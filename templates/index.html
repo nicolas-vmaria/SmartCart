@@ -3,94 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="static/index.css" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&family=BBH+Sans+Hegarty&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"">
+
     <title>Tech Cart</title>
   </head>
   <body>
     <nav>
-      <h1>LOGO</h1>
+      <h1></h1>
     </nav>
-    <div class="container">
-      <h1>3D</h1>
-    </div>
 
-    <div class="beneficios">
-      <h2>Benefícios</h2>
-      <p>
-        <b>Redução de tempo:</b> Sem aguardar na fila de checkout, o cliente sai
-        direto após a compra. <br /><b>Experiência de compra aprimorada:</b>
-        Visualização em tempo real dos itens, total gasto, cupons aplicados e
-        navegação pela loja. Por exemplo, o Amazon Dash Cart permite que o
-        cliente veja o recibo em tempo real. <br /><b
-          >Aumento de fidelização e ticket médio:</b
-        >
-        No uso do Dash Cart, 80% dos usuários retornam; e os que usam gastam
-        ~10% mais que os que não usam. <br /><b
-          >Menos carga operacional no checkout:</b
-        >
-        Menos caixas físicos, menor fila, menor esforço humano para processar
-        cada cliente. <br /><b>Melhor rastreabilidade de compras:</b> Registro
-        automático permite dados sobre comportamento, ofertas personalizadas,
-        redução de perdas ou fraudes.
-      </p>
-    </div>
 
-    <div class="pqComprar">
-      <h2>Por que comprar (do ponto de vista do varejista ou rede)</h2>
-      <p>
-        <b>Diferenciação competitiva:</b> Oferecer uma experiência moderna atrai
-        clientes exigentes. <br /><b>Eficiência operacional:</b> Menor custo por
-        transação, menos exigência de caixa/check-out, menos pessoal dedicado.
-        <br /><b>Incremento de receita:</b> Como indicado acima, usuários desse
-        tipo de carrinho gastam mais. <br /><b>Dados de valor:</b> Captação de
-        dados de comportamento em loja, aproveitamento de promoções
-        personalizadas e fidelização. <br /><b>Escalabilidade:</b> Uma vez
-        implementado, pode replicar para várias lojas. <br /><b
-          >Caso de falha a considerar:</b
-        >
-        custo de implementação elevado (sensores, hardware, software, suporte).
-        Requisito de manutenção técnica.
-      </p>
-    </div>
-
-    <div class="comoFunciona">
-      <h2>Como funciona o “Tech Cart”</h2>
-      <p><h3>Componentes</h3>
-
-        Carrinho físico com sensores (peso, câmeras ou scanners) para detectar itens inseridos ou retirados.<br>
-        
-        <br>Interface de usuário no carrinho (tela ou scanner) que mostra itens, total da compra, promoções.<br>
-        
-        <br>Leitor QR ou login via app para vincular o cliente ao carrinho. Na Amazon, o cliente escaneia código no app para ativar o Dash Cart.<br> 
-        
-        <br>Sistema de pagamento vinculado (cartão, conta, app) que será cobrado automaticamente ao final da compra.<br>
-        
-        <br>Saída dedicada (“lane” especial) ao final da loja onde o carrinho é registrado como finalizado e pagamento efetuado.<br> 
-        
-        
-        <h3>Fluxo de uso</h3>
-        
-        <br>Cliente entra na loja, pega um Tech Cart.<br>
-        
-        <br>Cliente faz login / autentica o carrinho via app ou QR.<br>
-        
-        <br>Cliente coloca produtos no carrinho. Cada adição/removal é automaticamente registrada. (Se algum item não tem código, o cliente pode usar a interface para adicionar manualmente ou pesar.) <br>
-        
-        
-        <br>Durante a compra, o carrinho mostra o total, cupons aplicados, localização de produtos, etc.<br>
-        
-        <br>Após terminar, o cliente vai para a saída dedicada com o Tech Cart. O sistema encerra a sessão, processa o pagamento e envia o recibo por e-mail ou app.<br> 
-        
-        <br>O cliente pode simplesmente sair, sem passar por caixa tradicional.<br>
-      </p>
-    </div>
-
+    
     <footer>
       <ul>
         <p>Contato</p>
