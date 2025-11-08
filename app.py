@@ -3,17 +3,23 @@ from flask import Flask, render_template, request, redirect
 from models import Usuario
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 import mysql.connector
+import hashlib
 
 app = Flask(__name__)
 app.secret_key = "chaveteste"
 lm = LoginManager(app)
+lm.login_view = "login"
+
+def hash(txt):
+    hash_obj = hashlib.sha256(txt.encode('utf-8'))
+    return hash_obj.hexdigest()
 
 @lm.user_loader
 def load_user(id):
     cursor.execute("SELECT * FROM Usuarios WHERE id=%s", (id,))
     resultado = cursor.fetchone()
-    user = Usuario
-    return user(resultado["id"])
+    if resultado:
+        return Usuario(resultado['id'], resultado['nome'], resultado['cpf'], resultado['telefone'], resultado['email'], resultado['senha'])
 
 
 conexao = mysql.connector.connect(
@@ -45,22 +51,21 @@ def cadastro():
         return render_template("/cadastro.html")
     elif request.method == "POST":
         nome = request.form["nome"]
+        cpf = request.form["cpf"].replace(".", "").replace("-", "")
         telefone = request.form["telefone"]
-        cpf = request.form["cpf"]
         email = request.form["email"]
         senha = request.form["senha"]
 
         cursor.execute(
-            "INSERT INTO Usuarios (nome, telefone, cpf, email, senha) VALUES (%s, %s, %s, %s, %s)",
-            (nome, telefone, cpf, email, senha),
+            "INSERT INTO Usuarios (nome, cpf, telefone, email, senha) VALUES (%s, %s, %s, %s, %s)",
+            (nome, cpf, telefone, email, hash(senha)),
         )
-        cursor.fetchone()
         conexao.commit()
 
-        new_user = Usuario(cursor.lastrowid, nome, telefone, cpf, email, senha)
+        new_user = Usuario(cursor.lastrowid, nome, cpf, telefone, email, senha)
         login_user(new_user)
         
-        return render_template("/index.html")
+        return redirect("/")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -68,18 +73,18 @@ def login():
     if request.method == "GET":
         return render_template("/login.html")
     elif request.method == "POST":
-        cpf = request.form["cpf"]
+        cpf = request.form["cpf"].replace("-", "").replace(".", "")
         senha = request.form["senha"]
 
-        cursor.execute("SELECT * FROM Usuarios WHERE cpf=%s AND senha=%s", (cpf, senha))
-        user = cursor.fetchone()
+        cursor.execute("SELECT * FROM Usuarios WHERE cpf=%s AND senha=%s", (cpf, hash(senha)))
+        user_old = cursor.fetchone()
 
-        if user:
-            User = Usuario
-            login_user(User(user["id"], user["cpf"], user["senha"]))
+        if user_old:
+            user = Usuario(user_old['id'], user_old['nome'], user_old["cpf"], user_old["telefone"], user_old["email"], user_old['senha'])
+            login_user(user)
             return redirect("/")
         else:
-            return redirect("/login", erro="Senha ou CPF incorretos")
+            return "Senha ou nome incorreto" , 401
 
 
 if __name__ == "__main__":
