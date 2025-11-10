@@ -56,16 +56,23 @@ def cadastro():
         email = request.form["email"]
         senha = request.form["senha"]
 
-        cursor.execute(
-            "INSERT INTO Usuarios (nome, cpf, telefone, email, senha) VALUES (%s, %s, %s, %s, %s)",
-            (nome, cpf, telefone, email, hash(senha)),
-        )
-        conexao.commit()
+        cursor.execute("SELECT * FROM Usuarios WHERE cpf=%s OR email=%s", (cpf, email))
+        usuario_existente = cursor.fetchone()
 
-        new_user = Usuario(cursor.lastrowid, nome, cpf, telefone, email, senha)
-        login_user(new_user)
-        
-        return redirect("/")
+        if usuario_existente:
+            erro = "CPF ou E-mail já cadastrado"
+            return redirect(f"/cadastro?erro={erro}")
+        else:
+            cursor.execute(
+                "INSERT INTO Usuarios (nome, cpf, telefone, email, senha) VALUES (%s, %s, %s, %s, %s)",
+                (nome, cpf, telefone, email, hash(senha)),
+            )
+            conexao.commit()
+
+            new_user = Usuario(cursor.lastrowid, nome, cpf, telefone, email, senha)
+            login_user(new_user)
+            
+            return redirect("/")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -79,12 +86,14 @@ def login():
         cursor.execute("SELECT * FROM Usuarios WHERE cpf=%s AND senha=%s", (cpf, hash(senha)))
         user_old = cursor.fetchone()
 
+
         if user_old:
             user = Usuario(user_old['id'], user_old['nome'], user_old["cpf"], user_old["telefone"], user_old["email"], user_old['senha'])
             login_user(user)
             return redirect("/")
         else:
-            return "Senha ou nome incorreto" , 401
+            erro = "Senha ou nome já cadastrado"
+            return redirect(f"/login?erro={erro}")
 
 
 if __name__ == "__main__":
