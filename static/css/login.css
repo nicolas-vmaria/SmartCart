@@ -1,0 +1,108 @@
+*{
+    font-family: montserrat;
+}
+
+body {
+    background-image:url(/static/img/fundoLogin.png) ;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .container{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+  }
+  
+  .container-login {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #A0B179;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+    width: 450px;
+    padding: 3rem;
+    text-align: center;
+  }
+  
+  h3 {
+    margin-bottom: 30px;
+    color: #4E4F3D;
+    font-size: 42px;
+    letter-spacing: 1px;
+    text-align: left;
+  }
+  
+  label {
+    color: #4E4F3D;
+    font-size: 18px;
+    display: block;
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  input {
+    display: block;
+    margin: 0 auto 20px auto;
+    padding: 22px;
+    width: 90%;
+    border-radius: 15px;
+    border: none;
+    outline: none;
+    background: #fff;
+    color: #fff;
+    font-size: 16px;
+    transition: background 0.3s ease;
+  }
+  
+  input:focus {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid #4E4F3D;
+  }
+  
+  button {
+    display: block;
+    margin: 20px auto;
+    border: none;
+    border-radius: 30px;
+    padding: 20px 20px;
+    width: 55%;
+    font-size: 20px;
+    background: #CACDA5;
+    color: #4E4F3D;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  .container-login a {
+    color: #4E4F3D;
+    font-weight:bold ;
+    transition: color 0.3s ease;
+  }
+  
+  .container-login a:hover {
+    color: #CACDA5;
+  }
+  
+  .conta {
+    color: #4E4F3D;
+    font-size: 16px;
+    margin-top: 25px;
+  }
+
+ 
+  .voltar img{
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    margin: 30px 30px;
+    cursor: pointer;
+  }

@@ -71,3 +71,22 @@ nav p{
     height: calc(100vh - 100px);
     background-image: url('../img/onda.png');
 }
+.section-mid{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    width: 100%;
+    background-color: #A3A277;
+}
+
+.section-mid .coluna{
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+.coluna image{
+
+}

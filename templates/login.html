@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login - SmartCart</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/login.css')
+    }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&family=BBH+Sans+Hegarty&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="shortcut icon"
+      href="../static/favicon.ico"
+      type="image/x-icon"
+    />
+  </head>
+  <body>
+    <a class="voltar" href="/"><img src="/static/img/Seta.png" alt="" /></a>
+    <div class="container">
+      <div class="container-login">
+        <h3>Login</h3>
+        <form method="POST">
+          <label><b>CPF:</b></label>
+          <input
+            type="cpf"
+            name="cpf"
+            placeholder="000.000.000-00"
+            class="cpf"
+            required
+          /><br />
+          <label><b>Senha:</b></label>
+          <input
+            type="password"
+            name="senha"
+            placeholder="Ex.: 1234"
+            class="senha"
+            required
+          /><br />
+          <button type="submit">Login</button>
+          {% if request.args.get('erro') %}
+          <p style="color: red">{{ request.args.get('erro') }}</p>
+          {% endif %}
+        </form>
+        <p class="conta">Não tem conta? <a href="/cadastro">Cadastrar-se</a></p>
+      </div>
+    </div>
+  </body>
+</html>
