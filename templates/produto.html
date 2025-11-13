@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <title>Produtos - SmartCart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,12 +12,11 @@
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css')
+      href="{{ url_for('static', filename='css/produtos.css')
     }}"
     />
-
-    <title>Tech Cart</title>
   </head>
+
   <body>
     <nav>
       <div class="logo">
@@ -120,28 +119,80 @@
         </svg>
       </div>
     </nav>
-    <section class="section-home">
-      <div class="titulo">
-        <h1>O Carrinho inteligente que facilita sua compra.</h1>
-        <p>
-          O <b>SmartCart,</b> um carrinho inteligente capaz de reconhecer
-          automaticamente os produtos inseridos e somar o valor total da compra
-          em tempo real.
+
+    <div class="container">
+      <div class="row">
+        {% if produtos %} {% for p in produtos %}
+        <div class="container-produtos">
+          <div class="card-body">
+            <h5 class="card-title">{{ p.nome }}</h5>
+
+            <img
+              class="img-produto"
+              src="../static/img/{{ p.id_imagem }}"
+              alt="produto"
+            />
+
+            <div class="card-info">
+              {% if p.categoria %}
+              <p class="text-muted small mb-1">
+                Categoria: <b>{{ p.categoria }}</b>
+              </p>
+              {% endif %}
+              <p class="card-text">R$ {{ "%.2f"|format(p.preco) }}</p>
+              {% if session.usuario_admin == 0%} {% if p.estoque <= 10 %}
+              <p>Ultimas {{ p.estoque }} unidades</p>
+
+              {% endif %} {%elif session.usuario_admin == 1 %}
+              <p>Estoque: {{p.estoque}}</p>
+              {%endif%}
+            </div>
+
+            {% if session.usuario_id %} {% if p.estoque == 0 %}
+            <a
+              href="#"
+              class="add-carrinho"
+              onclick="return alert('Produto sem estoque')"
+            >
+              <button class="btn-carrinho">Adicionar ao Carrinho</button></a
+            >
+            {%else%}
+            <a
+              href="/colocar/{{ p.id }}"
+              class="add-carrinho"
+              onclick="alert('{{ p.nome }} foi adicionado ao carrinho')"
+              ><button class="btn-carrinho">Adicionar ao Carrinho</button></a
+            >
+            {%endif%} {% else %} {% endif %} {% if session.usuario_admin == 1 %}
+            <div class="container-btn-card">
+              <a
+                style="display: none"
+                href="/colocar/{{ p.id }}"
+                class="add-carrinho"
+                onclick="alert('{{ p.nome }} foi adicionado ao carrinho')"
+                ><button class="btn-carrinho">Adicionar ao Carrinho</button></a
+              >
+
+              <button id="" data-id="{{ p.id }}" class="editar">Editar</button>
+              <a href="/delete/{{ p.id }}"
+                ><button
+                  class="excluir"
+                  onclick="return confirm('Deseja realmente excluir esse item?')"
+                >
+                  Excluir
+                </button></a
+              >
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {% endfor %} {% else %}
+        <p class="text-center text-muted">
+          Nenhum produto encontrado nesta categoria.
         </p>
+        {% endif %}
       </div>
-    </section>
-    <section class="section-mid">
-      <div class="coluna image">
-        <h1>aaaaaaaaa</h1>
-      </div>
-      <div class="coluna text">
-        <h1>Lorem ipsum</h1>
-        <p>
-          dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien
-          vitae pellentesque sem placerat. In id cursus mi pretium tellus duis
-          convallis. Tempus leo eu aenean sed diam urna tempor.
-        </p>
-      </div>
-    </section>
+    </div>
   </body>
 </html>
