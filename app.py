@@ -8,7 +8,7 @@ import hashlib
 app = Flask(__name__)
 app.secret_key = "chaveteste"
 lm = LoginManager(app)
-lm.login_view = "login"
+
 
 def hash(txt):
     hash_obj = hashlib.sha256(txt.encode('utf-8'))
@@ -29,17 +29,17 @@ cursor = conexao.cursor(dictionary=True)
 
 
 @app.route("/")
-@login_required
+
 def index():
-    return render_template("index.html")
+    return render_template("produto.html")
 
 @app.route("/sobre")
-@login_required
+
 def sobre():
     return render_template("sobre.html")
 
 @app.route("/logout")
-@login_required
+
 def logout():
     logout_user()
     return redirect("/")
@@ -95,6 +95,38 @@ def login():
             erro = "Senha ou nome já cadastrado"
             return redirect(f"/login?erro={erro}")
 
+def buscar_categorias():
+    cursor.execute(
+        "SELECT DISTINCT categoria FROM Produtos WHERE categoria IS NOT NULL AND categoria <> ''"
+    )
+    rows = cursor.fetchall()
+    return [r["categoria"] for r in rows]
+
+
+@app.route("/produtos")
+
+def listar_produtos():
+    cursor.execute("SELECT * FROM Produtos ORDER BY nome ASC")
+    produtos = cursor.fetchall()
+    categorias = buscar_categorias()
+    return render_template("produtos.html", produtos=produtos, categorias=categorias)
+
+
+# -----------------------------
+# Filtrar por categoria
+# -----------------------------
+@app.route("/categoria/<categoria>")
+
+def produtos_por_categoria(categoria):
+    cursor.execute("SELECT * FROM Produtos WHERE categoria=%s", (categoria,))
+    produtos = cursor.fetchall()
+    categorias = buscar_categorias()
+    return render_template(
+        "produtos.html",
+        produtos=produtos,
+        categorias=categorias,
+        categoria_atual=categoria,
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
