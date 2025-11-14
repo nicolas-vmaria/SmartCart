@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro - SmartCart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&family=BBH+Sans+Hegarty&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/cadastro.css')
+    }}"
+    />
+  </head>
+  <body>
+    
+    <section class="section">
+        <div class="voltarContainer"><a id="voltar" href="/"><img src="/static/img/Seta.png" alt="" /></a></div>
+        
+      <div class="coluna cadastro">
+        
+        <h1>Cadastrar</h1>
+
+        <form id="formCadastro" action="">
+            <input type="text" id="nmCompleto" placeholder="Nome Completo" required>
+            <input type="text" id="cpf" placeholder="CPF" maxlength="11" required>
+            <input type="tel" id="tel" placeholder="Número de Telefone" required>
+            <input type="email" placeholder="Email" required id="email">
+            <input type="password" id="senha" placeholder="Senha" required>
+            
+            <div id="checkboxContainer">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="checkbox" required>
+                    <span class="checkmark"></span>
+                </label>
+                <p>Estou ciente e concordo com o uso dos meus dados<br> conforme a <a href="">Política de
+                        Privacidade.</a></p>
+            </div>
+
+            <div id="containerSubmit">
+                <input type="submit" value="Cadastrar" id="cadastrar">
+            </div>
+            <p>Já tem conta? <a href="/login">Entrar</a></p>
+        </form>
+          
+        </div>
+      </div>
+    
+    </section>
+    <div class="title"><h1>Transforme as compras do <br>seus <span>clientes.</span></h1></div>
+  </body>
+</html>

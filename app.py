@@ -1,7 +1,13 @@
 import os
 from flask import Flask, render_template, request, redirect
 from models import Usuario
-from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from flask_login import (
+    LoginManager,
+    login_required,
+    login_user,
+    logout_user,
+    current_user,
+)
 import mysql.connector
 import hashlib
 
@@ -11,15 +17,23 @@ lm = LoginManager(app)
 
 
 def hash(txt):
-    hash_obj = hashlib.sha256(txt.encode('utf-8'))
+    hash_obj = hashlib.sha256(txt.encode("utf-8"))
     return hash_obj.hexdigest()
+
 
 @lm.user_loader
 def load_user(id):
     cursor.execute("SELECT * FROM Usuarios WHERE id=%s", (id,))
     resultado = cursor.fetchone()
     if resultado:
-        return Usuario(resultado['id'], resultado['nome'], resultado['cpf'], resultado['telefone'], resultado['email'], resultado['senha'])
+        return Usuario(
+            resultado["id"],
+            resultado["nome"],
+            resultado["cpf"],
+            resultado["telefone"],
+            resultado["email"],
+            resultado["senha"],
+        )
 
 
 conexao = mysql.connector.connect(
@@ -29,7 +43,6 @@ cursor = conexao.cursor(dictionary=True)
 
 
 @app.route("/")
-
 def index():
     return render_template("index.html")
 
@@ -71,7 +84,7 @@ def cadastro():
 
             new_user = Usuario(cursor.lastrowid, nome, cpf, telefone, email, senha)
             login_user(new_user)
-            
+
             return redirect("/")
 
 
@@ -83,17 +96,26 @@ def login():
         cpf = request.form["cpf"].replace("-", "").replace(".", "")
         senha = request.form["senha"]
 
-        cursor.execute("SELECT * FROM Usuarios WHERE cpf=%s AND senha=%s", (cpf, hash(senha)))
+        cursor.execute(
+            "SELECT * FROM Usuarios WHERE cpf=%s AND senha=%s", (cpf, hash(senha))
+        )
         user_old = cursor.fetchone()
 
-
         if user_old:
-            user = Usuario(user_old['id'], user_old['nome'], user_old["cpf"], user_old["telefone"], user_old["email"], user_old['senha'])
+            user = Usuario(
+                user_old["id"],
+                user_old["nome"],
+                user_old["cpf"],
+                user_old["telefone"],
+                user_old["email"],
+                user_old["senha"],
+            )
             login_user(user)
             return redirect("/")
         else:
             erro = "Senha ou nome já cadastrado"
             return redirect(f"/login?erro={erro}")
+
 
 def buscar_categorias():
     cursor.execute(
@@ -122,6 +144,7 @@ def produtos_por_categoria(categoria):
         categorias=categorias,
         categoria_atual=categoria,
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
