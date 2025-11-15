@@ -47,7 +47,13 @@
       </ul>
 
       <div class="user">
-        <p>Olá,<b>User</b></p>
+        {% if user.is_authenticated %}
+          <p>Olá,<b>{{user.nome}}</b></p>
+          <a href="/logout">Sair</a>
+        {% else %}
+        <a href="/cadastro">Cadastrar</a>
+        <a href="/login">Entrar</a>
+        {% endif %}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -123,7 +129,8 @@
 
     <div class="container">
       <div class="row">
-        {% if produtos %} {% for p in produtos %}
+        {% if produtos %} 
+        {% for p in produtos %}
         <div class="container-produtos">
           <div class="card-body">
             <h5 class="card-title">{{ p.nome }}</h5>
@@ -135,63 +142,14 @@
             />
 
             <div class="card-info">
-              {% if p.categoria %}
-              <p class="text-muted small mb-1">
-                Categoria: <b>{{ p.categoria }}</b>
-              </p>
-              {% endif %}
               <p class="card-text">R$ {{ "%.2f"|format(p.preco) }}</p>
-              {% if session.usuario_admin == 0%} {% if p.estoque <= 10 %}
-              <p>Ultimas {{ p.estoque }} unidades</p>
-
-              {% endif %} {%elif session.usuario_admin == 1 %}
-              <p>Estoque: {{p.estoque}}</p>
-              {%endif%}
-            </div>
-
-            {% if session.usuario_id %} {% if p.estoque == 0 %}
-            <a
-              href="#"
-              class="add-carrinho"
-              onclick="return alert('Produto sem estoque')"
-            >
-              <button class="btn-carrinho">Adicionar ao Carrinho</button></a
-            >
-            {%else%}
-            <a
-              href="/colocar/{{ p.id }}"
-              class="add-carrinho"
-              onclick="alert('{{ p.nome }} foi adicionado ao carrinho')"
-              ><button class="btn-carrinho">Adicionar ao Carrinho</button></a
-            >
-            {%endif%} {% else %} {% endif %} {% if session.usuario_admin == 1 %}
-            <div class="container-btn-card">
-              <a
-                style="display: none"
-                href="/colocar/{{ p.id }}"
-                class="add-carrinho"
-                onclick="alert('{{ p.nome }} foi adicionado ao carrinho')"
-                ><button class="btn-carrinho">Adicionar ao Carrinho</button></a
-              >
-
-              <button id="" data-id="{{ p.id }}" class="editar">Editar</button>
-              <a href="/delete/{{ p.id }}"
-                ><button
-                  class="excluir"
-                  onclick="return confirm('Deseja realmente excluir esse item?')"
-                >
-                  Excluir
-                </button></a
-              >
-            </div>
-            {% endif %}
+              <p> Estoque: {{ p.estoque }}</p>
           </div>
         </div>
 
-        {% endfor %} {% else %}
-        <p class="text-center text-muted">
-          Nenhum produto encontrado nesta categoria.
-        </p>
+        {% endfor %} 
+        {% else %}
+        <p>Nenhum produto encontrado.</p>
         {% endif %}
       </div>
     </div>

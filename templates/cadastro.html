@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -24,12 +24,12 @@
         
         <h1>Cadastrar</h1>
 
-        <form id="formCadastro" action="">
-            <input type="text" id="nmCompleto" placeholder="Nome Completo" required>
-            <input type="text" id="cpf" placeholder="CPF" maxlength="11" required>
-            <input type="tel" id="tel" placeholder="Número de Telefone" required>
-            <input type="email" placeholder="Email" required id="email">
-            <input type="password" id="senha" placeholder="Senha" required>
+        <form id="formCadastro" method="POST">
+            <input type="text" id="nmCompleto" name="nome" placeholder="Nome Completo" required>
+            <input type="text" id="cpf" name="cpf" placeholder="CPF" required>
+            <input type="tel" id="tel" name="tel" placeholder="Número de Telefone"  required>
+            <input type="email" name="email" placeholder="Email" required id="email">
+            <input type="password" name="senha" id="senha" placeholder="Senha" required>
             
             <div id="checkboxContainer">
                 <label class="checkbox-container">
@@ -43,6 +43,9 @@
             <div id="containerSubmit">
                 <input type="submit" value="Cadastrar" id="cadastrar">
             </div>
+            {% if request.args.get('erro') %}
+            <p style="color: red">{{ request.args.get('erro') }}</p>
+            {% endif %}
             <p>Já tem conta? <a href="/login">Entrar</a></p>
         </form>
           
@@ -51,5 +54,51 @@
     
     </section>
     <div class="title"><h1>Transforme as compras do <br>seus <span>clientes.</span></h1></div>
+
+    <script>
+        let tel = document.getElementById("tel");
+
+        tel.addEventListener("input", () => {
+          let v = tel.value.replace(/\D/g, "");
+
+          v = v.substring(0, 11);
+
+          if (v.length > 6 && v.length <= 10){
+            v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2$3")
+          }  else if( v.length === 11) {
+            v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
+          } else if (v.length > 2) {
+            v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2")
+          } else if (v.length === 2) {
+            v = `( ${v}`;
+          } else {
+            v = v
+          }
+         
+          tel.value = v;
+        });
+
+        let cpf = document.getElementById("cpf");
+
+        cpf.addEventListener("input", () => {
+          let n = cpf.value.replace(/\D/g, "");
+
+          n = n.substring(0, 11);
+
+          if (n.length > 9){
+            n = n.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4")
+          }  else if( n.length > 6) {
+            n = n.replace(/(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3")
+          } else if (n.length > 3) {
+            n = n.replace(/(\d{3})(\d{0,3})/, "$1.$2")
+          } else {
+            n = n.replace(/(\d{0,3})/, "$1")
+          }
+         
+          cpf.value = n;
+        });
+
+    </script>
+
   </body>
 </html>

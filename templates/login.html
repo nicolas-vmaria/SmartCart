@@ -29,10 +29,12 @@
         <form method="POST">
           <label><b>CPF:</b></label>
           <input
-            type="cpf"
+            type="text"
+            id="cpf"
             name="cpf"
             placeholder="000.000.000-00"
             class="cpf"
+            maxlength="14"
             required
           /><br />
           <label><b>Senha:</b></label>
@@ -41,6 +43,7 @@
             name="senha"
             placeholder="Ex.: 1234"
             class="senha"
+            autocomplete="off"
             required
           /><br />
           <button type="submit">Login</button>
@@ -51,5 +54,27 @@
         <p class="conta">Não tem conta? <a href="/cadastro">Cadastrar-se</a></p>
       </div>
     </div>
+
+    <script>
+      let cpf = document.getElementById("cpf");
+
+        cpf.addEventListener("input", () => {
+          let n = cpf.value.replace(/\D/g, "");
+
+          n = n.substring(0, 11);
+
+          if (n.length > 9){
+            n = n.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4")
+          }  else if( n.length > 6) {
+            n = n.replace(/(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3")
+          } else if (n.length > 3) {
+            n = n.replace(/(\d{3})(\d{0,3})/, "$1.$2")
+          } else {
+            n = n.replace(/(\d{0,3})/, "$1")
+          }
+         
+          cpf.value = n;
+        });
+    </script>
   </body>
 </html>

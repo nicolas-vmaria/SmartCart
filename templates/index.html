@@ -47,7 +47,15 @@
       </ul>
 
       <div class="user">
-        <p>Olá,<b>User</b></p>
+        {% if user.is_authenticated %}
+          <p>Olá,<b>{{user.nome}}</b></p>
+          <a href="/logout">Sair</a>
+        {% else %}
+        <a href="/cadastro">Cadastrar</a>
+        <a href="/login">Entrar</a>
+        {% endif %}
+        
+        
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"

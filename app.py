@@ -37,22 +37,23 @@ def load_user(id):
 
 
 conexao = mysql.connector.connect(
-    host="localhost", port="3406", user="root", password="", database="SmartCart"
+    host="localhost", port="3306", user="root", password="12345678", database="SmartCart"
 )
 cursor = conexao.cursor(dictionary=True)
 
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", user=current_user)
 
 
 @app.route("/sobre")
 def sobre():
-    return render_template("sobre.html")
+    return render_template("sobre.html", user=current_user)
 
 
 @app.route("/logout")
+@login_required
 def logout():
     logout_user()
     return redirect("/")
@@ -65,7 +66,7 @@ def cadastro():
     elif request.method == "POST":
         nome = request.form["nome"]
         cpf = request.form["cpf"].replace(".", "").replace("-", "")
-        telefone = request.form["telefone"]
+        telefone = request.form["tel"].replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
         email = request.form["email"]
         senha = request.form["senha"]
 
@@ -97,7 +98,7 @@ def login():
         senha = request.form["senha"]
 
         cursor.execute(
-            "SELECT * FROM Usuarios WHERE cpf=%s AND senha=%s", (cpf, hash(senha))
+            "SELECT * FROM Usuarios WHERE cpf=%s AND senha=%s", (cpf, hash(senha)) 
         )
         user_old = cursor.fetchone()
 
@@ -117,33 +118,13 @@ def login():
             return redirect(f"/login?erro={erro}")
 
 
-def buscar_categorias():
-    cursor.execute(
-        "SELECT DISTINCT categoria FROM Produtos WHERE categoria IS NOT NULL AND categoria <> ''"
-    )
-    rows = cursor.fetchall()
-    return [r["categoria"] for r in rows]
-
-
 @app.route("/produtos")
 def listar_produtos():
     cursor.execute("SELECT * FROM Produtos ORDER BY nome ASC")
     produtos = cursor.fetchall()
-    categorias = buscar_categorias()
-    return render_template("produto.html", produtos=produtos, categorias=categorias)
+    return render_template("produto.html", produtos=produtos, user=current_user)
 
 
-@app.route("/categoria/<categoria>")
-def produtos_por_categoria(categoria):
-    cursor.execute("SELECT * FROM Produtos WHERE categoria=%s", (categoria,))
-    produtos = cursor.fetchall()
-    categorias = buscar_categorias()
-    return render_template(
-        "produtos.html",
-        produtos=produtos,
-        categorias=categorias,
-        categoria_atual=categoria,
-    )
 
 
 if __name__ == "__main__":
