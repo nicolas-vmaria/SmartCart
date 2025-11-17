@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Produtos - SmartCart</title>
+    <title>Orçamento - SmartCart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,11 +12,9 @@
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/produtos.css')
-    }}"
+      href="{{ url_for('static', filename='css/orcamento.css')}}"
     />
   </head>
-
   <body>
     <nav>
       <div class="logo">
@@ -126,31 +124,146 @@
         </svg>
       </div>
     </nav>
+    <section class="section-home">
+      <h1>Orçamento</h1>
+    </section>
+    <section class="section-card">
+      <div class="card">
+        <form method="POST">
+          <h1>Empresa</h1>
+          <label><b>Nome da Empresa:</b></label>
+          <input
+            type="text"
+            id="nomeEmpresa"
+            name="nomeEmpresa"
+            placeholder="Ex.: Empresa XYZ"
+            class="nomeEmpresa"
+            required
+          /><br />
+          <label><b>CNPJ:</b></label>
+          <input
+            type="text"
+            name="cnpj"
+            placeholder="Ex.: 00.000.000/0000-00"
+            class="cnpj"
+            autocomplete="off"
+            required
+          /><br />
+          <label><b>Email de Contato:</b></label>
+          <input
+            type="email"
+            name="email"
+            placeholder="exemplo@gmail.com"
+            class="email"
+            autocomplete="off"
+            required
+          /><br />
+          <label><b>Endereço:</b></label>
+          <input
+            type="password"
+            name="senha"
+            placeholder="Ex.: 1234"
+            class="senha"
+            autocomplete="off"
+            required
+          /><br />
 
-    <div class="container">
-      <div class="row">
-        {% if produtos %} {% for p in produtos %}
-        <div class="container-produtos">
-          <div class="card-body">
-            <h5 class="card-title">{{ p.nome }}</h5>
-
-            <img
-              class="img-produto"
-              src="../static/img/{{ p.id_imagem }}"
-              alt="produto"
+          <div class="row">
+            <label><b>Número:</b></label>
+            <input
+              type="number"
+              name="numero"
+              placeholder="(47) 99999-9999"
+              class="numero"
+              autocomplete="off"
+              required
             />
-
-            <div class="card-info">
-              <p class="card-text">R$ {{ "%.2f"|format(p.preco) }}</p>
-              <p>Estoque: {{ p.estoque }}</p>
-            </div>
+            <label><b>Complemento:</b></label>
+            <input
+              type="text"
+              name="complemento"
+              placeholder="Ex.: Casa, Apt 101"
+              class="complemento"
+              autocomplete="off"
+              required
+            />
           </div>
-
-          {% endfor %} {% else %}
-          <p>Nenhum produto encontrado.</p>
+          <br />
+          <label><b>CEP:</b></label>
+          <input
+            type="number"
+            name="cep"
+            placeholder="Ex.: 12345-678"
+            class="cep"
+            autocomplete="off"
+            required
+          /><br />
+          <h1>Produto</h1>
+          <input
+            type="text"
+            name="produto"
+            placeholder="Escolha um Produto"
+            class="produto"
+            autocomplete="off"
+            required
+          /><br />
+          <label><b>Quantidade:</b></label>
+          <input
+            type="number"
+            name="quantidade"
+            placeholder="Ex.: 100"
+            class="quantidade"
+            autocomplete="off"
+            required
+          />
+          <label><b>Prazo de Entrega:</b></label>
+          <input
+            type="date"
+            name="prazo"
+            placeholder="Ex.: 10/08/2070"
+            class="prazo"
+            autocomplete="off"
+            required
+          /><br />
+          <h1>Pagamento</h1>
+          <input
+            type="text"
+            name="formaPagamento"
+            placeholder="Forma de Pagamento"
+            class="formaPagamento"
+            autocomplete="off"
+            required
+          /><br />
+          <input
+            type="number"
+            name="quantidadeParcelas"
+            placeholder="Quantidade de Parcelas"
+            class="quantidadeParcelas"
+            autocomplete="off"
+            required
+          /><br />
+          <label><b>Entrada:</b></label>
+          <input
+            type="number"
+            name="entrada"
+            placeholder="Ex.: 5000"
+            class="entrada"
+            autocomplete="off"
+            required
+          /><br />
+          <h1>Observações Gerais</h1>
+          <ul>
+            <li><a href="#">Garantias</a></li>
+            <li><a href="#">Políticas de cancelamento</a></li>
+            <li><a href="#">Responsabilidades</a></li>
+            <li><a href="#">Observações importantes para o cliente</a></li>
+          </ul>
+          <button type="submit">Mandar formulário</button>
+          {% if request.args.get('erro') %}
+          <p style="color: red">{{ request.args.get('erro') }}</p>
           {% endif %}
-        </div>
+        </form>
       </div>
-    </div>
+    </section>
   </body>
 </html>

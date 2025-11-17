@@ -14,14 +14,16 @@ import hashlib
 
 admin = Admin()
 
+
 def init_app(app):
     admin.name = "Loja de Informática Admin"
-    admin.template_mode = "bootstrap3"
+    admin.template_mode = None
     admin.init_app(app)
+
 
 app = Flask(__name__)
 app.secret_key = "chaveteste"
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db.init_app(app)
 admin.init_app(app)
 lm = LoginManager(app)
@@ -39,7 +41,8 @@ def hash(txt):
 def user_loader(id):
     usuario = db.session.query(Usuario).filter_by(id=id).first()
     return usuario
-    
+
+
 @app.route("/")
 def index():
     return render_template("index.html", user=current_user)
@@ -48,6 +51,11 @@ def index():
 @app.route("/sobre")
 def sobre():
     return render_template("sobre.html", user=current_user)
+
+
+@app.route("/orcamento")
+def orcamento():
+    return render_template("orcamento.html", user=current_user)
 
 
 @app.route("/logout")
@@ -64,17 +72,27 @@ def cadastro():
     elif request.method == "POST":
         nome = request.form["nome"]
         cpf = request.form["cpf"].replace(".", "").replace("-", "")
-        telefone = request.form["tel"].replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
+        telefone = (
+            request.form["tel"]
+            .replace("(", "")
+            .replace(")", "")
+            .replace("-", "")
+            .replace(" ", "")
+        )
         email = request.form["email"]
-        senha = request.form["senha"]  
+        senha = request.form["senha"]
 
-        usuario_existente = Usuario.query.filter( (Usuario.cpf == cpf) | (Usuario.email == email)).first()
+        usuario_existente = Usuario.query.filter(
+            (Usuario.cpf == cpf) | (Usuario.email == email)
+        ).first()
 
         if usuario_existente:
             erro = "CPF ou E-mail já cadastrado"
             return redirect(f"/cadastro?erro={erro}")
         else:
-            new_user = Usuario(nome=nome, cpf=cpf, telefone=telefone, email=email, senha=hash(senha))
+            new_user = Usuario(
+                nome=nome, cpf=cpf, telefone=telefone, email=email, senha=hash(senha)
+            )
 
             db.session.add(new_user)
             db.session.commit()
@@ -105,7 +123,6 @@ def login():
 def listar_produtos():
     produtos = db.session.query(Produto).all()
     return render_template("produto.html", user=current_user, produtos=produtos)
-
 
 
 if __name__ == "__main__":
