@@ -76,17 +76,14 @@ nav p {
 .section-card {
   display: flex;
   justify-content: center;
-  margin: 40px auto;
+  margin: auto;
 }
 
 .card {
-  background-color: rgb(224, 224, 224);
-  border-radius: 15px;
   color: #4e4f3d;
-  width: 800px;
+  width: 1000px;
   display: flex;
   flex-direction: column;
-  padding: 20px;
 }
 
 .card h1 {
@@ -96,4 +93,37 @@ nav p {
 .card p {
   font-size: 20px;
   line-height: 35px;
+}
+
+.containerSobre {
+  display: flex;
+  justify-content: center;
+}
+
+.lado {
+  margin: 20px 0 0 20px;
+  width: 400px;
+  height: 300px;
+}
+
+.lado h2 {
+  font-size: 25px;
+  color: #4e4f3d;
+}
+
+.lado li a {
+  font-size: 30px;
+  text-decoration: none;
+  color: #4e4f3d;
+  font-weight: bold;
+}
+.lado ul {
+  list-style: none;
+}
+
+.lado img {
+  width: 40px;
+  height: 30px;
+  margin-left: 50px;
+  fill: #4e4f3d;
 }

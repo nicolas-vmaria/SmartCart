@@ -46,8 +46,8 @@
 
       <div class="user">
         {% if user.is_authenticated %}
-          <p>Olá,<b>{{user.nome}}</b></p>
-          <a href="/logout">Sair</a>
+        <p>Olá,<b>{{user.nome}}</b></p>
+        <a href="/logout">Sair</a>
         {% else %}
         <a href="/cadastro">Cadastrar</a>
         <a href="/login">Entrar</a>
@@ -127,18 +127,46 @@
     <section class="section-home">
       <h1>Sobre</h1>
     </section>
-    <section class="section-card">
-      <div class="card">
-        <h1>Nossa História</h1>
-        <p>A SmartCart nasceu com a missão de redefinir a experiência de compra no varejo, eliminando atritos que há décadas comprometem eficiência e conveniência. Identificamos um padrão crítico: filas extensas, processos manuais e baixa digitalização reduzem a produtividade dos supermercados e a satisfação dos consumidores. A partir dessa lacuna, transformamos tecnologia em vantagem prática.
-
-Em 2025, após ciclos intensivos de pesquisa, testes de campo e prototipagem avançada, lançamos o SmartCart, nosso carro-chefe: um carrinho inteligente equipado com sensores de precisão, visão computacional e processamento embarcado capaz de reconhecer automaticamente os itens adicionados, calcular valores em tempo real e integrar-se aos sistemas de checkout e estoque. O objetivo permanece o mesmo: tornar a jornada de compras fluida, rápida e confiável.
-
-Ao longo do crescimento da empresa, expandimos nosso portfólio e desenvolvemos soluções complementares para o ecossistema do supermercado, incluindo carrinhos modulares, sistemas de monitoramento de fluxo, etiquetas inteligentes e ferramentas de automação operacional. Esse conjunto de produtos foi projetado para aumentar eficiência, reduzir perdas e acelerar a transformação digital no varejo físico.
-
-Hoje, seguimos comprometidos com inovação contínua. Buscamos unir tecnologia, simplicidade e escalabilidade em soluções que conectem consumidores e estabelecimentos com mais agilidade e inteligência. Nosso propósito permanece inalterado: elevar o padrão das compras do dia a dia, entregando eficiência em cada detalhe.</p>
+    <div class="containerSobre">
+      <div class="lado">
+        <h2>Sobre</h2>
+        <ul>
+          <li><a href="#">Quem Somos</a></li>
+          <br />
+          <li><a href="#">Missão Visão e Valores</a></li>
+        </ul>
       </div>
-    </section>
-    </section>
+      <section class="section-card">
+        <div class="card">
+          <h1>Quem somos</h1>
+          <p>
+            A SmartCart nasceu com a missão de redefinir a experiência de compra
+            no varejo, eliminando atritos que há décadas comprometem eficiência
+            e conveniência. Identificamos um padrão crítico: filas extensas,
+            processos manuais e baixa digitalização reduzem a produtividade dos
+            supermercados e a satisfação dos consumidores. A partir dessa
+            lacuna, transformamos tecnologia em vantagem prática. Em 2025, após
+            ciclos intensivos de pesquisa, testes de campo e prototipagem
+            avançada, lançamos o SmartCart, nosso carro-chefe: um carrinho
+            inteligente equipado com sensores de precisão, visão computacional e
+            processamento embarcado capaz de reconhecer automaticamente os itens
+            adicionados, calcular valores em tempo real e integrar-se aos
+            sistemas de checkout e estoque. O objetivo permanece o mesmo: tornar
+            a jornada de compras fluida, rápida e confiável. Ao longo do
+            crescimento da empresa, expandimos nosso portfólio e desenvolvemos
+            soluções complementares para o ecossistema do supermercado,
+            incluindo carrinhos modulares, sistemas de monitoramento de fluxo,
+            etiquetas inteligentes e ferramentas de automação operacional. Esse
+            conjunto de produtos foi projetado para aumentar eficiência, reduzir
+            perdas e acelerar a transformação digital no varejo físico. Hoje,
+            seguimos comprometidos com inovação contínua. Buscamos unir
+            tecnologia, simplicidade e escalabilidade em soluções que conectem
+            consumidores e estabelecimentos com mais agilidade e inteligência.
+            Nosso propósito permanece inalterado: elevar o padrão das compras do
+            dia a dia, entregando eficiência em cada detalhe.
+          </p>
+        </div>
+      </section>
+    </div>
   </body>
 </html>
