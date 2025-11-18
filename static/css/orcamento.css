@@ -1,117 +1,170 @@
 * {
-    font-family: montserrat;
-  }
-  
-  body {
-    margin: 0;
-  }
-  
-  nav {
-    background-color: #a0b179;
-    height: 100px;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-  }
-  nav ul {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 40px;
-    margin-left: -20px;
-  }
-  
-  nav a {
-    text-decoration: none;
-    color: #4e4f3d;
-    font-size: 20px;
-  }
-  .logo svg {
-    transform: translateY(-8%);
-    width: 120px;
-    height: 120px;
-    cursor: pointer;
-  }
-  
-  nav p {
-    font-size: 20px;
-    color: #4e4f3d;
-    align-self: center;
-  }
-  .user {
-    display: flex;
-    margin-right: 20px;
-    width: 160px;
-  }
-  .user p {
-    font-size: 20px;
-    color: #4e4f3d;
-    margin: 0;
-    display: flex;
-    margin-right: 10px;
-    gap: 5px;
-  }
-  
-  .section-home {
-    background-image: url(/static/img/imagemOrcamento.png);
-    width: 100%;
-    height: 485px;
-    margin-top: 120px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .section-home h1 {
-    width: 500px;
-    font-size: 60pt;
-    color: #f6ffcf;
-  }
-  .section-card {
-    display: flex;
-    justify-content: center;
-    margin: 40px auto;
-  }
-  
-  .card {
-    background-color: rgb(224, 224, 224);
-    border-radius: 15px;
-    color: #4e4f3d;
-    width: 800px;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-  }
-  
-  .card h1 {
-    font-size: 50px;
-  }
-
-form{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-  
-input{
-    margin: 10px 0;
-    padding: 20px 280px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    display: flex;
-    flex-direction: column;
+  font-family: montserrat;
 }
 
-.row{
-    display: flex;
-    justify-content: center;
+body {
+  margin: 0;
 }
-label{
-    font-size: 15px;
+
+nav {
+  background-color: #a0b179;
+  height: 100px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-left: -20px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #4e4f3d;
+  font-size: 20px;
+}
+.logo svg {
+  transform: translateY(-8%);
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+}
+
+nav p {
+  font-size: 20px;
+  color: #4e4f3d;
+  align-self: center;
+}
+.user {
+  display: flex;
+  margin-right: 20px;
+  width: 160px;
+}
+.user p {
+  font-size: 20px;
+  color: #4e4f3d;
+  margin: 0;
+  display: flex;
+  margin-right: 10px;
+  gap: 5px;
+}
+
+.section-home {
+  background-image: url(/static/img/imagemOrcamento.png);
+  width: 100%;
+  height: 485px;
+  margin-top: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.section-home h1 {
+  width: 500px;
+  font-size: 60pt;
+  color: #f6ffcf;
+}
+.section-card {
+  display: flex;
+  justify-content: center;
+  margin: 40px auto;
+}
+
+.card {
+  background-color: rgb(224, 224, 224);
+  border-radius: 50px;
+  color: #4e4f3d;
+  width: 850px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.card h1 {
+  font-size: 50px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+}
+
+input {
+  margin: 10px 0;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+}
+.card input {
+  width: 800px;
+  height: 90px;
+  margin: 10px auto;
+}
+
+.row input {
+  width: 380px;
+}
+
+::placeholder {
+  padding-left: 20px;
+  font-size: 20px;
+  color: #9e9e9e;
+}
+
+select {
+  width: 800px;
+  height: 90px;
+  margin: 10px auto;
+  border-radius: 20px;
+  border: none;
+  font-size: 20px;
+  padding-left: 20px;
+  color: #9e9e9e;
+}
+
+select:focus {
+  outline: none;
+  border: 1px solid #4e4f3d;
+}
+
+form a {
+  color: #4e4f3d;
+  font-size: 25px;
+}
+
+form button {
+  width: 400px;
+  height: 60px;
+  border-radius: 30px;
+  border: none;
+  background-color: #a0b179;
+  color: #4e4f3d;
+  font-size: 25px;
+  align-self: center;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #8b9a5c;
 }

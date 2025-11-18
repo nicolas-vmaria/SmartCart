@@ -130,138 +130,154 @@
     <section class="section-card">
       <div class="card">
         <form method="POST">
-          <h1>Empresa</h1>
-          <label><b>Nome da Empresa:</b></label>
-          <input
-            type="text"
-            id="nomeEmpresa"
-            name="nomeEmpresa"
-            placeholder="Ex.: Empresa XYZ"
-            class="nomeEmpresa"
-            required
-          /><br />
-          <label><b>CNPJ:</b></label>
-          <input
-            type="text"
-            name="cnpj"
-            placeholder="Ex.: 00.000.000/0000-00"
-            class="cnpj"
-            autocomplete="off"
-            required
-          /><br />
-          <label><b>Email de Contato:</b></label>
-          <input
-            type="email"
-            name="email"
-            placeholder="exemplo@gmail.com"
-            class="email"
-            autocomplete="off"
-            required
-          /><br />
-          <label><b>Endereço:</b></label>
-          <input
-            type="password"
-            name="senha"
-            placeholder="Ex.: 1234"
-            class="senha"
-            autocomplete="off"
-            required
-          /><br />
-
-          <div class="row">
-            <label><b>Número:</b></label>
-            <input
-              type="number"
-              name="numero"
-              placeholder="(47) 99999-9999"
-              class="numero"
-              autocomplete="off"
-              required
-            />
-            <label><b>Complemento:</b></label>
+          <div class="column">
+            <h1>Empresa</h1>
+            <label><b>Nome da Empresa:</b></label>
             <input
               type="text"
-              name="complemento"
-              placeholder="Ex.: Casa, Apt 101"
-              class="complemento"
+              id="nomeEmpresa"
+              name="nomeEmpresa"
+              placeholder="Ex.: Empresa XYZ"
+              class="nomeEmpresa"
+              required
+            /><br />
+            <label><b>CNPJ:</b></label>
+            <input
+              type="text"
+              name="cnpj"
+              placeholder="Ex.: 00.000.000/0000-00"
+              class="cnpj"
               autocomplete="off"
               required
-            />
+            /><br />
+            <label><b>Email de Contato:</b></label>
+            <input
+              type="email"
+              name="email"
+              placeholder="exemplo@gmail.com"
+              class="email"
+              autocomplete="off"
+              required
+            /><br />
+            <label><b>Endereço:</b></label>
+            <input
+              type="password"
+              name="senha"
+              placeholder="Ex.: Rua Waldemiro Jose Borges"
+              class="senha"
+              autocomplete="off"
+              required
+            /><br />
+
+            <div class="row">
+              <div class="column">
+                <label><b>Número:</b></label>
+                <input
+                  type="number"
+                  name="numero"
+                  placeholder="Ex.: 740"
+                  class="numero"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+              <div class="column">
+                <label><b>Complemento:</b></label>
+                <input
+                  type="text"
+                  name="complemento"
+                  placeholder="Ex.: Casa, Apt 101"
+                  class="complemento"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+            </div>
+            <br />
+            <label><b>CEP:</b></label>
+            <input
+              type="number"
+              name="cep"
+              placeholder="Ex.: 12345-678"
+              class="cep"
+              autocomplete="off"
+              required
+            /><br />
+            <h1>Produto</h1>
+            <select>
+              <option value="">Escolha o produto</option>
+              <option value="categoria1">Exemplo 1</option>
+              <option value="categoria2">Exemplo 2</option>
+              <option value="categoria3">Exemplo 3</option></select
+            ><br />
+            <div class="row">
+              <div class="column">
+                <label><b>Quantidade:</b></label>
+                <input
+                  type="number"
+                  name="quantidade"
+                  placeholder="Ex.: 100"
+                  class="quantidade"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+              <div class="column">
+                <label><b>Prazo de Entrega:</b></label>
+                <input
+                  type="date"
+                  name="prazo"
+                  placeholder="Ex.: 10/08/2070"
+                  class="prazo"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+            </div>
+            <br />
+            <h1>Pagamento</h1>
+            <select>
+              <option value="">Escolha a forma de pagamento</option>
+              <option value="categoria1">Boleto</option>
+              <option value="categoria2">Cartão de Crédito</option>
+              <option value="categoria3">Pix</option></select
+            ><br />
+            <select>
+              <option value="">Escolha o número de parcelas</option>
+              <option value="categoria1">1x - Sem juros</option>
+              <option value="categoria2">2x - Sem juros</option>
+              <option value="categoria3">3x - Sem juros</option>
+              <option value="categoria4">4x - Sem juros</option>
+              <option value="categoria5">5x - Sem juros</option>
+              <option value="categoria6">6x - Sem juros</option>
+              <option value="categoria7">7x - Com juros</option>
+              <option value="categoria8">8x - Com juros</option>
+              <option value="categoria9">9x - Com juros</option>
+              <option value="categoria10">10x - Com juros</option>
+              <option value="categoria11">11x - Com juros</option>
+              <option value="categoria12">12x - Com juros</option></select
+            ><br />
+            <label><b>Entrada:</b></label>
+            <input
+              type="number"
+              name="entrada"
+              placeholder="Ex.: R$5000"
+              class="entrada"
+              autocomplete="off"
+              required
+            /><br />
+            <h1>Observações Gerais</h1>
+            <ul>
+              <li><a href="#">Garantias</a></li>
+              <li><a href="#">Políticas de cancelamento</a></li>
+              <li><a href="#">Responsabilidades</a></li>
+              <li><a href="#">Observações importantes para o cliente</a></li>
+            </ul>
+            <button type="submit">Mandar formulário</button>
+            {% if request.args.get('erro') %}
+            <p style="color: red">{{ request.args.get('erro') }}</p>
+            {% endif %}
           </div>
-          <br />
-          <label><b>CEP:</b></label>
-          <input
-            type="number"
-            name="cep"
-            placeholder="Ex.: 12345-678"
-            class="cep"
-            autocomplete="off"
-            required
-          /><br />
-          <h1>Produto</h1>
-          <input
-            type="text"
-            name="produto"
-            placeholder="Escolha um Produto"
-            class="produto"
-            autocomplete="off"
-            required
-          /><br />
-          <label><b>Quantidade:</b></label>
-          <input
-            type="number"
-            name="quantidade"
-            placeholder="Ex.: 100"
-            class="quantidade"
-            autocomplete="off"
-            required
-          />
-          <label><b>Prazo de Entrega:</b></label>
-          <input
-            type="date"
-            name="prazo"
-            placeholder="Ex.: 10/08/2070"
-            class="prazo"
-            autocomplete="off"
-            required
-          /><br />
-          <h1>Pagamento</h1>
-          <input
-            type="text"
-            name="formaPagamento"
-            placeholder="Forma de Pagamento"
-            class="formaPagamento"
-            autocomplete="off"
-            required
-          /><br />
-          <input
-            type="number"
-            name="quantidadeParcelas"
-            placeholder="Quantidade de Parcelas"
-            class="quantidadeParcelas"
-            autocomplete="off"
-            required
-          /><br />
-          <label><b>Entrada:</b></label>
-          <input
-            type="number"
-            name="entrada"
-            placeholder="Ex.: 5000"
-            class="entrada"
-            autocomplete="off"
-            required
-          /><br />
-          <h1>Observações Gerais</h1>
-          <ul>
-            <li><a href="#">Garantias</a></li>
-            <li><a href="#">Políticas de cancelamento</a></li>
-            <li><a href="#">Responsabilidades</a></li>
-            <li><a href="#">Observações importantes para o cliente</a></li>
-          </ul>
-          <button type="submit">Mandar formulário</button>
-          {% if request.args.get('erro') %}
-          <p style="color: red">{{ request.args.get('erro') }}</p>
-          {% endif %}
         </form>
       </div>
     </section>
