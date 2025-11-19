@@ -58,6 +58,11 @@ def orcamento():
     return render_template("orcamento.html", user=current_user)
 
 
+@app.route("/contato")
+def contato():
+    return render_template("contato.html", user=current_user)
+
+
 @app.route("/logout")
 @login_required
 def logout():
