@@ -1,22 +1,26 @@
-create database smartcart;
-use smartcart;
+CREATE DATABASE IF NOT EXISTS smartCart;
+USE smartCart;
 
+CREATE TABLE Usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf varchar(11),
+    telefone varchar (11),
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL
+);
 
-create table Produto (
- id_produto int auto_increment primary key,
- nome varchar(45) not null,
- estoque int not null,
- preco float not null,
- id_imagem int
+CREATE TABLE Produtos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    preco DECIMAL(10,2) NOT NULL,
+    estoque INT DEFAULT 0,
+    id_imagem VARCHAR(20)
 );
 
 
-create table Usuario (
-	id_usuario int auto_increment primary key,
-    produto_id int,
-    nome varchar(45) not null,
-    email varchar(100) not null,
-    telefone bigint(11) not null
-);
+
+
+
 
 
