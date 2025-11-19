@@ -1,7 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from db import db
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
+import mysql.connector
 from models import Usuario, Produto
 from flask_login import (
     LoginManager,
@@ -12,24 +10,14 @@ from flask_login import (
 )
 import hashlib
 
-admin = Admin()
-
-
-def init_app(app):
-    admin.name = "Loja de Informática Admin"
-    admin.template_mode = None
-    admin.init_app(app)
-
-
 app = Flask(__name__)
 app.secret_key = "chaveteste"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-db.init_app(app)
-admin.init_app(app)
 lm = LoginManager(app)
 
-admin.add_view(ModelView(Produto, db.session))
-admin.add_view(ModelView(Usuario, db.session))
+conexao = mysql.connector.connect(
+    host="localhost", user="root", password="", port="3406", database="smartcart"
+)
+cursor = conexao.cursor(dictionary=True)
 
 
 def hash(txt):
@@ -39,8 +27,12 @@ def hash(txt):
 
 @lm.user_loader
 def user_loader(id):
-    usuario = db.session.query(Usuario).filter_by(id=id).first()
-    return usuario
+    cursor.execute("SELECT * FROM Usuario WHERE id = %s", (id,))
+    usuario = cursor.fetchone()
+    if usuario:
+        return Usuario(
+            usuario["id"], usuario["nome"], usuario["cpf"], usuario["telefone"], usuario["email"], usuario["senha"]
+        )
 
 
 @app.route("/")
@@ -82,23 +74,25 @@ def cadastro():
         email = request.form["email"]
         senha = request.form["senha"]
 
-        usuario_existente = Usuario.query.filter(
-            (Usuario.cpf == cpf) | (Usuario.email == email)
-        ).first()
+        cursor.execute(
+            "SELECT * FROM Usuario WHERE cpf = %s OR email = %s",
+            (cpf, email),
+        )
+        usuario_existente = cursor.fetchone() 
 
         if usuario_existente:
-            erro = "CPF ou E-mail já cadastrado"
+            erro = "Usuário já cadastrado"
             return redirect(f"/cadastro?erro={erro}")
-        else:
-            new_user = Usuario(
-                nome=nome, cpf=cpf, telefone=telefone, email=email, senha=hash(senha)
-            )
 
-            db.session.add(new_user)
-            db.session.commit()
-            login_user(new_user)
+        cursor.execute(
+            "INSERT INTO Usuario (nome, cpf, telefone, email, senha) VALUES (%s, %s, %s, %s, %s)",
+            (nome, cpf, telefone, email, hash(senha)),
+        )
+        conexao.commit()
+        new_user = Usuario(cursor.lastrowid, nome, cpf, telefone, email, hash(senha))
+        login_user(new_user)
 
-            return redirect(url_for("index"))
+        return redirect(url_for("index"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -109,10 +103,16 @@ def login():
         cpf = request.form["cpf"].replace("-", "").replace(".", "")
         senha = request.form["senha"]
 
-        usuario = Usuario.query.filter_by(cpf=cpf, senha=hash(senha)).first()
+        cursor.execute(
+            "SELECT * FROM Usuario WHERE cpf = %s AND senha = %s", (cpf, hash(senha))
+        )
+        usuario = cursor.fetchone()
 
         if usuario:
-            login_user(usuario)
+            user = Usuario(
+                usuario["id"], usuario["nome"], usuario["cpf"], usuario["telefone"], usuario["email"], usuario["senha"]
+            )
+            login_user(user)
             return redirect(url_for("index"))
         else:
             erro = "CPF ou senha incorretos"
@@ -121,11 +121,10 @@ def login():
 
 @app.route("/produtos")
 def listar_produtos():
-    produtos = db.session.query(Produto).all()
+    cursor.execute("SELECT * FROM produtos")
+    produtos = cursor.fetchall()
     return render_template("produto.html", user=current_user, produtos=produtos)
 
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
