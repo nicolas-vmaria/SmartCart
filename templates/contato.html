@@ -26,6 +26,7 @@
     <nav>
       <div class="logo">
         <svg
+          onclick="window.location.href='/'"
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
           width="100"
@@ -46,18 +47,14 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
+      
         <li><a href="/orcamento">Orçamento</a></li>
+        
         <li><a href="/contato">Contato</a></li>
       </ul>
 
       <div class="user">
         {% if user.is_authenticated %}
-        <p>Olá,<b>{{user.nome}}</b></p>
-        <a href="/logout">Sair</a>
-        {% else %}
-        <a href="/login">Entrar</a>
-        {% endif %}
-
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -68,6 +65,12 @@
           preserveAspectRatio="xMidYMid meet"
           version="1.0"
         >
+        <p>Olá,<b>{{user.nome}}</b></p>
+        <a href="/logout">Sair</a>
+        {% else %}
+        <a href="/login">Entrar</a>
+        {% endif %}
+
           <defs>
             <clipPath id="49a8b0a171">
               <path
@@ -137,7 +140,7 @@
           Aproveite e nos mande uma dica, uma crítica ou só um <b>alô.</b>👋
         </p>
         <div class="whats">
-          <a href="https://wa.me/5547992451974"
+          <a href="https://wa.me/5547992451974" target="_blank"
             ><?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
             <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
             <svg
@@ -192,12 +195,11 @@
           /><br />
           <textarea
             class="mensagem"
+            name="mensagem"
             placeholder="Conte mais, o que deseja falar?"
           ></textarea>
           <button type="submit">Enviar</button>
-          {% if request.args.get('erro') %}
-          <p style="color: red">{{ request.args.get('erro') }}</p>
-          {% endif %}
+          
         </form>
       </section>
     </section>

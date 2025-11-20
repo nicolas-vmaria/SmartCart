@@ -10,11 +10,4 @@ class Usuario(UserMixin):
         self.email = email
         self.senha = senha
 
-class Produto():
-    def __init__ (self, id, nome, preco, estoque, id_imagem):
-        self.id = id
-        self.nome = nome
-        self.preco = preco
-        self.estoque = estoque
-        self.id_imagem = id_imagem
-
+    

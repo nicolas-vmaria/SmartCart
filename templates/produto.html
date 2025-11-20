@@ -42,18 +42,14 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
+        
         <li><a href="/orcamento">Orçamento</a></li>
-        <li><a href="#">Contato</a></li>
+        
+        <li><a href="/contato">Contato</a></li>
       </ul>
 
       <div class="user">
         {% if user.is_authenticated %}
-        <p>Olá,<b>{{user.nome}}</b></p>
-        <a href="/logout">Sair</a>
-        {% else %}
-        <a href="/cadastro">Cadastrar</a>
-        <a href="/login">Entrar</a>
-        {% endif %}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -64,6 +60,12 @@
           preserveAspectRatio="xMidYMid meet"
           version="1.0"
         >
+        <p>Olá,<b>{{user.nome}}</b></p>
+        <a href="/logout">Sair</a>
+        {% else %}
+        <a href="/login">Entrar</a>
+        {% endif %}
+        
           <defs>
             <clipPath id="49a8b0a171">
               <path

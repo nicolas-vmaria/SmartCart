@@ -15,3 +15,11 @@ var swiper = new Swiper(".mySwiper", {
     }
 
 });
+
+setTimeout(() => {
+    const msg = document.getElementById("msg");
+    if (msg) {
+        msg.classList.add("hide");
+        setTimeout(() => msg.remove(), 600);
+    }
+}, 3000);

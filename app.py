@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import mysql.connector
-from models import Usuario, Produto
+from models import Usuario
 from flask_login import (
     LoginManager,
     login_required,
@@ -15,7 +15,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3406", database="smartcart"
+    host="localhost", user="root", password="12345678", port="3306", database="smartcart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -33,6 +33,15 @@ def user_loader(id):
         return Usuario(
             usuario["id"], usuario["nome"], usuario["cpf"], usuario["telefone"], usuario["email"], usuario["senha"]
         )
+    
+@lm.unauthorized_handler
+def unauthorized():
+    if request.endpoint == "orcamento":
+        flash("Entre na sua conta ou cadastre-se, para fazer orçamentos conosco!", "erro")
+    elif request.endpoint == "contato":
+        flash("Entre na sua conta ou cadastre-se, para fazer contato conosco!", "erro")
+    return redirect(url_for("login"))
+    
 
 
 @app.route("/")
@@ -45,14 +54,58 @@ def sobre():
     return render_template("sobre.html", user=current_user)
 
 
-@app.route("/orcamento")
+@app.route("/orcamento", methods=["GET", "POST"])
+@login_required
 def orcamento():
-    return render_template("orcamento.html", user=current_user)
+    if request.method == "GET":
+        cursor.execute("SELECT * FROM Produtos ORDER BY nome")
+        produtos = cursor.fetchall()
+        return render_template("orcamento.html", user=current_user, produtos=produtos)
+    elif request.method == "POST":
+        nome_empresa = request.form["nomeEmpresa"]
+        cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
+        email = request.form["email"]
+        endereco = request.form["endereco"]
+        numero = request.form["numero"]
+        complemento = request.form["complemento"]
+        cep = request.form["cep"].replace("-", "")
+        produtos = request.form["produtos"]
+        quantidades = request.form["quantidades"]
+        prazo_entrega = request.form["prazo"]
+        forma_pagamento = request.form["forma_pagamento"]
+        numero_parcelas = request.form.get("parcelas")
+        entrada = request.form["entrada"]
 
+        cursor.execute(
+            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento, numero_parcelas, entrada) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento, numero_parcelas, entrada),
+        )
+        conexao.commit()
 
-@app.route("/contato")
+        flash("Orçamento enviado com sucesso!", "sucesso")
+        return redirect(url_for("index"))
+
+        
+@app.route("/contato", methods=["GET", "POST"])
+@login_required
 def contato():
-    return render_template("contato.html", user=current_user)
+    if request.method == "GET":
+        return render_template("contato.html", user=current_user) 
+    elif request.method == "POST":
+        nome = request.form["nome"]
+        email = request.form["email"]
+        assunto = request.form["assunto"]
+        mensagem = request.form.get("mensagem")
+
+
+        cursor.execute(
+            "INSERT INTO Contatos (nome, email, assunto, mensagem) VALUES (%s, %s, %s, %s)",
+            (nome, email, assunto, mensagem),
+        )
+        conexao.commit()
+
+        flash("Mensagem enviada com sucesso!", "sucesso")
+        return redirect(url_for("index"))
 
 
 @app.route("/logout")
@@ -126,7 +179,7 @@ def login():
 
 @app.route("/produtos")
 def listar_produtos():
-    cursor.execute("SELECT * FROM produtos")
+    cursor.execute("SELECT * FROM Produtos")
     produtos = cursor.fetchall()
     return render_template("produto.html", user=current_user, produtos=produtos)
 

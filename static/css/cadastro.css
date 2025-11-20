@@ -127,6 +127,7 @@ form a {
     height: 25px;
     background-color: #efefef;
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .checkbox-container input:checked + .checkmark {
@@ -150,6 +151,11 @@ form a {
 
 #checkboxContainer a:hover{
     text-decoration: underline;
+}
+
+#cadastrar{
+    cursor: pointer;
+    
 }
 
 #voltar img{

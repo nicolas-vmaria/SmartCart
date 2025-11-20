@@ -17,10 +17,9 @@
     />
 
     <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css')
-    }}"
-    />
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/style.css') }}"
+/>
 
     <title>SmartCart</title>
   </head>
@@ -50,12 +49,18 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
+        
         <li><a href="/orcamento">Orçamento</a></li>
+       
+        
+        
         <li><a href="/contato">Contato</a></li>
       </ul>
 
       <div class="user">
         {% if user.is_authenticated %}
+        <p>Olá,<b>{{user.nome}}</b></p>
+        <a href="/logout">Sair</a>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -66,8 +71,6 @@
           preserveAspectRatio="xMidYMid meet"
           version="1.0"
         >
-        <p>Olá,<b>{{user.nome}}</b></p>
-        <a href="/logout">Sair</a>
         {% else %}
         <a href="/login">Entrar</a>
         {% endif %}
@@ -134,7 +137,17 @@
           </g>
         </svg>
       </div>
+      {% with mensagens = get_flashed_messages(with_categories=True) %}
+          {% if mensagens %}
+            {% for categoria, msg in mensagens %}
+              <p class="msg {{ categoria }}">{{ msg }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <!-- <p class="msg sucesso"> Teste</p> -->
     </nav>
+
+
     <section class="section-home">
       <div class="titulo">
         <h1>O Carrinho inteligente que facilita sua compra.</h1>
@@ -259,9 +272,10 @@
         </div>
       </div>
     </section>
-
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-    <script src="../static/js/script.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
   </body>
+  
 </html>

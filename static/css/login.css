@@ -106,3 +106,9 @@ body {
     margin: 30px 30px;
     cursor: pointer;
   }
+
+
+  .msg.erro {
+  color: red;
+  font-weight: 600;
+}

@@ -40,19 +40,19 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
+        
         <li><a href="/orcamento">Orçamento</a></li>
-        <li><a href="#">Contato</a></li>
+        
+        
+        <li><a href="/contato">Contato</a></li>
       </ul>
 
       <div class="user">
-        {% if user.is_authenticated %}
         <p>Olá,<b>{{user.nome}}</b></p>
         <a href="/logout">Sair</a>
-        {% else %}
-        <a href="/cadastro">Cadastrar</a>
-        <a href="/login">Entrar</a>
-        {% endif %}
+       
         <svg
+          onclick="window.location.href='/'"
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
           width="100"
@@ -144,6 +144,7 @@
             <label><b>CNPJ:</b></label>
             <input
               type="text"
+              id="cnpj"
               name="cnpj"
               placeholder="Ex.: 00.000.000/0000-00"
               class="cnpj"
@@ -161,8 +162,8 @@
             /><br />
             <label><b>Endereço:</b></label>
             <input
-              type="password"
-              name="senha"
+              type="text"
+              name="endereco"
               placeholder="Ex.: Rua Waldemiro Jose Borges"
               class="senha"
               autocomplete="off"
@@ -189,14 +190,14 @@
                   placeholder="Ex.: Casa, Apt 101"
                   class="complemento"
                   autocomplete="off"
-                  required
                 />
               </div>
             </div>
             <br />
             <label><b>CEP:</b></label>
             <input
-              type="number"
+              id="cep"
+              type="text"
               name="cep"
               placeholder="Ex.: 12345-678"
               class="cep"
@@ -204,11 +205,13 @@
               required
             /><br />
             <h1>Produto</h1>
-            <select>
+            <select name="produtos">
+              
               <option value="" >Escolha o produto</option>
-              <option value="categoria1">Exemplo 1</option>
-              <option value="categoria2">Exemplo 2</option>
-              <option value="categoria3">Exemplo 3</option></select
+              {% for p in produtos%}
+              <option value="{{p.nome}}">{{p.nome}}</option>
+              {% endfor %}
+              </select
             >
             <br />
             <div class="row">
@@ -216,7 +219,7 @@
                 <label><b>Quantidade:</b></label>
                 <input
                   type="number"
-                  name="quantidade"
+                  name="quantidades"
                   placeholder="Ex.: 100"
                   class="quantidade"
                   autocomplete="off"
@@ -237,30 +240,34 @@
             </div>
             <br />
             <h1>Pagamento</h1>
-            <select>
+            <select name="forma_pagamento" id="forma_pagamento">
               <option value="">Escolha a forma de pagamento</option>
-              <option value="categoria1">Boleto</option>
-              <option value="categoria2">Cartão de Crédito</option>
-              <option value="categoria3">Pix</option></select
+              <option value="Boleto">Boleto</option>
+              <option value="Cartão de Credito">Cartão de Crédito</option>
+              <option value="Pix">Pix</option></select
             ><br />
-            <select>
+            <div id="parcelas" style="display: none;">
+            <label><b>Número de Parcelas:</b></label>
+            <select name="parcelas">
               <option value="">Escolha o número de parcelas</option>
-              <option value="categoria1">1x - Sem juros</option>
-              <option value="categoria2">2x - Sem juros</option>
-              <option value="categoria3">3x - Sem juros</option>
-              <option value="categoria4">4x - Sem juros</option>
-              <option value="categoria5">5x - Sem juros</option>
-              <option value="categoria6">6x - Sem juros</option>
-              <option value="categoria7">7x - Com juros</option>
-              <option value="categoria8">8x - Com juros</option>
-              <option value="categoria9">9x - Com juros</option>
-              <option value="categoria10">10x - Com juros</option>
-              <option value="categoria11">11x - Com juros</option>
-              <option value="categoria12">12x - Com juros</option></select
+              <option value="1">1x - Sem juros</option>
+              <option value="2">2x - Sem juros</option>
+              <option value="3">3x - Sem juros</option>
+              <option value="4">4x - Sem juros</option>
+              <option value="5">5x - Sem juros</option>
+              <option value="6">6x - Sem juros</option>
+              <option value="7">7x - Com juros</option>
+              <option value="8">8x - Com juros</option>
+              <option value="9">9x - Com juros</option>
+              <option value="10">10x - Com juros</option>
+              <option value="11">11x - Com juros</option>
+              <option value="12">12x - Com juros</option></select
             ><br />
+            </div>
             <label><b>Entrada:</b></label>
             <input
-              type="number"
+              type="text"
+              id="entrada"
               name="entrada"
               placeholder="Ex.: R$5000"
               class="entrada"
@@ -274,13 +281,62 @@
               <li><a href="#">Responsabilidades</a></li>
               <li><a href="#">Observações importantes para o cliente</a></li>
             </ul>
-            <button type="submit">Mandar formulário</button>
-            {% if request.args.get('erro') %}
-            <p style="color: red">{{ request.args.get('erro') }}</p>
-            {% endif %}
+            <button type="submit"><b>Mandar Formulário</b></button>
           </div>
         </form>
       </div>
     </section>
+    
+    <script>
+      document.getElementById('forma_pagamento').addEventListener('change', function() {
+        let parcelas = document.getElementById('parcelas');
+
+        if (this.value === 'Cartão de Credito') {
+          parcelas.style.display = 'block';
+        } else{
+          parcelas.style.display = 'none';
+        }
+      });
+
+        let cep = document.getElementById("cep");
+
+        cep.addEventListener("input", () => {
+          let n = cep.value.replace(/\D/g, "");
+
+          n = n.substring(0, 8);
+
+          if (n.length > 5){
+            n = n.replace(/(\d{5})(\d{0,3})/, "$1-$2")
+          }  else {
+            n = n.replace(/(\d{0,5})/, "$1")
+          }
+         
+          cep.value = n;
+        });
+
+        let cnpj = document.getElementById("cnpj");
+
+        cnpj.addEventListener("input", () => {
+          let n = cnpj.value.replace(/\D/g, "");
+
+          n = n.substring(0, 14);
+
+          if (n.length > 12){
+            n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, "$1.$2.$3/$4-$5")
+          } else if(n.length > 8) {
+            n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4")
+          } else if (n.length > 5) {
+            n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3")
+          } else if (n.length > 2){
+            n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2")
+          } else {
+            n = n.replace(/(\d{0,2})/, "$1")
+          }
+         
+          cnpj.value = n;
+        });
+
+    </script>
+    
   </body>
 </html>
