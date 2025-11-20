@@ -38,6 +38,7 @@ nav a {
   transform: translateY(-8%);
   width: 120px;
   height: 120px;
+  cursor: pointer;
 }
 
 nav p {
@@ -201,5 +202,4 @@ nav p {
   border-radius: 6px;
   font-weight: 500;
   margin: 15px 0;
-  
 }
