@@ -218,7 +218,8 @@
               <div class="column">
                 <label><b>Quantidade:</b></label>
                 <input
-                  type="number"
+                  type="text"
+                  id="quantidade"
                   name="quantidades"
                   placeholder="Ex.: 100"
                   class="quantidade"
@@ -334,6 +335,50 @@
           }
          
           cnpj.value = n;
+        });
+
+        let entrada = document.getElementById("entrada");
+
+        entrada.addEventListener("input", () => {
+          let n = entrada.value.replace(/\D/g, "");
+
+          n = n.substring(0, 12);
+
+          if (n.length > 9) {
+            n = n.replace(/(\d{1,3})(\d{3})(\d{3})(\d{3})/, "R$ $1.$2.$3.$4");
+          } else if (n.length > 6) {
+            n = n.replace(/(\d{1,3})(\d{3})(\d{3})/, "R$ $1.$2.$3");
+          } else if (n.length > 3) {
+            n = n.replace(/(\d{1,3})(\d{3})/, "R$ $1.$2");
+          } else if (n.length > 0) {
+            n = "R$ " + n;
+          } else {
+            n = "";
+          }
+
+          entrada.value = n;
+        });
+
+        let quantidade = document.getElementById("quantidade");
+
+        quantidade.addEventListener("input", () => {
+          let n = quantidade.value.replace(/\D/g, "");
+
+          n = n.substring(0, 12);
+
+          if (n.length > 9) {
+            n = n.replace(/(\d{1,3})(\d{3})(\d{3})(\d{3})/, "$1.$2.$3.$4");
+          } else if (n.length > 6) {
+            n = n.replace(/(\d{1,3})(\d{3})(\d{3})/, "$1.$2.$3");
+          } else if (n.length > 3) {
+            n = n.replace(/(\d{1,3})(\d{3})/, "$1.$2");
+          } else if (n.length > 0) {
+            n = n;
+          } else {
+            n = "";
+          }
+
+          quantidade.value = n;
         });
 
     </script>

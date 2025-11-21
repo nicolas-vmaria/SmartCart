@@ -67,8 +67,9 @@ nav p{
 
 .row {
     width: 100%;
+    margin-left: 41px;
     display: flex;
-    justify-content: center;
+    justify-content: left;
     flex-wrap: wrap;
     gap: 60px;
     column-gap: 20px;

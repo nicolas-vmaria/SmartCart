@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import mysql.connector
+import smtplib
+import email.message
 from models import Usuario
 from flask_login import (
     LoginManager,
@@ -74,7 +76,7 @@ def orcamento():
         prazo_entrega = request.form["prazo"]
         forma_pagamento = request.form["forma_pagamento"]
         numero_parcelas = request.form.get("parcelas")
-        entrada = request.form["entrada"]
+        entrada = request.form["entrada"].replace("R$ ", "").replace(".", "")
 
         cursor.execute(
             "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento, numero_parcelas, entrada) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
@@ -93,16 +95,36 @@ def contato():
         return render_template("contato.html", user=current_user) 
     elif request.method == "POST":
         nome = request.form["nome"]
-        email = request.form["email"]
+        gmail = request.form["email"]
         assunto = request.form["assunto"]
         mensagem = request.form.get("mensagem")
 
 
         cursor.execute(
             "INSERT INTO Contatos (nome, email, assunto, mensagem) VALUES (%s, %s, %s, %s)",
-            (nome, email, assunto, mensagem),
+            (nome, gmail, assunto, mensagem),
         )
         conexao.commit()
+
+        corpo_email = f"""
+        <p><b>Nome:</b> {nome}</p>
+        <p><b>Email:</b> {gmail}</p>
+        <p>Mensegem:</b></p>
+        <p>{mensagem}</p>
+        """
+
+        msg = email.message.Message()
+        msg['Subject'] = f"{assunto}"
+        msg['From'] = 'pyhonprojetos@gmail.com'
+        msg['To'] = 'boing.caio@gmail.com'
+        password = 'mearjauclzstlewo' 
+        msg.add_header('Content-Type', 'text/html')
+        msg.set_payload(corpo_email )
+
+        s = smtplib.SMTP('smtp.gmail.com: 587')
+        s.starttls()
+        s.login(msg['From'], password)
+        s.sendmail(msg['From'], [msg['To']], msg.as_string().encode('utf-8'))
 
         flash("Mensagem enviada com sucesso!", "sucesso")
         return redirect(url_for("index"))
