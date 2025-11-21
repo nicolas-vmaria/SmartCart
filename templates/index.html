@@ -17,15 +17,14 @@
     />
 
     <link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/style.css') }}"
-/>
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
 
     <title>SmartCart</title>
   </head>
 
   <body>
-
     <nav>
       <div class="logo">
         <svg
@@ -50,11 +49,9 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
-        
+
         <li><a href="/orcamento">Orçamento</a></li>
-       
-        
-        
+
         <li><a href="/contato">Contato</a></li>
       </ul>
 
@@ -72,11 +69,10 @@
           preserveAspectRatio="xMidYMid meet"
           version="1.0"
         >
-        {% else %}
-        <a href="/login">Entrar</a>
-        {% endif %}
+          {% else %}
+          <a href="/login">Entrar</a>
+          {% endif %}
 
-        
           <defs>
             <clipPath id="49a8b0a171">
               <path
@@ -138,16 +134,21 @@
           </g>
         </svg>
       </div>
-      {% with mensagens = get_flashed_messages(with_categories=True) %}
-          {% if mensagens %}
-            {% for categoria, msg in mensagens %}
-              <p class="msg {{ categoria }}">{{ msg }}</p>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-        <!-- <p class="msg sucesso"> Teste</p> -->
+      {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
+      mensagens %} {% for categoria, msg in mensagens %}
+      <p class="msg {{ categoria }}">{{ msg }}</p>
+      {% endfor %} {% endif %} {% endwith %}
+      <script>
+        setTimeout(() => {
+          const msg = document.querySelector(".msg.sucesso");
+          if (msg) {
+            msg.style.transition = "opacity 0.5s ease";
+            msg.style.opacity = "0";
+            setTimeout(() => msg.remove(), 500);
+          }
+        }, 3000); // 3 segundos
+      </script>
     </nav>
-
 
     <section class="section-home">
       <div class="titulo">
@@ -276,7 +277,5 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-
   </body>
-  
 </html>
