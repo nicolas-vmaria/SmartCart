@@ -17,7 +17,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3406", database="smartcart"
+    host="localhost", user="root", password="12345678", port="3306", database="smartcart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -84,6 +84,8 @@ def orcamento():
         )
         conexao.commit()
 
+        
+
         flash("Orçamento enviado com sucesso!", "sucesso")
         return redirect(url_for("index"))
 
@@ -115,7 +117,7 @@ def contato():
 
         msg = email.message.Message()
         msg['Subject'] = f"{assunto}"
-        msg['From'] = 'pyhonprojetos@gmail.com'
+        msg['From'] = 'SamartCart <pyhonprojetos@gmail.com>'
         msg['To'] = 'boing.caio@gmail.com'
         password = 'mearjauclzstlewo' 
         msg.add_header('Content-Type', 'text/html')
@@ -123,8 +125,8 @@ def contato():
 
         s = smtplib.SMTP('smtp.gmail.com: 587')
         s.starttls()
-        s.login(msg['From'], password)
-        s.sendmail(msg['From'], [msg['To']], msg.as_string().encode('utf-8'))
+        s.login('pyhonprojetos@gmail.com', password)
+        s.sendmail("pyhonprojetos@gmail.com", [msg['To']], msg.as_string().encode('utf-8'))
 
         flash("Mensagem enviada com sucesso!", "sucesso")
         return redirect(url_for("index"))
