@@ -51,8 +51,8 @@ nav p {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 20px;
-  width: 250px;
+  width: 221.16px;
+  margin-right: 40px;
 }
 
 .user p {
@@ -60,12 +60,64 @@ nav p {
   color: #4e4f3d;
   margin: 0;
   display: flex;
-  margin-right: 10px;
   gap: 5px;
 }
-.user svg {
-  margin-right: 20px;
-  margin-left: 5px;
+.user .icone {
+  width: 70px;
+  height: 70px;
+}
+
+.user li {
+  list-style: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+}
+
+.dropdown:hover .dropdown-trigger {
+  background-color: #aebb80;
+  border-radius: 10px 10px 0 0;
+}
+
+/* MENU */
+.dropdown-menu {
+  position: absolute;
+  top: 78%; /* encosta perfeitamente abaixo */
+  right: 0; /* alinha pela esquerda */
+  width: 100%; /* exata largura do trigger */
+  display: none;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 15px 0;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: flex;
+}
+
+.msg.sucesso {
+  background-color: #d4f8d4;
+  color: #1f7a1f;
+  border: 1px solid #7bd67b;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
 }
 
 .titulo {
@@ -193,19 +245,6 @@ nav p {
   height: 50px;
   border: none;
   border-radius: 50%;
-}
-
-.msg.sucesso {
-  background-color: #d4f8d4;
-  color: #1f7a1f;
-  border: 1px solid #7bd67b;
-  padding: 12px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  right: 20px;
-  top: 20px;
-  position: absolute;
-  z-index: 9999;
 }
 
 footer {
