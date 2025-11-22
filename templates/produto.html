@@ -42,14 +42,15 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
-        
+
         <li><a href="/orcamento">Orçamento</a></li>
-        
+
         <li><a href="/contato">Contato</a></li>
       </ul>
 
       <div class="user">
         {% if user.is_authenticated %}
+        <p>Olá,<b>{{user.primeiro_nome}}</b></p>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -60,12 +61,6 @@
           preserveAspectRatio="xMidYMid meet"
           version="1.0"
         >
-        <p>Olá,<b>{{user.nome}}</b></p>
-        <a href="/logout">Sair</a>
-        {% else %}
-        <a href="/login">Entrar</a>
-        {% endif %}
-        
           <defs>
             <clipPath id="49a8b0a171">
               <path
@@ -126,31 +121,684 @@
             </g>
           </g>
         </svg>
+        <a href="/logout">Sair</a>
+
+        {% else %}
+        <a href="/login">Entrar</a>
+        {% endif %}
       </div>
     </nav>
 
     <div class="container">
       <div class="row">
         {% if produtos %} {% for p in produtos %}
-          <div class="card-body">
-            <h5 class="card-title">{{ p.nome }}</h5>
+        <div class="card-body">
+          <h5 class="card-title">{{ p.nome }}</h5>
 
-            <img
-              class="img-produto"
-              src="../static/img/{{ p.id_imagem }}"
-              alt="produto"
-            />
+          <img
+            class="img-produto"
+            src="../static/img/{{ p.id_imagem }}"
+            alt="produto"
+          />
 
-            <div class="card-info">
-              <p class="card-text">R$ {{ "%.2f"|format(p.preco) }}</p>
-              <p>Estoque: {{ p.estoque }}</p>
+          <div class="card-info">
+            <p class="card-text">R$ {{ "%.2f"|format(p.preco) }}</p>
+            <p>Estoque: {{ p.estoque }}</p>
+          </div>
+        </div>
+
+        {% endfor %} {% else %}
+        <p>Nenhum produto encontrado.</p>
+        {% endif %}
+      </div>
+    </div>
+    <footer>
+      <div class="container-foot">
+        <div class="linha">
+          <div class="coluna">
+            <h1>Sobre</h1>
+            <hr />
+
+            <ul>
+              <a href="">
+                <li>Quem Somos</li>
+              </a>
+              <a href="">
+                <li>Perguntas Frequentes</li>
+              </a>
+              <a href="">
+                <li>Seja um Franqueado</li>
+              </a>
+              <a href="">
+                <li>Nossas Lojas</li>
+              </a>
+              <a href="">
+                <li>Trabalhe Conosco</li>
+              </a>
+            </ul>
+          </div>
+          <div class="coluna">
+            <h1>Área do Cliente</h1>
+            <hr />
+
+            <ul>
+              <a href="">
+                <li>Minha Conta</li>
+              </a>
+              <a href="">
+                <li>Meus Pedidos</li>
+              </a>
+            </ul>
+          </div>
+          <div class="coluna">
+            <h1>Políticas</h1>
+            <hr />
+
+            <ul>
+              <a href="">
+                <li>Privacidade</li>
+              </a>
+              <a href="">
+                <li>Termos de Uso</li>
+              </a>
+              <a href="">
+                <li>Trocas e Devolução</li>
+              </a>
+              <a href="">
+                <li>Entrega e Frete</li>
+              </a>
+              <a href="">
+                <li>Pagamento</li>
+              </a>
+            </ul>
+          </div>
+          <div class="coluna">
+            <h1>Contato</h1>
+            <hr />
+
+            <div id="rs-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="ab110b6800">
+                    <path
+                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="117559e62c">
+                    <path
+                      d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="7f85356627">
+                    <path
+                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="087962049a">
+                    <rect x="0" width="75" y="0" height="75" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#ab110b6800)">
+                  <g transform="matrix(1, 0, 0, 1, 0, -0.000000000000001893)">
+                    <g clip-path="url(#087962049a)">
+                      <g clip-path="url(#117559e62c)">
+                        <g clip-path="url(#7f85356627)">
+                          <rect
+                            x="-16.5"
+                            width="108"
+                            fill="#ffffff"
+                            height="107.999996"
+                            y="-16.499999"
+                            fill-opacity="1"
+                          />
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="ab110b6800">
+                    <path
+                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="117559e62c">
+                    <path
+                      d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="7f85356627">
+                    <path
+                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="087962049a">
+                    <rect x="0" width="75" y="0" height="75" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#ab110b6800)">
+                  <g transform="matrix(1, 0, 0, 1, 0, -0.000000000000001893)">
+                    <g clip-path="url(#087962049a)">
+                      <g clip-path="url(#117559e62c)">
+                        <g clip-path="url(#7f85356627)">
+                          <rect
+                            x="-16.5"
+                            width="108"
+                            fill="#ffffff"
+                            height="107.999996"
+                            y="-16.499999"
+                            fill-opacity="1"
+                          />
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="ab110b6800">
+                    <path
+                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="117559e62c">
+                    <path
+                      d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="7f85356627">
+                    <path
+                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="087962049a">
+                    <rect x="0" width="75" y="0" height="75" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#ab110b6800)">
+                  <g transform="matrix(1, 0, 0, 1, 0, -0.000000000000001893)">
+                    <g clip-path="url(#087962049a)">
+                      <g clip-path="url(#117559e62c)">
+                        <g clip-path="url(#7f85356627)">
+                          <rect
+                            x="-16.5"
+                            width="108"
+                            fill="#ffffff"
+                            height="107.999996"
+                            y="-16.499999"
+                            fill-opacity="1"
+                          />
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="ab110b6800">
+                    <path
+                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="117559e62c">
+                    <path
+                      d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="7f85356627">
+                    <path
+                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="087962049a">
+                    <rect x="0" width="75" y="0" height="75" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#ab110b6800)">
+                  <g transform="matrix(1, 0, 0, 1, 0, -0.000000000000001893)">
+                    <g clip-path="url(#087962049a)">
+                      <g clip-path="url(#117559e62c)">
+                        <g clip-path="url(#7f85356627)">
+                          <rect
+                            x="-16.5"
+                            width="108"
+                            fill="#ffffff"
+                            height="107.999996"
+                            y="-16.499999"
+                            fill-opacity="1"
+                          />
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <ul>
+              <li>45 99999-9999</li>
+              <li>47 99999-9999</li>
+              <li>SmartCart@gmail.com.br</li>
+            </ul>
+          </div>
+          <div class="coluna">
+            <h1>Formas de pagamento</h1>
+            <hr />
+
+            <div id="fdp-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="1b609e4843">
+                    <path
+                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="c47f441181">
+                    <path
+                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="645e7bb6ba">
+                    <path
+                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="5eb3da40da">
+                    <path
+                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="42282d1fb0">
+                    <rect x="0" width="61" y="0" height="37" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#1b609e4843)">
+                  <g clip-path="url(#c47f441181)">
+                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
+                      <g clip-path="url(#42282d1fb0)">
+                        <g clip-path="url(#645e7bb6ba)">
+                          <g clip-path="url(#5eb3da40da)">
+                            <path
+                              fill="#ffffff"
+                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                              fill-opacity="1"
+                              fill-rule="nonzero"
+                            />
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="1b609e4843">
+                    <path
+                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="c47f441181">
+                    <path
+                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="645e7bb6ba">
+                    <path
+                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="5eb3da40da">
+                    <path
+                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="42282d1fb0">
+                    <rect x="0" width="61" y="0" height="37" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#1b609e4843)">
+                  <g clip-path="url(#c47f441181)">
+                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
+                      <g clip-path="url(#42282d1fb0)">
+                        <g clip-path="url(#645e7bb6ba)">
+                          <g clip-path="url(#5eb3da40da)">
+                            <path
+                              fill="#ffffff"
+                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                              fill-opacity="1"
+                              fill-rule="nonzero"
+                            />
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="1b609e4843">
+                    <path
+                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="c47f441181">
+                    <path
+                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="645e7bb6ba">
+                    <path
+                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="5eb3da40da">
+                    <path
+                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="42282d1fb0">
+                    <rect x="0" width="61" y="0" height="37" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#1b609e4843)">
+                  <g clip-path="url(#c47f441181)">
+                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
+                      <g clip-path="url(#42282d1fb0)">
+                        <g clip-path="url(#645e7bb6ba)">
+                          <g clip-path="url(#5eb3da40da)">
+                            <path
+                              fill="#ffffff"
+                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                              fill-opacity="1"
+                              fill-rule="nonzero"
+                            />
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="1b609e4843">
+                    <path
+                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="c47f441181">
+                    <path
+                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="645e7bb6ba">
+                    <path
+                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="5eb3da40da">
+                    <path
+                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="42282d1fb0">
+                    <rect x="0" width="61" y="0" height="37" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#1b609e4843)">
+                  <g clip-path="url(#c47f441181)">
+                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
+                      <g clip-path="url(#42282d1fb0)">
+                        <g clip-path="url(#645e7bb6ba)">
+                          <g clip-path="url(#5eb3da40da)">
+                            <path
+                              fill="#ffffff"
+                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                              fill-opacity="1"
+                              fill-rule="nonzero"
+                            />
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="1b609e4843">
+                    <path
+                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="c47f441181">
+                    <path
+                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="645e7bb6ba">
+                    <path
+                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="5eb3da40da">
+                    <path
+                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="42282d1fb0">
+                    <rect x="0" width="61" y="0" height="37" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#1b609e4843)">
+                  <g clip-path="url(#c47f441181)">
+                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
+                      <g clip-path="url(#42282d1fb0)">
+                        <g clip-path="url(#645e7bb6ba)">
+                          <g clip-path="url(#5eb3da40da)">
+                            <path
+                              fill="#ffffff"
+                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                              fill-opacity="1"
+                              fill-rule="nonzero"
+                            />
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100"
+                zoomAndPan="magnify"
+                viewBox="0 0 75 74.999997"
+                height="100"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.0"
+              >
+                <defs>
+                  <clipPath id="1b609e4843">
+                    <path
+                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="c47f441181">
+                    <path
+                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="645e7bb6ba">
+                    <path
+                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="5eb3da40da">
+                    <path
+                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
+                      clip-rule="nonzero"
+                    />
+                  </clipPath>
+                  <clipPath id="42282d1fb0">
+                    <rect x="0" width="61" y="0" height="37" />
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#1b609e4843)">
+                  <g clip-path="url(#c47f441181)">
+                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
+                      <g clip-path="url(#42282d1fb0)">
+                        <g clip-path="url(#645e7bb6ba)">
+                          <g clip-path="url(#5eb3da40da)">
+                            <path
+                              fill="#ffffff"
+                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
+                              fill-opacity="1"
+                              fill-rule="nonzero"
+                            />
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
             </div>
           </div>
-
-          {% endfor %} {% else %}
-          <p>Nenhum produto encontrado.</p>
-          {% endif %}
         </div>
-    </div>
+      </div>
+
+      <div id="foot-info">
+        <p>© 2025 SmartCart. Todos os direitos reservados.</p>
+        <p>De segunda à quinta-feira, das 8h às 18h.</p>
+        <p>CNPJ: 26.636.428/0001-19</p>
+      </div>
+    </footer>
   </body>
 </html>

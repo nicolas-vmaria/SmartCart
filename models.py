@@ -10,4 +10,4 @@ class Usuario(UserMixin):
         self.email = email
         self.senha = senha
 
-    
+        self.primeiro_nome = nome.strip().split(" ")[0]
