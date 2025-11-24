@@ -59,7 +59,7 @@
           <!-- AGORA É UM DIV, NÃO UM <li> -->
 
           <div class="dropdown-trigger">
-            <p>Olá, <b>{{ user.primeiro_nome }}</b></p>
+            <p>Olá, <b>{{ user.nome }}</b></p>
 
             <svg
               class="arrow-icon"
@@ -155,26 +155,39 @@
           </ul>
         </div>
 
-        {% else %}
-        <a href="/login">Entrar</a>
         {% endif %}
       </div>
     </nav>
+    
+    
     <section class="main">
+      {% if pedidos %}
       <h1>Meus Pedidos</h1>
+      {% for p in pedidos %}
+      <a href="#">Ir para o pagamento</a>
       <div class="container">
         <div class="card">
           <div class="cardUp">
-            <p><b>Estado do pedido:</b> Pendente</p>
-            <p><b>Total:</b> R$150.00</p>
+            <p><b>Estado do pedido:</b> {{ p.status }}</p>
+            <p><b>Total:</b> R$ {{ "%.2f"|format(p.preco_unitario * p.quantidade) }}</p>
+            <p><b>Quantidade:</b> {{ p.quantidade }}</p>
+            <p><b>Forma de pagamento:</b> {{p.forma_pagamento}}</p>
           </div>
           <div class="cardDown">
-            <div class="img"><h1>IMAGEM</h1></div>
-
-            <div class="text"><p>Carrinho mega blaster top</p></div>
+            <div class="img"><h1>{{ p.produto_imagem }}</h1></div>
+            <div class="text"><p>{{ p.produto_nome }}</p></div>
           </div>
         </div>
       </div>
+      {% endfor %}
+
+      {% else %}
+
+      <b><p>Voce ainda nao possui nenhum pedido.</p></b>
+
+      {% endif %}
+
     </section>
+    
   </body>
 </html>

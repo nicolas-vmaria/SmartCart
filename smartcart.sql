@@ -30,9 +30,7 @@ CREATE TABLE Orcamentos (
     produtos TEXT NOT NULL,
     quantidades INT NOT NULL,
     prazo_entrega DATE NOT NULL,
-    forma_pagamento VARCHAR(50) NOT NULL,
-    numero_parcelas INT,
-    entrada DECIMAL(10,2)
+    forma_pagamento VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Contatos (
@@ -42,6 +40,21 @@ CREATE TABLE Contatos (
     assunto VARCHAR(150) NOT NULL,
     mensagem VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE Pedidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_produto INT NOT NULL,
+    id_orcamento INT NOT NULL,
+    quantidade INT NOT NULL,
+    preco_unitario DECIMAL(10,2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'Pendente',
+    data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
+    FOREIGN KEY (id_produto) REFERENCES Produtos(id)
+);
+
 
 insert into Produtos (nome, preco, estoque, id_imagem) values
 ("carrinho de compras", 150.00, 10, "img1"),
