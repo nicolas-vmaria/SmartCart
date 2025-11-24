@@ -59,6 +59,24 @@ def sobre():
 def pedidos():
     return render_template("pedidos.html", user=current_user)
 
+@app.route("/admin")
+def admin():
+    return render_template("adminPage.html")
+
+@app.route("/admin/users")
+def admin_users():
+    return render_template("usersAdmin.html")
+
+@app.route("/admin/produtos")
+def admin_produtos():
+    return render_template("produtosAdmin.html")
+
+@app.route("/admin/orcamentos")
+def admin_orcamentos():
+    return render_template("orcamentosAdmin.html")
+
+
+
 
 @app.route("/orcamento", methods=["GET", "POST"])
 @login_required
@@ -141,6 +159,7 @@ def contato():
 def logout():
     logout_user()
     return redirect(url_for("index"))
+
 
 
 @app.route("/cadastro", methods=["GET", "POST"])

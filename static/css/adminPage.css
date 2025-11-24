@@ -1,0 +1,133 @@
+body{
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(243, 243, 243);
+    display: flex;
+}
+
+
+.sidebar{
+    background-color: #a0b179;
+    height: 100%;
+    width: 500px;
+}
+
+.logo-container{
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-container h1{
+    font-family: montserrat;
+    font-size: 18pt;
+    color: #ffffff;
+}
+
+.svg-logo{
+    width: 80px;
+    height: 80px;
+}
+
+.abas{
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    
+    gap: 80px;
+}
+
+li{
+
+}
+
+a{
+    text-decoration: none;
+    color: white;
+    font-family: montserrat;
+}
+
+
+
+.selected-aba{
+    background-color: #c7d8a1;
+    height: 80px;
+    width: 390px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    margin-left: 0;
+    font-weight: bold;
+}
+
+.nonselected-aba{
+    text-decoration: none;
+    color: white;
+    font-family: montserrat;
+    background-color: #a0b179;
+    height: 80px;
+    width: 390px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    margin-left: 0;
+    transition: background-color 0.3s ease;
+    
+}
+
+.nonselected-aba:hover{
+    cursor: pointer;
+    background-color: #aabb84;
+    height: 80px;
+    width: 390px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    margin-left: 0;
+    
+}
+
+.sair{
+    height: 40px;   
+    padding: 10px;
+    padding-left: 20px;
+    width: 90px;
+    border-radius: 10px;
+}
+
+.sair:hover{
+    border-radius: 10px;
+}
+
+.sair h1{
+    color: white;
+    font-family: montserrat;
+    font-size: 14pt;
+}
+
+.sair-button{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    border-radius: 10px;
+}
+
+.sair-button:hover{
+    background-color: #c7d8a1;
+    width: 90px;
+    border-radius: 10px;
+    cursor: pointer;
+}
