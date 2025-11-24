@@ -57,6 +57,11 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
+@app.route("/conta")
+@login_required
+def conta():
+    return render_template("conta.html", user=current_user)
+
 @app.route("/sobre")
 def sobre():
     return render_template("sobre.html", user=current_user)
