@@ -40,9 +40,7 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
-
         <li><a href="/orcamento">Orçamento</a></li>
-
         <li><a href="/contato">Contato</a></li>
       </ul>
 
@@ -143,7 +141,7 @@
           </div>
 
           <ul class="dropdown-menu">
-            <li><a href="#">Minha conta</a></li>
+            <li><a href="/conta">Minha conta</a></li>
             <li><a href="/pedidos">Meus pedidos</a></li>
             <li><a href="/logout">Sair</a></li>
           </ul>
@@ -152,6 +150,23 @@
         {% else %}
         <a href="/login">Entrar</a>
         {% endif %}
+
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const dropdown = document.querySelector(".dropdown");
+            const trigger = document.querySelector(".dropdown-trigger");
+
+            trigger.addEventListener("click", (e) => {
+              e.stopPropagation();
+              dropdown.classList.toggle("open");
+            });
+
+            // Fechar ao clicar fora
+            document.addEventListener("click", () => {
+              dropdown.classList.remove("open");
+            });
+          });
+        </script>
       </div>
     </nav>
     <section class="section-home">
@@ -159,909 +174,141 @@
     </section>
     <section class="section-card">
       <div class="card">
+        <h1>Empresa</h1>
         <form method="POST">
-          <div class="column">
-            <h1>Empresa</h1>
-            <label><b>Nome da Empresa:</b></label>
-            <input
-              type="text"
-              id="nomeEmpresa"
-              name="nomeEmpresa"
-              placeholder="Ex.: Empresa XYZ"
-              class="nomeEmpresa"
-              required
-            /><br />
-            <label><b>CNPJ:</b></label>
-            <input
-              type="text"
-              id="cnpj"
-              name="cnpj"
-              placeholder="Ex.: 00.000.000/0000-00"
-              class="cnpj"
-              autocomplete="off"
-              required
-            /><br />
-            <label><b>Email de Contato:</b></label>
-            <input
-              type="email"
-              name="email"
-              placeholder="exemplo@gmail.com"
-              class="email"
-              autocomplete="off"
-              required
-            /><br />
-            <label><b>Endereço:</b></label>
-            <input
-              type="text"
-              name="endereco"
-              placeholder="Ex.: Rua Waldemiro Jose Borges"
-              class="senha"
-              autocomplete="off"
-              required
-            /><br />
+          <label><b>Nome da Empresa:</b></label>
+          <input
+            type="text"
+            id="nomeEmpresa"
+            name="nomeEmpresa"
+            placeholder="Ex.: Empresa XYZ"
+            class="nomeEmpresa"
+            required
+          /><br />
+          <label><b>CNPJ:</b></label>
+          <input
+            type="text"
+            name="cnpj"
+            placeholder="Ex.: 00.000.000/0000-00"
+            class="cnpj"
+            autocomplete="off"
+            required
+          /><br />
+          <label><b>Email de Contato:</b></label>
+          <input
+            type="email"
+            name="email"
+            placeholder="exemplo@gmail.com"
+            class="email"
+            autocomplete="off"
+            required
+          /><br />
+          <label><b>Endereço:</b></label>
+          <input
+            type="password"
+            name="senha"
+            placeholder="Ex.: 1234"
+            class="senha"
+            autocomplete="off"
+            required
+          /><br />
 
-            <div class="row">
-              <div class="column">
-                <label><b>Número:</b></label>
-                <input
-                  type="number"
-                  name="numero"
-                  placeholder="Ex.: 740"
-                  class="numero"
-                  autocomplete="off"
-                  required
-                />
-              </div>
-              <div class="column">
-                <label><b>Complemento:</b></label>
-                <input
-                  type="text"
-                  name="complemento"
-                  placeholder="Ex.: Casa, Apt 101"
-                  class="complemento"
-                  autocomplete="off"
-                />
-              </div>
-            </div>
-            <br />
-            <label><b>CEP:</b></label>
+          <div class="row">
+            <label><b>Número:</b></label>
             <input
-              id="cep"
-              type="text"
-              name="cep"
-              placeholder="Ex.: 12345-678"
-              class="cep"
+              type="number"
+              name="numero"
+              placeholder="(47) 99999-9999"
+              class="numero"
               autocomplete="off"
               required
-            /><br />
-            <h1>Produto</h1>
-            <select name="produtos">
-              <option value="">Escolha o produto</option>
-              {% for p in produtos%}
-              <option value="{{p.nome}}">{{p.nome}}</option>
-              {% endfor %}
-            </select>
-            <br />
-            <div class="row">
-              <div class="column">
-                <label><b>Quantidade:</b></label>
-                <input
-                  type="text"
-                  id="quantidade"
-                  name="quantidades"
-                  placeholder="Ex.: 100"
-                  class="quantidade"
-                  autocomplete="off"
-                  required
-                />
-              </div>
-              <div class="column">
-                <label><b>Prazo de Entrega:</b></label>
-                <input
-                  type="date"
-                  name="prazo"
-                  placeholder="Ex.: 10/08/2070"
-                  class="prazo"
-                  autocomplete="off"
-                  required
-                />
-              </div>
-            </div>
-            <br />
-            <h1>Pagamento</h1>
-            <select name="forma_pagamento" id="forma_pagamento">
-              <option value="">Escolha a forma de pagamento</option>
-              <option value="Boleto">Boleto</option>
-              <option value="Cartão de Credito">Cartão de Crédito</option>
-              <option value="Pix">Pix</option></select
-            ><br />
-            <div id="parcelas" style="display: none">
-              <label><b>Número de Parcelas:</b></label>
-              <select name="parcelas">
-                <option value="">Escolha o número de parcelas</option>
-                <option value="1">1x - Sem juros</option>
-                <option value="2">2x - Sem juros</option>
-                <option value="3">3x - Sem juros</option>
-                <option value="4">4x - Sem juros</option>
-                <option value="5">5x - Sem juros</option>
-                <option value="6">6x - Sem juros</option>
-                <option value="7">7x - Com juros</option>
-                <option value="8">8x - Com juros</option>
-                <option value="9">9x - Com juros</option>
-                <option value="10">10x - Com juros</option>
-                <option value="11">11x - Com juros</option>
-                <option value="12">12x - Com juros</option></select
-              ><br />
-            </div>
-            <label><b>Entrada:</b></label>
+            />
+            <label><b>Complemento:</b></label>
             <input
               type="text"
-              id="entrada"
-              name="entrada"
-              placeholder="Ex.: R$5000"
-              class="entrada"
+              name="complemento"
+              placeholder="Ex.: Casa, Apt 101"
+              class="complemento"
               autocomplete="off"
               required
-            /><br />
-            <h1>Observações Gerais</h1>
-            <ul>
-              <li><a href="#">Garantias</a></li>
-              <li><a href="#">Políticas de cancelamento</a></li>
-              <li><a href="#">Responsabilidades</a></li>
-              <li><a href="#">Observações importantes para o cliente</a></li>
-            </ul>
-            <button type="submit"><b>Mandar Formulário</b></button>
+            />
           </div>
+          <br />
+          <label><b>CEP:</b></label>
+          <input
+            type="number"
+            name="cep"
+            placeholder="Ex.: 12345-678"
+            class="cep"
+            autocomplete="off"
+            required
+          /><br />
+          <h1>Produto</h1>
+          <input
+            type="text"
+            name="produto"
+            placeholder="Escolha um Produto"
+            class="produto"
+            autocomplete="off"
+            required
+          /><br />
+          <label><b>Quantidade:</b></label>
+          <input
+            type="number"
+            name="quantidade"
+            placeholder="Ex.: 100"
+            class="quantidade"
+            autocomplete="off"
+            required
+          />
+          <label><b>Prazo de Entrega:</b></label>
+          <input
+            type="date"
+            name="prazo"
+            placeholder="Ex.: 10/08/2070"
+            class="prazo"
+            autocomplete="off"
+            required
+          /><br />
+          <h1>Pagamento</h1>
+          <input
+            type="text"
+            name="formaPagamento"
+            placeholder="Forma de Pagamento"
+            class="formaPagamento"
+            autocomplete="off"
+            required
+          /><br />
+          <input
+            type="number"
+            name="quantidadeParcelas"
+            placeholder="Quantidade de Parcelas"
+            class="quantidadeParcelas"
+            autocomplete="off"
+            required
+          /><br />
+          <label><b>Entrada:</b></label>
+          <input
+            type="number"
+            name="entrada"
+            placeholder="Ex.: 5000"
+            class="entrada"
+            autocomplete="off"
+            required
+          /><br />
+          <h1>Observações Gerais</h1>
+          <ul>
+            <li><a href="#">Garantias</a></li>
+            <li><a href="#">Políticas de cancelamento</a></li>
+            <li><a href="#">Responsabilidades</a></li>
+            <li><a href="#">Observações importantes para o cliente</a></li>
+          </ul>
+          <button type="submit">Mandar formulário</button>
+          {% if request.args.get('erro') %}
+          <p style="color: red">{{ request.args.get('erro') }}</p>
+          {% endif %}
         </form>
       </div>
     </section>
-
-    <footer>
-      <div class="container-foot">
-        <div class="linha">
-          <div class="coluna">
-            <h1>Sobre</h1>
-            <hr />
-
-            <ul>
-              <a href="">
-                <li>Quem Somos</li>
-              </a>
-              <a href="">
-                <li>Perguntas Frequentes</li>
-              </a>
-              <a href="">
-                <li>Seja um Franqueado</li>
-              </a>
-              <a href="">
-                <li>Nossas Lojas</li>
-              </a>
-              <a href="">
-                <li>Trabalhe Conosco</li>
-              </a>
-            </ul>
-          </div>
-          <div class="coluna">
-            <h1>Área do Cliente</h1>
-            <hr />
-
-            <ul>
-              <a href="">
-                <li>Minha Conta</li>
-              </a>
-              <a href="">
-                <li>Meus Pedidos</li>
-              </a>
-            </ul>
-          </div>
-          <div class="coluna">
-            <h1>Políticas</h1>
-            <hr />
-
-            <ul>
-              <a href="">
-                <li>Privacidade</li>
-              </a>
-              <a href="">
-                <li>Termos de Uso</li>
-              </a>
-              <a href="">
-                <li>Trocas e Devolução</li>
-              </a>
-              <a href="">
-                <li>Entrega e Frete</li>
-              </a>
-              <a href="">
-                <li>Pagamento</li>
-              </a>
-            </ul>
-          </div>
-          <div class="coluna">
-            <h1>Contato</h1>
-            <hr />
-
-            <div id="rs-container">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="ab110b6800">
-                    <path
-                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="117559e62c">
-                    <path
-                      d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="7f85356627">
-                    <path
-                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="087962049a">
-                    <rect x="0" width="75" y="0" height="75" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#ab110b6800)">
-                  <g transform="matrix(1, 0, 0, 1, 0, -0.000000000000001893)">
-                    <g clip-path="url(#087962049a)">
-                      <g clip-path="url(#117559e62c)">
-                        <g clip-path="url(#7f85356627)">
-                          <rect
-                            x="-16.5"
-                            width="108"
-                            fill="#ffffff"
-                            height="107.999996"
-                            y="-16.499999"
-                            fill-opacity="1"
-                          />
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="ab110b6800">
-                    <path
-                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="117559e62c">
-                    <path
-                      d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="7f85356627">
-                    <path
-                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="087962049a">
-                    <rect x="0" width="75" y="0" height="75" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#ab110b6800)">
-                  <g transform="matrix(1, 0, 0, 1, 0, -0.000000000000001893)">
-                    <g clip-path="url(#087962049a)">
-                      <g clip-path="url(#117559e62c)">
-                        <g clip-path="url(#7f85356627)">
-                          <rect
-                            x="-16.5"
-                            width="108"
-                            fill="#ffffff"
-                            height="107.999996"
-                            y="-16.499999"
-                            fill-opacity="1"
-                          />
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="ab110b6800">
-                    <path
-                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="117559e62c">
-                    <path
-                      d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="7f85356627">
-                    <path
-                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="087962049a">
-                    <rect x="0" width="75" y="0" height="75" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#ab110b6800)">
-                  <g transform="matrix(1, 0, 0, 1, 0, -0.000000000000001893)">
-                    <g clip-path="url(#087962049a)">
-                      <g clip-path="url(#117559e62c)">
-                        <g clip-path="url(#7f85356627)">
-                          <rect
-                            x="-16.5"
-                            width="108"
-                            fill="#ffffff"
-                            height="107.999996"
-                            y="-16.499999"
-                            fill-opacity="1"
-                          />
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="ab110b6800">
-                    <path
-                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="117559e62c">
-                    <path
-                      d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="7f85356627">
-                    <path
-                      d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="087962049a">
-                    <rect x="0" width="75" y="0" height="75" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#ab110b6800)">
-                  <g transform="matrix(1, 0, 0, 1, 0, -0.000000000000001893)">
-                    <g clip-path="url(#087962049a)">
-                      <g clip-path="url(#117559e62c)">
-                        <g clip-path="url(#7f85356627)">
-                          <rect
-                            x="-16.5"
-                            width="108"
-                            fill="#ffffff"
-                            height="107.999996"
-                            y="-16.499999"
-                            fill-opacity="1"
-                          />
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-            </div>
-
-            <ul>
-              <li>45 99999-9999</li>
-              <li>47 99999-9999</li>
-              <li>SmartCart@gmail.com.br</li>
-            </ul>
-          </div>
-          <div class="coluna">
-            <h1>Formas de pagamento</h1>
-            <hr />
-
-            <div id="fdp-container">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="1b609e4843">
-                    <path
-                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="c47f441181">
-                    <path
-                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="645e7bb6ba">
-                    <path
-                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="5eb3da40da">
-                    <path
-                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="42282d1fb0">
-                    <rect x="0" width="61" y="0" height="37" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#1b609e4843)">
-                  <g clip-path="url(#c47f441181)">
-                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
-                      <g clip-path="url(#42282d1fb0)">
-                        <g clip-path="url(#645e7bb6ba)">
-                          <g clip-path="url(#5eb3da40da)">
-                            <path
-                              fill="#ffffff"
-                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                              fill-opacity="1"
-                              fill-rule="nonzero"
-                            />
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="1b609e4843">
-                    <path
-                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="c47f441181">
-                    <path
-                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="645e7bb6ba">
-                    <path
-                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="5eb3da40da">
-                    <path
-                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="42282d1fb0">
-                    <rect x="0" width="61" y="0" height="37" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#1b609e4843)">
-                  <g clip-path="url(#c47f441181)">
-                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
-                      <g clip-path="url(#42282d1fb0)">
-                        <g clip-path="url(#645e7bb6ba)">
-                          <g clip-path="url(#5eb3da40da)">
-                            <path
-                              fill="#ffffff"
-                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                              fill-opacity="1"
-                              fill-rule="nonzero"
-                            />
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="1b609e4843">
-                    <path
-                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="c47f441181">
-                    <path
-                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="645e7bb6ba">
-                    <path
-                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="5eb3da40da">
-                    <path
-                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="42282d1fb0">
-                    <rect x="0" width="61" y="0" height="37" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#1b609e4843)">
-                  <g clip-path="url(#c47f441181)">
-                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
-                      <g clip-path="url(#42282d1fb0)">
-                        <g clip-path="url(#645e7bb6ba)">
-                          <g clip-path="url(#5eb3da40da)">
-                            <path
-                              fill="#ffffff"
-                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                              fill-opacity="1"
-                              fill-rule="nonzero"
-                            />
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="1b609e4843">
-                    <path
-                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="c47f441181">
-                    <path
-                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="645e7bb6ba">
-                    <path
-                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="5eb3da40da">
-                    <path
-                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="42282d1fb0">
-                    <rect x="0" width="61" y="0" height="37" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#1b609e4843)">
-                  <g clip-path="url(#c47f441181)">
-                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
-                      <g clip-path="url(#42282d1fb0)">
-                        <g clip-path="url(#645e7bb6ba)">
-                          <g clip-path="url(#5eb3da40da)">
-                            <path
-                              fill="#ffffff"
-                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                              fill-opacity="1"
-                              fill-rule="nonzero"
-                            />
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="1b609e4843">
-                    <path
-                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="c47f441181">
-                    <path
-                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="645e7bb6ba">
-                    <path
-                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="5eb3da40da">
-                    <path
-                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="42282d1fb0">
-                    <rect x="0" width="61" y="0" height="37" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#1b609e4843)">
-                  <g clip-path="url(#c47f441181)">
-                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
-                      <g clip-path="url(#42282d1fb0)">
-                        <g clip-path="url(#645e7bb6ba)">
-                          <g clip-path="url(#5eb3da40da)">
-                            <path
-                              fill="#ffffff"
-                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                              fill-opacity="1"
-                              fill-rule="nonzero"
-                            />
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100"
-                zoomAndPan="magnify"
-                viewBox="0 0 75 74.999997"
-                height="100"
-                preserveAspectRatio="xMidYMid meet"
-                version="1.0"
-              >
-                <defs>
-                  <clipPath id="1b609e4843">
-                    <path
-                      d="M 7.5 19.648438 L 67.605469 19.648438 L 67.605469 55.351562 L 7.5 55.351562 Z M 7.5 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="c47f441181">
-                    <path
-                      d="M 11.25 19.648438 L 63.75 19.648438 C 65.820312 19.648438 67.5 21.328125 67.5 23.398438 L 67.5 51.601562 C 67.5 53.671875 65.820312 55.351562 63.75 55.351562 L 11.25 55.351562 C 9.179688 55.351562 7.5 53.671875 7.5 51.601562 L 7.5 23.398438 C 7.5 21.328125 9.179688 19.648438 11.25 19.648438 Z M 11.25 19.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="645e7bb6ba">
-                    <path
-                      d="M 0.5 0.648438 L 60.605469 0.648438 L 60.605469 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="5eb3da40da">
-                    <path
-                      d="M 4.25 0.648438 L 56.75 0.648438 C 58.820312 0.648438 60.5 2.328125 60.5 4.398438 L 60.5 32.601562 C 60.5 34.671875 58.820312 36.351562 56.75 36.351562 L 4.25 36.351562 C 2.179688 36.351562 0.5 34.671875 0.5 32.601562 L 0.5 4.398438 C 0.5 2.328125 2.179688 0.648438 4.25 0.648438 Z M 4.25 0.648438 "
-                      clip-rule="nonzero"
-                    />
-                  </clipPath>
-                  <clipPath id="42282d1fb0">
-                    <rect x="0" width="61" y="0" height="37" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#1b609e4843)">
-                  <g clip-path="url(#c47f441181)">
-                    <g transform="matrix(1, 0, 0, 1, 7, 19)">
-                      <g clip-path="url(#42282d1fb0)">
-                        <g clip-path="url(#645e7bb6ba)">
-                          <g clip-path="url(#5eb3da40da)">
-                            <path
-                              fill="#ffffff"
-                              d="M 0.5 0.648438 L 60.464844 0.648438 L 60.464844 36.351562 L 0.5 36.351562 Z M 0.5 0.648438 "
-                              fill-opacity="1"
-                              fill-rule="nonzero"
-                            />
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="foot-info">
-        <p>© 2025 SmartCart. Todos os direitos reservados.</p>
-        <p>De segunda à quinta-feira, das 8h às 18h.</p>
-        <p>CNPJ: 26.636.428/0001-19</p>
-      </div>
-    </footer>
-
-    <script>
-      document
-        .getElementById("forma_pagamento")
-        .addEventListener("change", function () {
-          let parcelas = document.getElementById("parcelas");
-
-          if (this.value === "Cartão de Credito") {
-            parcelas.style.display = "block";
-          } else {
-            parcelas.style.display = "none";
-          }
-        });
-
-      let cep = document.getElementById("cep");
-
-      cep.addEventListener("input", () => {
-        let n = cep.value.replace(/\D/g, "");
-
-        n = n.substring(0, 8);
-
-        if (n.length > 5) {
-          n = n.replace(/(\d{5})(\d{0,3})/, "$1-$2");
-        } else {
-          n = n.replace(/(\d{0,5})/, "$1");
-        }
-
-        cep.value = n;
-      });
-
-      let cnpj = document.getElementById("cnpj");
-
-      cnpj.addEventListener("input", () => {
-        let n = cnpj.value.replace(/\D/g, "");
-
-        n = n.substring(0, 14);
-
-        if (n.length > 12) {
-          n = n.replace(
-            /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
-            "$1.$2.$3/$4-$5"
-          );
-        } else if (n.length > 8) {
-          n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
-        } else if (n.length > 5) {
-          n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
-        } else if (n.length > 2) {
-          n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
-        } else {
-          n = n.replace(/(\d{0,2})/, "$1");
-        }
-
-        cnpj.value = n;
-      });
-
-      let entrada = document.getElementById("entrada");
-
-      entrada.addEventListener("input", () => {
-        let n = entrada.value.replace(/\D/g, "");
-
-        n = n.substring(0, 12);
-
-        if (n.length > 9) {
-          n = n.replace(/(\d{1,3})(\d{3})(\d{3})(\d{3})/, "R$ $1.$2.$3.$4");
-        } else if (n.length > 6) {
-          n = n.replace(/(\d{1,3})(\d{3})(\d{3})/, "R$ $1.$2.$3");
-        } else if (n.length > 3) {
-          n = n.replace(/(\d{1,3})(\d{3})/, "R$ $1.$2");
-        } else if (n.length > 0) {
-          n = "R$ " + n;
-        } else {
-          n = "";
-        }
-
-        entrada.value = n;
-      });
-
-      let quantidade = document.getElementById("quantidade");
-
-      quantidade.addEventListener("input", () => {
-        let n = quantidade.value.replace(/\D/g, "");
-
-        n = n.substring(0, 12);
-
-        if (n.length > 9) {
-          n = n.replace(/(\d{1,3})(\d{3})(\d{3})(\d{3})/, "$1.$2.$3.$4");
-        } else if (n.length > 6) {
-          n = n.replace(/(\d{1,3})(\d{3})(\d{3})/, "$1.$2.$3");
-        } else if (n.length > 3) {
-          n = n.replace(/(\d{1,3})(\d{3})/, "$1.$2");
-        } else if (n.length > 0) {
-          n = n;
-        } else {
-          n = "";
-        }
-
-        quantidade.value = n;
-      });
-    </script>
   </body>
 </html>

@@ -150,7 +150,7 @@
           </div>
 
           <ul class="dropdown-menu">
-            <li><a href="#">Minha conta</a></li>
+            <li><a href="/conta">Minha conta</a></li>
             <li><a href="/pedidos">Meus pedidos</a></li>
             <li><a href="/logout">Sair</a></li>
           </ul>
@@ -159,6 +159,23 @@
         {% else %}
         <a href="/login">Entrar</a>
         {% endif %}
+
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const dropdown = document.querySelector(".dropdown");
+            const trigger = document.querySelector(".dropdown-trigger");
+
+            trigger.addEventListener("click", (e) => {
+              e.stopPropagation();
+              dropdown.classList.toggle("open");
+            });
+
+            // Fechar ao clicar fora
+            document.addEventListener("click", () => {
+              dropdown.classList.remove("open");
+            });
+          });
+        </script>
       </div>
     </nav>
     <section class="home">
