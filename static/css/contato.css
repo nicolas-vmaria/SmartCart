@@ -84,17 +84,11 @@ nav p {
   padding: 10px 20px;
 }
 
-.dropdown:hover .dropdown-trigger {
-  background-color: #aebb80;
-  border-radius: 10px 10px 0 0;
-}
-
-/* MENU */
 .dropdown-menu {
   position: absolute;
-  top: 78%; /* encosta perfeitamente abaixo */
-  right: 0; /* alinha pela esquerda */
-  width: 100%; /* exata largura do trigger */
+  top: 78%;
+  right: 0;
+  width: 100%;
   display: none;
   flex-direction: column;
   background: #fff;
@@ -103,8 +97,17 @@ nav p {
   padding: 15px 0;
 }
 
-.dropdown:hover .dropdown-menu {
+.dropdown.open .dropdown-trigger {
+  background-color: #aebb80;
+  border-radius: 10px 10px 0 0;
+}
+
+.dropdown.open .dropdown-menu {
   display: flex;
+}
+
+.dropdown.open .arrow-icon {
+  transform: rotate(180deg);
 }
 
 .home {
@@ -136,13 +139,14 @@ form {
 input {
   width: 600px;
   height: 80px;
+  padding-left: 15px;
   border-radius: 20px;
   border: 2px solid #ccc;
   font-size: 16px;
 }
 ::placeholder {
   font-size: 20px;
-  padding-left: 20px;
+
 }
 .mensagem {
   width: 600px;
@@ -151,6 +155,7 @@ input {
   border: 2px solid #ccc;
   font-size: 20px;
   padding-top: 20px; /* placeholder vai para o topo */
+  padding-left: 15px;
   resize: none;
 }
 

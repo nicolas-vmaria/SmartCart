@@ -143,7 +143,7 @@
           </div>
 
           <ul class="dropdown-menu">
-            <li><a href="#">Minha conta</a></li>
+            <li><a href="/conta">Minha conta</a></li>
             <li><a href="/pedidos">Meus pedidos</a></li>
             <li><a href="/logout">Sair</a></li>
           </ul>
@@ -152,6 +152,23 @@
         {% else %}
         <a href="/login">Entrar</a>
         {% endif %}
+
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const dropdown = document.querySelector(".dropdown");
+            const trigger = document.querySelector(".dropdown-trigger");
+
+            trigger.addEventListener("click", (e) => {
+              e.stopPropagation();
+              dropdown.classList.toggle("open");
+            });
+
+            // Fechar ao clicar fora
+            document.addEventListener("click", () => {
+              dropdown.classList.remove("open");
+            });
+          });
+        </script>
       </div>
     </nav>
     <section class="section-home">
@@ -161,14 +178,43 @@
       <div class="lado">
         <h2>Sobre</h2>
         <ul>
-          <li><a href="#">Quem Somos</a></li>
+          <li>
+            <a href="#quem-somos">Quem Somos</a>
+            <?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+            <svg
+              width="800px"
+              height="800px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z"
+                fill="#4e4f3d"
+              />
+            </svg>
+          </li>
           <br />
-          <li><a href="#">Missão Visão e Valores</a></li>
+          <li>
+            <a href="#missao">Missão Visão e Valores</a>
+            <svg
+              width="800px"
+              height="800px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z"
+                fill="#4e4f3d"
+              />
+            </svg>
+          </li>
         </ul>
       </div>
       <section class="section-card">
         <div class="card">
-          <h1>Quem somos</h1>
+          <h1 id="quem-somos">Quem somos</h1>
           <p>
             A SmartCart nasceu com a missão de redefinir a experiência de compra
             no varejo, eliminando atritos que há décadas comprometem eficiência
@@ -194,6 +240,22 @@
             consumidores e estabelecimentos com mais agilidade e inteligência.
             Nosso propósito permanece inalterado: elevar o padrão das compras do
             dia a dia, entregando eficiência em cada detalhe.
+          </p>
+          <h1 id="missao">Missão</h1>
+          <p>
+            Transformar a experiência de compra por meio da tecnologia, tornando
+            o ato de comprar mais simples, rápido e inteligente para todos.
+          </p>
+          <h1 id="visao">Visão</h1>
+          <p>
+            Tornar-se líder em inovação tecnológica para o varejo, reconhecida
+            pela excelência em automação, eficiência e experiência do
+            consumidor.
+          </p>
+          <h1 id="valores">Valores</h1>
+          <p>
+            Inovação Contínua — Buscamos constantemente novas formas de unir
+            tecnologia e praticidade para melhorar a experiência de compra.
           </p>
         </div>
       </section>

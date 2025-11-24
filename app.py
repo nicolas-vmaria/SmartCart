@@ -33,31 +33,61 @@ def user_loader(id):
     usuario = cursor.fetchone()
     if usuario:
         return Usuario(
-            usuario["id"], usuario["nome"], usuario["cpf"], usuario["telefone"], usuario["email"], usuario["senha"]
+            usuario["id"],
+            usuario["nome"],
+            usuario["cpf"],
+            usuario["telefone"],
+            usuario["email"],
+            usuario["senha"],
         )
-    
+
+
 @lm.unauthorized_handler
 def unauthorized():
     if request.endpoint == "orcamento":
-        flash("Entre na sua conta ou cadastre-se, para fazer orçamentos conosco!", "erro")
+        flash(
+            "Entre na sua conta ou cadastre-se, para fazer orçamentos conosco!", "erro"
+        )
     elif request.endpoint == "contato":
         flash("Entre na sua conta ou cadastre-se, para fazer contato conosco!", "erro")
     return redirect(url_for("login"))
-    
 
 
 @app.route("/")
 def index():
     return render_template("index.html", user=current_user)
 
+@app.route("/conta")
+@login_required
+def conta():
+    return render_template("conta.html", user=current_user)
 
 @app.route("/sobre")
 def sobre():
     return render_template("sobre.html", user=current_user)
 
+
 @app.route("/pedidos")
+@login_required
 def pedidos():
-    return render_template("pedidos.html", user=current_user)
+
+    cursor.execute("""
+        SELECT 
+        p.*, 
+        pr.nome AS produto_nome, 
+        pr.id_imagem AS produto_imagem,
+        pr.preco AS preco_unitario,
+        (p.preco_unitario * p.quantidade) AS total_item,
+        o.forma_pagamento
+    FROM Pedidos p
+    JOIN Produtos pr ON p.id_produto = pr.id
+    JOIN Orcamentos o ON p.id_orcamento = o.id
+    WHERE p.id_usuario = %s
+    """, (current_user.id,))
+    pedidos = cursor.fetchall()
+
+
+    return render_template("pedidos.html", user=current_user, pedidos=pedidos)
 
 @app.route("/admin")
 def admin():
@@ -97,32 +127,38 @@ def orcamento():
         quantidades = request.form["quantidades"]
         prazo_entrega = request.form["prazo"]
         forma_pagamento = request.form["forma_pagamento"]
-        numero_parcelas = request.form.get("parcelas")
-        entrada = request.form["entrada"].replace("R$ ", "").replace(".", "")
 
         cursor.execute(
-            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento, numero_parcelas, entrada) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento, numero_parcelas, entrada),
+            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento),
+        )
+        conexao.commit()
+
+        cursor.execute("SELECT preco FROM Produtos WHERE id = %s", (produtos,))
+        preco = cursor.fetchone()["preco"]
+
+        id_orcamento = cursor.lastrowid
+
+        cursor.execute(
+            "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s)",
+            (current_user.id, produtos, id_orcamento, quantidades, preco, "pendente"),
         )
         conexao.commit()
 
         
-
         flash("Orçamento enviado com sucesso!", "sucesso")
         return redirect(url_for("index"))
 
-        
+
 @app.route("/contato", methods=["GET", "POST"])
-@login_required
 def contato():
     if request.method == "GET":
-        return render_template("contato.html", user=current_user) 
+        return render_template("contato.html", user=current_user)
     elif request.method == "POST":
         nome = request.form["nome"]
         gmail = request.form["email"]
         assunto = request.form["assunto"]
         mensagem = request.form.get("mensagem")
-
 
         cursor.execute(
             "INSERT INTO Contatos (nome, email, assunto, mensagem) VALUES (%s, %s, %s, %s)",
@@ -138,17 +174,19 @@ def contato():
         """
 
         msg = email.message.Message()
-        msg['Subject'] = f"{assunto}"
-        msg['From'] = 'SmartCart <pyhonprojetos@gmail.com>'
-        msg['To'] = 'boing.caio@gmail.com'
-        password = 'mearjauclzstlewo' 
-        msg.add_header('Content-Type', 'text/html')
-        msg.set_payload(corpo_email )
+        msg["Subject"] = f"{assunto}"
+        msg["From"] = "SmartCart <pyhonprojetos@gmail.com>"
+        msg["To"] = "smartcart.contato@gmail.com"
+        password = "mearjauclzstlewo"
+        msg.add_header("Content-Type", "text/html")
+        msg.set_payload(corpo_email)
 
-        s = smtplib.SMTP('smtp.gmail.com: 587')
+        s = smtplib.SMTP("smtp.gmail.com: 587")
         s.starttls()
-        s.login('pyhonprojetos@gmail.com', password)
-        s.sendmail("pyhonprojetos@gmail.com", [msg['To']], msg.as_string().encode('utf-8'))
+        s.login("pyhonprojetos@gmail.com", password)
+        s.sendmail(
+            "pyhonprojetos@gmail.com", [msg["To"]], msg.as_string().encode("utf-8")
+        )
 
         flash("Mensagem enviada com sucesso!", "sucesso")
         return redirect(url_for("index"))
@@ -183,7 +221,7 @@ def cadastro():
             "SELECT * FROM Usuario WHERE cpf = %s OR email = %s",
             (cpf, email),
         )
-        usuario_existente = cursor.fetchone() 
+        usuario_existente = cursor.fetchone()
 
         if usuario_existente:
             erro = "Usuário já cadastrado"
@@ -215,7 +253,12 @@ def login():
 
         if usuario:
             user = Usuario(
-                usuario["id"], usuario["nome"], usuario["cpf"], usuario["telefone"], usuario["email"], usuario["senha"]
+                usuario["id"],
+                usuario["nome"],
+                usuario["cpf"],
+                usuario["telefone"],
+                usuario["email"],
+                usuario["senha"],
             )
             login_user(user)
             return redirect(url_for("index"))
