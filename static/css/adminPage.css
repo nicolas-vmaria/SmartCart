@@ -59,6 +59,9 @@ a{
 
 
 .selected-aba{
+    text-decoration: none;
+    color: white;
+    font-family: montserrat;
     background-color: #c7d8a1;
     height: 80px;
     width: 390px;
