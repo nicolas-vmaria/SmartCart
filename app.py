@@ -55,6 +55,10 @@ def index():
 def sobre():
     return render_template("sobre.html", user=current_user)
 
+@app.route("/pedidos")
+def pedidos():
+    return render_template("pedidos.html", user=current_user)
+
 
 @app.route("/orcamento", methods=["GET", "POST"])
 @login_required
