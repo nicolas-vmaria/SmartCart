@@ -33,17 +33,24 @@ def user_loader(id):
     usuario = cursor.fetchone()
     if usuario:
         return Usuario(
-            usuario["id"], usuario["nome"], usuario["cpf"], usuario["telefone"], usuario["email"], usuario["senha"]
+            usuario["id"],
+            usuario["nome"],
+            usuario["cpf"],
+            usuario["telefone"],
+            usuario["email"],
+            usuario["senha"],
         )
-    
+
+
 @lm.unauthorized_handler
 def unauthorized():
     if request.endpoint == "orcamento":
-        flash("Entre na sua conta ou cadastre-se, para fazer orçamentos conosco!", "erro")
+        flash(
+            "Entre na sua conta ou cadastre-se, para fazer orçamentos conosco!", "erro"
+        )
     elif request.endpoint == "contato":
         flash("Entre na sua conta ou cadastre-se, para fazer contato conosco!", "erro")
     return redirect(url_for("login"))
-    
 
 
 @app.route("/")
@@ -53,6 +60,7 @@ def index():
 @app.route("/sobre")
 def sobre():
     return render_template("sobre.html", user=current_user)
+
 
 @app.route("/pedidos")
 @login_required
@@ -118,18 +126,16 @@ def orcamento():
         flash("Orçamento enviado com sucesso!", "sucesso")
         return redirect(url_for("index"))
 
-        
+
 @app.route("/contato", methods=["GET", "POST"])
-@login_required
 def contato():
     if request.method == "GET":
-        return render_template("contato.html", user=current_user) 
+        return render_template("contato.html", user=current_user)
     elif request.method == "POST":
         nome = request.form["nome"]
         gmail = request.form["email"]
         assunto = request.form["assunto"]
         mensagem = request.form.get("mensagem")
-
 
         cursor.execute(
             "INSERT INTO Contatos (nome, email, assunto, mensagem) VALUES (%s, %s, %s, %s)",
@@ -145,17 +151,19 @@ def contato():
         """
 
         msg = email.message.Message()
-        msg['Subject'] = f"{assunto}"
-        msg['From'] = 'SmartCart <pyhonprojetos@gmail.com>'
-        msg['To'] = 'boing.caio@gmail.com'
-        password = 'mearjauclzstlewo' 
-        msg.add_header('Content-Type', 'text/html')
-        msg.set_payload(corpo_email )
+        msg["Subject"] = f"{assunto}"
+        msg["From"] = "SmartCart <pyhonprojetos@gmail.com>"
+        msg["To"] = "smartcart.contato@gmail.com"
+        password = "mearjauclzstlewo"
+        msg.add_header("Content-Type", "text/html")
+        msg.set_payload(corpo_email)
 
-        s = smtplib.SMTP('smtp.gmail.com: 587')
+        s = smtplib.SMTP("smtp.gmail.com: 587")
         s.starttls()
-        s.login('pyhonprojetos@gmail.com', password)
-        s.sendmail("pyhonprojetos@gmail.com", [msg['To']], msg.as_string().encode('utf-8'))
+        s.login("pyhonprojetos@gmail.com", password)
+        s.sendmail(
+            "pyhonprojetos@gmail.com", [msg["To"]], msg.as_string().encode("utf-8")
+        )
 
         flash("Mensagem enviada com sucesso!", "sucesso")
         return redirect(url_for("index"))
@@ -189,7 +197,7 @@ def cadastro():
             "SELECT * FROM Usuario WHERE cpf = %s OR email = %s",
             (cpf, email),
         )
-        usuario_existente = cursor.fetchone() 
+        usuario_existente = cursor.fetchone()
 
         if usuario_existente:
             erro = "Usuário já cadastrado"
@@ -221,7 +229,12 @@ def login():
 
         if usuario:
             user = Usuario(
-                usuario["id"], usuario["nome"], usuario["cpf"], usuario["telefone"], usuario["email"], usuario["senha"]
+                usuario["id"],
+                usuario["nome"],
+                usuario["cpf"],
+                usuario["telefone"],
+                usuario["email"],
+                usuario["senha"],
             )
             login_user(user)
             return redirect(url_for("index"))

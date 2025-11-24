@@ -152,7 +152,7 @@
           </div>
 
           <ul class="dropdown-menu">
-            <li><a href="#">Minha conta</a></li>
+            <li><a href="/conta">Minha conta</a></li>
             <li><a href="/pedidos">Meus pedidos</a></li>
             <li><a href="/logout">Sair</a></li>
           </ul>
@@ -161,6 +161,23 @@
         {% else %}
         <a href="/login">Entrar</a>
         {% endif %}
+
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const dropdown = document.querySelector(".dropdown");
+            const trigger = document.querySelector(".dropdown-trigger");
+
+            trigger.addEventListener("click", (e) => {
+              e.stopPropagation();
+              dropdown.classList.toggle("open");
+            });
+
+            // Fechar ao clicar fora
+            document.addEventListener("click", () => {
+              dropdown.classList.remove("open");
+            });
+          });
+        </script>
       </div>
     </nav>
     {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
@@ -193,7 +210,9 @@
       </div>
     </section>
     <section class="section-mid">
-      <div class="coluna image"></div>
+      <div class="coluna image">
+        <img src="/static/img/carrinho.png" alt="" />
+      </div>
       <div class="coluna text">
         <h1>Lorem ipsum</h1>
         <p>

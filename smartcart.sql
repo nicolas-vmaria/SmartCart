@@ -52,7 +52,8 @@ CREATE TABLE Pedidos (
     data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
-    FOREIGN KEY (id_produto) REFERENCES Produtos(id)
+    FOREIGN KEY (id_produto) REFERENCES Produtos(id),
+    FOREIGN KEY (id_orcamento) REFERENCES Orcamentos(id)
 );
 
 
@@ -66,4 +67,5 @@ insert into Produtos (nome, preco, estoque, id_imagem) values
 
 ALTER TABLE Usuario ADD COLUMN admin BOOLEAN DEFAULT FALSE;
 
+select * from Pedidos;
 
