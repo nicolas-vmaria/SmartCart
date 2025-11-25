@@ -17,7 +17,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3406", database="smartcart"
+    host="localhost", user="root", password="", port="3406", database="smartCart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -58,6 +58,33 @@ def index():
     return render_template("index.html", user=current_user)
 
 
+@app.route("/conta", methods=["GET", "POST"])
+@login_required
+def conta():
+    if request.method == "GET":
+        return render_template("conta.html", user=current_user)
+    elif request.method == "POST":
+        nome = request.form["nome"]
+        cpf = request.form["cpf"].replace(".", "").replace("-", "")
+        telefone = (
+            request.form["tel"]
+            .replace("(", "")
+            .replace(")", "")
+            .replace("-", "")
+            .replace(" ", "")
+        )
+        email = request.form["email"]
+        senha = request.form["senha"]
+
+        cursor.execute(
+            "UPDATE Usuario SET nome = %s, cpf = %s, telefone = %s, email = %s, senha = %s WHERE id = %s",
+            (nome, cpf, telefone, email, hash(senha), current_user.id),
+        )
+        conexao.commit()
+
+        return render_template("conta.html", user=current_user)
+
+
 @app.route("/sobre")
 def sobre():
     return render_template("sobre.html", user=current_user)
@@ -65,12 +92,26 @@ def sobre():
 
 @app.route("/pedidos")
 def pedidos():
-    return render_template("pedidos.html", user=current_user)
 
+    cursor.execute(
+        """
+        SELECT 
+        p.*, 
+        pr.nome AS produto_nome, 
+        pr.id_imagem AS produto_imagem,
+        pr.preco AS preco_unitario,
+        (p.preco_unitario * p.quantidade) AS total_item,
+        o.forma_pagamento
+    FROM Pedidos p
+    JOIN Produtos pr ON p.id_produto = pr.id
+    JOIN Orcamentos o ON p.id_orcamento = o.id
+    WHERE p.id_usuario = %s
+    """,
+        (current_user.id,),
+    )
+    pedidos = cursor.fetchall()
 
-@app.route("/conta")
-def conta():
-    return render_template("conta.html", user=current_user)
+    return render_template("pedidos.html", user=current_user, pedidos=pedidos)
 
 
 @app.route("/orcamento", methods=["GET", "POST"])
