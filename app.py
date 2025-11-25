@@ -96,7 +96,7 @@ def conta():
             (nome, cpf, telefone, email, hash(senha), current_user.id),
         )
         conexao.commit()
-        
+
         return render_template("conta.html", user=current_user)
 
 
@@ -106,10 +106,10 @@ def sobre():
 
 
 @app.route("/pedidos")
-@login_required
 def pedidos():
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT 
         p.*, 
         pr.nome AS produto_nome, 
@@ -121,9 +121,10 @@ def pedidos():
     JOIN Produtos pr ON p.id_produto = pr.id
     JOIN Orcamentos o ON p.id_orcamento = o.id
     WHERE p.id_usuario = %s
-    """, (current_user.id,))
+    """,
+        (current_user.id,),
+    )
     pedidos = cursor.fetchall()
-
 
     return render_template("pedidos.html", user=current_user, pedidos=pedidos)
 
@@ -149,23 +150,23 @@ def orcamento():
         forma_pagamento = request.form["forma_pagamento"]
 
         cursor.execute(
-            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento),
+            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+                nome_empresa,
+                cnpj,
+                email,
+                endereco,
+                numero,
+                complemento,
+                cep,
+                produtos,
+                quantidades,
+                prazo_entrega,
+                forma_pagamento,
+            ),
         )
         conexao.commit()
 
-        cursor.execute("SELECT preco FROM Produtos WHERE id = %s", (produtos,))
-        preco = cursor.fetchone()["preco"]
-
-        id_orcamento = cursor.lastrowid
-
-        cursor.execute(
-            "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s)",
-            (current_user.id, produtos, id_orcamento, quantidades, preco, "pendente"),
-        )
-        conexao.commit()
-
-        
         flash("Orçamento enviado com sucesso!", "sucesso")
         return redirect(url_for("index"))
 
