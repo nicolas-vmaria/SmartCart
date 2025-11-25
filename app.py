@@ -17,7 +17,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="12345678", port="3306", database="smartCart"
+    host="localhost", user="root", password="", port="3406", database="smartCart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -57,10 +57,32 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
-@app.route("/conta")
+@app.route("/conta", methods=["GET", "POST"])
 @login_required
 def conta():
-    return render_template("conta.html", user=current_user)
+    if request.method == "GET":
+        return render_template("conta.html", user=current_user)
+    elif request.method == "POST":
+        nome = request.form["nome"]
+        cpf = request.form["cpf"].replace(".", "").replace("-", "")
+        telefone = (
+            request.form["tel"]
+            .replace("(", "")
+            .replace(")", "")
+            .replace("-", "")
+            .replace(" ", "")
+        )
+        email = request.form["email"]
+        senha = request.form["senha"]
+
+        cursor.execute(
+            "UPDATE Usuario SET nome = %s, cpf = %s, telefone = %s, email = %s, senha = %s WHERE id = %s",
+            (nome, cpf, telefone, email, hash(senha), current_user.id),
+        )
+        conexao.commit()
+        
+        return render_template("conta.html", user=current_user)
+
 
 @app.route("/sobre")
 def sobre():
@@ -88,24 +110,6 @@ def pedidos():
 
 
     return render_template("pedidos.html", user=current_user, pedidos=pedidos)
-
-@app.route("/admin")
-def admin():
-    return render_template("adminPage.html")
-
-@app.route("/admin/users")
-def admin_users():
-    return render_template("usersAdmin.html")
-
-@app.route("/admin/produtos")
-def admin_produtos():
-    return render_template("produtosAdmin.html")
-
-@app.route("/admin/orcamentos")
-def admin_orcamentos():
-    return render_template("orcamentosAdmin.html")
-
-
 
 
 @app.route("/orcamento", methods=["GET", "POST"])
@@ -197,7 +201,6 @@ def contato():
 def logout():
     logout_user()
     return redirect(url_for("index"))
-
 
 
 @app.route("/cadastro", methods=["GET", "POST"])
