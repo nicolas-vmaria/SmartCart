@@ -106,10 +106,9 @@ def sobre():
 
 
 @app.route("/pedidos")
+@login_required
 def pedidos():
-
-    cursor.execute(
-        """
+    cursor.execute("""
         SELECT 
         p.*, 
         pr.nome AS produto_nome, 
@@ -121,10 +120,9 @@ def pedidos():
     JOIN Produtos pr ON p.id_produto = pr.id
     JOIN Orcamentos o ON p.id_orcamento = o.id
     WHERE p.id_usuario = %s
-    """,
-        (current_user.id,),
-    )
+    """, (current_user.id,))
     pedidos = cursor.fetchall()
+
 
     return render_template("pedidos.html", user=current_user, pedidos=pedidos)
 
@@ -164,6 +162,17 @@ def orcamento():
                 prazo_entrega,
                 forma_pagamento,
             ),
+        )
+        conexao.commit()
+
+        cursor.execute("SELECT preco FROM Produtos WHERE id = %s", (produtos,))
+        preco = cursor.fetchone()["preco"]
+
+        id_orcamento = cursor.lastrowid
+
+        cursor.execute(
+            "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s)",
+            (current_user.id, produtos, id_orcamento, quantidades, preco, "pendente"),
         )
         conexao.commit()
 
