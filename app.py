@@ -57,6 +57,22 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
+@app.route("/admin")
+def admin():
+    return render_template("adminPage.html")
+
+@app.route("/admin/users")
+def admin_users():
+    return render_template("usersAdmin.html")
+
+@app.route("/admin/produtos")
+def admin_produtos():
+    return render_template("produtosAdmin.html")
+
+@app.route("/admin/orcamentos")
+def admin_orcamentos():
+    return render_template("orcamentosAdmin.html")
+
 @app.route("/conta", methods=["GET", "POST"])
 @login_required
 def conta():
