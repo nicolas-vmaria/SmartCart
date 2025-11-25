@@ -4,6 +4,11 @@ body{
     padding: 0;
     background-color: rgb(243, 243, 243);
     display: flex;
+    flex-direction: row;
+}
+
+main{
+    display: flex;
 }
 
 
@@ -52,7 +57,7 @@ li{
 
 a{
     text-decoration: none;
-    color: white;
+        
     font-family: montserrat;
 }
 
@@ -60,9 +65,9 @@ a{
 
 .selected-aba{
     text-decoration: none;
-    color: white;
     font-family: montserrat;
     background-color: #c7d8a1;
+    color: white;
     height: 80px;
     width: 390px;
     border-radius: 15px;
@@ -133,4 +138,46 @@ a{
     width: 90px;
     border-radius: 10px;
     cursor: pointer;
+}
+
+#main-screen{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    
+}
+
+#info-main-screen{
+    
+    height: 90%;
+    
+    font-family: montserrat;
+    color: rgb(122, 122, 122);
+    padding: 60px;
+}
+
+#info-main-screen span{
+    font-size: 20pt;
+    color: #a0b179;
+    font-weight: normal;
+}
+
+.aba-content{
+    display: flex;
+    flex-direction: row;
+    height: 40px;
+    width: 390px;
+    gap: 20px;
+    align-items: center;
+    
+    
+}
+
+.aba-content svg{
+    width: 40px;
+    height: 40px;
+}
+
+.aba-content p{
+    
 }
