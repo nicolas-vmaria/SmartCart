@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import mysql.connector
 import smtplib
 import email.message
@@ -77,32 +77,73 @@ def admin_produtos():
 def admin_orcamentos():
     return render_template("orcamentosAdmin.html")
 
-
-@app.route("/conta", methods=["GET", "POST"])
+# ROTA 1: APENAS PARA CARREGAR A PÁGINA
+@app.route("/conta", methods=["GET"])
 @login_required
 def conta():
-    if request.method == "GET":
-        return render_template("conta.html", user=current_user)
-    elif request.method == "POST":
-        nome = request.form["nome"]
-        cpf = request.form["cpf"].replace(".", "").replace("-", "")
-        telefone = (
-            request.form["tel"]
-            .replace("(", "")
-            .replace(")", "")
-            .replace("-", "")
-            .replace(" ", "")
-        )
-        email = request.form["email"]
-        senha = request.form["senha"]
+    # O método GET apenas renderiza o template
+    return render_template("conta.html", user=current_user)
 
-        cursor.execute(
-            "UPDATE Usuario SET nome = %s, cpf = %s, telefone = %s, email = %s, senha = %s WHERE id = %s",
-            (nome, cpf, telefone, email, hash(senha), current_user.id),
-        )
+
+# ROTA 2: PARA RECEBER O FETCH DO JAVASCRIPT E EXECUTAR NO DB
+@app.route("/conta/update", methods=["PUT"])
+@login_required
+def conta_update():
+    
+    # Verifica se o que o JS enviou é um JSON
+    if not request.is_json:
+        return jsonify({"message": "Erro: Requisição deve ser JSON"}), 415
+
+    try:
+        data = request.get_json()
+        
+        # Lista de campos que o JS pode atualizar no DB
+        allowed_fields = {
+            "nome": "nome",
+            "telfone": "telefone", # O 'name' do HTML era 'telfone'
+            "email": "email"
+        }
+        
+        updates = {} # Dicionário para guardar o que vamos atualizar
+        
+        # 1. Filtra os dados recebidos (data)
+        for js_key, db_field in allowed_fields.items():
+            if js_key in data:
+                # Se a chave (ex: "nome") está no JSON, adiciona ao update
+                updates[db_field] = data[js_key]
+
+        if not updates:
+            # Se o JS não enviou nada (caso raro, pois o JS já verifica)
+            return jsonify({"message": "Nenhum dado para atualizar."}), 400
+
+        # 2. Monta a Query SQL Dinâmica
+        # Isso cria a parte "SET nome = %s, email = %s"
+        set_clause = ", ".join([f"{field} = %s" for field in updates.keys()])
+        
+        # Cria a lista de valores na ordem correta
+        values = list(updates.values())
+        values.append(current_user.id) # Adiciona o ID do usuário no final
+        
+        # Query final
+        query = f"UPDATE Usuario SET {set_clause} WHERE id = %s"
+        
+        # 3. AQUI ESTÁ A EXECUÇÃO NO DB
+        # Usando os mesmos 'cursor' e 'conexao' que você já usa
+        
+        print(f"Executando Query: {query}")
+        print(f"Com Valores: {tuple(values)}")
+        
+        cursor.execute(query, tuple(values))
         conexao.commit()
 
-        return render_template("conta.html", user=current_user)
+        # 4. Retorna sucesso para o JavaScript
+        return jsonify({"message": "Perfil atualizado com sucesso!"}), 200
+
+    except Exception as e:
+        # Se der erro no DB
+        conexao.rollback() # Desfaz qualquer mudança
+        print(f"Erro no DB: {e}")
+        return jsonify({"message": "Erro interno ao atualizar o banco de dados."}), 500
 
 
 @app.route("/sobre")

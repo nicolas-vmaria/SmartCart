@@ -177,11 +177,12 @@
         </script>
       </div>
     </nav>
-
+    
     <section class="section-card">
+      <div id="top-message-container"></div>
       <h1>Minha conta</h1>
       <div class="card">
-        <form method="POST">
+        <form method="POST" id="profileForm">
           <div class="column">
             <label><b>Nome:</b></label>
             <input
@@ -191,6 +192,7 @@
               value="{{user.nome}}"
               class="nome"
               required
+              disabled
             /><br />
 
             <div class="row">
@@ -203,6 +205,8 @@
                   class="cnpj"
                   autocomplete="off"
                   required
+                  disabled
+                  
                 />
               </div>
               <div class="column">
@@ -214,6 +218,7 @@
                   class="telefone"
                   autocomplete="off"
                   required
+                  disabled
                 />
               </div>
             </div>
@@ -227,6 +232,7 @@
               class="email"
               autocomplete="off"
               required
+              disabled
             /><br />
 
             <label><b>Senha:</b></label>
@@ -237,15 +243,245 @@
               class="senha"
               autocomplete="off"
               required
+              disabled
             /><br />
+            
 
-            <button type="submit">Salvar</button>
-            {% if request.args.get('erro') %}
-            <p style="color: red">{{ request.args.get('erro') }}</p>
-            {% endif %}
+            <button type="submit" id="saveButton" disabled>Salvar Alterações</button>
+            
           </div>
         </form>
+
+        <button type="button" id="editButton">
+          <span id="buttonText">Editar Perfil</span>
+        </button>
       </div>
     </section>
+   
+    <script>
+     // --- Lógica do Dropdown (Mantenha este bloco) ---
+    document.addEventListener("DOMContentLoaded", () => {
+        const dropdown = document.querySelector(".dropdown");
+        const trigger = document.querySelector(".dropdown-trigger");
+
+        if (trigger) {
+            trigger.addEventListener("click", (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle("open");
+            });
+
+            // Fechar ao clicar fora
+            document.addEventListener("click", () => {
+                if (dropdown && dropdown.classList.contains("open")) {
+                    dropdown.classList.remove("open");
+                }
+            });
+        }
+    });
+
+    // -------------------------------------------------------------
+    // --- LÓGICA DE EDIÇÃO DE PERFIL E ENVIO DE DADOS (FETCH) ---
+    // -------------------------------------------------------------
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Seleciona os elementos principais
+        const profileForm = document.getElementById('profileForm');
+        const editButton = document.getElementById('editButton');
+        const saveButton = document.getElementById('saveButton');
+        const buttonText = document.getElementById('buttonText');
+        
+        // CORREÇÃO AQUI: USANDO O ID CORRETO 'top-message-container'
+        const messageContainer = document.getElementById('top-message-container');
+        
+        const formInputs = document.querySelectorAll('#profileForm input'); 
+        let isEditing = false;
+        
+        // Cores dos botões (Ajuste a cor original se for diferente)
+        const originalEditButtonColor = '#8b9a5c'; 
+        const cancelEditButtonColor = '#dc3545'; 
+
+        const originalValues = {};
+        formInputs.forEach(input => {
+            originalValues[input.name] = input.value;
+        });
+
+        // --- Funções de Mensagem ---
+
+        function showMessage(message, type = 'error') {
+            if (messageContainer) { // Só executa se o container existir
+                // Garante que o container esteja visível antes de aplicar a opacidade
+                messageContainer.style.opacity = "1"; 
+                messageContainer.style.transition = "none";
+                
+                messageContainer.textContent = message;
+                messageContainer.className = type; 
+            }
+        }
+
+        function hideMessage() {
+            if (messageContainer) {
+                // Ao esconder, já reseta a opacidade e transição para o próximo showMessage ser instantâneo
+                messageContainer.style.transition = "none";
+                messageContainer.style.opacity = "1"; 
+                messageContainer.textContent = '';
+                messageContainer.className = ''; 
+            }
+        }
+        
+        // Função para ocultar a mensagem automaticamente (FAZER ELE DESAPARECER)
+        function autoHideMessage(container, delay = 3000, fadeDuration = 500) {
+            // Se a mensagem for de erro, não a esconde automaticamente, apenas se for sucesso.
+            if (!container || container.classList.contains('error')) return;
+
+            setTimeout(() => {
+                // Inicia o fade-out
+                container.style.transition = `opacity ${fadeDuration / 1000}s ease`;
+                container.style.opacity = "0";
+                
+                // Depois que o fade-out terminar, limpa a div para reutilização
+                setTimeout(() => {
+                    hideMessage(); // Chama a função hideMessage para limpar e resetar
+                }, fadeDuration);
+                
+            }, delay);
+        }
+
+        // --- Fim das Funções de Mensagem ---
+
+
+        // Função principal para alternar o modo de edição
+        function toggleEditMode(editing) {
+            isEditing = editing;
+
+            formInputs.forEach(input => {
+                const isCPF = input.name === 'cnpj' || input.name === 'cpf'; 
+                const isSenha = input.name === 'senha'; 
+
+                if (isCPF || isSenha) { 
+                    input.disabled = true;
+                    return;
+                }
+                input.disabled = !isEditing;
+            });
+            
+            // Aplica a classe ao formulário para estilização
+            if (isEditing) {
+                profileForm.classList.add('editing-mode');
+            } else {
+                profileForm.classList.remove('editing-mode');
+            }
+
+            // 4. Altera o texto e as cores dos botões
+            if (isEditing) {
+                buttonText.textContent = 'Cancelar Edição';
+                editButton.style.backgroundColor = cancelEditButtonColor;
+                saveButton.disabled = false;
+                saveButton.style.display = 'block';
+            } else {
+                buttonText.textContent = 'Editar Perfil';
+                editButton.style.backgroundColor = originalEditButtonColor;
+                saveButton.disabled = true;
+                saveButton.style.display = 'none';
+
+                // Restaura os valores originais
+                formInputs.forEach(input => {
+                    const isCPF = input.name === 'cnpj' || input.name === 'cpf';
+                    const isSenha = input.name === 'senha'; 
+                    if (!isCPF && !isSenha) {
+                        input.value = originalValues[input.name];
+                    }
+                });
+            }
+        }
+
+        // Inicializa o modo de visualização
+        toggleEditMode(false);
+
+        // 2. Adiciona o Event Listener no botão de Edição/Cancelamento (SEM CONFIRMAÇÃO)
+        editButton.addEventListener('click', function() {
+            
+            // Oculta qualquer mensagem anterior
+            hideMessage(); 
+            
+            if (isEditing) {
+                // Modo CANCELAR 
+                toggleEditMode(false); 
+            } else {
+                // Modo EDITAR
+                toggleEditMode(true);
+            }
+        });
+        
+        // 5. Lógica para SALVAR (Enviar os dados para o Flask)
+        profileForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); 
+            
+            // Oculta mensagens antigas
+            hideMessage(); 
+
+            const profileData = {};
+            let isChanged = false;
+
+            formInputs.forEach(input => {
+                const isCPF = input.name === 'cnpj' || input.name === 'cpf';
+                const isSenha = input.name === 'senha'; 
+
+                if (!isCPF && !isSenha && !input.disabled) {
+                    if (input.value !== originalValues[input.name]) {
+                        profileData[input.name] = input.value;
+                        isChanged = true;
+                    }
+                }
+            });
+            
+            // LÓGICA CORRIGIDA PARA "NENHUMA ALTERAÇÃO FEITA"
+            if (!isChanged) {
+                showMessage('Nenhuma alteração foi feita. Saindo do modo de edição.', 'error'); // Use 'error' ou 'warning'
+                // Aqui você pode adicionar um pequeno delay para a pessoa ler a mensagem antes de sair
+                setTimeout(() => {
+                    toggleEditMode(false);
+                    // Opcional: esconder a mensagem após sair do modo de edição
+                    setTimeout(hideMessage, 2000); 
+                }, 1000); 
+                return;
+            }
+
+            const url = '/conta/update'; 
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(profileData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    showMessage('Alterações feitas com sucesso!', 'success'); 
+                    
+                    autoHideMessage(messageContainer);
+
+                    toggleEditMode(false);
+                    
+                    // Atualizamos os 'valores originais' para os novos valores salvos
+                    Object.keys(profileData).forEach(key => {
+                        if(originalValues.hasOwnProperty(key)) {
+                             originalValues[key] = profileData[key];
+                        }
+                    });
+
+                } else {
+                    const errorData = await response.json();
+                    showMessage('❌ Erro ao salvar: ' + (errorData.message || 'Ocorreu um erro desconhecido.'), 'error');
+                }
+
+            } catch (error) {
+                console.error('Erro de rede:', error);
+                showMessage('❌ Não foi possível comunicar com o servidor. Verifique sua conexão.', 'error');
+            }
+        });
+    });
+    </script>
   </body>
 </html>
