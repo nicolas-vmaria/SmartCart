@@ -59,7 +59,7 @@
           <!-- AGORA É UM DIV, NÃO UM <li> -->
 
           <div class="dropdown-trigger">
-            <p>Olá, <b>{{ user.nome }}</b></p>
+            <p>Olá, <b>{{ user.primeiro_nome }}</b></p>
 
             <svg
               class="arrow-icon"
@@ -173,10 +173,9 @@
             });
           });
         </script>
-      </div>
+      </div>=
     </nav>
-    
-    
+
     <section class="main">
       {% if pedidos %}
       <h1>Meus Pedidos</h1>
@@ -186,7 +185,10 @@
         <div class="card">
           <div class="cardUp">
             <p><b>Estado do pedido:</b> {{ p.status }}</p>
-            <p><b>Total:</b> R$ {{ "%.2f"|format(p.preco_unitario * p.quantidade) }}</p>
+            <p>
+              <b>Total:</b> R$ {{ "%.2f"|format(p.preco_unitario * p.quantidade)
+              }}
+            </p>
             <p><b>Quantidade:</b> {{ p.quantidade }}</p>
             <p><b>Forma de pagamento:</b> {{p.forma_pagamento}}</p>
           </div>
@@ -203,8 +205,6 @@
       <b><p>Voce ainda nao possui nenhum pedido.</p></b>
 
       {% endif %}
-
     </section>
-    
   </body>
 </html>

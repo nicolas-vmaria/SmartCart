@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import mysql.connector
 import smtplib
 import email.message
@@ -57,10 +57,94 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
-@app.route("/conta")
+
+@app.route("/admin")
+def admin():
+    return render_template("adminPage.html")
+
+
+@app.route("/admin/users")
+def admin_users():
+    return render_template("usersAdmin.html")
+
+
+@app.route("/admin/produtos")
+def admin_produtos():
+    return render_template("produtosAdmin.html")
+
+
+@app.route("/admin/orcamentos")
+def admin_orcamentos():
+    return render_template("orcamentosAdmin.html")
+
+# ROTA 1: APENAS PARA CARREGAR A PÁGINA
+@app.route("/conta", methods=["GET"])
 @login_required
 def conta():
+    # O método GET apenas renderiza o template
     return render_template("conta.html", user=current_user)
+
+
+# ROTA 2: PARA RECEBER O FETCH DO JAVASCRIPT E EXECUTAR NO DB
+@app.route("/conta/update", methods=["PUT"])
+@login_required
+def conta_update():
+    
+    # Verifica se o que o JS enviou é um JSON
+    if not request.is_json:
+        return jsonify({"message": "Erro: Requisição deve ser JSON"}), 415
+
+    try:
+        data = request.get_json()
+        
+        # Lista de campos que o JS pode atualizar no DB
+        allowed_fields = {
+            "nome": "nome",
+            "telfone": "telefone", # O 'name' do HTML era 'telfone'
+            "email": "email"
+        }
+        
+        updates = {} # Dicionário para guardar o que vamos atualizar
+        
+        # 1. Filtra os dados recebidos (data)
+        for js_key, db_field in allowed_fields.items():
+            if js_key in data:
+                # Se a chave (ex: "nome") está no JSON, adiciona ao update
+                updates[db_field] = data[js_key]
+
+        if not updates:
+            # Se o JS não enviou nada (caso raro, pois o JS já verifica)
+            return jsonify({"message": "Nenhum dado para atualizar."}), 400
+
+        # 2. Monta a Query SQL Dinâmica
+        # Isso cria a parte "SET nome = %s, email = %s"
+        set_clause = ", ".join([f"{field} = %s" for field in updates.keys()])
+        
+        # Cria a lista de valores na ordem correta
+        values = list(updates.values())
+        values.append(current_user.id) # Adiciona o ID do usuário no final
+        
+        # Query final
+        query = f"UPDATE Usuario SET {set_clause} WHERE id = %s"
+        
+        # 3. AQUI ESTÁ A EXECUÇÃO NO DB
+        # Usando os mesmos 'cursor' e 'conexao' que você já usa
+        
+        print(f"Executando Query: {query}")
+        print(f"Com Valores: {tuple(values)}")
+        
+        cursor.execute(query, tuple(values))
+        conexao.commit()
+
+        # 4. Retorna sucesso para o JavaScript
+        return jsonify({"message": "Perfil atualizado com sucesso!"}), 200
+
+    except Exception as e:
+        # Se der erro no DB
+        conexao.rollback() # Desfaz qualquer mudança
+        print(f"Erro no DB: {e}")
+        return jsonify({"message": "Erro interno ao atualizar o banco de dados."}), 500
+
 
 @app.route("/sobre")
 def sobre():
@@ -70,8 +154,8 @@ def sobre():
 @app.route("/pedidos")
 @login_required
 def pedidos():
-
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT 
         p.*, 
         pr.nome AS produto_nome, 
@@ -83,29 +167,12 @@ def pedidos():
     JOIN Produtos pr ON p.id_produto = pr.id
     JOIN Orcamentos o ON p.id_orcamento = o.id
     WHERE p.id_usuario = %s
-    """, (current_user.id,))
+    """,
+        (current_user.id,),
+    )
     pedidos = cursor.fetchall()
 
-
     return render_template("pedidos.html", user=current_user, pedidos=pedidos)
-
-@app.route("/admin")
-def admin():
-    return render_template("adminPage.html")
-
-@app.route("/admin/users")
-def admin_users():
-    return render_template("usersAdmin.html")
-
-@app.route("/admin/produtos")
-def admin_produtos():
-    return render_template("produtosAdmin.html")
-
-@app.route("/admin/orcamentos")
-def admin_orcamentos():
-    return render_template("orcamentosAdmin.html")
-
-
 
 
 @app.route("/orcamento", methods=["GET", "POST"])
@@ -129,8 +196,20 @@ def orcamento():
         forma_pagamento = request.form["forma_pagamento"]
 
         cursor.execute(
-            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento),
+            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+                nome_empresa,
+                cnpj,
+                email,
+                endereco,
+                numero,
+                complemento,
+                cep,
+                produtos,
+                quantidades,
+                prazo_entrega,
+                forma_pagamento,
+            ),
         )
         conexao.commit()
 
@@ -145,7 +224,6 @@ def orcamento():
         )
         conexao.commit()
 
-        
         flash("Orçamento enviado com sucesso!", "sucesso")
         return redirect(url_for("index"))
 
@@ -197,7 +275,6 @@ def contato():
 def logout():
     logout_user()
     return redirect(url_for("index"))
-
 
 
 @app.route("/cadastro", methods=["GET", "POST"])
