@@ -17,7 +17,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3306", database="smartcart"
+    host="localhost", user="root", password="12345678", port="3306", database="smartCart"
 )
 cursor = conexao.cursor(dictionary=True)
 

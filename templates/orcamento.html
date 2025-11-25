@@ -189,6 +189,7 @@
           <input
             type="text"
             name="cnpj"
+            id="cnpj"
             placeholder="Ex.: 00.000.000/0000-00"
             class="cnpj"
             autocomplete="off"
@@ -205,113 +206,41 @@
           /><br />
           <label><b>Endereço:</b></label>
           <input
-            type="password"
-            name="senha"
-            placeholder="Ex.: 1234"
+            type="text"
+            name="endereco"
+            placeholder="Rua Exemplo, 123"
             class="senha"
             autocomplete="off"
             required
           /><br />
-
-          <div class="row">
-            <label><b>Número:</b></label>
-            <input
-              type="number"
-              name="numero"
-              placeholder="(47) 99999-9999"
-              class="numero"
-              autocomplete="off"
-              required
-<<<<<<< HEAD
-            /><br />
-            <h1>Produto</h1>
-            <select name="produtos">
-              <option value="">Escolha o produto</option>
-              {% for p in produtos%}
-              <option value="{{p.id}}">{{p.nome}}</option>
-              {% endfor %}
-            </select>
-            <br />
-            <div class="row">
-              <div class="column">
-                <label><b>Quantidade:</b></label>
-                <input
-                  type="text"
-                  id="quantidade"
-                  name="quantidades"
-                  placeholder="Ex.: 100"
-                  class="quantidade"
-                  autocomplete="off"
-                  required
-                />
-              </div>
-              <div class="column">
-                <label><b>Prazo de Entrega:</b></label>
-                <input
-                  type="date"
-                  name="prazo"
-                  placeholder="Ex.: 10/08/2070"
-                  class="prazo"
-                  autocomplete="off"
-                  required
-                />
-              </div>
-            </div>
-            <br />
-            <h1>Pagamento</h1>
-            <select name="forma_pagamento" id="forma_pagamento">
-              <option value="">Escolha a forma de pagamento</option>
-              <option value="Boleto">Boleto</option>
-              <option value="Cartão de Credito">Cartão de Crédito</option>
-              <option value="Pix">Pix</option></select
-            ><br />
-            <br />
-            <h1>Observações Gerais</h1>
-            <ul>
-              <li><a href="#">Garantias</a></li>
-              <li><a href="#">Políticas de cancelamento</a></li>
-              <li><a href="#">Responsabilidades</a></li>
-              <li><a href="#">Observações importantes para o cliente</a></li>
-            </ul>
-            <button type="submit"><b>Mandar Formulário</b></button>
-=======
-            />
-            <label><b>Complemento:</b></label>
-            <input
-              type="text"
-              name="complemento"
-              placeholder="Ex.: Casa, Apt 101"
-              class="complemento"
-              autocomplete="off"
-              required
-            />
->>>>>>> 6751b5f945ebe5f79034ddd860296d26f58862af
-          </div>
-          <br />
+          <label><b>Numero: </b></label>
+          <input type="number" name="numero" id="numero" placeholder="Ex.: 640">
+          <label><b>Complemento:</b></label>
+          <input type="text" name="complemento" id="complementos" placeholder="Ex.:  apto, 401">
           <label><b>CEP:</b></label>
           <input
-            type="number"
+            type="text"
             name="cep"
+            id="cep"
             placeholder="Ex.: 12345-678"
             class="cep"
             autocomplete="off"
             required
           /><br />
           <h1>Produto</h1>
-          <input
-            type="text"
-            name="produto"
-            placeholder="Escolha um Produto"
-            class="produto"
-            autocomplete="off"
-            required
-          /><br />
+          <select name="produtos" id="produtos">
+            <option value="" disabled selected>Escolha o produto</option>
+            {% for p in produtos %}
+            <option value="{{p.id}}">{{p.nome}}</option>
+            {% endfor %}
+          </select>
+          <br />
           <label><b>Quantidade:</b></label>
           <input
             type="number"
-            name="quantidade"
+            name="quantidades"
             placeholder="Ex.: 100"
-            class="quantidade"
+            class="quantidades"
             autocomplete="off"
             required
           />
@@ -325,31 +254,13 @@
             required
           /><br />
           <h1>Pagamento</h1>
-          <input
-            type="text"
-            name="formaPagamento"
-            placeholder="Forma de Pagamento"
-            class="formaPagamento"
-            autocomplete="off"
-            required
-          /><br />
-          <input
-            type="number"
-            name="quantidadeParcelas"
-            placeholder="Quantidade de Parcelas"
-            class="quantidadeParcelas"
-            autocomplete="off"
-            required
-          /><br />
-          <label><b>Entrada:</b></label>
-          <input
-            type="number"
-            name="entrada"
-            placeholder="Ex.: 5000"
-            class="entrada"
-            autocomplete="off"
-            required
-          /><br />
+          <select name="forma_pagamento" id="forma_pagamento">
+            <option value="" disabled selected>Escolha a forma de pagamento</option>
+            <option value="Pix">Pix</option>
+            <option value="Cartão De Crédito">Cartão De Crétido</option>
+            <option value="Boleto">Boleto</option>
+          </select>
+          <br />
           <h1>Observações Gerais</h1>
           <ul>
             <li><a href="#">Garantias</a></li>
@@ -358,13 +269,9 @@
             <li><a href="#">Observações importantes para o cliente</a></li>
           </ul>
           <button type="submit">Mandar formulário</button>
-          {% if request.args.get('erro') %}
-          <p style="color: red">{{ request.args.get('erro') }}</p>
-          {% endif %}
         </form>
       </div>
     </section>
-<<<<<<< HEAD
 
     <footer>
       <div class="container-foot">
@@ -1113,7 +1020,5 @@
         quantidade.value = n;
       });
     </script>
-=======
->>>>>>> 6751b5f945ebe5f79034ddd860296d26f58862af
   </body>
 </html>
