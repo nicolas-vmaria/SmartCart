@@ -180,6 +180,7 @@
         </script>
       </div>
     </nav>
+
     {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
     mensagens %} {% for categoria, msg in mensagens %}
     <p class="msg {{ categoria }}">{{ msg }}</p>

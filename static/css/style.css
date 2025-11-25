@@ -118,9 +118,9 @@ nav p {
   padding: 12px 16px;
   border-radius: 6px;
   font-weight: 500;
-  position: fixed;
+  left: 800px;
   top: 20px;
-  right: 20px;
+  position: fixed;
   z-index: 9999;
 }
 

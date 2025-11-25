@@ -57,21 +57,26 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
+
 @app.route("/admin")
 def admin():
     return render_template("adminPage.html")
+
 
 @app.route("/admin/users")
 def admin_users():
     return render_template("usersAdmin.html")
 
+
 @app.route("/admin/produtos")
 def admin_produtos():
     return render_template("produtosAdmin.html")
 
+
 @app.route("/admin/orcamentos")
 def admin_orcamentos():
     return render_template("orcamentosAdmin.html")
+
 
 @app.route("/conta", methods=["GET", "POST"])
 @login_required
@@ -108,7 +113,8 @@ def sobre():
 @app.route("/pedidos")
 @login_required
 def pedidos():
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT 
         p.*, 
         pr.nome AS produto_nome, 
@@ -120,9 +126,10 @@ def pedidos():
     JOIN Produtos pr ON p.id_produto = pr.id
     JOIN Orcamentos o ON p.id_orcamento = o.id
     WHERE p.id_usuario = %s
-    """, (current_user.id,))
+    """,
+        (current_user.id,),
+    )
     pedidos = cursor.fetchall()
-
 
     return render_template("pedidos.html", user=current_user, pedidos=pedidos)
 
