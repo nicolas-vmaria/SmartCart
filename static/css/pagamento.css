@@ -1,0 +1,54 @@
+* {
+    font-family: montserrat;
+  }
+  
+  body {
+    margin: 0;
+  
+  }
+  
+
+
+  .voltar img{
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    margin: 30px 30px;
+    cursor: pointer;
+  }
+
+  .container{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+  }
+  
+  .container-login {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    background: #ffffff;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+    width: 450px;
+    height: 500px;
+    padding: 3rem;
+    text-align: center;
+    display: flex;
+    
+    align-items: center;
+    flex-direction: column ;
+  }
+
+  .container-login h1 {
+    color: #4E4F3D;
+    font-size: 42px;
+  }
+
+  .qr-code {
+    background-color: #4E4F3D;
+    width: 250px;
+    height: 250px;
+  }

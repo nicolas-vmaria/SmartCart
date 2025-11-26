@@ -56,8 +56,6 @@
         {% if user.is_authenticated %}
 
         <div class="dropdown">
-          <!-- AGORA É UM DIV, NÃO UM <li> -->
-
           <div class="dropdown-trigger">
             <p>Olá, <b>{{ user.primeiro_nome }}</b></p>
 
@@ -180,7 +178,7 @@
       {% if pedidos %}
       <h1>Meus Pedidos</h1>
       {% for p in pedidos %}
-      <a href="#">Ir para o pagamento</a>
+      <a href="/pagamento">Ir para o pagamento</a>
       <div class="container">
         <div class="card">
           <div class="cardUp">

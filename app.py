@@ -78,6 +78,11 @@ def admin_orcamentos():
     return render_template("orcamentosAdmin.html")
 
 
+@app.route("/pagamento")
+def pagamento():
+    return render_template("pagamento.html", user=current_user)
+
+
 @app.route("/conta", methods=["GET", "POST"])
 @login_required
 def conta():
