@@ -26,7 +26,7 @@
 
         <form id="formCadastro" method="POST">
             <input type="text" id="nmCompleto" name="nome" placeholder="Nome Completo" required>
-            <input type="text" id="cpf" name="cpf" placeholder="CPF" required>
+            <input type="text" id="cnpj" name="cnpj" placeholder="CNPJ" required>
             <input type="tel" id="tel" name="tel" placeholder="Número de Telefone"  required>
             <input type="email" name="email" placeholder="Email" required id="email">
             <input type="password" name="senha" id="senha" placeholder="Senha" required>
@@ -44,7 +44,7 @@
                 <input type="submit" value="Cadastrar" id="cadastrar">
             </div>
             {% if request.args.get('erro') %}
-            <p style="color: red">{{ request.args.get('erro') }}</p>
+            <p style="color: red"><b>{{ request.args.get('erro') }}</b></p>
             {% endif %}
             <p>Já tem conta? <a href="/login">Entrar</a></p>
         </form>
@@ -78,25 +78,30 @@
           tel.value = v;
         });
 
-        let cpf = document.getElementById("cpf");
+        let cnpj = document.getElementById("cnpj");
 
-        cpf.addEventListener("input", () => {
-          let n = cpf.value.replace(/\D/g, "");
+        cnpj.addEventListener("input", () => {
+        let n = cnpj.value.replace(/\D/g, "");
 
-          n = n.substring(0, 11);
+        n = n.substring(0, 14);
 
-          if (n.length > 9){
-            n = n.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4")
-          }  else if( n.length > 6) {
-            n = n.replace(/(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3")
-          } else if (n.length > 3) {
-            n = n.replace(/(\d{3})(\d{0,3})/, "$1.$2")
-          } else {
-            n = n.replace(/(\d{0,3})/, "$1")
-          }
-         
-          cpf.value = n;
-        });
+        if (n.length > 12) {
+          n = n.replace(
+            /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
+            "$1.$2.$3/$4-$5"
+          );
+        } else if (n.length > 8) {
+          n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
+        } else if (n.length > 5) {
+          n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
+        } else if (n.length > 2) {
+          n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
+        } else {
+          n = n.replace(/(\d{0,2})/, "$1");
+        }
+
+        cnpj.value = n;
+      });
 
     </script>
 

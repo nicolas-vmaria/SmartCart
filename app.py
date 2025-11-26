@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import mysql.connector
 import smtplib
 import email.message
@@ -11,13 +11,18 @@ from flask_login import (
     current_user,
 )
 import hashlib
+import re
 
 app = Flask(__name__)
 app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3406", database="smartCart"
+    host="localhost",
+    user="root",
+    password="12345678",
+    port="3306",
+    database="smartCart",
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -35,10 +40,11 @@ def user_loader(id):
         return Usuario(
             usuario["id"],
             usuario["nome"],
-            usuario["cpf"],
+            usuario["cnpj"],
             usuario["telefone"],
             usuario["email"],
             usuario["senha"],
+            usuario["is_admin"],
         )
 
 
@@ -58,56 +64,144 @@ def index():
     return render_template("index.html", user=current_user)
 
 
-@app.route("/admin")
+@app.route("/excluir_pedido/<int:id>")
+@login_required
+def excluir_pedido(id):
+    cursor.execute(
+        "DELETE FROM Pedidos WHERE id = %s AND id_usuario = %s", (id, current_user.id)
+    )
+    conexao.commit()
+
+    flash("Pedido excluído com sucesso!", "sucesso")
+    return redirect(url_for("pedidos"))
+
+
+@app.route("/admin/")
+@login_required
 def admin():
+    if not current_user.is_admin:
+        flash("Acesso negado: Você não tem permissões de administrador.", "erro")
+        return redirect(url_for("index"))
+
     return render_template("adminPage.html")
 
 
 @app.route("/admin/users")
+@login_required
 def admin_users():
+    if not current_user.is_admin:
+        flash("Acesso negado: Você não tem permissões de administrador.", "erro")
+        return redirect(url_for("index"))
+
     return render_template("usersAdmin.html")
 
 
 @app.route("/admin/produtos")
+@login_required
 def admin_produtos():
+    if not current_user.is_admin:
+        flash("Acesso negado: Você não tem permissões de administrador.", "erro")
+        return redirect(url_for("index"))
+
     return render_template("produtosAdmin.html")
 
 
 @app.route("/admin/orcamentos")
+@login_required
 def admin_orcamentos():
+    if not current_user.is_admin:
+        flash("Acesso negado: Você não tem permissões de administrador.", "erro")
+        return redirect(url_for("index"))
+
     return render_template("orcamentosAdmin.html")
 
 
-@app.route("/pagamento")
-def pagamento():
-    return render_template("pagamento.html", user=current_user)
-
-
-@app.route("/conta", methods=["GET", "POST"])
+@app.route("/conta")
 @login_required
 def conta():
-    if request.method == "GET":
-        return render_template("conta.html", user=current_user)
-    elif request.method == "POST":
-        nome = request.form["nome"]
-        cpf = request.form["cpf"].replace(".", "").replace("-", "")
-        telefone = (
-            request.form["tel"]
-            .replace("(", "")
-            .replace(")", "")
-            .replace("-", "")
-            .replace(" ", "")
-        )
-        email = request.form["email"]
-        senha = request.form["senha"]
+    # Passa o usuário atual para o template
+    return render_template("conta.html", user=current_user)
 
-        cursor.execute(
-            "UPDATE Usuario SET nome = %s, cpf = %s, telefone = %s, email = %s, senha = %s WHERE id = %s",
-            (nome, cpf, telefone, email, hash(senha), current_user.id),
-        )
+
+@app.route("/conta/update", methods=["PUT"])
+@login_required
+def conta_update():
+
+    # Verifica se o que o JS enviou é um JSON
+    if not request.is_json:
+        return jsonify({"message": "Erro: Requisição deve ser JSON"}), 415
+
+    try:
+        data = request.get_json()
+
+        # Lista de campos que o JS pode atualizar no DB
+        allowed_fields = {
+            "nome": "nome",
+            "telfone": "telefone",  # O 'name' do HTML era 'telfone'
+            "email": "email",
+            "senha": "senha",
+        }
+
+        updates = {}  # Dicionário para guardar o que vamos atualizar
+
+        # 1. Filtra e LIMPA os dados recebidos (data)
+        for js_key, db_field in allowed_fields.items():
+            if js_key in data:
+                value = data[js_key]
+
+                # Limpeza do telefone (remove máscara)
+                if js_key == "telfone":
+                    # Remove todos os caracteres que não são dígitos (0-9)
+                    value = re.sub(r"\D", "", value)
+
+                if js_key == "senha":
+                    # REGRA DE SEGURANÇA: NUNCA SALVE SENHA SEM HASH
+                    value = hash(value)  # Hash da senha antes de salvar
+
+                updates[db_field] = (
+                    value  # Adiciona o valor (limpo ou hasheado) ao dicionário
+                )
+
+        if not updates:
+            # Se o JS não enviou nada (caso raro, pois o JS já verifica)
+            return jsonify({"message": "Nenhum dado para atualizar."}), 400
+
+        # 2. Monta a Query SQL Dinâmica
+        # Isso cria a parte "SET nome = %s, email = %s"
+        set_clause = ", ".join([f"{field} = %s" for field in updates.keys()])
+
+        # Cria a lista de valores na ordem correta
+        values = list(updates.values())
+        values.append(current_user.id)  # Adiciona o ID do usuário no final
+
+        # Query final
+        query = f"UPDATE Usuario SET {set_clause} WHERE id = %s"
+
+        # 3. AQUI ESTÁ A EXECUÇÃO NO DB
+
+        cursor.execute(query, tuple(values))
+
+        # 4. Atualiza o objeto current_user na sessão com os novos dados
+        if "telefone" in updates:
+            current_user.telefone = updates["telefone"]
+        if "nome" in updates:
+            current_user.nome = updates["nome"]
+        if "email" in updates:
+            current_user.email = updates["email"]
+        if "senha" in updates:
+            # AQUI: Se a senha foi atualizada, use o valor JÁ HASHADO de 'updates["senha"]'
+            current_user.senha = updates["senha"]
+
         conexao.commit()
 
-        return render_template("conta.html", user=current_user)
+        # 5. Retorna sucesso para o JavaScript
+        return jsonify({"message": "Perfil atualizado com sucesso!"}), 200
+
+    except Exception as e:
+        # Se der erro no DB
+        print(f"Erro na atualização de conta: {e}")  # Bom para debug
+        conexao.rollback()  # Desfaz qualquer mudança no DB
+        return jsonify({"message": "Erro interno ao atualizar o banco de dados."}), 500
 
 
 @app.route("/sobre")
@@ -120,18 +214,18 @@ def sobre():
 def pedidos():
     cursor.execute(
         """
-        SELECT 
-        p.*, 
-        pr.nome AS produto_nome, 
-        pr.id_imagem AS produto_imagem,
-        pr.preco AS preco_unitario,
-        (p.preco_unitario * p.quantidade) AS total_item,
-        o.forma_pagamento
-    FROM Pedidos p
-    JOIN Produtos pr ON p.id_produto = pr.id
-    JOIN Orcamentos o ON p.id_orcamento = o.id
-    WHERE p.id_usuario = %s
-    """,
+            SELECT 
+            p.*, 
+            pr.nome AS produto_nome, 
+            pr.id_imagem AS produto_imagem,
+            pr.preco AS preco_unitario,
+            (p.preco_unitario * p.quantidade) AS total_item,
+            o.forma_pagamento
+        FROM Pedidos p
+        JOIN Produtos pr ON p.id_produto = pr.id
+        JOIN Orcamentos o ON p.id_orcamento = o.id
+        WHERE p.id_usuario = %s
+        """,
         (current_user.id,),
     )
     pedidos = cursor.fetchall()
@@ -247,7 +341,7 @@ def cadastro():
         return render_template("cadastro.html")
     elif request.method == "POST":
         nome = request.form["nome"]
-        cpf = request.form["cpf"].replace(".", "").replace("-", "")
+        cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
         telefone = (
             request.form["tel"]
             .replace("(", "")
@@ -259,8 +353,8 @@ def cadastro():
         senha = request.form["senha"]
 
         cursor.execute(
-            "SELECT * FROM Usuario WHERE cpf = %s OR email = %s",
-            (cpf, email),
+            "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
+            (cnpj, email),
         )
         usuario_existente = cursor.fetchone()
 
@@ -269,11 +363,11 @@ def cadastro():
             return redirect(f"/cadastro?erro={erro}")
 
         cursor.execute(
-            "INSERT INTO Usuario (nome, cpf, telefone, email, senha) VALUES (%s, %s, %s, %s, %s)",
-            (nome, cpf, telefone, email, hash(senha)),
+            "INSERT INTO Usuario (nome, cnpj, telefone, email, senha) VALUES (%s, %s, %s, %s, %s)",
+            (nome, cnpj, telefone, email, hash(senha)),
         )
         conexao.commit()
-        new_user = Usuario(cursor.lastrowid, nome, cpf, telefone, email, hash(senha))
+        new_user = Usuario(cursor.lastrowid, nome, cnpj, telefone, email, hash(senha))
         login_user(new_user)
 
         return redirect(url_for("index"))
@@ -284,11 +378,11 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
     elif request.method == "POST":
-        cpf = request.form["cpf"].replace("-", "").replace(".", "")
+        cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
         senha = request.form["senha"]
 
         cursor.execute(
-            "SELECT * FROM Usuario WHERE cpf = %s AND senha = %s", (cpf, hash(senha))
+            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, hash(senha))
         )
         usuario = cursor.fetchone()
 
@@ -296,12 +390,17 @@ def login():
             user = Usuario(
                 usuario["id"],
                 usuario["nome"],
-                usuario["cpf"],
+                usuario["cnpj"],
                 usuario["telefone"],
                 usuario["email"],
                 usuario["senha"],
+                usuario["is_admin"],
             )
             login_user(user)
+
+            if user.is_admin:
+                return redirect(url_for("admin"))
+
             return redirect(url_for("index"))
         else:
             erro = "CPF ou senha incorretos"

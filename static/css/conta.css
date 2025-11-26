@@ -126,13 +126,15 @@
   }
   
   .card {
-    background-color: rgb(224, 224, 224);
+    background-color: rgb(255, 255, 255);
     border-radius: 20px;
     color: #4e4f3d;
     width: 1100px;
     display: flex;
     flex-direction: column;
     padding: 40px 0;
+    box-shadow: 0px 4px 12px #4e4f3d;
+    border: #c4c4c4 solid 1px;
   }
   
   .card h1 {
@@ -146,6 +148,15 @@
   }
   
   input {
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid black;
+    font-size: 16px;
+    padding-left: 20px;
+  }
+
+  input:disabled{
+    background-color: rgb(231, 231, 231);
     margin: 10px 0;
     border-radius: 10px;
     border: none;
@@ -174,6 +185,22 @@
     width: 450px;
 
   }
+button {
+  width: 400px;
+  height: 60px;
+  border-radius: 30px;
+  border: none;
+  background-color: #a0b179;
+  color: #4e4f3d;
+  font-size: 25px;
+  align-self: center;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+#editButton {
+  background-color: #8b9a5c;
+}
 
   
   form button {
@@ -192,3 +219,45 @@
   form button:hover {
     background-color: #8b9a5c;
   }
+
+  #top-message-container.success {
+    /* --- Estilos base --- */
+    background-color: #d4f8d4;
+    color: #1f7a1f;
+    border: 1px solid #7bd67b;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    
+    /* --- Novas propriedades para centralização no fluxo normal --- */
+    /* Removeu: position, top, right, z-index */
+    
+    /* 1. Define uma largura máxima para a caixa */
+    max-width: 600px; 
+    
+    /* 2. Centraliza a caixa na horizontal (necessita de largura definida) */
+    margin: 20px auto; /* 20px de margem em cima/baixo, 'auto' nas laterais para centralizar */
+    
+    /* 3. Garante que o texto dentro da caixa esteja centralizado (opcional) */
+    text-align: center;
+}
+
+#top-message-container.error {
+    /* --- Estilos base (Amarelo) --- */
+    background-color: #fff3cd; /* Amarelo claro/creme */
+    color: #856404; /* Amarelo escuro/marrom para o texto */
+    border: 1px solid #ffeeba; /* Borda em tom de amarelo */
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    
+    /* --- Propriedades de centralização --- */
+    /* 1. Define uma largura máxima para a caixa */
+    max-width: 600px; 
+    
+    /* 2. Centraliza a caixa na horizontal */
+    margin: 20px auto; 
+    
+    /* 3. Garante que o texto dentro da caixa esteja centralizado (opcional) */
+    text-align: center;
+}

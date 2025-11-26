@@ -4,7 +4,7 @@ USE smartCart;
 CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    cpf varchar(11),
+    cnpj varchar(14) NOT NULL,
     telefone varchar (11),
     email VARCHAR(100) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL
@@ -65,7 +65,9 @@ insert into Produtos (nome, preco, estoque, id_imagem) values
 ("gôndola de supermercado", 400.00, 3, "img5");
 
 
-ALTER TABLE Usuario ADD COLUMN admin BOOLEAN DEFAULT FALSE;
+ALTER TABLE Usuario ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
 
-select * from Pedidos;
+insert into Usuario (nome, cnpj, telefone, email, senha, is_admin)
+values ("Caio", "12345678909876", "47992451974", "boing@gmail.com", 2409, true);
+
 
