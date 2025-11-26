@@ -150,20 +150,22 @@ a{
 #info-main-screen{
     
     height: 90%;
-    
+    color: #a0b179;
     font-family: montserrat;
-    color: #7a7a7a;
+    
     padding: 20px;
 }
 
-#info-main-screen user{
-    
+#info-main-screen span{
+    color: #7a7a7a;
+    font-size: 15pt;
+    font-weight: normal;
 }
 
-#info-main-screen span{
+#info-main-screen h1{
     font-size: 20pt;
-    color: #a0b179;
-    font-weight: normal;
+    
+    font-weight: bold;
 }
 
 .aba-content{
@@ -189,7 +191,7 @@ a{
 th{
     background-color: #a0b179;
     color: white;
-    width: 225px;
+    width: 195px;
     height: 40px;
     text-align: left;
     padding-left: 30px;
@@ -198,6 +200,8 @@ th{
 table{
     border-collapse: collapse;
     border: 1px solid #b7b7b7;
+    border-radius: 15px;
+    overflow: hidden; /* importante para o arredondamento aparecer */
 
     
 }
@@ -208,7 +212,7 @@ td{
 }
 
 table tr:nth-child(odd) {
-  background-color: #f1f6e7;
+  background-color: #f6f6f6;
 }
 
 table tr:nth-child(even) {
@@ -218,12 +222,18 @@ table tr:nth-child(even) {
 td button{
     border: none;
     background-color: #e9020200;
+    transition: all 0.3s ease
 }
 
 td button:hover{
-    background-color: #dee3d1;
+    transform: scale(0.90);
+    
     border-radius: 10px;
     cursor: pointer;
+}
+
+td button:active{
+    transform: rotate(360);
 }
 
 .action-table{
@@ -240,12 +250,71 @@ td button:hover{
     border-radius: 15px;
     border: 1px solid black;
     padding: 10px;
+    padding-left: 50px;
+    font-family: montserrat;
+}
+
+.action-table input::placeholder{
+    color: #7a7a7a  ;
+}
+
+.action-table input:focus{
+    outline: 3px solid #a0b179;
+    border: none;
 }
 
 .action-table button{
     height: 50px;
     width: 200px;
     border-radius: 20px;
-    
-    
+    border: none;
+    background-color: #a0b179;
+    color: white;
+    font-family: montserrat;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.action-table button div{
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.action-table button:hover{
+    transform: scale(0.95);
+    cursor: pointer;
+}
+
+.action-table button:active{
+    background-color: #c7d8a1;
+    transform: scale(1);
+}
+
+.action-buttons-group{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#button-filter{
+    background-color: rgb(243, 243, 243);
+    border: 1px solid black;
+    color: black;
+}
+
+#button-filter div{
+    display: flex;
+    gap: 5px;
+}
+
+.input-action-table{
+    position: relative;
+    display: inline-block;
+}
+
+.input-action-table i{
+    position: absolute;
+    top: 31%;
+    left: 16px;
 }

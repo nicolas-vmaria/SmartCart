@@ -18,11 +18,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="12345678",
-    port="3306",
-    database="smartCart",
+    host="localhost", user="root", password="", port="3406", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -51,9 +47,7 @@ def user_loader(id):
 @lm.unauthorized_handler
 def unauthorized():
     if request.endpoint == "orcamento":
-        flash(
-            "Entre na sua conta ou cadastre-se, para fazer orçamentos conosco!", "erro"
-        )
+        flash("Entre na sua conta ou cadastre-se, para fazer orçamentos conosco!", "erro")
     elif request.endpoint == "contato":
         flash("Entre na sua conta ou cadastre-se, para fazer contato conosco!", "erro")
     return redirect(url_for("login"))
@@ -63,18 +57,14 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
-
 @app.route("/excluir_pedido/<int:id>")
 @login_required
 def excluir_pedido(id):
-    cursor.execute(
-        "DELETE FROM Pedidos WHERE id = %s AND id_usuario = %s", (id, current_user.id)
-    )
+    cursor.execute("DELETE FROM Pedidos WHERE id = %s AND id_usuario = %s", (id, current_user.id))
     conexao.commit()
 
     flash("Pedido excluído com sucesso!", "sucesso")
     return redirect(url_for("pedidos"))
-
 
 @app.route("/admin/")
 @login_required
@@ -82,7 +72,7 @@ def admin():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
-
+    
     return render_template("adminPage.html")
 
 
@@ -92,7 +82,7 @@ def admin_users():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
-
+    
     return render_template("usersAdmin.html")
 
 
@@ -112,9 +102,8 @@ def admin_orcamentos():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
-
+    
     return render_template("orcamentosAdmin.html")
-
 
 @app.route("/conta")
 @login_required
@@ -126,41 +115,39 @@ def conta():
 @app.route("/conta/update", methods=["PUT"])
 @login_required
 def conta_update():
-
+    
     # Verifica se o que o JS enviou é um JSON
     if not request.is_json:
         return jsonify({"message": "Erro: Requisição deve ser JSON"}), 415
 
     try:
         data = request.get_json()
-
+        
         # Lista de campos que o JS pode atualizar no DB
         allowed_fields = {
             "nome": "nome",
-            "telfone": "telefone",  # O 'name' do HTML era 'telfone'
+            "telfone": "telefone", # O 'name' do HTML era 'telfone'
             "email": "email",
-            "senha": "senha",
+            "senha": "senha"
         }
-
-        updates = {}  # Dicionário para guardar o que vamos atualizar
-
+        
+        updates = {} # Dicionário para guardar o que vamos atualizar
+        
         # 1. Filtra e LIMPA os dados recebidos (data)
         for js_key, db_field in allowed_fields.items():
             if js_key in data:
                 value = data[js_key]
-
+                
                 # Limpeza do telefone (remove máscara)
                 if js_key == "telfone":
                     # Remove todos os caracteres que não são dígitos (0-9)
-                    value = re.sub(r"\D", "", value)
+                    value = re.sub(r'\D', '', value) 
 
                 if js_key == "senha":
                     # REGRA DE SEGURANÇA: NUNCA SALVE SENHA SEM HASH
-                    value = hash(value)  # Hash da senha antes de salvar
-
-                updates[db_field] = (
-                    value  # Adiciona o valor (limpo ou hasheado) ao dicionário
-                )
+                    value = hash(value) # Hash da senha antes de salvar
+                
+                updates[db_field] = value # Adiciona o valor (limpo ou hasheado) ao dicionário
 
         if not updates:
             # Se o JS não enviou nada (caso raro, pois o JS já verifica)
@@ -169,18 +156,18 @@ def conta_update():
         # 2. Monta a Query SQL Dinâmica
         # Isso cria a parte "SET nome = %s, email = %s"
         set_clause = ", ".join([f"{field} = %s" for field in updates.keys()])
-
+        
         # Cria a lista de valores na ordem correta
         values = list(updates.values())
-        values.append(current_user.id)  # Adiciona o ID do usuário no final
-
+        values.append(current_user.id) # Adiciona o ID do usuário no final
+        
         # Query final
         query = f"UPDATE Usuario SET {set_clause} WHERE id = %s"
-
+        
         # 3. AQUI ESTÁ A EXECUÇÃO NO DB
-
+        
         cursor.execute(query, tuple(values))
-
+        
         # 4. Atualiza o objeto current_user na sessão com os novos dados
         if "telefone" in updates:
             current_user.telefone = updates["telefone"]
@@ -190,7 +177,7 @@ def conta_update():
             current_user.email = updates["email"]
         if "senha" in updates:
             # AQUI: Se a senha foi atualizada, use o valor JÁ HASHADO de 'updates["senha"]'
-            current_user.senha = updates["senha"]
+            current_user.senha = updates["senha"] 
 
         conexao.commit()
 
@@ -199,8 +186,8 @@ def conta_update():
 
     except Exception as e:
         # Se der erro no DB
-        print(f"Erro na atualização de conta: {e}")  # Bom para debug
-        conexao.rollback()  # Desfaz qualquer mudança no DB
+        print(f"Erro na atualização de conta: {e}") # Bom para debug
+        conexao.rollback() # Desfaz qualquer mudança no DB
         return jsonify({"message": "Erro interno ao atualizar o banco de dados."}), 500
 
 
@@ -212,8 +199,8 @@ def sobre():
 @app.route("/pedidos")
 @login_required
 def pedidos():
-    cursor.execute(
-        """
+        cursor.execute(
+            """
             SELECT 
             p.*, 
             pr.nome AS produto_nome, 
@@ -226,11 +213,11 @@ def pedidos():
         JOIN Orcamentos o ON p.id_orcamento = o.id
         WHERE p.id_usuario = %s
         """,
-        (current_user.id,),
-    )
-    pedidos = cursor.fetchall()
+            (current_user.id,),
+        )
+        pedidos = cursor.fetchall()
 
-    return render_template("pedidos.html", user=current_user, pedidos=pedidos)
+        return render_template("pedidos.html", user=current_user, pedidos=pedidos)
 
 
 @app.route("/orcamento", methods=["GET", "POST"])
@@ -382,7 +369,7 @@ def login():
         senha = request.form["senha"]
 
         cursor.execute(
-            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, hash(senha))
+            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, senha)
         )
         usuario = cursor.fetchone()
 
