@@ -172,134 +172,143 @@
     <section class="section-home">
       <h1>Orçamento</h1>
     </section>
+
+    <!-- Seção Card -->
     <section class="section-card">
       <div class="card">
-        <div class="column">
-          <h1>Empresa</h1>
-          <form method="POST">
-            <label><b>Nome da Empresa:</b></label>
+        <form method="POST">
+          <!-- Bloco Empresa -->
+          <h1 class="form-section-title">Dados da Empresa</h1>
+
+          <div class="form-group">
+            <label for="nomeEmpresa">Nome da Empresa:</label>
             <input
               type="text"
               id="nomeEmpresa"
               name="nomeEmpresa"
-              placeholder="Ex.: Empresa XYZ"
-              class="nomeEmpresa"
+              placeholder="Ex.: Empresa XYZ Ltda"
               required
-            /><br />
-            <label><b>CNPJ:</b></label>
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="cnpj">CNPJ:</label>
             <input
               type="text"
-              name="cnpj"
               id="cnpj"
+              name="cnpj"
               placeholder="Ex.: 00.000.000/0000-00"
-              class="cnpj"
               autocomplete="off"
               required
-            /><br />
-            <label><b>Email de Contato:</b></label>
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email de Contato:</label>
             <input
               type="email"
+              id="email"
               name="email"
-              placeholder="exemplo@gmail.com"
-              class="email"
+              placeholder="exemplo@empresa.com"
               autocomplete="off"
               required
-            /><br />
-            <label><b>Endereço:</b></label>
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="endereco">Endereço:</label>
             <input
               type="text"
+              id="endereco"
               name="endereco"
-              placeholder="Rua Exemplo, 123"
-              class="senha"
+              placeholder="Rua Exemplo, Bairro Centro"
               autocomplete="off"
               required
-            /><br />
-            <div class="row">
-              <div class="column">
-                <label><b>Numero: </b></label>
-                <input
-                  type="number"
-                  name="numero"
-                  id="numero"
-                 
-                  placeholder="Ex.: 640"
-                />
-              </div>
-              <br />
-              <div class="column">
-                <label><b>Complemento:</b></label>
-                <input
-                  type="text"
-                  name="complemento"
-                  id="complementos"
-                  placeholder="Ex.:  apto, 401"
-                />
-                <br />
-              </div>
+            />
+          </div>
+
+          <!-- Linha Dupla: Número e Complemento -->
+          <div class="form-row">
+            <div class="form-col col-numero">
+              <label for="numero">Número:</label>
+              <input
+                type="number"
+                id="numero"
+                name="numero"
+                placeholder="123"
+              />
             </div>
-            <label><b>CEP:</b></label>
+            <div class="form-col col-comp">
+              <label for="complemento">Complemento:</label>
+              <input
+                type="text"
+                id="complemento"
+                name="complemento"
+                placeholder="Ex.: Apto 401, Bloco B"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cep">CEP:</label>
             <input
               type="text"
-              name="cep"
               id="cep"
+              name="cep"
               placeholder="Ex.: 12345-678"
               class="cep"
-              autocomplete="off"
               required
-            /><br />
-            <h1>Produto</h1>
-            <select name="produtos" id="produtos">
-              <option value="" disabled selected>Escolha o produto</option>
-              {% for p in produtos %}
-              <option value="{{p.id}}">{{p.nome}}</option>
-              {% endfor %}
-            </select>
-            <br />
-            <div class="row">
-              <div class="column">
-                <label><b>Quantidade:</b></label>
-                <input
-                  type="text"
-                  name="quantidades"
-                  id="quantidade"
-                  placeholder="Ex.: 100"
-                  class="quantidades"
-                  autocomplete="off"
-                  required
-                />
-              </div>
-              <div class="column">
-                <label><b>Prazo de Entrega:</b></label>
-                <input
-                  type="date"
-                  name="prazo"
-                  placeholder="Ex.: 10/08/2070"
-                  class="prazo"
-                  autocomplete="off"
-                  required
-                /><br />
-              </div>
-            </div>
-            <h1>Pagamento</h1>
-            <select name="forma_pagamento" id="forma_pagamento">
+            />
+          </div>
+
+          <!-- Bloco Produto -->
+          <h1 class="form-section-title sec-produto">Detalhes do Pedido</h1>
+
+          <div class="form-group">
+            <label for="produtos">Selecione o Produto:</label>
+            <select name="produtos" id="produtos" required>
               <option value="" disabled selected>
-                Escolha a forma de pagamento
+                Escolha o produto desejado
               </option>
-              <option value="Pix">Pix</option>
-              <option value="Cartão De Crédito">Cartão De Crétido</option>
-              <option value="Boleto">Boleto</option>
+              <!-- Exemplo de como ficaria com o Jinja (comentado para preview funcionar) -->
+              <!-- {% for p in produtos %} -->
+              <option value="1">Consultoria de Marketing</option>
+              <option value="2">Desenvolvimento Web</option>
+              <option value="3">Design Gráfico</option>
+              <!-- {% endfor %} -->
             </select>
-            <br />
-            <h1>Observações Gerais</h1>
-            <ul>
-              <li><a href="#">Garantias</a></li>
-              <li><a href="#">Políticas de cancelamento</a></li>
-              <li><a href="#">Responsabilidades</a></li>
-              <li><a href="#">Observações importantes para o cliente</a></li>
-            </ul>
-            <button type="submit">Mandar formulário</button>
-          </form>
-        </div>
+          </div>
+
+          <!-- Linha Dupla: Quantidade e Prazo -->
+          <div class="form-row">
+            <div class="form-col">
+              <label for="quantidade">Quantidade:</label>
+              <input
+                type="number"
+                id="quantidade"
+                name="quantidades"
+                placeholder="Ex.: 100"
+                required
+              />
+            </div>
+            <div class="form-col">
+              <label for="prazo">Prazo de Entrega:</label>
+              <input type="date" id="prazo" name="prazo" required />
+            </div>
+          </div>
+
+          <!-- Bloco Observações/Links -->
+          <h1 class="form-section-title sec-produto">Informações Gerais</h1>
+
+          <ul class="obs-list">
+            <li><a href="#">Termos de Garantia</a></li>
+            <li><a href="#">Políticas de Cancelamento</a></li>
+            <li><a href="#">Termos de Responsabilidade</a></li>
+            <li><a href="#">Avisos Importantes</a></li>
+          </ul>
+
+          <button type="submit">Enviar Orçamento</button>
+        </form>
       </div>
     </section>
 
@@ -953,18 +962,6 @@
     </footer>
 
     <script>
-      document
-        .getElementById("forma_pagamento")
-        .addEventListener("change", function () {
-          let parcelas = document.getElementById("parcelas");
-
-          if (this.value === "Cartão de Credito") {
-            parcelas.style.display = "block";
-          } else {
-            parcelas.style.display = "none";
-          }
-        });
-
       let cep = document.getElementById("cep");
 
       cep.addEventListener("input", () => {
@@ -1005,28 +1002,6 @@
 
         cnpj.value = n;
       });
-
-      // let entrada = document.getElementById("entrada");
-
-      // entrada.addEventListener("input", () => {
-      //   let n = entrada.value.replace(/\D/g, "");
-
-      //   n = n.substring(0, 12);
-
-      //   if (n.length > 9) {
-      //     n = n.replace(/(\d{1,3})(\d{3})(\d{3})(\d{3})/, "R$ $1.$2.$3.$4");
-      //   } else if (n.length > 6) {
-      //     n = n.replace(/(\d{1,3})(\d{3})(\d{3})/, "R$ $1.$2.$3");
-      //   } else if (n.length > 3) {
-      //     n = n.replace(/(\d{1,3})(\d{3})/, "R$ $1.$2");
-      //   } else if (n.length > 0) {
-      //     n = "R$ " + n;
-      //   } else {
-      //     n = "";
-      //   }
-
-      //   entrada.value = n;
-      // });
 
       let quantidade = document.getElementById("quantidade");
 

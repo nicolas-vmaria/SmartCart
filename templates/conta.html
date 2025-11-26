@@ -158,26 +158,9 @@
         {% else %}
         <a href="/login">Entrar</a>
         {% endif %}
-
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            const dropdown = document.querySelector(".dropdown");
-            const trigger = document.querySelector(".dropdown-trigger");
-
-            trigger.addEventListener("click", (e) => {
-              e.stopPropagation();
-              dropdown.classList.toggle("open");
-            });
-
-            // Fechar ao clicar fora
-            document.addEventListener("click", () => {
-              dropdown.classList.remove("open");
-            });
-          });
-        </script>
       </div>
     </nav>
-    
+
     <section class="section-card">
       <div id="top-message-container"></div>
       <h1>Minha conta</h1>
@@ -207,7 +190,6 @@
                   autocomplete="off"
                   required
                   disabled
-                  
                 />
               </div>
               <div class="column">
@@ -246,10 +228,10 @@
               autocomplete="off"
               disabled
             /><br />
-            
 
-            <button type="submit" id="saveButton" disabled>Salvar Alterações</button>
-            
+            <button type="submit" id="saveButton" disabled>
+              Salvar Alterações
+            </button>
           </div>
         </form>
 
@@ -258,322 +240,346 @@
         </button>
       </div>
     </section>
-   
-<script>
-    // --- Funções de Máscara Refatoradas para Reuso ---
 
-    function applyCnpjMask(input) {
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const dropdown = document.querySelector(".dropdown");
+        const trigger = document.querySelector(".dropdown-trigger");
+
+        trigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dropdown.classList.toggle("open");
+        });
+
+        document.addEventListener("click", () => {
+          dropdown.classList.remove("open");
+        });
+      });
+
+      function applyCnpjMask(input) {
         let n = input.value.replace(/\D/g, "");
 
         n = n.substring(0, 14);
 
         if (n.length > 12) {
-            n = n.replace(
-                /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
-                "$1.$2.$3/$4-$5"
-            );
+          n = n.replace(
+            /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
+            "$1.$2.$3/$4-$5"
+          );
         } else if (n.length > 8) {
-            n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
+          n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
         } else if (n.length > 5) {
-            n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
+          n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
         } else if (n.length > 2) {
-            n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
+          n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
         } else {
-            n = n.replace(/(\d{0,2})/, "$1");
+          n = n.replace(/(\d{0,2})/, "$1");
         }
 
         input.value = n;
-    }
+      }
 
-    function applyTelMask(input) {
+      function applyTelMask(input) {
         let v = input.value.replace(/\D/g, "");
 
         v = v.substring(0, 11);
 
-        if (v.length > 6 && v.length <= 10){
-            v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2$3")
-        }  else if( v.length === 11) {
-            v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
+        if (v.length > 6 && v.length <= 10) {
+          v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2$3");
+        } else if (v.length === 11) {
+          v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
         } else if (v.length > 2) {
-            v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2")
+          v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2");
         } else if (v.length === 2) {
-            v = `( ${v}`;
+          v = `( ${v}`;
         } else {
-            v = v
+          v = v;
         }
 
         input.value = v;
-    }
+      }
 
-    // --- Seleção dos elementos de input ---
-    let cnpj = document.getElementById("cnpj");
-    let tel = document.getElementById("tel");
+      // --- Seleção dos elementos de input ---
+      let cnpj = document.getElementById("cnpj");
+      let tel = document.getElementById("tel");
 
-    // -----------------------------------------------------------
-    // APLICAÇÃO DA MÁSCARA AO CARREGAR A PÁGINA (SOLUÇÃO)
-    // As funções são chamadas imediatamente para formatar os valores iniciais.
-    // -----------------------------------------------------------
-    if (cnpj && cnpj.value) {
+      // -----------------------------------------------------------
+      // APLICAÇÃO DA MÁSCARA AO CARREGAR A PÁGINA (SOLUÇÃO)
+      // As funções são chamadas imediatamente para formatar os valores iniciais.
+      // -----------------------------------------------------------
+      if (cnpj && cnpj.value) {
         applyCnpjMask(cnpj);
-    }
-    if (tel && tel.value) {
+      }
+      if (tel && tel.value) {
         applyTelMask(tel);
-    }
+      }
 
-    // --- Listeners para aplicar a máscara no input do usuário ---
-    cnpj.addEventListener("input", () => {
+      // --- Listeners para aplicar a máscara no input do usuário ---
+      cnpj.addEventListener("input", () => {
         applyCnpjMask(cnpj);
-    });
+      });
 
-    tel.addEventListener("input", () => {
+      tel.addEventListener("input", () => {
         applyTelMask(tel);
-    });
+      });
 
-    // --- Lógica do Dropdown (Mantenha este bloco) ---
-    document.addEventListener("DOMContentLoaded", () => {
+      // --- Lógica do Dropdown (Mantenha este bloco) ---
+      document.addEventListener("DOMContentLoaded", () => {
         const dropdown = document.querySelector(".dropdown");
         const trigger = document.querySelector(".dropdown-trigger");
 
         if (trigger) {
-            trigger.addEventListener("click", (e) => {
-                e.stopPropagation();
-                dropdown.classList.toggle("open");
-            });
+          trigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle("open");
+          });
 
-            // Fechar ao clicar fora
-            document.addEventListener("click", () => {
-                if (dropdown && dropdown.classList.contains("open")) {
-                    dropdown.classList.remove("open");
-                }
-            });
+          // Fechar ao clicar fora
+          document.addEventListener("click", () => {
+            if (dropdown && dropdown.classList.contains("open")) {
+              dropdown.classList.remove("open");
+            }
+          });
         }
-    });
+      });
 
-    // -------------------------------------------------------------
-    // --- LÓGICA DE EDIÇÃO DE PERFIL E ENVIO DE DADOS (FETCH) ---
-    // -------------------------------------------------------------
+      // -------------------------------------------------------------
+      // --- LÓGICA DE EDIÇÃO DE PERFIL E ENVIO DE DADOS (FETCH) ---
+      // -------------------------------------------------------------
 
-    document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         // 1. Seleciona os elementos principais
-        const profileForm = document.getElementById('profileForm');
-        const editButton = document.getElementById('editButton');
-        const saveButton = document.getElementById('saveButton');
-        const buttonText = document.getElementById('buttonText');
+        const profileForm = document.getElementById("profileForm");
+        const editButton = document.getElementById("editButton");
+        const saveButton = document.getElementById("saveButton");
+        const buttonText = document.getElementById("buttonText");
 
         // CORREÇÃO AQUI: USANDO O ID CORRETO 'top-message-container'
-        const messageContainer = document.getElementById('top-message-container');
+        const messageContainer = document.getElementById(
+          "top-message-container"
+        );
 
-        const formInputs = document.querySelectorAll('#profileForm input');
+        const formInputs = document.querySelectorAll("#profileForm input");
         let isEditing = false;
 
         // Cores dos botões (Ajuste a cor original se for diferente)
-        const originalEditButtonColor = '#8b9a5c';
-        const cancelEditButtonColor = '#dc3545';
+        const originalEditButtonColor = "#8b9a5c";
+        const cancelEditButtonColor = "#dc3545";
 
         const originalValues = {};
-        formInputs.forEach(input => {
-            originalValues[input.name] = input.value;
+        formInputs.forEach((input) => {
+          originalValues[input.name] = input.value;
         });
 
         // --- Funções de Mensagem ---
 
-        function showMessage(message, type = 'error') {
-            if (messageContainer) { // Só executa se o container existir
-                // Garante que o container esteja visível antes de aplicar a opacidade
-                messageContainer.style.opacity = "1";
-                messageContainer.style.transition = "none";
+        function showMessage(message, type = "error") {
+          if (messageContainer) {
+            // Só executa se o container existir
+            // Garante que o container esteja visível antes de aplicar a opacidade
+            messageContainer.style.opacity = "1";
+            messageContainer.style.transition = "none";
 
-                messageContainer.textContent = message;
-                messageContainer.className = type;
-            }
+            messageContainer.textContent = message;
+            messageContainer.className = type;
+          }
         }
 
         function hideMessage() {
-            if (messageContainer) {
-                // Ao esconder, já reseta a opacidade e transição para o próximo showMessage ser instantâneo
-                messageContainer.style.transition = "none";
-                messageContainer.style.opacity = "1";
-                messageContainer.textContent = '';
-                messageContainer.className = '';
-            }
+          if (messageContainer) {
+            // Ao esconder, já reseta a opacidade e transição para o próximo showMessage ser instantâneo
+            messageContainer.style.transition = "none";
+            messageContainer.style.opacity = "1";
+            messageContainer.textContent = "";
+            messageContainer.className = "";
+          }
         }
 
         // Função para ocultar a mensagem automaticamente (FAZER ELE DESAPARECER)
         function autoHideMessage(container, delay = 3000, fadeDuration = 500) {
-            // Se a mensagem for de erro, não a esconde automaticamente, apenas se for sucesso.
-            if (!container || container.classList.contains('error')) return;
+          // Se a mensagem for de erro, não a esconde automaticamente, apenas se for sucesso.
+          if (!container || container.classList.contains("error")) return;
 
+          setTimeout(() => {
+            // Inicia o fade-out
+            container.style.transition = `opacity ${fadeDuration / 1000}s ease`;
+            container.style.opacity = "0";
+
+            // Depois que o fade-out terminar, limpa a div para reutilização
             setTimeout(() => {
-                // Inicia o fade-out
-                container.style.transition = `opacity ${fadeDuration / 1000}s ease`;
-                container.style.opacity = "0";
-
-                // Depois que o fade-out terminar, limpa a div para reutilização
-                setTimeout(() => {
-                    hideMessage(); // Chama a função hideMessage para limpar e resetar
-                }, fadeDuration);
-
-            }, delay);
+              hideMessage(); // Chama a função hideMessage para limpar e resetar
+            }, fadeDuration);
+          }, delay);
         }
 
         // --- Fim das Funções de Mensagem ---
 
-
         // Função principal para alternar o modo de edição
         function toggleEditMode(editing) {
-            isEditing = editing;
+          isEditing = editing;
 
-            formInputs.forEach(input => {
-                const isCPF = input.name === 'cnpj' || input.name === 'cpf';
-                const isSenha = input.name === 'senha';
+          formInputs.forEach((input) => {
+            const isCPF = input.name === "cnpj" || input.name === "cpf";
+            const isSenha = input.name === "senha";
 
-                if (isCPF) {
-                    input.disabled = true;
-                    return;
+            if (isCPF) {
+              input.disabled = true;
+              return;
+            }
+            input.disabled = !isEditing;
+          });
+
+          // Aplica a classe ao formulário para estilização
+          if (isEditing) {
+            profileForm.classList.add("editing-mode");
+          } else {
+            profileForm.classList.remove("editing-mode");
+          }
+
+          // 4. Altera o texto e as cores dos botões
+          if (isEditing) {
+            buttonText.textContent = "Cancelar Edição";
+            editButton.style.backgroundColor = cancelEditButtonColor;
+            saveButton.disabled = false;
+            saveButton.style.display = "block";
+          } else {
+            buttonText.textContent = "Editar Perfil";
+            editButton.style.backgroundColor = originalEditButtonColor;
+            saveButton.disabled = true;
+            saveButton.style.display = "none";
+
+            // Restaura os valores originais
+            formInputs.forEach((input) => {
+              const isCPF = input.name === "cnpj" || input.name === "cpf";
+              const isSenha = input.name === "senha";
+              if (!isCPF && !isSenha) {
+                // Se o valor do input está diferente do original (mascarado), restaura.
+                if (input.value !== originalValues[input.name]) {
+                  input.value = originalValues[input.name];
+                  if (input.name === "telfone") {
+                    // Re-aplica a máscara para garantir a formatação
+                    applyTelMask(input);
+                  }
                 }
-                input.disabled = !isEditing;
+              }
             });
-
-            // Aplica a classe ao formulário para estilização
-            if (isEditing) {
-                profileForm.classList.add('editing-mode');
-            } else {
-                profileForm.classList.remove('editing-mode');
-            }
-
-            // 4. Altera o texto e as cores dos botões
-            if (isEditing) {
-                buttonText.textContent = 'Cancelar Edição';
-                editButton.style.backgroundColor = cancelEditButtonColor;
-                saveButton.disabled = false;
-                saveButton.style.display = 'block';
-            } else {
-                buttonText.textContent = 'Editar Perfil';
-                editButton.style.backgroundColor = originalEditButtonColor;
-                saveButton.disabled = true;
-                saveButton.style.display = 'none';
-
-                // Restaura os valores originais
-                formInputs.forEach(input => {
-                    const isCPF = input.name === 'cnpj' || input.name === 'cpf';
-                    const isSenha = input.name === 'senha';
-                    if (!isCPF && !isSenha) {
-                        // Se o valor do input está diferente do original (mascarado), restaura.
-                        if (input.value !== originalValues[input.name]) {
-                             input.value = originalValues[input.name];
-                             if (input.name === 'telfone') {
-                                 // Re-aplica a máscara para garantir a formatação
-                                 applyTelMask(input);
-                            }
-                        }
-                    }
-                });
-            }
+          }
         }
 
         // Inicializa o modo de visualização
         toggleEditMode(false);
-        
+
         // 🚀 NOVO CÓDIGO: VERIFICA PARAMETRO NA URL PARA MENSAGEM PÓS-CARREGAMENTO
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('status') === 'success') {
-            // 1. Mostrar a mensagem
-            showMessage('Perfil atualizado com sucesso!', 'success');
-            
-            // 2. Fazer o fade-out automático
-            autoHideMessage(messageContainer);
-            
-            // 3. Limpar a URL (remove o ?status=success) para que não apareça em um futuro F5
-            if (history.replaceState) {
-                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                history.replaceState({path:cleanUrl},'',cleanUrl);
-            }
+        if (urlParams.get("status") === "success") {
+          // 1. Mostrar a mensagem
+          showMessage("Perfil atualizado com sucesso!", "success");
+
+          // 2. Fazer o fade-out automático
+          autoHideMessage(messageContainer);
+
+          // 3. Limpar a URL (remove o ?status=success) para que não apareça em um futuro F5
+          if (history.replaceState) {
+            const cleanUrl =
+              window.location.protocol +
+              "//" +
+              window.location.host +
+              window.location.pathname;
+            history.replaceState({ path: cleanUrl }, "", cleanUrl);
+          }
         }
         // FIM DO NOVO CÓDIGO
-        
+
         // 2. Adiciona o Event Listener no botão de Edição/Cancelamento (SEM CONFIRMAÇÃO)
-        editButton.addEventListener('click', function() {
+        editButton.addEventListener("click", function () {
+          // Oculta qualquer mensagem anterior
+          hideMessage();
 
-            // Oculta qualquer mensagem anterior
-            hideMessage();
-
-            if (isEditing) {
-                // Modo CANCELAR
-                toggleEditMode(false);
-            } else {
-                // Modo EDITAR
-                toggleEditMode(true);
-            }
+          if (isEditing) {
+            // Modo CANCELAR
+            toggleEditMode(false);
+          } else {
+            // Modo EDITAR
+            toggleEditMode(true);
+          }
         });
 
         // 5. Lógica para SALVAR (Enviar os dados para o Flask)
-        profileForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        profileForm.addEventListener("submit", async function (event) {
+          event.preventDefault();
 
-            // Oculta mensagens antigas
-            hideMessage();
+          // Oculta mensagens antigas
+          hideMessage();
 
-            const profileData = {};
-            let isChanged = false;
+          const profileData = {};
+          let isChanged = false;
 
-            formInputs.forEach(input => {
-                const isCPF = input.name === 'cnpj' || input.name === 'cpf';
-                const isSenha = input.name === 'senha';
+          formInputs.forEach((input) => {
+            const isCPF = input.name === "cnpj" || input.name === "cpf";
+            const isSenha = input.name === "senha";
 
-                if (!isCPF && !isSenha && !input.disabled) {
-                    let currentValue = input.value;
-                    let originalValue = originalValues[input.name];
+            if (!isCPF && !isSenha && !input.disabled) {
+              let currentValue = input.value;
+              let originalValue = originalValues[input.name];
 
-                    if (input.name === 'telfone') {
-                         // Para o telefone, remove a máscara para comparar e enviar o valor limpo
-                         currentValue = input.value.replace(/\D/g, "");
-                         originalValue = originalValues[input.name].replace(/\D/g, "");
-                    }
+              if (input.name === "telfone") {
+                // Para o telefone, remove a máscara para comparar e enviar o valor limpo
+                currentValue = input.value.replace(/\D/g, "");
+                originalValue = originalValues[input.name].replace(/\D/g, "");
+              }
 
-                    if (currentValue !== originalValue) {
-                        profileData[input.name] = currentValue;
-                        isChanged = true;
-                    }
-                }
+              if (currentValue !== originalValue) {
+                profileData[input.name] = currentValue;
+                isChanged = true;
+              }
+            }
+          });
+
+          // LÓGICA CORRIGIDA PARA "NENHUMA ALTERAÇÃO FEITA"
+          if (!isChanged) {
+            showMessage(
+              "Nenhuma alteração foi feita. Saindo do modo de edição.",
+              "error"
+            ); // Use 'error' ou 'warning'
+            // Aqui você pode adicionar um pequeno delay para a pessoa ler a mensagem antes de sair
+            setTimeout(() => {
+              toggleEditMode(false);
+              // Opcional: esconder a mensagem após sair do modo de edição
+              setTimeout(hideMessage, 2000);
+            }, 1000);
+            return;
+          }
+
+          const url = "/conta/update";
+
+          try {
+            const response = await fetch(url, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(profileData),
             });
 
-            // LÓGICA CORRIGIDA PARA "NENHUMA ALTERAÇÃO FEITA"
-            if (!isChanged) {
-                showMessage('Nenhuma alteração foi feita. Saindo do modo de edição.', 'error'); // Use 'error' ou 'warning'
-                // Aqui você pode adicionar um pequeno delay para a pessoa ler a mensagem antes de sair
-                setTimeout(() => {
-                    toggleEditMode(false);
-                    // Opcional: esconder a mensagem após sair do modo de edição
-                    setTimeout(hideMessage, 2000);
-                }, 1000);
-                return;
+            if (response.ok) {
+              // 🚀 CÓDIGO MODIFICADO: Removemos showMessage e adicionamos o parâmetro 'status=success' na URL
+              // O JavaScript de inicialização (DOMContentLoaded) irá detectar este parâmetro e exibir a mensagem APÓS o carregamento.
+              window.location.href = "/conta?status=success";
+            } else {
+              const errorData = await response.json();
+              showMessage(
+                "❌ Erro ao salvar: " +
+                  (errorData.message || "Ocorreu um erro desconhecido."),
+                "error"
+              );
             }
-
-            const url = '/conta/update';
-
-            try {
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(profileData)
-                });
-
-                if (response.ok) {
-                    // 🚀 CÓDIGO MODIFICADO: Removemos showMessage e adicionamos o parâmetro 'status=success' na URL
-                    // O JavaScript de inicialização (DOMContentLoaded) irá detectar este parâmetro e exibir a mensagem APÓS o carregamento.
-                    window.location.href = '/conta?status=success';
-                    
-                } else {
-                    const errorData = await response.json();
-                    showMessage('❌ Erro ao salvar: ' + (errorData.message || 'Ocorreu um erro desconhecido.'), 'error');
-                }
-
-            } catch (error) {
-                console.error('Erro de rede:', error);
-                showMessage('❌ Não foi possível comunicar com o servidor. Verifique sua conexão.', 'error');
-            }
+          } catch (error) {
+            console.error("Erro de rede:", error);
+            showMessage(
+              "❌ Não foi possível comunicar com o servidor. Verifique sua conexão.",
+              "error"
+            );
+          }
         });
-    });
-</script>
+      });
+    </script>
   </body>
 </html>

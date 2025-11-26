@@ -22,17 +22,191 @@
     />
   </head>
   <body>
-    <a class="voltar" href="/"><img src="/static/img/Seta.png" alt="" /></a>
-    <div class="container">
-      <div class="container-login">
-        <h1>PIX</h1>
-        <div class="qr-code">
-          <img src="{{ qr_code_url }}" alt="QR Code PIX" />
+    <a class="voltar" href="/pedidos"
+      ><img src="/static/img/Seta.png" alt=""
+    /></a>
+
+    <div class="payment-wrapper">
+      <!-- Lado Esquerdo: Área de Pagamento -->
+      <div class="payment-main">
+        <!-- Seleção de Método -->
+        <div class="method-tabs">
+          <button class="tab-btn active" onclick="switchTab('pix')">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              ></path>
+            </svg>
+            Pix
+          </button>
+          <button class="tab-btn" onclick="switchTab('card')">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            Cartão de Crédito
+          </button>
         </div>
-        <p>Produto: Carrinho de compras</p>
-        <p>Quantidade: 100</p>
-        <p>Total:10000</p>
+
+        <!-- Conteúdo PIX -->
+        <div id="tab-pix" class="tab-content active">
+          <div class="pix-header">
+            <h1>Pagamento via Pix</h1>
+            <p>Escaneie o QR Code ou copie o código.</p>
+          </div>
+
+          <div class="qr-container">
+            <img
+              src="{{ qr_code_url }}"
+              alt="QR Code Pix"
+              onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ExemploPixSmartCart'"
+            />
+          </div>
+
+          <div class="timer">Tempo restante: 14:59</div>
+
+          <button class="btn-action" onclick="copiarCodigo()">
+            Copiar Código Pix
+          </button>
+        </div>
+
+        <!-- Conteúdo CARTÃO -->
+        <div id="tab-card" class="tab-content">
+          <div class="pix-header">
+            <h1>Dados do Cartão</h1>
+            <p>Preencha os dados para finalizar.</p>
+          </div>
+
+          <form
+            class="card-form"
+            onsubmit="event.preventDefault(); alert('Pagamento Processado!')"
+          >
+            <div class="form-group">
+              <label>Número do Cartão</label>
+              <input
+                type="text"
+                placeholder="0000 0000 0000 0000"
+                maxlength="19"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Nome no Cartão</label>
+              <input type="text" placeholder="Como impresso no cartão" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="flex: 1">
+                <label>Validade</label>
+                <input type="text" placeholder="MM/AA" maxlength="5" />
+              </div>
+              <div class="form-group" style="flex: 1">
+                <label>CVV</label>
+                <input type="text" placeholder="123" maxlength="3" />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn-action"
+              style="max-width: 100%; margin-top: 10px"
+            >
+              Pagar R$ 10.000,00
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Lado Direito: Resumo -->
+      <div class="payment-summary">
+        <h2 class="summary-title">Resumo do Pedido</h2>
+
+        <div class="summary-row">
+          <span>Produto</span>
+          <strong>Carrinho de compras</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Quantidade</span>
+          <strong>100 un</strong>
+        </div>
+
+        <div class="summary-row total">
+          <span class="total-label">Valor Total a Pagar</span>
+          <span>R$ 10.000,00</span>
+        </div>
+
+        <div class="secure-badge">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          Ambiente Seguro
+        </div>
       </div>
     </div>
+
+    <script>
+      // Função para trocar abas
+      function switchTab(tabName) {
+        // Remove active de todos os botões e conteúdos
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((c) => c.classList.remove("active"));
+
+        // Adiciona active no selecionado
+        const selectedBtn = event.currentTarget; // Botão clicado
+        selectedBtn.classList.add("active");
+
+        document.getElementById("tab-" + tabName).classList.add("active");
+      }
+
+      function copiarCodigo() {
+        navigator.clipboard.writeText(
+          "00020126580014br.gov.bcb.pix0136123e4567..."
+        );
+        const btn = document.querySelector("#tab-pix .btn-action");
+        const originalText = btn.innerText;
+
+        btn.innerText = "Copiado!";
+        btn.style.backgroundColor = "#8b9a5c";
+
+        setTimeout(() => {
+          btn.innerText = originalText;
+          btn.style.backgroundColor = ""; // Volta ao CSS original
+        }, 2000);
+      }
+    </script>
   </body>
 </html>

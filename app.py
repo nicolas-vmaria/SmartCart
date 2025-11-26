@@ -20,8 +20,8 @@ lm = LoginManager(app)
 conexao = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="12345678",
-    port="3306",
+    password="",
+    port="3406",
     database="smartCart",
 )
 cursor = conexao.cursor(dictionary=True)
@@ -74,6 +74,11 @@ def excluir_pedido(id):
 
     flash("Pedido excluído com sucesso!", "sucesso")
     return redirect(url_for("pedidos"))
+
+
+@app.route("/pagamento")
+def pagamento():
+    return render_template("pagamento.html", user=current_user)
 
 
 @app.route("/admin/")
@@ -251,10 +256,9 @@ def orcamento():
         produtos = request.form["produtos"]
         quantidades = request.form["quantidades"]
         prazo_entrega = request.form["prazo"]
-        forma_pagamento = request.form["forma_pagamento"]
 
         cursor.execute(
-            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega, forma_pagamento) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             (
                 nome_empresa,
                 cnpj,
@@ -266,7 +270,6 @@ def orcamento():
                 produtos,
                 quantidades,
                 prazo_entrega,
-                forma_pagamento,
             ),
         )
         conexao.commit()

@@ -197,34 +197,106 @@
       });
     </script>
 
-    <section class="main">
-      {% if pedidos %}
-      <h1>Meus Pedidos</h1>
-      {% for p in pedidos %}
-      <a href="#">Ir para o pagamento</a>
-      <a href="/excluir_pedido/{{ p.id }}">Excluir Pedido</a>
-      <div class="container">
-        <div class="card">
-          <div class="cardUp">
-            <p><b>Estado do pedido:</b> {{ p.status }}</p>
-            <p>
-              <b>Total:</b> R$ {{ "%.2f"|format(p.preco_unitario * p.quantidade)
-              }}
-            </p>
-            <p><b>Quantidade:</b> {{ p.quantidade }}</p>
-            <p><b>Forma de pagamento:</b> {{p.forma_pagamento}}</p>
+    <section class="main-orders">
+      <div class="content-wrapper">
+        <h1 class="page-title">Meus Pedidos</h1>
+
+        {% if pedidos %}
+        <div class="orders-list">
+          {% for p in pedidos %}
+          <div class="order-card">
+            <div class="card-header">
+              <span class="status-success">{{ p.status }}</span>
+              <span class="order-id">Pedido #{{ p.id }}</span>
+            </div>
+
+            <div class="card-body">
+              <div class="product-image">
+                <img
+                  src="{{ p.produto_imagem }}"
+                  alt="{{ p.produto_nome }}"
+                  onerror="this.style.display='none'"
+                />
+              </div>
+
+              <div class="product-details">
+                <h2 class="product-name">{{ p.produto_nome }}</h2>
+                <p class="product-qty">
+                  Quantidade: <strong>{{ p.quantidade }}</strong>
+                </p>
+              </div>
+
+              <div class="product-price">
+                <span class="label">Total</span>
+                <span class="value"
+                  >R$ {{ "%.2f"|format(p.preco_unitario * p.quantidade) }}</span
+                >
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a href="/pagamento" class="btn btn-pay" title="Pagar Pedido">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <line x1="2" y1="10" x2="22" y2="10" />
+                </svg>
+                Pagar Agora
+              </a>
+
+              <a
+                href="/excluir_pedido/{{ p.id }}"
+                class="btn btn-delete"
+                title="Cancelar Pedido"
+                onclick="return confirm('Tem certeza que deseja cancelar este pedido?');"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  ></path>
+                </svg>
+                Cancelar
+              </a>
+            </div>
           </div>
-          <div class="cardDown">
-            <div class="img"><h1>{{ p.produto_imagem }}</h1></div>
-            <div class="text"><p>{{ p.produto_nome }}</p></div>
-          </div>
+          {% endfor %}
         </div>
+        {% else %}
+        <div class="empty-state">
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ccc"
+            stroke-width="1.5"
+          >
+            <path d="M21 8v13H3V8M1 3h22v5H1z" />
+            <path d="M10 12h4" />
+          </svg>
+          <p>Você ainda não possui nenhum pedido.</p>
+          <a href="/orcamento" class="btn-shop">Faça um novo orçamento</a>
+        </div>
+        {% endif %}
       </div>
-      {% endfor %} {% else %}
-
-      <b><p>Voce ainda não possui nenhum pedido.</p></b>
-
-      {% endif %}
     </section>
   </body>
 </html>
