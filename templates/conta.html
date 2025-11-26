@@ -197,11 +197,12 @@
 
             <div class="row">
               <div class="column">
-                <label><b>Cpf:</b></label>
+                <label><b>CNPJ:</b></label>
                 <input
                   type="text"
                   name="cnpj"
-                  value="{{user.cpf}}"
+                  id="cnpj"
+                  value="{{user.cnpj}}"
                   class="cnpj"
                   autocomplete="off"
                   required
@@ -213,7 +214,8 @@
                 <label><b>Telefone:</b></label>
                 <input
                   type="tel"
-                  name="telfone"
+                  name="telefone"
+                  id="tel"
                   value="{{user.telefone}}"
                   class="telefone"
                   autocomplete="off"
@@ -239,10 +241,9 @@
             <input
               type="text"
               name="senha"
-              value="{{user.senha}}"
+              placeholder="Se quiser mudar a senha, digite sua nova senha aqui! Caso não queira, deixe vazio."
               class="senha"
               autocomplete="off"
-              required
               disabled
             /><br />
             
@@ -258,8 +259,77 @@
       </div>
     </section>
    
-    <script>
-     // --- Lógica do Dropdown (Mantenha este bloco) ---
+<script>
+    // --- Funções de Máscara Refatoradas para Reuso ---
+
+    function applyCnpjMask(input) {
+        let n = input.value.replace(/\D/g, "");
+
+        n = n.substring(0, 14);
+
+        if (n.length > 12) {
+            n = n.replace(
+                /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
+                "$1.$2.$3/$4-$5"
+            );
+        } else if (n.length > 8) {
+            n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
+        } else if (n.length > 5) {
+            n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
+        } else if (n.length > 2) {
+            n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
+        } else {
+            n = n.replace(/(\d{0,2})/, "$1");
+        }
+
+        input.value = n;
+    }
+
+    function applyTelMask(input) {
+        let v = input.value.replace(/\D/g, "");
+
+        v = v.substring(0, 11);
+
+        if (v.length > 6 && v.length <= 10){
+            v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2$3")
+        }  else if( v.length === 11) {
+            v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
+        } else if (v.length > 2) {
+            v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2")
+        } else if (v.length === 2) {
+            v = `( ${v}`;
+        } else {
+            v = v
+        }
+
+        input.value = v;
+    }
+
+    // --- Seleção dos elementos de input ---
+    let cnpj = document.getElementById("cnpj");
+    let tel = document.getElementById("tel");
+
+    // -----------------------------------------------------------
+    // APLICAÇÃO DA MÁSCARA AO CARREGAR A PÁGINA (SOLUÇÃO)
+    // As funções são chamadas imediatamente para formatar os valores iniciais.
+    // -----------------------------------------------------------
+    if (cnpj && cnpj.value) {
+        applyCnpjMask(cnpj);
+    }
+    if (tel && tel.value) {
+        applyTelMask(tel);
+    }
+
+    // --- Listeners para aplicar a máscara no input do usuário ---
+    cnpj.addEventListener("input", () => {
+        applyCnpjMask(cnpj);
+    });
+
+    tel.addEventListener("input", () => {
+        applyTelMask(tel);
+    });
+
+    // --- Lógica do Dropdown (Mantenha este bloco) ---
     document.addEventListener("DOMContentLoaded", () => {
         const dropdown = document.querySelector(".dropdown");
         const trigger = document.querySelector(".dropdown-trigger");
@@ -289,16 +359,16 @@
         const editButton = document.getElementById('editButton');
         const saveButton = document.getElementById('saveButton');
         const buttonText = document.getElementById('buttonText');
-        
+
         // CORREÇÃO AQUI: USANDO O ID CORRETO 'top-message-container'
         const messageContainer = document.getElementById('top-message-container');
-        
-        const formInputs = document.querySelectorAll('#profileForm input'); 
+
+        const formInputs = document.querySelectorAll('#profileForm input');
         let isEditing = false;
-        
+
         // Cores dos botões (Ajuste a cor original se for diferente)
-        const originalEditButtonColor = '#8b9a5c'; 
-        const cancelEditButtonColor = '#dc3545'; 
+        const originalEditButtonColor = '#8b9a5c';
+        const cancelEditButtonColor = '#dc3545';
 
         const originalValues = {};
         formInputs.forEach(input => {
@@ -310,11 +380,11 @@
         function showMessage(message, type = 'error') {
             if (messageContainer) { // Só executa se o container existir
                 // Garante que o container esteja visível antes de aplicar a opacidade
-                messageContainer.style.opacity = "1"; 
+                messageContainer.style.opacity = "1";
                 messageContainer.style.transition = "none";
-                
+
                 messageContainer.textContent = message;
-                messageContainer.className = type; 
+                messageContainer.className = type;
             }
         }
 
@@ -322,12 +392,12 @@
             if (messageContainer) {
                 // Ao esconder, já reseta a opacidade e transição para o próximo showMessage ser instantâneo
                 messageContainer.style.transition = "none";
-                messageContainer.style.opacity = "1"; 
+                messageContainer.style.opacity = "1";
                 messageContainer.textContent = '';
-                messageContainer.className = ''; 
+                messageContainer.className = '';
             }
         }
-        
+
         // Função para ocultar a mensagem automaticamente (FAZER ELE DESAPARECER)
         function autoHideMessage(container, delay = 3000, fadeDuration = 500) {
             // Se a mensagem for de erro, não a esconde automaticamente, apenas se for sucesso.
@@ -337,12 +407,12 @@
                 // Inicia o fade-out
                 container.style.transition = `opacity ${fadeDuration / 1000}s ease`;
                 container.style.opacity = "0";
-                
+
                 // Depois que o fade-out terminar, limpa a div para reutilização
                 setTimeout(() => {
                     hideMessage(); // Chama a função hideMessage para limpar e resetar
                 }, fadeDuration);
-                
+
             }, delay);
         }
 
@@ -354,16 +424,16 @@
             isEditing = editing;
 
             formInputs.forEach(input => {
-                const isCPF = input.name === 'cnpj' || input.name === 'cpf'; 
-                const isSenha = input.name === 'senha'; 
+                const isCPF = input.name === 'cnpj' || input.name === 'cpf';
+                const isSenha = input.name === 'senha';
 
-                if (isCPF || isSenha) { 
+                if (isCPF) {
                     input.disabled = true;
                     return;
                 }
                 input.disabled = !isEditing;
             });
-            
+
             // Aplica a classe ao formulário para estilização
             if (isEditing) {
                 profileForm.classList.add('editing-mode');
@@ -386,9 +456,16 @@
                 // Restaura os valores originais
                 formInputs.forEach(input => {
                     const isCPF = input.name === 'cnpj' || input.name === 'cpf';
-                    const isSenha = input.name === 'senha'; 
+                    const isSenha = input.name === 'senha';
                     if (!isCPF && !isSenha) {
-                        input.value = originalValues[input.name];
+                        // Se o valor do input está diferente do original (mascarado), restaura.
+                        if (input.value !== originalValues[input.name]) {
+                             input.value = originalValues[input.name];
+                             if (input.name === 'telfone') {
+                                 // Re-aplica a máscara para garantir a formatação
+                                 applyTelMask(input);
+                            }
+                        }
                     }
                 });
             }
@@ -396,44 +473,70 @@
 
         // Inicializa o modo de visualização
         toggleEditMode(false);
-
+        
+        // 🚀 NOVO CÓDIGO: VERIFICA PARAMETRO NA URL PARA MENSAGEM PÓS-CARREGAMENTO
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('status') === 'success') {
+            // 1. Mostrar a mensagem
+            showMessage('Perfil atualizado com sucesso!', 'success');
+            
+            // 2. Fazer o fade-out automático
+            autoHideMessage(messageContainer);
+            
+            // 3. Limpar a URL (remove o ?status=success) para que não apareça em um futuro F5
+            if (history.replaceState) {
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                history.replaceState({path:cleanUrl},'',cleanUrl);
+            }
+        }
+        // FIM DO NOVO CÓDIGO
+        
         // 2. Adiciona o Event Listener no botão de Edição/Cancelamento (SEM CONFIRMAÇÃO)
         editButton.addEventListener('click', function() {
-            
+
             // Oculta qualquer mensagem anterior
-            hideMessage(); 
-            
+            hideMessage();
+
             if (isEditing) {
-                // Modo CANCELAR 
-                toggleEditMode(false); 
+                // Modo CANCELAR
+                toggleEditMode(false);
             } else {
                 // Modo EDITAR
                 toggleEditMode(true);
             }
         });
-        
+
         // 5. Lógica para SALVAR (Enviar os dados para o Flask)
         profileForm.addEventListener('submit', async function(event) {
-            event.preventDefault(); 
-            
+            event.preventDefault();
+
             // Oculta mensagens antigas
-            hideMessage(); 
+            hideMessage();
 
             const profileData = {};
             let isChanged = false;
 
             formInputs.forEach(input => {
                 const isCPF = input.name === 'cnpj' || input.name === 'cpf';
-                const isSenha = input.name === 'senha'; 
+                const isSenha = input.name === 'senha';
 
                 if (!isCPF && !isSenha && !input.disabled) {
-                    if (input.value !== originalValues[input.name]) {
-                        profileData[input.name] = input.value;
+                    let currentValue = input.value;
+                    let originalValue = originalValues[input.name];
+
+                    if (input.name === 'telfone') {
+                         // Para o telefone, remove a máscara para comparar e enviar o valor limpo
+                         currentValue = input.value.replace(/\D/g, "");
+                         originalValue = originalValues[input.name].replace(/\D/g, "");
+                    }
+
+                    if (currentValue !== originalValue) {
+                        profileData[input.name] = currentValue;
                         isChanged = true;
                     }
                 }
             });
-            
+
             // LÓGICA CORRIGIDA PARA "NENHUMA ALTERAÇÃO FEITA"
             if (!isChanged) {
                 showMessage('Nenhuma alteração foi feita. Saindo do modo de edição.', 'error'); // Use 'error' ou 'warning'
@@ -441,13 +544,13 @@
                 setTimeout(() => {
                     toggleEditMode(false);
                     // Opcional: esconder a mensagem após sair do modo de edição
-                    setTimeout(hideMessage, 2000); 
-                }, 1000); 
+                    setTimeout(hideMessage, 2000);
+                }, 1000);
                 return;
             }
 
-            const url = '/conta/update'; 
-            
+            const url = '/conta/update';
+
             try {
                 const response = await fetch(url, {
                     method: 'PUT',
@@ -456,21 +559,10 @@
                 });
 
                 if (response.ok) {
-                    const result = await response.json();
+                    // 🚀 CÓDIGO MODIFICADO: Removemos showMessage e adicionamos o parâmetro 'status=success' na URL
+                    // O JavaScript de inicialização (DOMContentLoaded) irá detectar este parâmetro e exibir a mensagem APÓS o carregamento.
+                    window.location.href = '/conta?status=success';
                     
-                    showMessage('Alterações feitas com sucesso!', 'success'); 
-                    
-                    autoHideMessage(messageContainer);
-
-                    toggleEditMode(false);
-                    
-                    // Atualizamos os 'valores originais' para os novos valores salvos
-                    Object.keys(profileData).forEach(key => {
-                        if(originalValues.hasOwnProperty(key)) {
-                             originalValues[key] = profileData[key];
-                        }
-                    });
-
                 } else {
                     const errorData = await response.json();
                     showMessage('❌ Erro ao salvar: ' + (errorData.message || 'Ocorreu um erro desconhecido.'), 'error');
@@ -482,6 +574,6 @@
             }
         });
     });
-    </script>
+</script>
   </body>
 </html>

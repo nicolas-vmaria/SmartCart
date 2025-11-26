@@ -173,14 +173,39 @@
             });
           });
         </script>
-      </div>=
+      </div>
     </nav>
+
+    {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
+    mensagens %} {% for categoria, msg in mensagens %}
+    <p class="msg {{ categoria }}">{{ msg }}</p>
+    {% endfor %} {% endif %} {% endwith %}
+
+   <script>
+    const flashMessages = document.querySelectorAll('.msg');
+    const displayTime = 4000; 
+
+    flashMessages.forEach(message => {
+        setTimeout(() => {
+            message.style.transition = "opacity 0.5s ease";
+            message.style.opacity = "0";
+
+            setTimeout(() => {
+                if (message && message.parentNode) {
+                    message.parentNode.removeChild(message);
+                }
+            }, 500); 
+
+        }, displayTime); 
+    });
+</script>
 
     <section class="main">
       {% if pedidos %}
       <h1>Meus Pedidos</h1>
       {% for p in pedidos %}
       <a href="#">Ir para o pagamento</a>
+      <a href="/excluir_pedido/{{ p.id }}">Excluir Pedido</a>
       <div class="container">
         <div class="card">
           <div class="cardUp">
@@ -202,7 +227,7 @@
 
       {% else %}
 
-      <b><p>Voce ainda nao possui nenhum pedido.</p></b>
+      <b><p>Voce ainda não possui nenhum pedido.</p></b>
 
       {% endif %}
     </section>

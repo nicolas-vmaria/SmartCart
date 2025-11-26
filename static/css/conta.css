@@ -243,8 +243,21 @@ button {
 }
 
 #top-message-container.error {
-  background-color: #fff3cd; /* Fundo amarelo claro (aviso) */
-  color: #856404; /* Texto amarelo/marrom escuro */
-  border: 1px solid #ffeeba; /* Borda amarela */
-  opacity: 1; /* Torna visível */
+    /* --- Estilos base (Amarelo) --- */
+    background-color: #fff3cd; /* Amarelo claro/creme */
+    color: #856404; /* Amarelo escuro/marrom para o texto */
+    border: 1px solid #ffeeba; /* Borda em tom de amarelo */
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    
+    /* --- Propriedades de centralização --- */
+    /* 1. Define uma largura máxima para a caixa */
+    max-width: 600px; 
+    
+    /* 2. Centraliza a caixa na horizontal */
+    margin: 20px auto; 
+    
+    /* 3. Garante que o texto dentro da caixa esteja centralizado (opcional) */
+    text-align: center;
 }
