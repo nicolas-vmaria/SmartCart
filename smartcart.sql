@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS smartCart;
-USE smartCart;
+CREATE DATABASE IF NOT EXISTS smart_cart;
+USE smart_cart;
 
 CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,

@@ -18,11 +18,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    port="3406",
-    database="smartCart",
+    host="localhost", user="root", password="", port="3406", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -74,11 +70,6 @@ def excluir_pedido(id):
 
     flash("Pedido excluído com sucesso!", "sucesso")
     return redirect(url_for("pedidos"))
-
-
-@app.route("/pagamento")
-def pagamento():
-    return render_template("pagamento.html", user=current_user)
 
 
 @app.route("/admin/")
@@ -385,7 +376,7 @@ def login():
         senha = request.form["senha"]
 
         cursor.execute(
-            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, hash(senha))
+            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, senha)
         )
         usuario = cursor.fetchone()
 
