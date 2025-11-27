@@ -1,0 +1,269 @@
+* {
+    font-family: montserrat;
+  }
+  
+  body {
+    margin: 0;
+  }
+  
+  nav {
+    background-color: #a0b179;
+    height: 100px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  nav ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: #4e4f3d;
+    font-size: 20px;
+  }
+  .logo svg {
+    transform: translateY(-8%);
+    width: 120px;
+    height: 120px;
+    cursor: pointer;
+  }
+  
+  nav p {
+    font-size: 20px;
+    color: #4e4f3d;
+    align-items: center;
+  }
+  .user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 221.16px;
+    margin-right: 40px;
+  }
+  
+  .user p {
+    font-size: 20px;
+    color: #4e4f3d;
+    margin: 0;
+    display: flex;
+    gap: 5px;
+  }
+  .user .icone {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .user li {
+    list-style: none;
+    cursor: pointer;
+  }
+
+  
+
+  
+  .dropdown {
+    position: relative;
+    display: inline-flex;
+  }
+  
+  .dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 78%;
+    right: 0;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 15px 0;
+  }
+  
+  .dropdown.open .dropdown-trigger {
+    background-color: #aebb80;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  .dropdown.open .dropdown-menu {
+    display: flex;
+  }
+  
+  .dropdown.open .arrow-icon {
+    transform: rotate(180deg);
+  }
+  
+  .section-home {
+    background-image: url(/static/img/imagemSobre.png);
+    width: 100%;
+    height: 485px;
+    margin-top: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .section-home h1 {
+    width: 600px;
+    font-size: 60pt;
+    color: #f6ffcf;
+  }
+  
+  .section-card {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+  }
+  
+  .card {
+    color: #4e4f3d;
+    width: 1000px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card h1 {
+    font-size: 50px;
+    scroll-margin-top: 140px;
+  }
+  
+  .card p {
+    font-size: 20px;
+    line-height: 35px;
+  }
+  
+  .containerSobre {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .lado {
+    margin: 20px 0 0 20px;
+    width: 400px;
+    height: 300px;
+  }
+  
+  .lado h2 {
+    font-size: 30px;
+    color: #4e4f3d;
+  }
+  
+  .lado li {
+    display: flex;
+    align-items: center;
+    width: 300px;
+    height: 50px;
+    justify-content: space-between;
+  }
+  
+  .lado li a {
+    font-size: 25px;
+    text-decoration: none;
+    color: #4e4f3d;
+    font-weight: bold;
+  }
+  .lado ul {
+    list-style: none;
+  }
+  
+  .lado svg {
+    width: 30px;
+    height: 30px;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-top: 50px;
+    background-color: #a0b179;
+    color: #4e4f3d;
+    height: 400px;
+  }
+  
+  .container-foot {
+    display: flex;
+  }
+  
+  .linha {
+    display: flex;
+    gap: 50px;
+  }
+  
+  .coluna h1 {
+    font-weight: bold;
+    font-size: 15pt;
+    width: 300px;
+  }
+  
+  .coluna li {
+    list-style: none;
+  
+    color: #4e4f3d;
+  }
+  
+  .coluna a {
+    text-decoration: none;
+  }
+  
+  .coluna a li:hover {
+    color: white;
+  }
+  
+  .coluna ul {
+    margin: 0;
+    padding: 0;
+  }
+  
+  #rs-container {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0 20px 0px;
+  }
+  
+  #rs-container svg {
+    width: 50px;
+    height: 50px;
+  }
+  
+  #fdp-container svg {
+    width: 70px;
+    height: 70px;
+  }
+  
+  #foot-info {
+    display: flex;
+    margin-top: 70px;
+    gap: 50px;
+  }
+  
+  #foot-info p {
+    margin: 0;
+  }
+  
+  hr {
+    border: 1px solid #4e4f3d;
+  }
+  

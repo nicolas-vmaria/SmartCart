@@ -27,6 +27,13 @@ def hash(txt):
     hash_obj = hashlib.sha256(txt.encode("utf-8"))
     return hash_obj.hexdigest()
 
+# Criptogrando a senha do admin
+# senha_admin = "admin"
+# objeto_hash = hashlib.sha256()
+# objeto_hash.update(senha_admin.encode("utf-8"))
+# senha_admin = objeto_hash.hexdigest()
+# print(senha_admin)
+
 
 @lm.user_loader
 def user_loader(id):
@@ -58,6 +65,11 @@ def unauthorized():
 @app.route("/")
 def index():
     return render_template("index.html", user=current_user)
+
+@app.route("/pagamento")
+@login_required
+def pagamento():
+    return render_template("pagamento.html", user=current_user)
 
 
 @app.route("/excluir_pedido/<int:id>")
@@ -130,33 +142,35 @@ def conta_update():
     try:
         data = request.get_json()
 
-        # Lista de campos que o JS pode atualizar no DB
         allowed_fields = {
             "nome": "nome",
-            "telfone": "telefone",  # O 'name' do HTML era 'telfone'
+            "telfone": "telefone", 
             "email": "email",
             "senha": "senha",
         }
 
-        updates = {}  # Dicionário para guardar o que vamos atualizar
+        updates = {} 
 
-        # 1. Filtra e LIMPA os dados recebidos (data)
         for js_key, db_field in allowed_fields.items():
             if js_key in data:
                 value = data[js_key]
 
-                # Limpeza do telefone (remove máscara)
+                # Se o valor for vazio, pula (segurança extra)
+                if not value:
+                    continue
+
                 if js_key == "telfone":
-                    # Remove todos os caracteres que não são dígitos (0-9)
                     value = re.sub(r"\D", "", value)
 
+                # --- CORREÇÃO AQUI ---
                 if js_key == "senha":
-                    # REGRA DE SEGURANÇA: NUNCA SALVE SENHA SEM HASH
-                    value = hash(value)  # Hash da senha antes de salvar
+                    # Usamos o mesmo padrão SHA-256 do login e cadastro
+                    objeto_hash = hashlib.sha256()
+                    objeto_hash.update(value.encode('utf-8'))
+                    value = objeto_hash.hexdigest()
+                # ---------------------
 
-                updates[db_field] = (
-                    value  # Adiciona o valor (limpo ou hasheado) ao dicionário
-                )
+                updates[db_field] = value
 
         if not updates:
             # Se o JS não enviou nada (caso raro, pois o JS já verifica)
@@ -346,6 +360,11 @@ def cadastro():
         email = request.form["email"]
         senha = request.form["senha"]
 
+        objeto_hash = hashlib.sha256()
+        objeto_hash.update(senha.encode("utf-8"))
+        senha_criptografada = objeto_hash.hexdigest()
+
+
         cursor.execute(
             "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
             (cnpj, email),
@@ -358,10 +377,10 @@ def cadastro():
 
         cursor.execute(
             "INSERT INTO Usuario (nome, cnpj, telefone, email, senha) VALUES (%s, %s, %s, %s, %s)",
-            (nome, cnpj, telefone, email, hash(senha)),
+            (nome, cnpj, telefone, email, senha_criptografada),
         )
         conexao.commit()
-        new_user = Usuario(cursor.lastrowid, nome, cnpj, telefone, email, hash(senha))
+        new_user = Usuario(cursor.lastrowid, nome, cnpj, telefone, email, senha_criptografada)
         login_user(new_user)
 
         return redirect(url_for("index"))
@@ -375,8 +394,12 @@ def login():
         cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
         senha = request.form["senha"]
 
+        objeto_hash = hashlib.sha256()
+        objeto_hash.update(senha.encode("utf-8"))
+        senha_verificada = objeto_hash.hexdigest()
+
         cursor.execute(
-            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, senha)
+            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, senha_verificada)
         )
         usuario = cursor.fetchone()
 

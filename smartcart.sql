@@ -68,6 +68,6 @@ insert into Produtos (nome, preco, estoque, id_imagem) values
 ALTER TABLE Usuario ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
 
 insert into Usuario (nome, cnpj, telefone, email, senha, is_admin)
-values ("Caio", "12345678909876", "47992451974", "boing@gmail.com", 2409, true);
+values ("Caio", "12345678909876", "47992451974", "boing@gmail.com", "cb889e05f91275a69d2fb0f7ee4af3b92dae9a0e6ecfcf597bda893a49fb2673", true);
 
 
