@@ -27,6 +27,7 @@ def hash(txt):
     hash_obj = hashlib.sha256(txt.encode("utf-8"))
     return hash_obj.hexdigest()
 
+
 # Criptogrando a senha do admin
 # senha_admin = "admin"
 # objeto_hash = hashlib.sha256()
@@ -151,12 +152,12 @@ def conta_update():
 
         allowed_fields = {
             "nome": "nome",
-            "telfone": "telefone", 
+            "telfone": "telefone",
             "email": "email",
             "senha": "senha",
         }
 
-        updates = {} 
+        updates = {}
 
         for js_key, db_field in allowed_fields.items():
             if js_key in data:
@@ -173,7 +174,7 @@ def conta_update():
                 if js_key == "senha":
                     # Usamos o mesmo padrão SHA-256 do login e cadastro
                     objeto_hash = hashlib.sha256()
-                    objeto_hash.update(value.encode('utf-8'))
+                    objeto_hash.update(value.encode("utf-8"))
                     value = objeto_hash.hexdigest()
                 # ---------------------
 
@@ -224,6 +225,11 @@ def conta_update():
 @app.route("/sobre")
 def sobre():
     return render_template("sobre.html", user=current_user)
+
+
+@app.route("/termos")
+def termos():
+    return render_template("termos.html", user=current_user)
 
 
 @app.route("/pedidos")
@@ -376,7 +382,6 @@ def cadastro():
         objeto_hash.update(senha.encode("utf-8"))
         senha_criptografada = objeto_hash.hexdigest()
 
-
         cursor.execute(
             "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
             (cnpj, email),
@@ -392,7 +397,9 @@ def cadastro():
             (nome, cnpj, telefone, email, senha_criptografada),
         )
         conexao.commit()
-        new_user = Usuario(cursor.lastrowid, nome, cnpj, telefone, email, senha_criptografada)
+        new_user = Usuario(
+            cursor.lastrowid, nome, cnpj, telefone, email, senha_criptografada
+        )
         login_user(new_user)
 
         return redirect(url_for("index"))
@@ -411,7 +418,8 @@ def login():
         senha_verificada = objeto_hash.hexdigest()
 
         cursor.execute(
-            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, senha_verificada)
+            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s",
+            (cnpj, senha_verificada),
         )
         usuario = cursor.fetchone()
 

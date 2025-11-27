@@ -1,4 +1,4 @@
-body{
+body {
     height: 100vh;
     margin: 0;
     padding: 0;
@@ -7,63 +7,59 @@ body{
     flex-direction: row;
 }
 
-main{
+main {
     display: flex;
 }
 
 
-.sidebar{
+.sidebar {
     background-color: #a0b179;
     height: 100%;
     width: 500px;
 }
 
-.logo-container{
+.logo-container {
     padding: 20px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.logo-container h1{
+.logo-container h1 {
     font-family: montserrat;
     font-size: 18pt;
     color: #ffffff;
 }
 
-.svg-logo{
+.svg-logo {
     width: 80px;
     height: 80px;
 }
 
-.abas{
+.abas {
     height: 80%;
     display: flex;
     align-items: center;
     justify-content: left;
 }
 
-ul{
+ul {
     list-style: none;
     display: flex;
     flex-direction: column;
-    
+
     gap: 80px;
 }
 
-li{
-
-}
-
-a{
+a {
     text-decoration: none;
-        
+
     font-family: montserrat;
 }
 
 
 
-.selected-aba{
+.selected-aba {
     text-decoration: none;
     font-family: montserrat;
     background-color: #c7d8a1;
@@ -78,7 +74,7 @@ a{
     font-weight: bold;
 }
 
-.nonselected-aba{
+.nonselected-aba {
     text-decoration: none;
     color: white;
     font-family: montserrat;
@@ -91,10 +87,10 @@ a{
     padding-left: 10px;
     margin-left: 0;
     transition: background-color 0.3s ease;
-    
+
 }
 
-.nonselected-aba:hover{
+.nonselected-aba:hover {
     cursor: pointer;
     background-color: #aabb84;
     height: 80px;
@@ -104,28 +100,28 @@ a{
     align-items: center;
     padding-left: 10px;
     margin-left: 0;
-    
+
 }
 
-.sair{
-    height: 40px;   
+.sair {
+    height: 40px;
     padding: 10px;
     padding-left: 20px;
     width: 90px;
     border-radius: 10px;
 }
 
-.sair:hover{
+.sair:hover {
     border-radius: 10px;
 }
 
-.sair h1{
+.sair h1 {
     color: white;
     font-family: montserrat;
     font-size: 14pt;
 }
 
-.sair-button{
+.sair-button {
     display: flex;
     gap: 10px;
     align-items: center;
@@ -133,62 +129,60 @@ a{
     border-radius: 10px;
 }
 
-.sair-button:hover{
+.sair-button:hover {
     background-color: #c7d8a1;
     width: 90px;
     border-radius: 10px;
     cursor: pointer;
 }
 
-#main-screen{
+#main-screen {
     display: flex;
     height: 100%;
     align-items: center;
-    
+    justify-content: center;
+
 }
 
-#info-main-screen{
-    
+#info-main-screen {
+
     height: 90%;
     color: #a0b179;
     font-family: montserrat;
-    
+    display: flex;
+    flex-direction: column;
     padding: 20px;
 }
 
-#info-main-screen span{
+#info-main-screen span {
     color: #7a7a7a;
     font-size: 15pt;
     font-weight: normal;
 }
 
-#info-main-screen h1{
+#info-main-screen .titulo-page {
     font-size: 20pt;
-    
+
     font-weight: bold;
 }
 
-.aba-content{
+.aba-content {
     display: flex;
     flex-direction: row;
     height: 40px;
     width: 390px;
     gap: 20px;
     align-items: center;
-    
-    
+
+
 }
 
-.aba-content svg{
+.aba-content svg {
     width: 40px;
     height: 40px;
 }
 
-.aba-content p{
-    
-}
-
-th{
+th {
     background-color: #a0b179;
     color: white;
     width: 195px;
@@ -197,46 +191,48 @@ th{
     padding-left: 30px;
 }
 
-table{
+table {
     border-collapse: collapse;
     border: 1px solid #b7b7b7;
     border-radius: 15px;
-    overflow: hidden; /* importante para o arredondamento aparecer */
+    overflow: hidden;
+    /* importante para o arredondamento aparecer */
 
-    
+
 }
 
-td{
+
+td {
     padding: 30px;
     height: 70px;
 }
 
 table tr:nth-child(odd) {
-  background-color: #f6f6f6;
+    background-color: #f6f6f6;
 }
 
 table tr:nth-child(even) {
-  background-color: #ffffff;
+    background-color: #ffffff;
 }
 
-td button{
+td button {
     border: none;
     background-color: #e9020200;
     transition: all 0.3s ease
 }
 
-td button:hover{
+td button:hover {
     transform: scale(0.90);
-    
+
     border-radius: 10px;
     cursor: pointer;
 }
 
-td button:active{
+td button:active {
     transform: rotate(360);
 }
 
-.action-table{
+.action-table {
     width: 100%;
     height: 100px;
     display: flex;
@@ -244,7 +240,7 @@ td button:active{
     justify-content: space-between;
 }
 
-.action-table input{
+.action-table input {
     width: 300px;
     height: 50px;
     border-radius: 15px;
@@ -254,16 +250,16 @@ td button:active{
     font-family: montserrat;
 }
 
-.action-table input::placeholder{
-    color: #7a7a7a  ;
+.action-table input::placeholder {
+    color: #7a7a7a;
 }
 
-.action-table input:focus{
+.action-table input:focus {
     outline: 3px solid #a0b179;
     border: none;
 }
 
-.action-table button{
+.action-table button {
     height: 50px;
     width: 200px;
     border-radius: 20px;
@@ -275,46 +271,133 @@ td button:active{
     transition: all 0.3s ease;
 }
 
-.action-table button div{
+.action-table button div {
     height: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.action-table button:hover{
+
+.action-table button:hover {
     transform: scale(0.95);
     cursor: pointer;
 }
 
-.action-table button:active{
+.action-table button:active {
     background-color: #c7d8a1;
     transform: scale(1);
 }
 
-.action-buttons-group{
+.action-buttons-group {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-#button-filter{
+#button-filter {
     background-color: rgb(243, 243, 243);
     border: 1px solid black;
     color: black;
 }
 
-#button-filter div{
+#button-filter div {
     display: flex;
     gap: 5px;
 }
 
-.input-action-table{
+.input-action-table {
     position: relative;
     display: inline-block;
 }
 
-.input-action-table i{
+.input-action-table i {
     position: absolute;
     top: 31%;
     left: 16px;
+}
+
+.info-card {
+    margin-top: 20px;
+    width: 1380px;
+    height: 200px;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.card-dashboard {
+    border: 1px solid #dcdcdc;
+    text-align: left;
+    width: 320px;
+    height: 200px;
+    border-radius: 20px;
+    padding: 15px;
+    box-sizing: border-box;
+
+}
+
+.icon-card-dashboard {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #dcdcdc;
+    border-radius: 50%;
+}
+
+.titulo-card {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.titulo-card h1 {
+    padding-right: 10px;
+    font-size: 15pt;
+    color: #4e4f3d;
+    padding: 0;
+}
+
+#orcamento-titulo {
+    margin: 0;
+}
+
+.display-card {
+
+    width: 100%;
+    height: 130px;
+    display: flex;
+    justify-content: left;
+    align-items: flex-end;
+
+
+}
+
+.display-card h1 {
+    font-size: 35pt;
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+.mid-dashboard-container {
+    display: flex;
+    margin-top: 50px;
+    width: 1380px;
+    height: 500px;
+    justify-content: space-between;
+}
+
+.graphic-container {
+    border-radius: 20px;
+    width: 1028px;
+    height: 500px;
+    background-color: #7a7a7a;
+}
+
+.fast-action-container {
+    border-radius: 20px;
+    height: 500px;
+    width: 320px;
+    background-color: #7a7a7a;
 }

@@ -186,25 +186,23 @@
     <p class="msg {{ categoria }}">{{ msg }}</p>
     {% endfor %} {% endif %} {% endwith %}
 
-   <script>
-    const flashMessages = document.querySelectorAll('.msg');
-    const displayTime = 4000; 
+    <script>
+      const flashMessages = document.querySelectorAll(".msg");
+      const displayTime = 4000;
 
-    flashMessages.forEach(message => {
+      flashMessages.forEach((message) => {
         setTimeout(() => {
-            message.style.transition = "opacity 0.5s ease";
-            message.style.opacity = "0";
+          message.style.transition = "opacity 0.5s ease";
+          message.style.opacity = "0";
 
-            setTimeout(() => {
-                if (message && message.parentNode) {
-                    message.parentNode.removeChild(message);
-                }
-            }, 500); 
-
-        }, displayTime); 
-    });
-</script>
-    
+          setTimeout(() => {
+            if (message && message.parentNode) {
+              message.parentNode.removeChild(message);
+            }
+          }, 500);
+        }, displayTime);
+      });
+    </script>
 
     <section class="section-home">
       <div id="container-home">
@@ -738,19 +736,19 @@
             <hr />
 
             <ul>
-              <a href="">
+              <a href="/sobre#quem-somos">
                 <li>Quem Somos</li>
               </a>
-              <a href="">
+              <a href="/sobre#perguntas">
                 <li>Perguntas Frequentes</li>
               </a>
-              <a href="">
+              <a href="/sobre#franqueado">
                 <li>Seja um Franqueado</li>
               </a>
-              <a href="">
+              <a href="/sobre#lojas">
                 <li>Nossas Lojas</li>
               </a>
-              <a href="">
+              <a href="/sobre#trabalhe">
                 <li>Trabalhe Conosco</li>
               </a>
             </ul>
@@ -760,10 +758,10 @@
             <hr />
 
             <ul>
-              <a href="">
+              <a href="/conta">
                 <li>Minha Conta</li>
               </a>
-              <a href="">
+              <a href="/pedidos">
                 <li>Meus Pedidos</li>
               </a>
             </ul>
@@ -773,19 +771,19 @@
             <hr />
 
             <ul>
-              <a href="">
+              <a href="/termos">
                 <li>Privacidade</li>
               </a>
-              <a href="">
+              <a href="/termos">
                 <li>Termos de Uso</li>
               </a>
-              <a href="">
+              <a href="/termos">
                 <li>Trocas e Devolução</li>
               </a>
-              <a href="">
+              <a href="/termos">
                 <li>Entrega e Frete</li>
               </a>
-              <a href="">
+              <a href="/termos">
                 <li>Pagamento</li>
               </a>
             </ul>
