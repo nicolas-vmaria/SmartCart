@@ -4,7 +4,6 @@
 
 body {
   margin: 0;
-
 }
 
 nav {
@@ -83,6 +82,7 @@ nav p {
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
+  cursor: pointer;
 }
 
 .dropdown-menu {
@@ -110,81 +110,79 @@ nav p {
 .dropdown.open .arrow-icon {
   transform: rotate(180deg);
 }
-  
-  .section-card {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 150px;
 
-  }
-  .section-card h1{
-    width: 1100px;
-    text-align: left;
-    margin: 0 0 20px 0;
-  }
-  
-  .card {
-    background-color: rgb(255, 255, 255);
-    border-radius: 20px;
-    color: #4e4f3d;
-    width: 1100px;
-    display: flex;
-    flex-direction: column;
-    padding: 40px 0;
-    box-shadow: 0px 4px 12px #4e4f3d;
-    border: #c4c4c4 solid 1px;
-  }
-  
-  .card h1 {
-    font-size: 50px;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    font-size: 20px;
-  }
-  
-  input {
-    margin: 10px 0;
-    border-radius: 10px;
-    border: 1px solid black;
-    font-size: 16px;
-    padding-left: 20px;
-  }
+.section-card {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 150px;
+}
+.section-card h1 {
+  width: 1100px;
+  text-align: left;
+  margin: 0 0 20px 0;
+}
 
-  input:disabled{
-    background-color: rgb(231, 231, 231);
-    margin: 10px 0;
-    border-radius: 10px;
-    border: none;
-    font-size: 16px;
-    padding-left: 20px;
-  }
-  
-  .row {
-    display: flex;
-    justify-content: center;
-    gap: 80px;
-  }
-  
-  .column {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-  }
-  .card input {
-    width: 1000px;
-    height: 70px;
-    margin: 10px auto;
-  }
-  
-  .row input {
-    width: 450px;
+.card {
+  background-color: rgb(255, 255, 255);
+  border-radius: 20px;
+  color: #4e4f3d;
+  width: 1100px;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 0;
+  box-shadow: 0px 4px 12px #4e4f3d;
+  border: #c4c4c4 solid 1px;
+}
 
-  }
+.card h1 {
+  font-size: 50px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+}
+
+input {
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid black;
+  font-size: 16px;
+  padding-left: 20px;
+}
+
+input:disabled {
+  background-color: rgb(231, 231, 231);
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  padding-left: 20px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+.card input {
+  width: 1000px;
+  height: 70px;
+  margin: 10px auto;
+}
+
+.row input {
+  width: 450px;
+}
 button {
   width: 400px;
   height: 60px;
@@ -202,62 +200,61 @@ button {
   background-color: #8b9a5c;
 }
 
-  
-  form button {
-    width: 400px;
-    height: 60px;
-    border-radius: 30px;
-    border: none;
-    background-color: #a0b179;
-    color: #4e4f3d;
-    font-size: 25px;
-    align-self: center;
-    margin-top: 10px;
-    cursor: pointer;
-  }
-  
-  form button:hover {
-    background-color: #8b9a5c;
-  }
+form button {
+  width: 400px;
+  height: 60px;
+  border-radius: 30px;
+  border: none;
+  background-color: #a0b179;
+  color: #4e4f3d;
+  font-size: 25px;
+  align-self: center;
+  margin-top: 10px;
+  cursor: pointer;
+}
 
-  #top-message-container.success {
-    /* --- Estilos base --- */
-    background-color: #d4f8d4;
-    color: #1f7a1f;
-    border: 1px solid #7bd67b;
-    padding: 12px 16px;
-    border-radius: 6px;
-    font-weight: 500;
-    
-    /* --- Novas propriedades para centralização no fluxo normal --- */
-    /* Removeu: position, top, right, z-index */
-    
-    /* 1. Define uma largura máxima para a caixa */
-    max-width: 600px; 
-    
-    /* 2. Centraliza a caixa na horizontal (necessita de largura definida) */
-    margin: 20px auto; /* 20px de margem em cima/baixo, 'auto' nas laterais para centralizar */
-    
-    /* 3. Garante que o texto dentro da caixa esteja centralizado (opcional) */
-    text-align: center;
+form button:hover {
+  background-color: #8b9a5c;
+}
+
+#top-message-container.success {
+  /* --- Estilos base --- */
+  background-color: #d4f8d4;
+  color: #1f7a1f;
+  border: 1px solid #7bd67b;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+
+  /* --- Novas propriedades para centralização no fluxo normal --- */
+  /* Removeu: position, top, right, z-index */
+
+  /* 1. Define uma largura máxima para a caixa */
+  max-width: 600px;
+
+  /* 2. Centraliza a caixa na horizontal (necessita de largura definida) */
+  margin: 20px auto; /* 20px de margem em cima/baixo, 'auto' nas laterais para centralizar */
+
+  /* 3. Garante que o texto dentro da caixa esteja centralizado (opcional) */
+  text-align: center;
 }
 
 #top-message-container.error {
-    /* --- Estilos base (Amarelo) --- */
-    background-color: #fff3cd; /* Amarelo claro/creme */
-    color: #856404; /* Amarelo escuro/marrom para o texto */
-    border: 1px solid #ffeeba; /* Borda em tom de amarelo */
-    padding: 12px 16px;
-    border-radius: 6px;
-    font-weight: 500;
-    
-    /* --- Propriedades de centralização --- */
-    /* 1. Define uma largura máxima para a caixa */
-    max-width: 600px; 
-    
-    /* 2. Centraliza a caixa na horizontal */
-    margin: 20px auto; 
-    
-    /* 3. Garante que o texto dentro da caixa esteja centralizado (opcional) */
-    text-align: center;
+  /* --- Estilos base (Amarelo) --- */
+  background-color: #fff3cd; /* Amarelo claro/creme */
+  color: #856404; /* Amarelo escuro/marrom para o texto */
+  border: 1px solid #ffeeba; /* Borda em tom de amarelo */
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+
+  /* --- Propriedades de centralização --- */
+  /* 1. Define uma largura máxima para a caixa */
+  max-width: 600px;
+
+  /* 2. Centraliza a caixa na horizontal */
+  margin: 20px auto;
+
+  /* 3. Garante que o texto dentro da caixa esteja centralizado (opcional) */
+  text-align: center;
 }

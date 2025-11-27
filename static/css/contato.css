@@ -82,6 +82,7 @@ nav p {
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
+  cursor: pointer;
 }
 
 .dropdown-menu {
@@ -146,7 +147,6 @@ input {
 }
 ::placeholder {
   font-size: 20px;
-
 }
 .mensagem {
   width: 600px;

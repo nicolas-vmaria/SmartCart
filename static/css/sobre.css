@@ -104,6 +104,7 @@ nav p {
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
+  cursor: pointer;
 }
 
 .dropdown-menu {
@@ -163,7 +164,6 @@ nav p {
 .card h1 {
   font-size: 50px;
   scroll-margin-top: 140px;
-  
 }
 
 .card p {
@@ -187,7 +187,7 @@ nav p {
   color: #4e4f3d;
 }
 
-.lado li{
+.lado li {
   display: flex;
   align-items: center;
   width: 300px;
@@ -205,10 +205,9 @@ nav p {
   list-style: none;
 }
 
-.lado svg{
+.lado svg {
   width: 30px;
   height: 30px;
-
 }
 
 html {

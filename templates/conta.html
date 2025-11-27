@@ -159,6 +159,21 @@
         <a href="/login">Entrar</a>
         {% endif %}
       </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const dropdown = document.querySelector(".dropdown");
+          const trigger = document.querySelector(".dropdown-trigger");
+
+          trigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle("open");
+          });
+
+          document.addEventListener("click", () => {
+            dropdown.classList.remove("open");
+          });
+        });
+      </script>
     </nav>
 
     <section class="section-card">
