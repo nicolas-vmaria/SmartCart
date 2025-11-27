@@ -175,9 +175,9 @@
   .lado li a {
     font-size: 25px;
     text-decoration: none;
-    color: #4e4f3d;
-    font-weight: bold;
+    color: #565745;
   }
+
   .lado ul {
     list-style: none;
   }
@@ -185,11 +185,24 @@
   .lado svg {
     width: 30px;
     height: 30px;
+
   }
   
   html {
     scroll-behavior: smooth;
   }
+
+  table{
+    background-color: #f2f3f2;
+    padding: 20px;
+    border-radius: 10px;
+    line-height: 40px;
+  }
+
+th{
+  border-bottom: 1px solid rgb(197, 197, 197);
+
+} 
   
   footer {
     display: flex;
