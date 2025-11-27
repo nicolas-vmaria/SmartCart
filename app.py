@@ -66,10 +66,17 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
-@app.route("/pagamento")
+@app.route("/pagamento/<int:id>")
 @login_required
-def pagamento():
-    return render_template("pagamento.html", user=current_user)
+def pagamento(id):
+    cursor.execute(
+        "select * from Pedidos where id = %s and id_usuario = %s", (id, current_user.id)
+    )
+    conexao.commit()
+
+    pedido = cursor.fetchone()
+
+    return render_template("pagamento.html", user=current_user, pedido=pedido)
 
 
 @app.route("/excluir_pedido/<int:id>")
@@ -224,17 +231,22 @@ def sobre():
 def pedidos():
     cursor.execute(
         """
-            SELECT 
-            p.*, 
-            pr.nome AS produto_nome, 
-            pr.id_imagem AS produto_imagem,
-            pr.preco AS preco_unitario,
+        SELECT 
+            p.id,
+            p.nome_produto,        
+            p.quantidade,
+            p.preco_unitario,     
+            p.status,
+            p.data_pedido,
+            p.id_orcamento,
+            pr.id_imagem AS produto_imagem, -- A imagem ainda buscamos da tabela de produtos original
             (p.preco_unitario * p.quantidade) AS total_item,
             o.forma_pagamento
         FROM Pedidos p
         JOIN Produtos pr ON p.id_produto = pr.id
         JOIN Orcamentos o ON p.id_orcamento = o.id
         WHERE p.id_usuario = %s
+        ORDER BY p.data_pedido DESC
         """,
         (current_user.id,),
     )
