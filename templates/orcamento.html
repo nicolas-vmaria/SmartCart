@@ -186,7 +186,7 @@
               type="text"
               id="nomeEmpresa"
               name="nomeEmpresa"
-              placeholder="Ex.: Empresa XYZ Ltda"
+              placeholder="Ex.: Empresa XYZ"
               required
             />
           </div>
@@ -270,12 +270,9 @@
               <option value="" disabled selected>
                 Escolha o produto desejado
               </option>
-              <!-- Exemplo de como ficaria com o Jinja (comentado para preview funcionar) -->
-              <!-- {% for p in produtos %} -->
-              <option value="1">Consultoria de Marketing</option>
-              <option value="2">Desenvolvimento Web</option>
-              <option value="3">Design Gráfico</option>
-              <!-- {% endfor %} -->
+              {% for p in produtos %}
+              <option value="{{ p.id }}">{{ p.nome }}</option>
+              {% endfor %}
             </select>
           </div>
 
@@ -284,7 +281,7 @@
             <div class="form-col">
               <label for="quantidade">Quantidade:</label>
               <input
-                type="number"
+                type="text"
                 id="quantidade"
                 name="quantidades"
                 placeholder="Ex.: 100"

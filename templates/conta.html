@@ -465,7 +465,7 @@
 
             // Restaura os valores originais
             formInputs.forEach((input) => {
-              const isCPF = input.name === "cnpj" || input.name === "cpf";
+              const isCPF = input.name === "cnpj";
               const isSenha = input.name === "senha";
               if (!isCPF && !isSenha) {
                 // Se o valor do input está diferente do original (mascarado), restaura.
@@ -530,22 +530,36 @@
           let isChanged = false;
 
           formInputs.forEach((input) => {
-            const isCPF = input.name === "cnpj" || input.name === "cpf";
+            const isCPF = input.name === "cnpj" || input.name === "cpf"; // Campos bloqueados
             const isSenha = input.name === "senha";
 
-            if (!isCPF && !isSenha && !input.disabled) {
+            // Ignora campos desabilitados ou CPFs (que não mudam)
+            if (!isCPF && !input.disabled) {
+              
               let currentValue = input.value;
               let originalValue = originalValues[input.name];
 
+              // Tratamento especial para telefone (limpar máscara antes de comparar)
               if (input.name === "telfone") {
-                // Para o telefone, remove a máscara para comparar e enviar o valor limpo
                 currentValue = input.value.replace(/\D/g, "");
                 originalValue = originalValues[input.name].replace(/\D/g, "");
               }
 
-              if (currentValue !== originalValue) {
-                profileData[input.name] = currentValue;
-                isChanged = true;
+              // --- LÓGICA DA SENHA ---
+              if (isSenha) {
+                // Se o campo senha NÃO estiver vazio, significa que o usuário quer alterar
+                if (currentValue.trim() !== "") {
+                    profileData[input.name] = currentValue;
+                    isChanged = true;
+                }
+              } 
+              // --- LÓGICA DOS OUTROS CAMPOS ---
+              else {
+                // Compara se mudou em relação ao original
+                if (currentValue !== originalValue) {
+                  profileData[input.name] = currentValue;
+                  isChanged = true;
+                }
               }
             }
           });
