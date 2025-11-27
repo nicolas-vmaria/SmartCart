@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Orçamento - SmartCart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,8 +11,9 @@
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/orcamento.css')}}"
+      href="{{ url_for('static', filename='css/termos.css')}}"
     />
+    <title>Informações Gerais - SmartCart</title>
   </head>
   <body>
     <nav>
@@ -40,7 +40,9 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
+
         <li><a href="/orcamento">Orçamento</a></li>
+
         <li><a href="/contato">Contato</a></li>
       </ul>
 
@@ -170,148 +172,91 @@
       </div>
     </nav>
     <section class="section-home">
-      <h1>Orçamento</h1>
+      <h1>Informações Gerais</h1>
     </section>
-
-    <!-- Seção Card -->
-    <section class="section-card">
-      <div class="card">
-        <form method="POST">
-          <!-- Bloco Empresa -->
-          <h1 class="form-section-title">Dados da Empresa</h1>
-
-          <div class="form-group">
-            <label for="nomeEmpresa">Nome da Empresa:</label>
-            <input
-              type="text"
-              id="nomeEmpresa"
-              name="nomeEmpresa"
-              placeholder="Ex.: Empresa XYZ Ltda"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="cnpj">CNPJ:</label>
-            <input
-              type="text"
-              id="cnpj"
-              name="cnpj"
-              placeholder="Ex.: 00.000.000/0000-00"
-              autocomplete="off"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email de Contato:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="exemplo@empresa.com"
-              autocomplete="off"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="endereco">Endereço:</label>
-            <input
-              type="text"
-              id="endereco"
-              name="endereco"
-              placeholder="Rua Exemplo, Bairro Centro"
-              autocomplete="off"
-              required
-            />
-          </div>
-
-          <!-- Linha Dupla: Número e Complemento -->
-          <div class="form-row">
-            <div class="form-col col-numero">
-              <label for="numero">Número:</label>
-              <input
-                type="number"
-                id="numero"
-                name="numero"
-                placeholder="123"
+    <div class="containerSobre">
+      <div class="lado">
+        <h2>Informações Gerais</h2>
+        <ul>
+          <li>
+            <a href="#garantia">Termos de Garantia</a>
+            <?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+            <svg
+              width="800px"
+              height="800px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z"
+                fill="#4e4f3d"
               />
-            </div>
-            <div class="form-col col-comp">
-              <label for="complemento">Complemento:</label>
-              <input
-                type="text"
-                id="complemento"
-                name="complemento"
-                placeholder="Ex.: Apto 401, Bloco B"
+            </svg>
+          </li>
+          <br />
+          <li>
+            <a href="#responsabilidade">Termos de Responsabilidade</a>
+            <svg
+              width="800px"
+              height="800px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z"
+                fill="#4e4f3d"
               />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="cep">CEP:</label>
-            <input
-              type="text"
-              id="cep"
-              name="cep"
-              placeholder="Ex.: 12345-678"
-              class="cep"
-              required
-            />
-          </div>
-
-          <!-- Bloco Produto -->
-          <h1 class="form-section-title sec-produto">Detalhes do Pedido</h1>
-
-          <div class="form-group">
-            <label for="produtos">Selecione o Produto:</label>
-            <select name="produtos" id="produtos" required>
-              <option value="" disabled selected>
-                Escolha o produto desejado
-              </option>
-              <!-- Exemplo de como ficaria com o Jinja (comentado para preview funcionar) -->
-              <!-- {% for p in produtos %} -->
-              <option value="1">Consultoria de Marketing</option>
-              <option value="2">Desenvolvimento Web</option>
-              <option value="3">Design Gráfico</option>
-              <!-- {% endfor %} -->
-            </select>
-          </div>
-
-          <!-- Linha Dupla: Quantidade e Prazo -->
-          <div class="form-row">
-            <div class="form-col">
-              <label for="quantidade">Quantidade:</label>
-              <input
-                type="number"
-                id="quantidade"
-                name="quantidades"
-                placeholder="Ex.: 100"
-                required
+            </svg>
+          </li>
+          <br />
+          <li>
+            <a href="#cancelamento">Políticas de Cancelamento</a>
+            <svg
+              width="800px"
+              height="800px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z"
+                fill="#4e4f3d"
               />
-            </div>
-            <div class="form-col">
-              <label for="prazo">Prazo de Entrega:</label>
-              <input type="date" id="prazo" name="prazo" required />
-            </div>
-          </div>
-
-          <!-- Bloco Observações/Links -->
-          <h1 class="form-section-title sec-produto">Informações Gerais</h1>
-
-          <ul class="obs-list">
-            <li><a href="/termos">Termos de Garantia</a></li>
-            <li><a href="/termos">Políticas de Cancelamento</a></li>
-            <li><a href="/termos">Termos de Responsabilidade</a></li>
-            <li><a href="/termos">Avisos Importantes</a></li>
-          </ul>
-
-          <button type="submit">Enviar Orçamento</button>
-        </form>
+            </svg>
+          </li>
+          <br />
+          <li>
+            <a href="#avisos">Avisos Importantes</a>
+            <svg
+              width="800px"
+              height="800px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z"
+                fill="#4e4f3d"
+              />
+            </svg>
+          </li>
+        </ul>
       </div>
-    </section>
-
+      <section class="section-card">
+        <div class="card">
+          <h1 id="garantia">Termos de Garantia</h1>
+          <p></p>
+          <h1 id="responsabilidade">Termos de Responsabilidade</h1>
+          <p></p>
+          <h1 id="cancelamento">Políticas de Cancelamento</h1>
+          <p></p>
+          <h1 id="avisos">Avisos Importantes</h1>
+          <p></p>
+        </div>
+      </section>
+    </div>
     <footer>
       <div class="container-foot">
         <div class="linha">
@@ -960,70 +905,5 @@
         <p>CNPJ: 26.636.428/0001-19</p>
       </div>
     </footer>
-
-    <script>
-      let cep = document.getElementById("cep");
-
-      cep.addEventListener("input", () => {
-        let n = cep.value.replace(/\D/g, "");
-
-        n = n.substring(0, 8);
-
-        if (n.length > 5) {
-          n = n.replace(/(\d{5})(\d{0,3})/, "$1-$2");
-        } else {
-          n = n.replace(/(\d{0,5})/, "$1");
-        }
-
-        cep.value = n;
-      });
-
-      let cnpj = document.getElementById("cnpj");
-
-      cnpj.addEventListener("input", () => {
-        let n = cnpj.value.replace(/\D/g, "");
-
-        n = n.substring(0, 14);
-
-        if (n.length > 12) {
-          n = n.replace(
-            /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
-            "$1.$2.$3/$4-$5"
-          );
-        } else if (n.length > 8) {
-          n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
-        } else if (n.length > 5) {
-          n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
-        } else if (n.length > 2) {
-          n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
-        } else {
-          n = n.replace(/(\d{0,2})/, "$1");
-        }
-
-        cnpj.value = n;
-      });
-
-      let quantidade = document.getElementById("quantidade");
-
-      quantidade.addEventListener("input", () => {
-        let n = quantidade.value.replace(/\D/g, "");
-
-        n = n.substring(0, 12);
-
-        if (n.length > 9) {
-          n = n.replace(/(\d{1,3})(\d{3})(\d{3})(\d{3})/, "$1.$2.$3.$4");
-        } else if (n.length > 6) {
-          n = n.replace(/(\d{1,3})(\d{3})(\d{3})/, "$1.$2.$3");
-        } else if (n.length > 3) {
-          n = n.replace(/(\d{1,3})(\d{3})/, "$1.$2");
-        } else if (n.length > 0) {
-          n = n;
-        } else {
-          n = "";
-        }
-
-        quantidade.value = n;
-      });
-    </script>
   </body>
 </html>
