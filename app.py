@@ -18,7 +18,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
+    host="localhost", user="root", password="", port="3406", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -67,6 +67,7 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
+
 @app.route("/pagamento/<int:id>")
 @login_required
 def pagamento(id):
@@ -97,12 +98,12 @@ def criar_usuario():
     nome = request.form["nome"]
     cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
     telefone = (
-            request.form["tel"]
-            .replace("(", "")
-            .replace(")", "")
-            .replace("-", "")
-            .replace(" ", "")
-        )
+        request.form["tel"]
+        .replace("(", "")
+        .replace(")", "")
+        .replace("-", "")
+        .replace(" ", "")
+    )
     email = request.form["email"]
     senha = request.form["senha"]
 
@@ -111,19 +112,19 @@ def criar_usuario():
     senha_criptografada = objeto_hash.hexdigest()
 
     cursor.execute(
-            "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
-            (cnpj, email),
-        )
+        "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
+        (cnpj, email),
+    )
     usuario_existente = cursor.fetchone()
 
     if usuario_existente:
-            erro = "Usuário já cadastrado"
-            return redirect(f"/admin/criar_usuario?erro={erro}")
+        erro = "Usuário já cadastrado"
+        return redirect(f"/admin/criar_usuario?erro={erro}")
 
     cursor.execute(
-            "INSERT INTO Usuario (nome, cnpj, telefone, email, senha, is_admin) VALUES (%s, %s, %s, %s, %s, %s)",
-            (nome, cnpj, telefone, email, senha_criptografada, True),
-        )
+        "INSERT INTO Usuario (nome, cnpj, telefone, email, senha, is_admin) VALUES (%s, %s, %s, %s, %s, %s)",
+        (nome, cnpj, telefone, email, senha_criptografada, True),
+    )
     conexao.commit()
 
     flash("Usuario criado com sucesso!", "sucesso")
@@ -133,13 +134,12 @@ def criar_usuario():
 @app.route("/excluir_usuario/<int:id>")
 @login_required
 def excluir_usuario(id):
-    cursor.execute(
-        "DELETE FROM Usuario WHERE id = %s", (id)
-    )
+    cursor.execute("DELETE FROM Usuario WHERE id = %s", (id))
     conexao.commit()
 
     flash("Usuario excluído com sucesso!", "sucesso")
     return redirect(url_for("admin_users"))
+
 
 @app.route("/editar_usuario/<int:id>", methods=["POST"])
 @login_required
@@ -158,14 +158,17 @@ def editar_usuario(id):
 
     cursor.execute(
         "UPDATE Usuario SET nome=%s, cnpj=%s, telefone=%s, email=%s, senha=%s WHERE id = %s",
-        (nome, cnpj, telefone, email, senha, id)
+        (nome, cnpj, telefone, email, senha, id),
     )
     conexao.commit()
 
     flash("Usuario atualizado com sucesso!", "sucesso")
     return redirect(url_for("admin_users"))
 
+
 app.route("/admin/criar_produto", methods=["POST"])
+
+
 @login_required
 def criar_produto():
     nome = request.form["nome"]
@@ -174,24 +177,24 @@ def criar_produto():
     id_imagem = request.form["id_imagem"]
 
     cursor.execute(
-            "INSERT INTO Produtos (nome, preco, estoque, id_imagem) VALUES (%s, %s, %s, %s)",
-            (nome, preco, estoque, id_imagem),
-        )
+        "INSERT INTO Produtos (nome, preco, estoque, id_imagem) VALUES (%s, %s, %s, %s)",
+        (nome, preco, estoque, id_imagem),
+    )
     conexao.commit()
 
     flash("Produto criado com sucesso!", "sucesso")
     return redirect(url_for("admin_produtos"))
 
+
 @app.route("/excluir_produto/<int:id>")
 @login_required
 def excluir_produto(id):
-    cursor.execute(
-        "DELETE FROM Produtos WHERE id = %s", (id,)
-    )
+    cursor.execute("DELETE FROM Produtos WHERE id = %s", (id,))
     conexao.commit()
 
     flash("Produto excluído com sucesso!", "sucesso")
     return redirect(url_for("admin_produtos"))
+
 
 @app.route("/editar_produto/<int:id>", methods=["POST"])
 @login_required
@@ -203,13 +206,12 @@ def editar_produto(id):
 
     cursor.execute(
         "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, id_imagem=%s WHERE id = %s",
-        (nome, preco, estoque, id_imagem, id)
+        (nome, preco, estoque, id_imagem, id),
     )
     conexao.commit()
 
     flash("Produto atualizado com sucesso!", "sucesso")
     return redirect(url_for("admin_produtos"))
-
 
 
 @app.route("/admin/")
@@ -218,15 +220,24 @@ def admin():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
-    
+
     cursor.execute("SELECT COUNT(*) AS total_usuarios FROM Usuario WHERE is_admin = 0")
     total_usuarios = cursor.fetchone()["total_usuarios"]
     cursor.execute("SELECT COUNT(*) AS total_produtos FROM Produtos")
     total_produtos = cursor.fetchone()["total_produtos"]
-    cursor.execute("SELECT COUNT(*) AS total_pedidos FROM Pedidos WHERE status = 'Pendente'")
+    cursor.execute(
+        "SELECT COUNT(*) AS total_pedidos FROM Pedidos WHERE status = 'Pendente'"
+    )
     total_pedidos = cursor.fetchone()["total_pedidos"]
 
-    return render_template("adminPage.html", user=current_user, total_usuarios=total_usuarios, total_produtos=total_produtos, total_pedidos=total_pedidos)
+    return render_template(
+        "adminPage.html",
+        user=current_user,
+        total_usuarios=total_usuarios,
+        total_produtos=total_produtos,
+        total_pedidos=total_pedidos,
+    )
+
 
 @app.route("/admin/users")
 @login_required
@@ -234,7 +245,7 @@ def admin_users():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
-    
+
     cursor.execute("SELECT * FROM Usuario WHERE is_admin = 0")
     usuarios = cursor.fetchall()
 
@@ -247,7 +258,7 @@ def admin_produtos():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
-    
+
     cursor.execute("SELECT * FROM Produtos")
     produtos = cursor.fetchall()
 
@@ -439,7 +450,15 @@ def orcamento():
 
         cursor.execute(
             "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, nome_produto, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (current_user.id, produtos, id_orcamento, nome_produto, quantidades, preco, "Pendente"),
+            (
+                current_user.id,
+                produtos,
+                id_orcamento,
+                nome_produto,
+                quantidades,
+                preco,
+                "Pendente",
+            ),
         )
         conexao.commit()
 
