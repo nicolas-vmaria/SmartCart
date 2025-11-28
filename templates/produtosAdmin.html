@@ -195,6 +195,8 @@
                     <span>Local onde o administrador vê, edita e controla os produtos do sistema.</span>
                 </h1>
 
+                {% if produtos %}
+
                 <div class="action-table">
 
                     <div class="input-action-table">
@@ -272,18 +274,20 @@
                         <th>Preço</th>
                         <th>Ação</th>
                     </tr>
+                    {% for p in produtos %}
                     <tr>
-                        <td>01</td>
+                        
+                        <td>{{ p.nome }}</td>
                         <td>
                             <div class="img-produto">
-
+                                <img src="{{ p.id_imagem }}" alt="Imagem do Produto">
                             </div>
                         </td>
-                        <td>Carrinho mega legal</td>
-                        <td>78 un.</td>
-                        <td>R$ 1380,89</td>
+                        <td>{{ p.nome }}</td>
+                        <td>{{ p.estoque }} un.</td>
+                        <td>R$ {{ p.preco }}</td>
                         <td>
-                            <button>
+                            <a>
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -307,8 +311,8 @@
                                     </g>
 
                                 </svg>
-                            </button>
-                            <button>
+                            </a>
+                            <a href="/excluir_produto/{{ p.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -336,12 +340,16 @@
                                     </g>
 
                                 </svg>
-                            </button>
+                            </a>
                         </td>
                     </tr>
+                    {% endfor %}
                 </table>
                 </h1>
             </div>
+            {% else %}
+            <h1>Não há produtos cadastrados</h1>
+            {% endif %}
         </section>
     </main>
 </body>

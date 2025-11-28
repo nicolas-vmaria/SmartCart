@@ -190,7 +190,7 @@
         </section>
         <section id="main-screen">
             <div id="info-main-screen">
-                <h1 class="titulo-page">Olá, User-Admin <br>
+                <h1 class="titulo-page">Olá, {{ user.primeiro_nome }}<br>
                     <span>Seja bem-vindo!</span>
                 </h1>
 
@@ -254,11 +254,11 @@
                                 </svg>
                             </div>
 
-                            <h1 id="orcamento-titulo">Orçamentos<br> Pendentes </h1>
+                            <h1 id="orcamento-titulo">Pedidos<br> Pendentes </h1>
                         </div>
 
                         <div class="display-card">
-                            <h1>16</h1>
+                            <h1>{{ total_pedidos }}</h1>
                         </div>
 
                     </div>
@@ -292,7 +292,7 @@
                         </div>
 
                         <div class="display-card">
-                            <h1>10</h1>
+                            <h1>{{ total_produtos }}</h1>
                         </div>
                     </div>
                     <div class="card-dashboard">
@@ -328,7 +328,7 @@
                         </div>
 
                         <div class="display-card">
-                            <h1>652</h1>
+                            <h1>{{ total_usuarios }}</h1>
                         </div>
 
                     </div>

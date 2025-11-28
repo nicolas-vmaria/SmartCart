@@ -27,6 +27,7 @@ def hash(txt):
     hash_obj = hashlib.sha256(txt.encode("utf-8"))
     return hash_obj.hexdigest()
 
+
 # Criptogrando a senha do admin
 # senha_admin = "admin"
 # objeto_hash = hashlib.sha256()
@@ -66,10 +67,17 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
-@app.route("/pagamento")
+
+@app.route("/pagamento/<int:id>")
 @login_required
-def pagamento():
-    return render_template("pagamento.html", user=current_user)
+def pagamento(id):
+    cursor.execute(
+        "select * from Pedidos where id = %s and id_usuario = %s", (id, current_user.id)
+    )
+
+    pedido = cursor.fetchone()
+
+    return render_template("pagamento.html", user=current_user, pedido=pedido)
 
 
 @app.route("/excluir_pedido/<int:id>")
@@ -84,6 +92,128 @@ def excluir_pedido(id):
     return redirect(url_for("pedidos"))
 
 
+@app.route("/admin/criar_usuario", methods=["POST"])
+@login_required
+def criar_usuario():
+    nome = request.form["nome"]
+    cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
+    telefone = (
+        request.form["tel"]
+        .replace("(", "")
+        .replace(")", "")
+        .replace("-", "")
+        .replace(" ", "")
+    )
+    email = request.form["email"]
+    senha = request.form["senha"]
+
+    objeto_hash = hashlib.sha256()
+    objeto_hash.update(senha.encode("utf-8"))
+    senha_criptografada = objeto_hash.hexdigest()
+
+    cursor.execute(
+        "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
+        (cnpj, email),
+    )
+    usuario_existente = cursor.fetchone()
+
+    if usuario_existente:
+        erro = "Usuário já cadastrado"
+        return redirect(f"/admin/criar_usuario?erro={erro}")
+
+    cursor.execute(
+        "INSERT INTO Usuario (nome, cnpj, telefone, email, senha, is_admin) VALUES (%s, %s, %s, %s, %s, %s)",
+        (nome, cnpj, telefone, email, senha_criptografada, True),
+    )
+    conexao.commit()
+
+    flash("Usuario criado com sucesso!", "sucesso")
+    return redirect(url_for("admin_users"))
+
+
+@app.route("/excluir_usuario/<int:id>")
+@login_required
+def excluir_usuario(id):
+    cursor.execute("DELETE FROM Usuario WHERE id = %s", (id))
+    conexao.commit()
+
+    flash("Usuario excluído com sucesso!", "sucesso")
+    return redirect(url_for("admin_users"))
+
+
+@app.route("/editar_usuario/<int:id>", methods=["POST"])
+@login_required
+def editar_usuario(id):
+    nome = request.form["nome"]
+    cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
+    telefone = (
+        request.form["tel"]
+        .replace("(", "")
+        .replace(")", "")
+        .replace("-", "")
+        .replace(" ", "")
+    )
+    email = request.form["email"]
+    senha = request.form["senha"]
+
+    cursor.execute(
+        "UPDATE Usuario SET nome=%s, cnpj=%s, telefone=%s, email=%s, senha=%s WHERE id = %s",
+        (nome, cnpj, telefone, email, senha, id),
+    )
+    conexao.commit()
+
+    flash("Usuario atualizado com sucesso!", "sucesso")
+    return redirect(url_for("admin_users"))
+
+
+app.route("/admin/criar_produto", methods=["POST"])
+
+
+@login_required
+def criar_produto():
+    nome = request.form["nome"]
+    preco = request.form["preco"]
+    estoque = request.form["estoque"]
+    id_imagem = request.form["id_imagem"]
+
+    cursor.execute(
+        "INSERT INTO Produtos (nome, preco, estoque, id_imagem) VALUES (%s, %s, %s, %s)",
+        (nome, preco, estoque, id_imagem),
+    )
+    conexao.commit()
+
+    flash("Produto criado com sucesso!", "sucesso")
+    return redirect(url_for("admin_produtos"))
+
+
+@app.route("/excluir_produto/<int:id>")
+@login_required
+def excluir_produto(id):
+    cursor.execute("DELETE FROM Produtos WHERE id = %s", (id,))
+    conexao.commit()
+
+    flash("Produto excluído com sucesso!", "sucesso")
+    return redirect(url_for("admin_produtos"))
+
+
+@app.route("/editar_produto/<int:id>", methods=["POST"])
+@login_required
+def editar_produto(id):
+    nome = request.form["nome"]
+    preco = request.form["preco"]
+    estoque = request.form["estoque"]
+    id_imagem = request.form["id_imagem"]
+
+    cursor.execute(
+        "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, id_imagem=%s WHERE id = %s",
+        (nome, preco, estoque, id_imagem, id),
+    )
+    conexao.commit()
+
+    flash("Produto atualizado com sucesso!", "sucesso")
+    return redirect(url_for("admin_produtos"))
+
+
 @app.route("/admin/")
 @login_required
 def admin():
@@ -91,7 +221,22 @@ def admin():
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
 
-    return render_template("adminPage.html")
+    cursor.execute("SELECT COUNT(*) AS total_usuarios FROM Usuario WHERE is_admin = 0")
+    total_usuarios = cursor.fetchone()["total_usuarios"]
+    cursor.execute("SELECT COUNT(*) AS total_produtos FROM Produtos")
+    total_produtos = cursor.fetchone()["total_produtos"]
+    cursor.execute(
+        "SELECT COUNT(*) AS total_pedidos FROM Pedidos WHERE status = 'Pendente'"
+    )
+    total_pedidos = cursor.fetchone()["total_pedidos"]
+
+    return render_template(
+        "adminPage.html",
+        user=current_user,
+        total_usuarios=total_usuarios,
+        total_produtos=total_produtos,
+        total_pedidos=total_pedidos,
+    )
 
 
 @app.route("/admin/users")
@@ -101,7 +246,10 @@ def admin_users():
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
 
-    return render_template("usersAdmin.html")
+    cursor.execute("SELECT * FROM Usuario WHERE is_admin = 0")
+    usuarios = cursor.fetchall()
+
+    return render_template("usersAdmin.html", user=current_user, usuarios=usuarios)
 
 
 @app.route("/admin/produtos")
@@ -111,7 +259,10 @@ def admin_produtos():
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
 
-    return render_template("produtosAdmin.html")
+    cursor.execute("SELECT * FROM Produtos")
+    produtos = cursor.fetchall()
+
+    return render_template("produtosAdmin.html", user=current_user, produtos=produtos)
 
 
 @app.route("/admin/orcamentos")
@@ -144,12 +295,12 @@ def conta_update():
 
         allowed_fields = {
             "nome": "nome",
-            "telfone": "telefone", 
+            "telfone": "telefone",
             "email": "email",
             "senha": "senha",
         }
 
-        updates = {} 
+        updates = {}
 
         for js_key, db_field in allowed_fields.items():
             if js_key in data:
@@ -166,7 +317,7 @@ def conta_update():
                 if js_key == "senha":
                     # Usamos o mesmo padrão SHA-256 do login e cadastro
                     objeto_hash = hashlib.sha256()
-                    objeto_hash.update(value.encode('utf-8'))
+                    objeto_hash.update(value.encode("utf-8"))
                     value = objeto_hash.hexdigest()
                 # ---------------------
 
@@ -219,22 +370,32 @@ def sobre():
     return render_template("sobre.html", user=current_user)
 
 
+@app.route("/termos")
+def termos():
+    return render_template("termos.html", user=current_user)
+
+
 @app.route("/pedidos")
 @login_required
 def pedidos():
     cursor.execute(
         """
-            SELECT 
-            p.*, 
-            pr.nome AS produto_nome, 
-            pr.id_imagem AS produto_imagem,
-            pr.preco AS preco_unitario,
+        SELECT 
+            p.id,
+            p.nome_produto,        
+            p.quantidade,
+            p.preco_unitario,     
+            p.status,
+            p.data_pedido,
+            p.id_orcamento,
+            pr.id_imagem AS produto_imagem, -- A imagem ainda buscamos da tabela de produtos original
             (p.preco_unitario * p.quantidade) AS total_item,
             o.forma_pagamento
         FROM Pedidos p
         JOIN Produtos pr ON p.id_produto = pr.id
         JOIN Orcamentos o ON p.id_orcamento = o.id
         WHERE p.id_usuario = %s
+        ORDER BY p.data_pedido DESC
         """,
         (current_user.id,),
     )
@@ -259,7 +420,7 @@ def orcamento():
         complemento = request.form["complemento"]
         cep = request.form["cep"].replace("-", "")
         produtos = request.form["produtos"]
-        quantidades = request.form["quantidades"]
+        quantidades = request.form["quantidades"].replace(".", "")
         prazo_entrega = request.form["prazo"]
 
         cursor.execute(
@@ -282,11 +443,22 @@ def orcamento():
         cursor.execute("SELECT preco FROM Produtos WHERE id = %s", (produtos,))
         preco = cursor.fetchone()["preco"]
 
+        cursor.execute("select nome from Produtos where id = %s", (produtos,))
+        nome_produto = cursor.fetchone()["nome"]
+
         id_orcamento = cursor.lastrowid
 
         cursor.execute(
-            "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s)",
-            (current_user.id, produtos, id_orcamento, quantidades, preco, "pendente"),
+            "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, nome_produto, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (
+                current_user.id,
+                produtos,
+                id_orcamento,
+                nome_produto,
+                quantidades,
+                preco,
+                "Pendente",
+            ),
         )
         conexao.commit()
 
@@ -364,7 +536,6 @@ def cadastro():
         objeto_hash.update(senha.encode("utf-8"))
         senha_criptografada = objeto_hash.hexdigest()
 
-
         cursor.execute(
             "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
             (cnpj, email),
@@ -380,7 +551,9 @@ def cadastro():
             (nome, cnpj, telefone, email, senha_criptografada),
         )
         conexao.commit()
-        new_user = Usuario(cursor.lastrowid, nome, cnpj, telefone, email, senha_criptografada)
+        new_user = Usuario(
+            cursor.lastrowid, nome, cnpj, telefone, email, senha_criptografada
+        )
         login_user(new_user)
 
         return redirect(url_for("index"))
@@ -399,7 +572,8 @@ def login():
         senha_verificada = objeto_hash.hexdigest()
 
         cursor.execute(
-            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s", (cnpj, senha_verificada)
+            "SELECT * FROM Usuario WHERE cnpj = %s AND senha = %s",
+            (cnpj, senha_verificada),
         )
         usuario = cursor.fetchone()
 

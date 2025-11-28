@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pagamento Pix - SmartCart</title>
+    <title>Pagamento - SmartCart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -82,7 +82,6 @@
             />
           </div>
 
-          <div class="timer">Tempo restante: 14:59</div>
 
           <button class="btn-action" onclick="copiarCodigo()">
             Copiar Código Pix
@@ -105,23 +104,24 @@
               <input
                 type="text"
                 placeholder="0000 0000 0000 0000"
-                maxlength="19"
+                id="cartao" 
+                required
               />
             </div>
 
             <div class="form-group">
               <label>Nome no Cartão</label>
-              <input type="text" placeholder="Como impresso no cartão" />
+              <input type="text" placeholder="Como impresso no cartão" required/>
             </div>
 
             <div class="form-row">
               <div class="form-group" style="flex: 1">
                 <label>Validade</label>
-                <input type="text" placeholder="MM/AA" maxlength="5" />
+                <input type="text" placeholder="MM/AA" id="validade" required />
               </div>
               <div class="form-group" style="flex: 1">
                 <label>CVV</label>
-                <input type="text" placeholder="123" maxlength="3" />
+                <input type="text" placeholder="123" maxlength="3" id="cvv" required/>
               </div>
             </div>
 
@@ -129,30 +129,32 @@
               type="submit"
               class="btn-action"
               style="max-width: 100%; margin-top: 10px"
+              
             >
-              Pagar R$ 10.000,00
+              Pagar {{ "%.2f"|format(pedido.preco_unitario * pedido.quantidade) }}
             </button>
           </form>
         </div>
       </div>
 
       <!-- Lado Direito: Resumo -->
+       
       <div class="payment-summary">
         <h2 class="summary-title">Resumo do Pedido</h2>
 
         <div class="summary-row">
           <span>Produto</span>
-          <strong>Carrinho de compras</strong>
+          <strong>{{ pedido.nome_produto }}</strong>
         </div>
 
         <div class="summary-row">
           <span>Quantidade</span>
-          <strong>100 un</strong>
+          <strong>{{ pedido.quantidade }} un</strong>
         </div>
 
         <div class="summary-row total">
           <span class="total-label">Valor Total a Pagar</span>
-          <span>R$ 10.000,00</span>
+          <span>R$ {{ "%.2f"|format(pedido.preco_unitario * pedido.quantidade) }}</span>
         </div>
 
         <div class="secure-badge">
@@ -175,6 +177,48 @@
     </div>
 
     <script>
+      let catao = document.getElementById("cartao");
+
+      cartao.addEventListener("input", () => {
+        let n = cartao.value.replace(/\D/g, "");
+
+        n = n.substring(0, 16);
+
+        if (n.length > 12) {
+          n = n.replace(/(\d{4})(\d{4})(\d{4})(\d{0,4})/, "$1 $2 $3 $4");
+        } else if (n.length > 8) {
+          n = n.replace(/(\d{4})(\d{4})(\d{0,4})/, "$1 $2 $3");
+        } else if (n.length > 4) {
+          n = n.replace(/(\d{4})(\d{0,4})/, "$1 $2");
+        } else if (n.length > 0) {
+          n = n;
+        } else {
+          n = "";
+        }
+
+        catao.value = n;
+      });
+
+      let validade = document.getElementById("validade");
+
+      validade.addEventListener("input", () => {
+        let n = validade.value.replace(/\D/g, "");
+
+        n = n.substring(0, 4);
+
+        if (n.length > 2) {
+          n = n.replace(/(\d{2})(\d{0,2})/, "$1/$2");
+        }  else if (n.length > 0) {
+          n = n;
+        } else {
+          n = "";
+        }
+        
+
+        validade.value = n;
+      });
+
+
       // Função para trocar abas
       function switchTab(tabName) {
         // Remove active de todos os botões e conteúdos

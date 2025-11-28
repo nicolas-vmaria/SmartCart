@@ -46,6 +46,7 @@ CREATE TABLE Pedidos (
     id_usuario INT NOT NULL,
     id_produto INT NOT NULL,
     id_orcamento INT NOT NULL,
+    nome_produto VARCHAR(100) NOT NULL,
     quantidade INT NOT NULL,
     preco_unitario DECIMAL(10,2) NOT NULL,
     status VARCHAR(50) DEFAULT 'Pendente',
