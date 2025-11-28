@@ -195,6 +195,8 @@
                     <span>Local onde o administrador vê, edita e controla os produtos do sistema.</span>
                 </h1>
 
+                {% if produtos %}
+
                 <div class="action-table">
 
                     <div class="input-action-table">
@@ -285,7 +287,7 @@
                         <td>{{ p.estoque }} un.</td>
                         <td>R$ {{ p.preco }}</td>
                         <td>
-                            <button>
+                            <a>
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -309,8 +311,8 @@
                                     </g>
 
                                 </svg>
-                            </button>
-                            <button>
+                            </a>
+                            <a href="/excluir_produto/{{ p.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -338,13 +340,16 @@
                                     </g>
 
                                 </svg>
-                            </button>
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
                 </table>
                 </h1>
             </div>
+            {% else %}
+            <h1>Não há produtos cadastrados</h1>
+            {% endif %}
         </section>
     </main>
 </body>

@@ -198,6 +198,8 @@
                     <span>Local onde o administrador vê, edita e controla os usuários do sistema.</span>
                 </h1>
 
+                {% if usuarios %}
+
                 <div class="action-table">
 
                     <div class="input-action-table">
@@ -224,6 +226,7 @@
                         </i>
                         <input type="search" placeholder="Pesquisar usuário" name="" id="">
                     </div>
+                    
 
                     <div class="action-buttons-group">
                         <button id="button-filter">
@@ -283,7 +286,9 @@
                         <td>{{ user.telefone }}</td>
                         <td>{{ user.email }}</td>
                         <td>
-                            <button>
+
+                        
+                            <a>
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -307,8 +312,8 @@
                                     </g>
 
                                 </svg>
-                            </button>
-                            <button>
+                            </a>
+                            <a href="/excluir_usuario/{{ user.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -336,13 +341,18 @@
                                     </g>
 
                                 </svg>
-                            </button>
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
                 </table>
-                </h1>
+            </h1>
+
             </div>
+            {% else %}
+                
+            <h1>Não há usuários cadastrados</h1>
+            {% endif %}
         </section>
     </main>
 </body>
