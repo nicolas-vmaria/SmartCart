@@ -600,9 +600,30 @@ def login():
 
 @app.route("/produtos")
 def listar_produtos():
+    # 1. Busca os dados do banco
     cursor.execute("SELECT * FROM Produtos")
-    produtos = cursor.fetchall()
-    return render_template("produto.html", user=current_user, produtos=produtos)
+    produtos_db = cursor.fetchall()
+
+    # Transforma em lista para podermos ordenar no Python
+    produtos_lista = list(produtos_db)
+
+    # 2. Pega o filtro selecionado na URL
+    sort_option = request.args.get("sort", "recommended")
+
+    # 3. Ordena a lista no Python antes de enviar
+    # NOTA: Verifique se no seu banco a coluna se chama 'preco', 'price' ou é um índice numérico
+    if sort_option == "price-low":
+        produtos_lista.sort(key=lambda x: x["preco"])
+    elif sort_option == "price-high":
+        produtos_lista.sort(key=lambda x: x["preco"], reverse=True)
+
+    # 4. Renderiza
+    return render_template(
+        "produto.html",
+        user=current_user,
+        produtos=produtos_lista,
+        current_sort=sort_option,
+    )
 
 
 if __name__ == "__main__":

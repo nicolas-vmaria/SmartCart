@@ -114,7 +114,7 @@ nav p {
 /* --- Variáveis de Estilo --- */
 :root {
   --primary-color: #a0b179;
-  --success-color: #28a745;
+  --success-color: #a0b179;
   --danger-color: #dc3545;
   --pendente-color: #eb971a;
   --text-dark: #333;
@@ -288,7 +288,7 @@ nav p {
   color: white;
 }
 .btn-pay:hover {
-  background-color: #218838;
+  background-color: #adbb8d;
 }
 
 .btn-delete {

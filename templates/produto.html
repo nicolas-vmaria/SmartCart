@@ -173,29 +173,52 @@
         </script>
       </div>
     </nav>
+  
+      <div class="container">
+        <form action="/produtos" method="GET" class="controls">
+            <div class="sort-wrapper">
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="recommended" {% if current_sort == 'recommended' %}selected{% endif %}>
+                        Ordenar por: Recomendados
+                    </option>
+                    <option value="price-low" {% if current_sort == 'price-low' %}selected{% endif %}>
+                        Preço: Menor para Maior
+                    </option>
+                    <option value="price-high" {% if current_sort == 'price-high' %}selected{% endif %}>
+                        Preço: Maior para Menor
+                    </option>
+                </select>
+            </div>
+        </form>
+    
+        <div class="product-grid">
 
-    <div class="container">
-      <div class="row">
-        {% if produtos %} {% for p in produtos %}
-        <div class="card-body">
-          <h5 class="card-title">{{ p.nome }}</h5>
-
-          <img
-            class="img-produto"
-            src="../static/img/{{ p.id_imagem }}"
-            alt="produto"
-          />
-
-          <div class="card-info">
-            <p class="card-text">R$ {{ "%.2f"|format(p.preco) }}</p>
-            <p>Estoque: {{ p.estoque }}</p>
-          </div>
+            {% for produto in produtos %}
+            <div class="product-card">
+                
+                <div class="image-container">
+                    <input type="checkbox" id="like-{{ produto.id }}" class="like-checkbox">
+                    
+                    <label for="like-{{ produto.id }}" class="heart-btn">
+                        <svg class="heart-icon" viewBox="0 0 24 24">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </label>
+    
+                    <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" class="product-img">
+                </div>
+    
+                <div class="product-info">
+                    <h3 class="product-title">{{ produto.nome }}</h3>                 
+                    <div class="product-price">R$ {{ "%.2f"|format(produto.preco) }}</div>
+                </div>
+                
+    
+            </div>
+            {% else %}
+                <p style="text-align: center; width: 100%; color: #666;">Nenhum produto encontrado.</p>
+            {% endfor %}
         </div>
-
-        {% endfor %} {% else %}
-        <p>Nenhum produto encontrado.</p>
-        {% endif %}
-      </div>
     </div>
     <footer>
       <div class="container-foot">
@@ -205,19 +228,19 @@
             <hr />
 
             <ul>
-              <a href="">
+              <a href="/sobre#quem-somos">
                 <li>Quem Somos</li>
               </a>
-              <a href="">
+              <a href="/sobre#perguntas">
                 <li>Perguntas Frequentes</li>
               </a>
-              <a href="">
+              <a href="/sobre#franqueado">
                 <li>Seja um Franqueado</li>
               </a>
-              <a href="">
+              <a href="/sobre#lojas">
                 <li>Nossas Lojas</li>
               </a>
-              <a href="">
+              <a href="/sobre#trabalhe">
                 <li>Trabalhe Conosco</li>
               </a>
             </ul>
@@ -227,10 +250,10 @@
             <hr />
 
             <ul>
-              <a href="">
+              <a href="/conta">
                 <li>Minha Conta</li>
               </a>
-              <a href="">
+              <a href="/pedidos">
                 <li>Meus Pedidos</li>
               </a>
             </ul>
@@ -240,19 +263,19 @@
             <hr />
 
             <ul>
-              <a href="">
+              <a href="/termos">
                 <li>Privacidade</li>
               </a>
-              <a href="">
+              <a href="/termos">
                 <li>Termos de Uso</li>
               </a>
-              <a href="">
+              <a href="/termos">
                 <li>Trocas e Devolução</li>
               </a>
-              <a href="">
+              <a href="/termos">
                 <li>Entrega e Frete</li>
               </a>
-              <a href="">
+              <a href="/termos">
                 <li>Pagamento</li>
               </a>
             </ul>
