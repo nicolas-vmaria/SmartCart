@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pagamento Pix - SmartCart</title>
+    <title>Pagamento - SmartCart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -129,31 +129,32 @@
               type="submit"
               class="btn-action"
               style="max-width: 100%; margin-top: 10px"
+              
             >
-              Pagar R$ 10.000,00
+              Pagar {{ "%.2f"|format(pedido.preco_unitario * pedido.quantidade) }}
             </button>
           </form>
         </div>
       </div>
 
       <!-- Lado Direito: Resumo -->
-       {% for p in pedido %}
+       
       <div class="payment-summary">
         <h2 class="summary-title">Resumo do Pedido</h2>
 
         <div class="summary-row">
           <span>Produto</span>
-          <strong>{{ p.produto_nome }}</strong>
+          <strong>{{ pedido.nome_produto }}</strong>
         </div>
 
         <div class="summary-row">
           <span>Quantidade</span>
-          <strong>100 un</strong>
+          <strong>{{ pedido.quantidade }} un</strong>
         </div>
 
         <div class="summary-row total">
           <span class="total-label">Valor Total a Pagar</span>
-          <span>R$ 10.000,00</span>
+          <span>R$ {{ "%.2f"|format(pedido.preco_unitario * pedido.quantidade) }}</span>
         </div>
 
         <div class="secure-badge">

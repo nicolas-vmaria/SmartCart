@@ -272,16 +272,18 @@
                         <th>Preço</th>
                         <th>Ação</th>
                     </tr>
+                    {% for p in produtos %}
                     <tr>
-                        <td>01</td>
+                        
+                        <td>{{ p.nome }}</td>
                         <td>
                             <div class="img-produto">
-
+                                <img src="{{ p.id_imagem }}" alt="Imagem do Produto">
                             </div>
                         </td>
-                        <td>Carrinho mega legal</td>
-                        <td>78 un.</td>
-                        <td>R$ 1380,89</td>
+                        <td>{{ p.nome }}</td>
+                        <td>{{ p.estoque }} un.</td>
+                        <td>R$ {{ p.preco }}</td>
                         <td>
                             <button>
                                 <!DOCTYPE svg
@@ -339,6 +341,7 @@
                             </button>
                         </td>
                     </tr>
+                    {% endfor %}
                 </table>
                 </h1>
             </div>

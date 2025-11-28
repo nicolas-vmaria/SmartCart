@@ -18,7 +18,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3406", database="smart_cart"
+    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -73,7 +73,6 @@ def pagamento(id):
     cursor.execute(
         "select * from Pedidos where id = %s and id_usuario = %s", (id, current_user.id)
     )
-    conexao.commit()
 
     pedido = cursor.fetchone()
 
@@ -92,15 +91,142 @@ def excluir_pedido(id):
     return redirect(url_for("pedidos"))
 
 
+@app.route("/admin/criar_usuario", methods=["POST"])
+@login_required
+def criar_usuario():
+    nome = request.form["nome"]
+    cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
+    telefone = (
+            request.form["tel"]
+            .replace("(", "")
+            .replace(")", "")
+            .replace("-", "")
+            .replace(" ", "")
+        )
+    email = request.form["email"]
+    senha = request.form["senha"]
+
+    objeto_hash = hashlib.sha256()
+    objeto_hash.update(senha.encode("utf-8"))
+    senha_criptografada = objeto_hash.hexdigest()
+
+    cursor.execute(
+            "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
+            (cnpj, email),
+        )
+    usuario_existente = cursor.fetchone()
+
+    if usuario_existente:
+            erro = "Usuário já cadastrado"
+            return redirect(f"/admin/criar_usuario?erro={erro}")
+
+    cursor.execute(
+            "INSERT INTO Usuario (nome, cnpj, telefone, email, senha, is_admin) VALUES (%s, %s, %s, %s, %s, %s)",
+            (nome, cnpj, telefone, email, senha_criptografada, True),
+        )
+    conexao.commit()
+
+    flash("Usuario criado com sucesso!", "sucesso")
+    return redirect(url_for("admin_users"))
+
+
+@app.route("/excluir_usuario/<int:id>")
+@login_required
+def excluir_usuario(id):
+    cursor.execute(
+        "DELETE FROM Usuario WHERE id = %s", (id)
+    )
+    conexao.commit()
+
+    flash("Usuario excluído com sucesso!", "sucesso")
+    return redirect(url_for("admin_users"))
+
+@app.route("/editar_usuario/<int:id>", methods=["POST"])
+@login_required
+def editar_usuario(id):
+    nome = request.form["nome"]
+    cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
+    telefone = (
+        request.form["tel"]
+        .replace("(", "")
+        .replace(")", "")
+        .replace("-", "")
+        .replace(" ", "")
+    )
+    email = request.form["email"]
+    senha = request.form["senha"]
+
+    cursor.execute(
+        "UPDATE Usuario SET nome=%s, cnpj=%s, telefone=%s, email=%s, senha=%s WHERE id = %s",
+        (nome, cnpj, telefone, email, senha, id)
+    )
+    conexao.commit()
+
+    flash("Usuario atualizado com sucesso!", "sucesso")
+    return redirect(url_for("admin_users"))
+
+app.route("/admin/criar_produto", methods=["POST"])
+@login_required
+def criar_produto():
+    nome = request.form["nome"]
+    preco = request.form["preco"]
+    estoque = request.form["estoque"]
+    id_imagem = request.form["id_imagem"]
+
+    cursor.execute(
+            "INSERT INTO Produtos (nome, preco, estoque, id_imagem) VALUES (%s, %s, %s, %s)",
+            (nome, preco, estoque, id_imagem),
+        )
+    conexao.commit()
+
+    flash("Produto criado com sucesso!", "sucesso")
+    return redirect(url_for("admin_produtos"))
+
+@app.route("/excluir_produto/<int:id>")
+@login_required
+def excluir_produto(id):
+    cursor.execute(
+        "DELETE FROM Produtos WHERE id = %s", (id,)
+    )
+    conexao.commit()
+
+    flash("Produto excluído com sucesso!", "sucesso")
+    return redirect(url_for("admin_produtos"))
+
+@app.route("/editar_produto/<int:id>", methods=["POST"])
+@login_required
+def editar_produto(id):
+    nome = request.form["nome"]
+    preco = request.form["preco"]
+    estoque = request.form["estoque"]
+    id_imagem = request.form["id_imagem"]
+
+    cursor.execute(
+        "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, id_imagem=%s WHERE id = %s",
+        (nome, preco, estoque, id_imagem, id)
+    )
+    conexao.commit()
+
+    flash("Produto atualizado com sucesso!", "sucesso")
+    return redirect(url_for("admin_produtos"))
+
+
+
 @app.route("/admin/")
 @login_required
 def admin():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
+    
+    cursor.execute("SELECT COUNT(*) AS total_usuarios FROM Usuario WHERE is_admin = 0")
+    total_usuarios = cursor.fetchone()["total_usuarios"]
+    cursor.execute("SELECT COUNT(*) AS total_produtos FROM Produtos")
+    total_produtos = cursor.fetchone()["total_produtos"]
+    cursor.execute("SELECT COUNT(*) AS total_pedidos FROM Pedidos WHERE status = 'Pendente'")
+    total_pedidos = cursor.fetchone()["total_pedidos"]
 
-    return render_template("adminPage.html")
-
+    return render_template("adminPage.html", user=current_user, total_usuarios=total_usuarios, total_produtos=total_produtos, total_pedidos=total_pedidos)
 
 @app.route("/admin/users")
 @login_required
@@ -108,8 +234,11 @@ def admin_users():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
+    
+    cursor.execute("SELECT * FROM Usuario WHERE is_admin = 0")
+    usuarios = cursor.fetchall()
 
-    return render_template("usersAdmin.html")
+    return render_template("usersAdmin.html", user=current_user, usuarios=usuarios)
 
 
 @app.route("/admin/produtos")
@@ -118,8 +247,11 @@ def admin_produtos():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
+    
+    cursor.execute("SELECT * FROM Produtos")
+    produtos = cursor.fetchall()
 
-    return render_template("produtosAdmin.html")
+    return render_template("produtosAdmin.html", user=current_user, produtos=produtos)
 
 
 @app.route("/admin/orcamentos")
@@ -277,7 +409,7 @@ def orcamento():
         complemento = request.form["complemento"]
         cep = request.form["cep"].replace("-", "")
         produtos = request.form["produtos"]
-        quantidades = request.form["quantidades"]
+        quantidades = request.form["quantidades"].replace(".", "")
         prazo_entrega = request.form["prazo"]
 
         cursor.execute(
@@ -300,11 +432,14 @@ def orcamento():
         cursor.execute("SELECT preco FROM Produtos WHERE id = %s", (produtos,))
         preco = cursor.fetchone()["preco"]
 
+        cursor.execute("select nome from Produtos where id = %s", (produtos,))
+        nome_produto = cursor.fetchone()["nome"]
+
         id_orcamento = cursor.lastrowid
 
         cursor.execute(
-            "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s)",
-            (current_user.id, produtos, id_orcamento, quantidades, preco, "pendente"),
+            "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, nome_produto, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (current_user.id, produtos, id_orcamento, nome_produto, quantidades, preco, "Pendente"),
         )
         conexao.commit()
 
