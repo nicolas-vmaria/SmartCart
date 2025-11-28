@@ -190,7 +190,7 @@ nav p {
 .lado li {
   display: flex;
   align-items: center;
-  width: 300px;
+  width: 350px;
   height: 50px;
   justify-content: space-between;
 }

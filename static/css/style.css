@@ -210,6 +210,12 @@ nav p {
   justify-content: center;
 }
 
+.titulo-container-team{
+  width: 1700px;
+  justify-content: left;
+  margin-bottom: 50px;
+}
+
 .swiper {
   width: 1700px;
   height: 400px;
@@ -260,7 +266,13 @@ nav p {
   width: 545px;
   height: 320px;
   border-radius: 30px;
+  overflow: hidden;
 }
+
+.foto-slide img{
+  object-fit: cover;
+}
+
 
 #sec-video {
   background-color: #ffffff;

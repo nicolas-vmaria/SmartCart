@@ -1,11 +1,12 @@
 * {
-  font-family: montserrat;
+  font-family: montserrat, sans-serif;
 }
 
 body {
   margin: 0;
 }
 
+/* --- NAV --- */
 nav {
   background-color: #a0b179;
   height: 100px;
@@ -18,6 +19,7 @@ nav {
   width: 100%;
   z-index: 1000;
 }
+
 nav ul {
   list-style: none;
   display: flex;
@@ -32,6 +34,7 @@ nav a {
   color: #4e4f3d;
   font-size: 20px;
 }
+
 .logo svg {
   transform: translateY(-8%);
   width: 120px;
@@ -44,6 +47,7 @@ nav p {
   color: #4e4f3d;
   align-self: center;
 }
+
 .user {
   display: flex;
   justify-content: center;
@@ -59,6 +63,7 @@ nav p {
   display: flex;
   gap: 5px;
 }
+
 .user .icone {
   width: 70px;
   height: 70px;
@@ -69,6 +74,7 @@ nav p {
   cursor: pointer;
 }
 
+/* --- DROPDOWN --- */
 .dropdown {
   position: relative;
   display: inline-flex;
@@ -108,66 +114,164 @@ nav p {
   transform: rotate(180deg);
 }
 
+/* --- CONFIGURAÇÃO DO CONTAINER PRINCIPAL --- */
 .container {
-  display: flex;
-  margin-top: 200px;
-  margin-bottom: 50px;
-}
-
-.row {
   width: 100%;
-  margin-left: 41px;
-  display: flex;
-  justify-content: left;
-  flex-wrap: wrap;
-  gap: 60px;
-  column-gap: 20px;
+  max-width: 1200px;
+  margin: 100px auto; /* 100px top compensa a nav fixa */
+  padding: 40px 20px;
+  min-height: 60vh;
 }
 
-.card-body {
-  background-color: rgb(163, 163, 163);
-  color: rgb(25 5, 255, 255);
-  border-radius: 15px;
-  color: white;
-  height: 400px;
-  width: 400px;
+/* --- FILTRO --- */
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 30px;
+}
+
+.sort-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.sort-wrapper select {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  padding-right: 40px;
+  font-weight: 500;
+  color: #333;
+  outline: none;
+}
+
+.sort-wrapper::after {
+  content: '▼';
+  font-size: 10px;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #333;
+}
+
+/* --- GRID DE PRODUTOS --- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 100px; /* Reduzi de 100px para 30px para caber melhor na tela */
+}
+
+/* --- CARD DO PRODUTO --- */
+.product-card {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* Área cinza da imagem */
+.image-container {
+  width: 100%;
+  background-color: #f8f9fa;
+  border-radius: 16px;
+  padding: 40px;
+  position: relative;
+  display: flex;
   justify-content: center;
   align-items: center;
+  aspect-ratio: 1 / 1;
+  margin-bottom: 15px;
 }
 
-.img-produto {
-  width: 200px;
-  height: 200px;
-  border-radius: 8px;
+.product-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
 }
 
-.card-body p {
-  color: rgb(255, 255, 255);
-  margin-top: 5px;
+.product-card:hover .product-img {
+  transform: scale(1.05);
 }
 
-.card-info {
+/* --- LÓGICA DO CORAÇÃO (SEM JS) --- */
+
+/* Esconde o checkbox real */
+.like-checkbox {
+  display: none;
+}
+
+/* Estilo do Botão de Coração (Label) */
+.heart-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  background: white;
+  border-radius: 50%;
   display: flex;
-  gap: 50px;
-}
-
-.card-info p {
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  cursor: pointer; /* Importante para o clique funcionar no label */
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+  z-index: 2;
 }
 
-.card-title {
-  padding: 0px;
-  margin: 10px;
-  font-size: 20pt;
-  color: rgb(255, 255, 255);
+.heart-btn:hover {
+  transform: scale(1.1);
 }
 
+.heart-icon {
+  width: 20px;
+  height: 20px;
+  stroke: #333;
+  stroke-width: 2;
+  fill: none;
+  transition: fill 0.3s, stroke 0.3s;
+}
+
+/* Quando o checkbox invisível (que vem antes) está marcado, pinta o ícone dentro do label */
+.like-checkbox:checked + .heart-btn .heart-icon {
+  fill: #ff4d4d;
+  stroke: #ff4d4d;
+  transform: scale(1.1);
+}
+
+/* --- INFORMAÇÕES DO PRODUTO --- */
+.product-info {
+  text-align: center;
+}
+
+.product-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #4e4f3d;
+  margin-bottom: 8px;
+}
+
+.rating {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.product-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #a0b179;
+}
+
+/* --- FOOTER --- */
 footer {
   display: flex;
   flex-direction: column;
@@ -197,7 +301,6 @@ footer {
 
 .coluna li {
   list-style: none;
-
   color: #4e4f3d;
 }
 
