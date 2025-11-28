@@ -459,3 +459,12 @@ footer {
 hr {
   border: 1px solid #4e4f3d;
 }
+
+button:disabled,
+.btn-pay:disabled {
+  background-color: #cccccc !important; /* Cor cinza */
+  color: #666666 !important;
+  cursor: not-allowed; /* Mostra o ícone de 'proibido' no mouse */
+  opacity: 0.7;
+  pointer-events: none; /* Garante que não dá para clicar */
+}

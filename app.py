@@ -190,7 +190,7 @@ def excluir_produto(id):
     )
     conexao.commit()
 
-    flash("Produto excluído com sucesso!", "sucesso")
+    
     return redirect(url_for("admin_produtos"))
 
 @app.route("/editar_produto/<int:id>", methods=["POST"])

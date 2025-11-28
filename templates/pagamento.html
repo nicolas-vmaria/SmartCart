@@ -94,46 +94,65 @@
             <h1>Dados do Cartão</h1>
             <p>Preencha os dados para finalizar.</p>
           </div>
-
-          <form
-            class="card-form"
-            onsubmit="event.preventDefault(); alert('Pagamento Processado!')"
-          >
+s
+          <form class="card-form">
             <div class="form-group">
-              <label>Número do Cartão</label>
-              <input
-                type="text"
-                placeholder="0000 0000 0000 0000"
-                id="cartao" 
-                required
-              />
+                <label>Número do Cartão</label>
+                <input 
+                    type="text" 
+                    placeholder="0000 0000 0000 0000" 
+                    id="cartao" 
+                    class="campo-obrigatorio" 
+                    maxlength="19"
+                    required 
+                />
             </div>
-
+        
             <div class="form-group">
-              <label>Nome no Cartão</label>
-              <input type="text" placeholder="Como impresso no cartão" required/>
+                <label>Nome no Cartão</label>
+                <input 
+                    type="text" 
+                    placeholder="Como impresso no cartão" 
+                    class="campo-obrigatorio" 
+                    required 
+                />
             </div>
-
+        
             <div class="form-row">
-              <div class="form-group" style="flex: 1">
-                <label>Validade</label>
-                <input type="text" placeholder="MM/AA" id="validade" required />
-              </div>
-              <div class="form-group" style="flex: 1">
-                <label>CVV</label>
-                <input type="text" placeholder="123" maxlength="3" id="cvv" required/>
-              </div>
+                <div class="form-group" style="flex: 1">
+                    <label>Validade</label>
+                    <input 
+                        type="text" 
+                        placeholder="MM/AA" 
+                        id="validade" 
+                        class="campo-obrigatorio" 
+                        maxlength="5"
+                        required 
+                    />
+                </div>
+                <div class="form-group" style="flex: 1">
+                    <label>CVV</label>
+                    <input 
+                        type="text" 
+                        placeholder="123" 
+                        maxlength="3" 
+                        id="cvv" 
+                        class="campo-obrigatorio" 
+                        required 
+                    />
+                </div>
             </div>
-
-            <button
-              type="submit"
-              class="btn-action"
-              style="max-width: 100%; margin-top: 10px"
-              
+        
+            <button 
+                class="btn-action btn-pay" 
+                style="max-width: 100%; margin-top: 10px" 
+                onclick="window.location.href=('/pedidos')" 
+                id="btn-pagar" 
+                disabled
             >
-              Pagar {{ "%.2f"|format(pedido.preco_unitario * pedido.quantidade) }}
+                {{ pedido.preco_unitario * pedido.quantidade}}
             </button>
-          </form>
+        </form>
         </div>
       </div>
 
@@ -154,7 +173,7 @@
 
         <div class="summary-row total">
           <span class="total-label">Valor Total a Pagar</span>
-          <span>R$ {{ "%.2f"|format(pedido.preco_unitario * pedido.quantidade) }}</span>
+          <span class="value valor-para-formatar"> {{ pedido.preco_unitario * pedido.quantidade }} </span>
         </div>
 
         <div class="secure-badge">
@@ -251,6 +270,93 @@
           btn.style.backgroundColor = ""; // Volta ao CSS original
         }, 2000);
       }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // 1. Seleciona todos os elementos que têm o preço
+        const elementosPreco = document.querySelectorAll(".valor-para-formatar");
+    
+        // 2. Formatador padrão brasileiro (R$)
+        const formatador = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+    
+        // 3. Passa por cada pedido e formata o valor
+        elementosPreco.forEach((elemento) => {
+          // Pega o texto que veio do Python (ex: "1500.0" ou "1500.5")
+          let valorTexto = elemento.innerText;
+    
+          // Converte para número decimal
+          let valorNumerico = parseFloat(valorTexto);
+    
+          // Se for um número válido, substitui o texto pelo valor formatado (ex: R$ 1.500,50)
+          if (!isNaN(valorNumerico)) {
+            elemento.innerText = formatador.format(valorNumerico);
+          }
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+    // --- CONFIGURAÇÃO ---
+    const formatador = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    });
+
+    // --- PARTE 1: Formatar a lista de pedidos ---
+    const elementosPreco = document.querySelectorAll(".valor-para-formatar");
+
+    elementosPreco.forEach((elemento) => {
+        let valorNumerico = parseFloat(elemento.innerText);
+        if (!isNaN(valorNumerico)) {
+            elemento.innerText = formatador.format(valorNumerico);
+        }
+    });
+
+    // --- PARTE 2: Lógica do Botão de Pagar ---
+    const btnPagar = document.getElementById("btn-pagar");
+
+    // Verifica se o botão existe na tela
+    if (btnPagar) {
+        
+        // A) Formatação do Texto do Botão
+        let valorBotao = parseFloat(btnPagar.innerText);
+
+        if (!isNaN(valorBotao)) {
+            let valorFormatado = formatador.format(valorBotao);
+            btnPagar.innerText = `Pagar ${valorFormatado}`;
+        }
+
+        // --- PARTE 3: Validação (Só libera se preencher) ---
+        
+        // Seleciona todos os inputs que tenham a classe "campo-obrigatorio"
+        const camposObrigatorios = document.querySelectorAll(".campo-obrigatorio");
+
+        function validarFormulario() {
+            let formularioValido = true;
+
+            // Verifica cada campo
+            camposObrigatorios.forEach((campo) => {
+                // Se estiver vazio (sem contar espaços em branco), invalida
+                if (campo.value.trim() === "") {
+                    formularioValido = false;
+                }
+            });
+
+            // Se for válido, disabled = false (liberado). Se não, disabled = true (bloqueado).
+            btnPagar.disabled = !formularioValido;
+        }
+
+        // Adiciona o "espião" em cada campo para detectar digitação
+        camposObrigatorios.forEach((campo) => {
+            campo.addEventListener("input", validarFormulario);
+        });
+
+        // Roda a validação imediatamente ao carregar a página
+        // (Garante que o botão comece bloqueado se os campos estiverem vazios)
+        validarFormulario();
+    }
+});
     </script>
   </body>
 </html>

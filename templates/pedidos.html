@@ -228,9 +228,8 @@
 
               <div class="product-price">
                 <span class="label">Total</span>
-                <span class="value"
-                  >R$ {{ "%.2f"|format(p.preco_unitario * p.quantidade) }}</span
-                >
+                <span class="value valor-para-formatar"> {{ p.preco_unitario * p.quantidade }} </span>
+                
               </div>
             </div>
 
@@ -299,5 +298,31 @@
         {% endif %}
       </div>
     </section>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // 1. Seleciona todos os elementos que têm o preço
+        const elementosPreco = document.querySelectorAll(".valor-para-formatar");
+    
+        // 2. Formatador padrão brasileiro (R$)
+        const formatador = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+    
+        // 3. Passa por cada pedido e formata o valor
+        elementosPreco.forEach((elemento) => {
+          // Pega o texto que veio do Python (ex: "1500.0" ou "1500.5")
+          let valorTexto = elemento.innerText;
+    
+          // Converte para número decimal
+          let valorNumerico = parseFloat(valorTexto);
+    
+          // Se for um número válido, substitui o texto pelo valor formatado (ex: R$ 1.500,50)
+          if (!isNaN(valorNumerico)) {
+            elemento.innerText = formatador.format(valorNumerico);
+          }
+        });
+      });
+    </script>
   </body>
 </html>
