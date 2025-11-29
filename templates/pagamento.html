@@ -94,7 +94,6 @@
             <h1>Dados do Cartão</h1>
             <p>Preencha os dados para finalizar.</p>
           </div>
-s
           <form class="card-form">
             <div class="form-group">
                 <label>Número do Cartão</label>
@@ -142,16 +141,46 @@ s
                     />
                 </div>
             </div>
+
+            <div class="form-group">
+              <input 
+    type="hidden" 
+    id="valor-total-pedido" 
+    value="{{ pedido.preco_unitario * pedido.quantidade }}" 
+  />
+
+          <label for="parcelas">Condição de Pagamento:</label>
+          <select name="parcelas" id="parcelas" required>
+            <option value="" disabled selected>Escolha as parcelas</option>
+            
+            <option value="1">1x (À vista)</option>
+            <option value="2">2x (Sem Juros)</option>
+            <option value="3">3x (Sem Juros)</option>
+            <option value="4">4x (Sem Juros)</option>
+            <option value="5">5x (Sem Juros)</option>
+
+            <option value="6">6x (Com Juros)</option>
+            <option value="7">7x (Com Juros)</option>
+            <option value="8">8x (Com Juros)</option>
+            <option value="9">9x (Com Juros)</option>
+            <option value="10">10x (Com Juros)</option>
+            <option value="11">11x (Com Juros)</option>
+            <option value="12">12x (Com Juros)</option>
+          </select>
+
+              <p id="info-parcela" class="msg-parcela">
+                  </p>
+            </div>
         
-            <button 
-                class="btn-action btn-pay" 
-                style="max-width: 100%; margin-top: 10px" 
-                onclick="window.location.href=('/pedidos')" 
+            <a
+                class="link-bloqueado btn-action" 
+                style="max-width: 100%; margin-top: 10px; text-decoration: none;"  
+                href="/pagamento_realizado/{{pedido.id}}"
                 id="btn-pagar" 
                 disabled
             >
                 {{ pedido.preco_unitario * pedido.quantidade}}
-            </button>
+          </a>
         </form>
         </div>
       </div>
@@ -296,16 +325,22 @@ s
         });
       });
 
-      document.addEventListener("DOMContentLoaded", () => {
-    // --- CONFIGURAÇÃO ---
+ document.addEventListener("DOMContentLoaded", () => {
+    // --- 1. CONFIGURAÇÃO INICIAL E FORMATADORES ---
     const formatador = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
     });
 
-    // --- PARTE 1: Formatar a lista de pedidos ---
-    const elementosPreco = document.querySelectorAll(".valor-para-formatar");
+    // Elementos principais
+    const btnPagar = document.getElementById("btn-pagar");
+    const selectParcelas = document.getElementById('parcelas');
+    const infoParcela = document.getElementById('info-parcela');
+    const inputTotalHidden = document.getElementById('valor-total-pedido');
+    const camposObrigatorios = document.querySelectorAll(".campo-obrigatorio");
 
+    // Formata valores soltos na tela (se houver)
+    const elementosPreco = document.querySelectorAll(".valor-para-formatar");
     elementosPreco.forEach((elemento) => {
         let valorNumerico = parseFloat(elemento.innerText);
         if (!isNaN(valorNumerico)) {
@@ -313,50 +348,236 @@ s
         }
     });
 
-    // --- PARTE 2: Lógica do Botão de Pagar ---
-    const btnPagar = document.getElementById("btn-pagar");
+    // --- 2. FUNÇÃO DE CÁLCULO DAS PARCELAS ---
+    function atualizarMensagemParcela() {
+        if (!selectParcelas) return;
 
-    // Verifica se o botão existe na tela
-    if (btnPagar) {
-        
-        // A) Formatação do Texto do Botão
-        let valorBotao = parseFloat(btnPagar.innerText);
+        const numParcelas = parseInt(selectParcelas.value);
+        let valorTotal = parseFloat(inputTotalHidden ? inputTotalHidden.value : 0);
 
-        if (!isNaN(valorBotao)) {
-            let valorFormatado = formatador.format(valorBotao);
-            btnPagar.innerText = `Pagar ${valorFormatado}`;
+        // Se não tiver parcela válida selecionada, esconde a mensagem
+        if (!numParcelas || isNaN(numParcelas)) {
+            infoParcela.style.display = "none";
+            return; 
         }
 
-        // --- PARTE 3: Validação (Só libera se preencher) ---
-        
-        // Seleciona todos os inputs que tenham a classe "campo-obrigatorio"
-        const camposObrigatorios = document.querySelectorAll(".campo-obrigatorio");
+        let textoJuros = "Sem Juros";
+        let valorFinal = valorTotal;
 
-        function validarFormulario() {
-            let formularioValido = true;
-
-            // Verifica cada campo
-            camposObrigatorios.forEach((campo) => {
-                // Se estiver vazio (sem contar espaços em branco), invalida
-                if (campo.value.trim() === "") {
-                    formularioValido = false;
-                }
-            });
-
-            // Se for válido, disabled = false (liberado). Se não, disabled = true (bloqueado).
-            btnPagar.disabled = !formularioValido;
+        // Regra do Juros (Acima de 6x)
+        if (numParcelas >= 6) {
+            valorFinal = valorTotal * 1.10; // +10%
+            textoJuros = "Com Juros";
         }
 
-        // Adiciona o "espião" em cada campo para detectar digitação
+        let valorParcela = valorFinal / numParcelas;
+
+        // Atualiza texto do botão Pagar
+        if (btnPagar) {
+            btnPagar.innerText = `Pagar ${formatador.format(valorFinal)}`;
+        }
+
+        // Mostra a caixinha verde com detalhes
+        infoParcela.style.display = "block";
+        infoParcela.innerHTML = `
+            Mensalidade: <strong>${numParcelas}x</strong> de 
+            <span style="color: #4e4f3d; font-weight: 800;">${formatador.format(valorParcela)}</span> 
+            <br><span style="font-size: 0.85em; color: #666">(${textoJuros} - Total: ${formatador.format(valorFinal)})</span>
+        `;
+    }
+
+    // --- 3. FUNÇÃO DE VALIDAÇÃO (BLOQUEIA O BOTÃO) ---
+    function validarFormulario() {
+        if (!btnPagar) return;
+
+        let formularioValido = true;
+
+        // A) Verifica campos de texto (Cartão, Validade, etc.)
         camposObrigatorios.forEach((campo) => {
-            campo.addEventListener("input", validarFormulario);
+            // Ignora o select por enquanto, foca nos inputs de texto
+            if (campo.tagName !== 'SELECT' && campo.value.trim() === "") {
+                formularioValido = false;
+            }
         });
 
-        // Roda a validação imediatamente ao carregar a página
-        // (Garante que o botão comece bloqueado se os campos estiverem vazios)
+        // B) VERIFICAÇÃO ESPECÍFICA DO SELECT DE PARCELAS
+        // Se o valor for vazio (opção padrão "Escolha as parcelas"), bloqueia
+        if (selectParcelas.value === "") {
+            formularioValido = false;
+        }
+
+        // C) Aplica o bloqueio ou libera o botão
+        if (formularioValido) {
+            btnPagar.classList.remove("link-bloqueado"); // Libera
+        } else {
+            btnPagar.classList.add("link-bloqueado");    // Bloqueia
+        }
+    }
+
+    // --- 4. ADICIONA OS EVENTOS (LISTENERS) ---
+    
+    // Para campos de texto (enquanto digita)
+    camposObrigatorios.forEach((campo) => {
+        campo.addEventListener("input", validarFormulario);
+    });
+
+    // Para o Select de Parcelas (quando muda)
+    if (selectParcelas) {
+        selectParcelas.addEventListener("change", () => {
+            atualizarMensagemParcela(); // Recalcula o valor
+            validarFormulario();        // Verifica se pode liberar o botão
+        });
+    }
+
+    // Inicialização
+    if (btnPagar) {
+        // Formata o texto inicial do botão
+        let valorInicial = parseFloat(inputTotalHidden ? inputTotalHidden.value : 0);
+        if(valorInicial > 0) {
+             btnPagar.innerText = `Pagar ${formatador.format(valorInicial)}`;
+        }
+        
+        // Garante que comece bloqueado
         validarFormulario();
     }
 });
+
+
+  // 1. Selecionando todos os elementos
+  const selectProduto = document.getElementById('produtos');
+  const inputQuantidade = document.getElementById('quantidade');
+  const selectParcelas = document.getElementById('parcelas'); // NOVO
+  
+  const spanTotal = document.getElementById('preco-total');
+  const labelPreco = document.getElementById('label-preco');
+  const infoParcela = document.getElementById('info-parcela'); // NOVO
+  const btnEnviar = document.getElementById('btn-enviar');
+
+  // Variável para guardar o total atualizado e usar no cálculo da parcela
+  let totalCalculadoGlobal = 0; 
+
+  // --- FUNÇÃO PRINCIPAL (Roda quando muda qualquer coisa) ---
+  function atualizarTudo() {
+    
+    // 1. Coleta dados do produto
+    const opcao = selectProduto.options[selectProduto.selectedIndex];
+    let preco = parseFloat(opcao.getAttribute('data-preco')) || 0;
+    let estoque = parseFloat(opcao.getAttribute('data-estoque')) || 0;
+
+    // 2. Trata a quantidade (tira pontos e vira número)
+    let valorDigitado = inputQuantidade.value;
+    valorDigitado = valorDigitado.replace(/\./g, '').replace(',', '.');
+    let quantidade = parseFloat(valorDigitado) || 0;
+
+    // 3. VERIFICAÇÃO DE ESTOQUE
+    if (quantidade > estoque && selectProduto.value !== "") {
+        // --- DEU ERRO (Sem Estoque) ---
+        labelPreco.style.display = "none";
+        infoParcela.style.display = "none"; // Esconde a info da parcela também
+        
+        spanTotal.innerText = "Estoque Indisponível (Máx: " + estoque + ")";
+        spanTotal.style.color = "red";
+        spanTotal.style.fontWeight = "bold";
+        
+        btnEnviar.disabled = true;
+        btnEnviar.style.opacity = "0.5";
+        btnEnviar.style.cursor = "not-allowed";
+        
+        totalCalculadoGlobal = 0; // Zera o total
+
+    } else {
+        // --- SUCESSO (Estoque OK) ---
+        totalCalculadoGlobal = preco * quantidade;
+
+        // Mostra Preço Total
+        labelPreco.style.display = "inline";
+        spanTotal.innerText = totalCalculadoGlobal.toLocaleString('pt-BR', {
+          style: 'currency', currency: 'BRL'
+        });
+        spanTotal.style.color = "inherit"; 
+        spanTotal.style.fontWeight = "normal";
+        
+        // Libera botão
+        btnEnviar.disabled = false;
+        btnEnviar.style.opacity = "1";
+        btnEnviar.style.cursor = "pointer";
+
+        // Chama a função para atualizar o texto da parcela lá em baixo
+        calcularParcelaDetalhada();
+    }
+  }
+
+  // --- LÓGICA DE CÁLCULO DAS PARCELAS ---
+  document.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Seleciona os elementos
+    const selectParcelas = document.getElementById('parcelas');
+    const infoParcela = document.getElementById('info-parcela');
+    const inputTotalHidden = document.getElementById('valor-total-pedido');
+    const btnPagar = document.getElementById('btn-pagar');
+
+    // 2. Função que calcula e mostra a mensagem
+    function atualizarMensagemParcela() {
+      // Pega o número de parcelas escolhido
+      const numParcelas = parseInt(selectParcelas.value);
+      
+      // Pega o valor total do pedido (do campo invisível)
+      // Se não achar o campo (por segurança), usa 0
+      let valorTotal = parseFloat(inputTotalHidden ? inputTotalHidden.value : 0);
+
+      // Se não tiver parcela selecionada ou valor for 0, esconde a mensagem e sai
+      if (!numParcelas || valorTotal <= 0) {
+        infoParcela.style.display = "none";
+        return;
+      }
+
+      let textoJuros = "Sem Juros";
+      let valorFinal = valorTotal;
+
+      // --- REGRA DO JUROS (Acima de 5x) ---
+      if (numParcelas >= 6) {
+        valorFinal = valorTotal * 1.10; // Adiciona 10%
+        textoJuros = "Com Juros";
+      }
+
+      // Calcula valor de cada prestação
+      let valorParcela = valorFinal / numParcelas;
+
+      // Formata para Real Brasileiro
+      let valorFormatado = valorParcela.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+      
+      let totalFinalFormatado = valorFinal.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+
+      // --- EXIBE A MENSAGEM ---
+      infoParcela.style.display = "block";
+      
+      // Atualiza o texto do botão para mostrar o total correto (com ou sem juros)
+      btnPagar.innerText = `Pagar ${totalFinalFormatado}`;
+
+      // Escreve a mensagem bonitinha no box verde
+      infoParcela.innerHTML = `
+        Mensalidade: <strong>${numParcelas}x</strong> de 
+        <span style="color: #4e4f3d; font-weight: 800;">${valorFormatado}</span> 
+        <br><span style="font-size: 0.85em; color: #666">(${textoJuros} - Total: ${totalFinalFormatado})</span>
+      `;
+    }
+
+    // 3. Adiciona o ouvinte de evento
+    if (selectParcelas) {
+        selectParcelas.addEventListener('change', atualizarMensagemParcela);
+    }
+  });
+
+  
+
+
+
     </script>
   </body>
 </html>

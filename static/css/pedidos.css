@@ -343,3 +343,16 @@ nav p {
     width: 100%; /* Botões largura total no celular */
   }
 }
+
+.msg.sucesso {
+  background-color: #d4f8d4;
+  color: #1f7a1f;
+  border: 1px solid #7bd67b;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  left: 800px;
+  top: 20px;
+  position: fixed;
+  z-index: 9999;
+}

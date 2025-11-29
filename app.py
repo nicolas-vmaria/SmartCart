@@ -18,7 +18,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3406", database="smart_cart"
+    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -60,6 +60,7 @@ def unauthorized():
         )
     elif request.endpoint == "contato":
         flash("Entre na sua conta ou cadastre-se, para fazer contato conosco!", "erro")
+
     return redirect(url_for("login"))
 
 
@@ -74,10 +75,21 @@ def pagamento(id):
     cursor.execute(
         "select * from Pedidos where id = %s and id_usuario = %s", (id, current_user.id)
     )
-
     pedido = cursor.fetchone()
 
     return render_template("pagamento.html", user=current_user, pedido=pedido)
+
+@app.route("/pagamento_realizado/<int:id>")
+@login_required
+def pagamento_realizado(id):
+    cursor.execute(
+        "UPDATE Pedidos SET status = %s WHERE id = %s AND id_usuario = %s",
+        ("Pago", id, current_user.id),
+    )
+    conexao.commit()
+
+    flash("Pagamento realizado com sucesso!", "sucesso")
+    return redirect(url_for("pedidos"))
 
 
 @app.route("/excluir_pedido/<int:id>")
@@ -134,7 +146,9 @@ def criar_usuario():
 @app.route("/excluir_usuario/<int:id>")
 @login_required
 def excluir_usuario(id):
-    cursor.execute("DELETE FROM Usuario WHERE id = %s", (id))
+    cursor.execute("DELETE FROM Pedidos WHERE id_usuario = %s", (id,))
+    cursor.execute("DELETE FROM Orcamentos WHERE id_usuario = %s", (id,))
+    cursor.execute("DELETE FROM Usuario WHERE id = %s", (id,))
     conexao.commit()
 
     flash("Usuario excluído com sucesso!", "sucesso")
@@ -167,8 +181,6 @@ def editar_usuario(id):
 
 
 app.route("/admin/criar_produto", methods=["POST"])
-
-
 @login_required
 def criar_produto():
     nome = request.form["nome"]
@@ -189,10 +201,12 @@ def criar_produto():
 @app.route("/excluir_produto/<int:id>")
 @login_required
 def excluir_produto(id):
+    cursor.execute("DELETE FROM Orcamentos WHERE id_produto = %s", (id,))
+    cursor.execute("DELETE FROM Pedidos WHERE id_produto = %s", (id,))
     cursor.execute("DELETE FROM Produtos WHERE id = %s", (id,))
     conexao.commit()
 
-    
+    flash("Produto excluído com sucesso!", "sucesso")
     return redirect(url_for("admin_produtos"))
 
 
@@ -424,8 +438,10 @@ def orcamento():
         prazo_entrega = request.form["prazo"]
 
         cursor.execute(
-            "INSERT INTO Orcamentos (nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO Orcamentos (id_usuario, id_produto, nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             (
+                current_user.id,
+                produtos,
                 nome_empresa,
                 cnpj,
                 email,

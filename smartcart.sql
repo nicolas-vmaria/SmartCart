@@ -20,6 +20,8 @@ CREATE TABLE Produtos (
 
 CREATE TABLE Orcamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario int not null,
+    id_produto int not null,
     nome_empresa VARCHAR(100) NOT NULL,
     cnpj VARCHAR(14) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -30,8 +32,12 @@ CREATE TABLE Orcamentos (
     produtos TEXT NOT NULL,
     quantidades INT NOT NULL,
     prazo_entrega DATE NOT NULL,
-    forma_pagamento VARCHAR(50) NOT NULL
+    forma_pagamento VARCHAR(50) NOT NULL,
+    
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
+    FOREIGN KEY (id_produto) REFERENCES Produtos(id)
 );
+
 
 CREATE TABLE Contatos (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -59,14 +65,15 @@ CREATE TABLE Pedidos (
 
 
 insert into Produtos (nome, preco, estoque, id_imagem) values
-("carrinho de compras", 150.00, 10, "img1"),
-("caixa registradora", 300.00, 5, "img2"),
-("leitor de código de barras", 200.00, 8, "img3"),
-("balança digital", 250.00, 7, "img4"),
-("gôndola de supermercado", 400.00, 3, "img5");
+("SmartCart", 649.00, 5000, "img1"),
+("DoubleCart", 760.00, 1000, "img2"),
+("SmartGlide", 490.00, 800, "img3"),
+("SmartConfort ", 399.00, 50, "img4"),
+("SmartDrop", 180.00, 3000, "img5");
 
 
 ALTER TABLE Usuario ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
+-- UPDATE Pedidos SET status = "RESPONDIDO" WHERE id = ?;
 
 insert into Usuario (nome, cnpj, telefone, email, senha, is_admin)
 values ("Caio", "12345678909876", "47992451974", "boing@gmail.com", "cb889e05f91275a69d2fb0f7ee4af3b92dae9a0e6ecfcf597bda893a49fb2673", true);

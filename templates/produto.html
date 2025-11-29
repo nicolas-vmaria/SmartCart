@@ -194,6 +194,7 @@
         <div class="product-grid">
 
             {% for produto in produtos %}
+            {% if produto.estoque < 100 %}
             <div class="product-card">
                 
                 <div class="image-container">
@@ -207,14 +208,32 @@
     
                     <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" class="product-img">
                 </div>
+                <div class="product-info">
+                    <h3 class="product-title">{{ produto.nome }}</h3>                 
+                    <div class="product-price">R$ {{ "%.2f"|format(produto.preco) }}</div>
+                    <div class="product-estoque">Ultimas unidades!</div>
+                </div>
+            </div>
+            {% else %}
+                        <div class="product-card">
+                
+                <div class="image-container">
+                    <input type="checkbox" id="like-{{ produto.id }}" class="like-checkbox">
+                    
+                    <label for="like-{{ produto.id }}" class="heart-btn">
+                        <svg class="heart-icon" viewBox="0 0 24 24">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </label>
     
+                    <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" class="product-img">
+                </div>
                 <div class="product-info">
                     <h3 class="product-title">{{ produto.nome }}</h3>                 
                     <div class="product-price">R$ {{ "%.2f"|format(produto.preco) }}</div>
                 </div>
-                
-    
             </div>
+            {% endif %}
             {% else %}
                 <p style="text-align: center; width: 100%; color: #666;">Nenhum produto encontrado.</p>
             {% endfor %}

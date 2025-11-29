@@ -188,7 +188,28 @@
                 </div>
             </div>
         </section>
+        {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
+            mensagens %} {% for categoria, msg in mensagens %}
+            <p class="msg {{ categoria }}">{{ msg }}</p>
+            {% endfor %} {% endif %} {% endwith %}
 
+                <script>
+            const flashMessages = document.querySelectorAll(".msg");
+            const displayTime = 4000;
+
+            flashMessages.forEach((message) => {
+                setTimeout(() => {
+                message.style.transition = "opacity 0.5s ease";
+                message.style.opacity = "0";
+
+                setTimeout(() => {
+                    if (message && message.parentNode) {
+                    message.parentNode.removeChild(message);
+                    }
+                }, 500);
+                }, displayTime);
+            });
+    </script>
 
 
         <section id="main-screen">
