@@ -18,7 +18,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
+    host="localhost", user="root", password="", port="3306", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -29,11 +29,11 @@ def hash(txt):
 
 
 # Criptogrando a senha do admin
-# senha_admin = "admin"
-# objeto_hash = hashlib.sha256()
-# objeto_hash.update(senha_admin.encode("utf-8"))
-# senha_admin = objeto_hash.hexdigest()
-# print(senha_admin)
+senha_admin = "0123"
+objeto_hash = hashlib.sha256()
+objeto_hash.update(senha_admin.encode("utf-8"))
+senha_admin = objeto_hash.hexdigest()
+print(senha_admin)
 
 
 @lm.user_loader

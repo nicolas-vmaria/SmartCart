@@ -189,27 +189,27 @@
             </div>
         </section>
         {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
-            mensagens %} {% for categoria, msg in mensagens %}
-            <p class="msg {{ categoria }}">{{ msg }}</p>
-            {% endfor %} {% endif %} {% endwith %}
+        mensagens %} {% for categoria, msg in mensagens %}
+        <p class="msg {{ categoria }}">{{ msg }}</p>
+        {% endfor %} {% endif %} {% endwith %}
 
-                <script>
+        <script>
             const flashMessages = document.querySelectorAll(".msg");
             const displayTime = 4000;
 
             flashMessages.forEach((message) => {
                 setTimeout(() => {
-                message.style.transition = "opacity 0.5s ease";
-                message.style.opacity = "0";
+                    message.style.transition = "opacity 0.5s ease";
+                    message.style.opacity = "0";
 
-                setTimeout(() => {
-                    if (message && message.parentNode) {
-                    message.parentNode.removeChild(message);
-                    }
-                }, 500);
+                    setTimeout(() => {
+                        if (message && message.parentNode) {
+                            message.parentNode.removeChild(message);
+                        }
+                    }, 500);
                 }, displayTime);
             });
-    </script>
+        </script>
 
 
         <section id="main-screen">
@@ -247,7 +247,7 @@
                         </i>
                         <input type="search" placeholder="Pesquisar usuário" name="" id="">
                     </div>
-                    
+
 
                     <div class="action-buttons-group">
                         <button id="button-filter">
@@ -308,7 +308,7 @@
                         <td>{{ user.email }}</td>
                         <td>
 
-                        
+
                             <a>
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -339,7 +339,7 @@
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
                                 <!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
-                                <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" 
+                                <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
 
                                     <g id="SVGRepo_bgCarrier" stroke-width="0" />
@@ -367,12 +367,14 @@
                     </tr>
                     {% endfor %}
                 </table>
-            </h1>
+                </h1>
 
             </div>
             {% else %}
-                
-            <h1>Não há usuários cadastrados</h1>
+
+            <div class="notfound-container">
+                <h1>Não há usuários cadastrados</h1>
+            </div>
             {% endif %}
         </section>
     </main>
