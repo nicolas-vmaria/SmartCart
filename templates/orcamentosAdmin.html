@@ -317,6 +317,7 @@
       </section>
       <section id="main-screen">
         <div id="info-main-screen">
+          
         <h1>Gerenciamento de Orçamentos
                     <br>
                     <span>Local onde o administrador vê, edita e controla os orçamentos do sistema.</span>
@@ -410,14 +411,19 @@
                         <td>{{ o.email }}</td>
                         <td>{{ o.nome_produto }}</td>
                         <td>
-                            <select name="novo_status" id="" class="status-orcamento-ajax" data-id="{{ o.id }}">
-                              <option value="" disabled>Status do Orçamentos</option>
-                              
-                              <option value="Pendente" {% if o.status == 'Pendente'%} selected {% endif %}>Pendente</option>
-                              <option value="Em análise" {% if o.status == "Em análise" %} selected {% endif %}>Em análise</option>
-                              <option value="Respondido" {% if o.status == 'Respondido'%} selected {% endif %}>Respondido</option>
-                              <option value="Entregue" {% if o.status == 'Entregue'%} selected {% endif %}>Entregue</option>
-                            </select>
+                            <form action="{{ url_for('atualizar_status') }}" method="POST">
+    
+    <input type="hidden" name="id_orcamento" value="{{ o.id }}">
+
+    <select name="novo_status" class="form-select" onchange="this.form.submit()">
+        <option value="" disabled>Status do Orçamento</option>
+        
+        <option value="Pendente" {% if o.status == 'Pendente'%} selected {% endif %}>Pendente</option>
+        <option value="Em análise" {% if o.status == "Em análise" %} selected {% endif %}>Em análise</option>
+        <option value="Respondido" {% if o.status == 'Respondido'%} selected {% endif %}>Respondido</option>
+        <option value="Entregue" {% if o.status == 'Entregue'%} selected {% endif %}>Entregue</option>
+    </select>
+</form>
                             <span class="status-msg" id="msg-{{ o.id }}"></span>
                       </td>
                     </tr>

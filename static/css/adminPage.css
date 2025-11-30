@@ -466,18 +466,18 @@ td button:active {
   height: 80px;
 }
 
-.containerM{
-    display: none;
-    height: 80vh;
-    justify-content: center;
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    background-color: rgba(0, 0, 0, 0.582);
-    width: 100%;
-    height: 100%;
-    animation: aparecer 0.3s ease;
+.containerM {
+  display: none;
+  height: 80vh;
+  justify-content: center;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.582);
+  width: 100%;
+  height: 100%;
+  animation: aparecer 0.3s ease;
 }
 
 .fechar {
@@ -490,63 +490,66 @@ td button:active {
 }
 
 @keyframes aparecer {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.card-editar{
-    display: flex;
-    background-color: rgb(51, 51, 51);
-    width: 600px;
-    height: 600px;
-    margin-top: 150px;
-    
-    align-items: center;
-    justify-content: center;
-    border-radius:10px ;
-    box-shadow: 10px 0px 200px black;
-    
+.card-editar {
+  display: flex;
+  background-color: rgb(51, 51, 51);
+  width: 600px;
+  height: 600px;
+  margin-top: 150px;
+
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  box-shadow: 10px 0px 200px black;
 }
 
-.form-editar{
-    display: flex;
-    flex-direction: column;
-    font-size: 20px;
+.form-editar {
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
 }
 
-.form-editar h1{
-    text-align: center;
+.form-editar h1 {
+  text-align: center;
 }
 
-    
-
-.form-editar label{
-    margin-top: 10px;
+.form-editar label {
+  margin-top: 10px;
 }
-.form-editar input{
-    padding: 15px 15px;
-    border-radius: 10px;
-    border: none;
-    width: 400px;
+.form-editar input {
+  padding: 15px 15px;
+  border-radius: 10px;
+  border: none;
+  width: 400px;
 }
-.form-editar button{
-    width: 200px;
-    margin-top: 20px;
-    margin-left: 125px;
-    background-color: #640292;
-    color: white;
-    height: 40px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: transform 0.3s ease;
+.form-editar button {
+  width: 200px;
+  margin-top: 20px;
+  margin-left: 125px;
+  background-color: #640292;
+  color: white;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
 }
-.form-editar button:hover{
-    cursor: pointer;
-    transform: scale(1.1);
+.form-editar button:hover {
+  cursor: pointer;
+  transform: scale(1.1);
 }
 
-.status-orcamento{
+.status-orcamento {
   font-family: montserrat;
   width: 150px;
   height: 30px;
