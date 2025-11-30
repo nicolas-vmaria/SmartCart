@@ -445,9 +445,11 @@
             </div>
           </div>
           {% elif p.status == "Entregue"%}
-                     <div class="order-card">
+          <div class="order-card">
+            <div class="opacidade"></div>
+
             <div class="card-header">
-              <span class="status-success">{{ p.status }}</span>
+              <span class="status-entregue">{{ p.status }}</span>
               <span class="order-id">Pedido #{{ p.id }}</span>
             </div>
 
@@ -466,6 +468,7 @@
                   Quantidade: <strong>{{ p.quantidade }}</strong>
                 </p>
               </div>
+          
           </div>
           {% endif %} {% endfor %}
         </div>
