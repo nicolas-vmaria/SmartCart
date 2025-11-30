@@ -32,6 +32,7 @@ CREATE TABLE Orcamentos (
     nome_produto TEXT NOT NULL,
     quantidades INT NOT NULL,
     prazo_entrega DATE NOT NULL,
+    status VARCHAR(50) DEFAULT 'Pendente',
     FOREIGN KEY (id_usuario)
         REFERENCES Usuario (id),
     FOREIGN KEY (id_produto)
@@ -77,6 +78,8 @@ ALTER TABLE Usuario ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
 
 insert into Usuario (nome, cnpj, telefone, email, senha, is_admin)
 values ("Caio", "12345678909876", "47992451974", "boing@gmail.com", "cb889e05f91275a69d2fb0f7ee4af3b92dae9a0e6ecfcf597bda893a49fb2673", true);
+
+update Pedidos set status = "Respondido" WHERE id = 10;
 
 select * from Orcamentos;
 select * from Usuario;
