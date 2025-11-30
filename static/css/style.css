@@ -210,7 +210,7 @@ nav p {
   justify-content: center;
 }
 
-.titulo-container-team{
+.titulo-container-team {
   width: 1700px;
   justify-content: left;
   margin-bottom: 50px;
@@ -269,10 +269,9 @@ nav p {
   overflow: hidden;
 }
 
-.foto-slide img{
+.foto-slide img {
   object-fit: cover;
 }
-
 
 #sec-video {
   background-color: #ffffff;
@@ -451,6 +450,8 @@ footer {
 #rs-container svg {
   width: 50px;
   height: 50px;
+  background-color: white;
+  border-radius: 50%;
 }
 
 #fdp-container svg {

@@ -156,7 +156,7 @@
 
                             <p>Orçamentos</p>
 
-                        </div>  
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -188,28 +188,28 @@
                 </div>
             </div>
         </section>
-            {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
-            mensagens %} {% for categoria, msg in mensagens %}
-            <p class="msg {{ categoria }}">{{ msg }}</p>
-            {% endfor %} {% endif %} {% endwith %}
+        {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
+        mensagens %} {% for categoria, msg in mensagens %}
+        <p class="msg {{ categoria }}">{{ msg }}</p>
+        {% endfor %} {% endif %} {% endwith %}
 
-                <script>
+        <script>
             const flashMessages = document.querySelectorAll(".msg");
             const displayTime = 4000;
 
             flashMessages.forEach((message) => {
                 setTimeout(() => {
-                message.style.transition = "opacity 0.5s ease";
-                message.style.opacity = "0";
+                    message.style.transition = "opacity 0.5s ease";
+                    message.style.opacity = "0";
 
-                setTimeout(() => {
-                    if (message && message.parentNode) {
-                    message.parentNode.removeChild(message);
-                    }
-                }, 500);
+                    setTimeout(() => {
+                        if (message && message.parentNode) {
+                            message.parentNode.removeChild(message);
+                        }
+                    }, 500);
                 }, displayTime);
             });
-    </script>
+        </script>
         <section id="main-screen">
             <div id="info-main-screen">
                 <h1>Gerenciamentos de Produtos
@@ -299,21 +299,18 @@
                     {% for p in produtos %}
                     <tr>
                         <td>{{ p.id }}</td>
-                        
+
                         <td>
                             <div class="img-produto">
-                                <img
-                                src="../static/img/{{ p.id_imagem }}"
-                                alt="{{ p.nome }}"
-                                />
+                                <img src="../static/img/{{ p.id_imagem }}" alt="{{ p.nome }}" />
                             </div>
                         </td>
-                        
+
                         <td>{{ p.nome }}</td>
                         <td>{{ p.estoque }} un.</td>
                         <td>R$ {{ p.preco }}</td>
                         <td>
-                            <a>
+                            <a data-id="{{ p.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -373,6 +370,31 @@
                 </table>
                 </h1>
             </div>
+
+            <div id="containerM" class="containerM">
+                <div id="card-editar" class="card-editar">
+                    <span class="fechar">&times;</span>
+
+                    <form id="form-editar" class="form-editar">
+                        <h1>Editar Produto</h1>
+                        <input type="hidden" id="edit-id" onsubmit="return false;" />
+
+                        <label for="nome">Nome:</label>
+                        <input type="text" id="edit-nome" name="nome" value="" required />
+
+                        <label for="preco">Preco:</label>
+                        <input type="number" id="edit-preco" name="preco" step="0.01" value="" required />
+
+                        <label for="categoria">Categoria:</label>
+                        <input type="text" id="edit-categoria" name="categoria" value="" required />
+
+                        <label for="estoque">Estoque:</label>
+                        <input type="number" id="edit-estoque" name="estoque" value="" required />
+
+                        <button type="submit">Salvar</button>
+                    </form>
+                </div>
+            </div>
             {% else %}
             <div class="notfound-container">
                 <h1>Não há produtos cadastrados</h1>
@@ -380,6 +402,72 @@
             {% endif %}
         </section>
     </main>
+
+    <script>
+        const modal = document.getElementById("containerM");
+        const fechar = document.querySelector(".fechar");
+        const form = document.getElementById("form-editar");
+
+        // Função pra abrir o modal com os dados do produto
+        async function abrirModalEdicao(id) {
+            try {
+                const res = await fetch(`/api/produto/${id}`);
+                if (!res.ok) throw new Error("Erro ao buscar produto!");
+
+                const produto = await res.json();
+
+                document.getElementById("edit-id").value = produto.id;
+                document.getElementById("edit-nome").value = produto.nome;
+                document.getElementById("edit-preco").value = produto.preco;
+                document.getElementById("edit-categoria").value = produto.categoria;
+                document.getElementById("edit-estoque").value = produto.estoque;
+
+                modal.style.display = "flex";
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // Fecha o modal
+        fechar.onclick = () => (modal.style.display = "none");
+        window.onclick = (e) => {
+            if (e.target === modal) modal.style.display = "none";
+        };
+
+        // Quando clicar em "Editar"
+        document.querySelectorAll(".editar").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const id = btn.dataset.id;
+                abrirModalEdicao(id);
+            });
+        });
+
+        // Enviar atualização pro backend
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById("edit-id").value;
+            const nome = document.getElementById("edit-nome").value;
+            const preco = document.getElementById("edit-preco").value;
+            const categoria = document.getElementById("edit-categoria").value;
+            const estoque = document.getElementById("edit-estoque").value;
+
+            const res = await fetch(`/api/produto/${id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ nome, preco, categoria, estoque }),
+            });
+
+            if (res.ok) {
+                alert("Produto atualizado com sucesso!");
+                modal.style.display = "none";
+                location.reload();
+            } else {
+                alert("Erro ao atualizar produto!");
+            }
+        });
+    </script>
 </body>
 
 </html>

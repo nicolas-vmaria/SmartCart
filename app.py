@@ -21,7 +21,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
+    host="localhost", user="root", password="", port="3306", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -728,6 +728,18 @@ def produto_detalhes(id):
         return redirect(url_for("listar_produtos"))
 
     return render_template("detalhes_produto.html", user=current_user, produto=produto)
+
+@app.route("/api/users/<int:id>")
+@login_required
+def api_produto(id):
+    cursor.execute("SELECT * FROM Usuario WHERE id=%s", (id,))
+    users = cursor.fetchone()
+    if users:
+        return jsonify(users)
+    
+    else:
+        return jsonify({"erro": "Usuario não encontrado"}), 404
+
 
 
 if __name__ == "__main__":
