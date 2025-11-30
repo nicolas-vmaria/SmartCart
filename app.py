@@ -13,8 +13,6 @@ from flask_login import (
 
 import hashlib
 import re
-import qrcode
-import crcmod
 
 app = Flask(__name__)
 app.secret_key = "chaveteste"
