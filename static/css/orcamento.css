@@ -200,6 +200,7 @@ label {
 
 input,
 select {
+  font-family: montserrat;
   width: 100%;
   height: 55px;
   padding: 0 20px;
@@ -254,6 +255,7 @@ select:focus {
 }
 
 .obs-list li a {
+  font-family: montserrat;
   color: var(--cor-texto);
   font-size: 1.1rem;
   text-decoration: none;
@@ -269,6 +271,7 @@ select:focus {
 
 /* --- Botão --- */
 button[type="submit"] {
+  font-family: montserrat;
   width: 100%;
   max-width: 400px;
   height: 65px;

@@ -31,6 +31,7 @@ form{
 }
 
 form input{
+    font-family: montserrat;
     display: flex;
     width: 750px;
     height: 40px;
