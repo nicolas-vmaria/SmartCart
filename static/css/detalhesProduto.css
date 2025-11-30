@@ -214,6 +214,7 @@ h1.detail-title {
   text-transform: uppercase;
   font-weight: bold;
   width: fit-content;
+  text-decoration: none;
 }
 
 .btn-buy:hover {
