@@ -300,7 +300,7 @@
                     <span>Local onde o administrador vê, edita e controla os orçamentos do sistema.</span>
                 </h1>
 
-                <!-- {% if produtos %} -->
+                {% if orcamentos %}
 
                 <div class="action-table">
 
@@ -345,7 +345,7 @@
                             </div>
                         </button>
 
-                        <button>
+                          <button>
                             <div>
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -367,30 +367,25 @@
 
                                 Criar Produto
                             </div>
-                        </button>
+                        </button> 
                     </div>
                 </div>
                 <table>
                     <tr>
                         <th>Id</th>
-                        <th>Imagem</th>
-                        <th>Nome</th>
-                        <th>Estoque</th>
-                        <th>Preço</th>
-                        <th>Ação</th>
+                        <th>Nome da Empresa</th>
+                        <th>CNPJ</th>
+                        <th>Email</th>
+                        <th>Produto</th>
+                        <th>Ações</th>
                     </tr>
-                    <!-- {% for p in produtos %} -->
+                    {% for o in orcamentos %}
                     <tr>
-                        
-                        <td>{{ p.nome }}</td>
-                        <td>
-                            <div class="img-produto">
-                                <img src="{{ p.id_imagem }}" alt="Imagem do Produto">
-                            </div>
-                        </td>
-                        <td>{{ p.nome }}</td>
-                        <td>{{ p.estoque }} un.</td>
-                        <td>R$ {{ p.preco }}</td>
+                        <td>{{ o.id }}</td>
+                        <td>{{ o.nome_empresa }}</td>
+                        <td class="cnpj-data">{{ o.cnpj }}</td>
+                        <td>{{ o.email }}</td>
+                        <td>{{ o.nome_produto }}</td>
                         <td>
                             <a>
                                 <!DOCTYPE svg
@@ -417,7 +412,7 @@
 
                                 </svg>
                             </a>
-                            <a href="/excluir_produto/{{ p.id }}">
+                            <a href="/excluir_orcamento/{{ o.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -448,16 +443,90 @@
                             </a>
                         </td>
                     </tr>
-                    <!-- {% endfor %} -->
+                    {% endfor %}
                 </table>
                 </h1>
             </div>
-            <!-- {% else %} -->
-            <!-- <div class="notfound-container">
+            {% else %} 
+             <div class="notfound-container">
                 <h1>Não há orçamentos feitos</h1>
-            </div> -->
-            <!-- {% endif %} -->
+            </div> 
+             {% endif %} 
       </section>
     </main>
   </body>
+  <script>
+
+    // Função adaptada para formatar o TEXTO de um elemento
+    function formatCnpjText(element) {
+        let n = element.textContent.replace(/\D/g, "");
+
+        n = n.substring(0, 14);
+
+        if (n.length > 12) {
+          n = n.replace(
+            /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
+            "$1.$2.$3/$4-$5"
+          );
+        } else if (n.length > 8) {
+          n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
+        } else if (n.length > 5) {
+          n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
+        } else if (n.length > 2) {
+          n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
+        } else {
+          n = n.replace(/(\d{0,2})/, "$1");
+        }
+
+        element.textContent = n; // Define o texto formatado de volta ao elemento
+    }
+
+    // Função adaptada para formatar o TEXTO de um elemento
+    function formatTelText(element) {
+        let v = element.textContent.replace(/\D/g, "");
+
+        v = v.substring(0, 11);
+
+        if (v.length === 11) {
+            v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+        } else if (v.length > 6) {
+            // Para telefones fixos ou incompletos (opcional)
+            v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+        } else if (v.length > 2) {
+            v = v.replace(/(\d{2})(\d{0,})/, "($1) $2");
+        } else if (v.length > 0) {
+            v = `(${v}`;
+        } else {
+            v = "";
+        }
+
+        element.textContent = v; // Define o texto formatado de volta ao elemento
+    }
+
+    // APLICAÇÃO DA MÁSCARA AO CARREGAR A PÁGINA
+    document.addEventListener("DOMContentLoaded", () => {
+        // ... seu código do dropdown (deixe-o aqui) ...
+
+        const cnpjElements = document.querySelectorAll(".cnpj-data");
+        const telElements = document.querySelectorAll(".tel-data");
+
+        // Itera sobre *todos* os elementos com a classe "cnpj-data"
+        cnpjElements.forEach(element => {
+            if (element.textContent.trim().length > 0) {
+                formatCnpjText(element);
+            }
+        });
+
+        // Itera sobre *todos* os elementos com a classe "tel-data"
+        telElements.forEach(element => {
+            if (element.textContent.trim().length > 0) {
+                formatTelText(element);
+            }
+        });
+    });
+
+    // Remova ou ignore os Listeners de 'input' do seu código original,
+    // pois eles só fazem sentido para campos de formulário (inputs), não para células de tabela (td).
+    // O código acima aplica a máscara uma única vez ao carregar a página.
+    </script>
 </html>

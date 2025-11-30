@@ -197,7 +197,7 @@
             {% if produto.estoque < 100 %}
             <div class="product-card">
                 
-                <div class="image-container">
+                <div class="image-container" onclick="window.location.href='/produto/{{ produto.id }}'">
                     <input type="checkbox" id="like-{{ produto.id }}" class="like-checkbox">
                     
                     <label for="like-{{ produto.id }}" class="heart-btn">
@@ -206,7 +206,7 @@
                         </svg>
                     </label>
     
-                    <img src="../static/img/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" onclick="window.location.href='/produto/{{ produto.id }}'"> 
+                    <img src="../static/img/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" > 
                 </div>
                 <div class="product-info">
                     <h3 class="product-title">{{ produto.nome }}</h3>                 
@@ -217,7 +217,7 @@
             {% else %}
                         <div class="product-card">
                 
-                <div class="image-container">
+                <div class="image-container" onclick="window.location.href='/produto/{{ produto.id }}'">
                     <input type="checkbox" id="like-{{ produto.id }}" class="like-checkbox">
                     
                     <label for="like-{{ produto.id }}" class="heart-btn">
@@ -226,7 +226,7 @@
                         </svg>
                     </label>
     
-                    <img src="../static/img/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" onclick="window.location.href='/produto/{{ produto.id }}'">                </div>
+                    <img src="../static/img/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" >                </div>
                 <div class="product-info">
                     <h3 class="product-title">{{ produto.nome }}</h3>                 
                     <div class="product-price">R$ {{ "%.2f"|format(produto.preco) }}</div>

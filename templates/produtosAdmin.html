@@ -298,8 +298,8 @@
                     </tr>
                     {% for p in produtos %}
                     <tr>
+                        <td>{{ p.id }}</td>
                         
-                        <td>{{ p.nome }}</td>
                         <td>
                             <div class="img-produto">
                                 <img
@@ -308,6 +308,7 @@
                                 />
                             </div>
                         </td>
+                        
                         <td>{{ p.nome }}</td>
                         <td>{{ p.estoque }} un.</td>
                         <td>R$ {{ p.preco }}</td>

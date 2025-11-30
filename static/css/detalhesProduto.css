@@ -173,7 +173,7 @@ h1.detail-title {
 
 .detail-price {
   font-size: 2rem;
-  color: #8cbf75; /* O verde do seu site */
+  color: #aebb80; /* O verde do seu site */
   font-weight: bold;
   margin: 15px 0;
 }
@@ -186,7 +186,7 @@ h1.detail-title {
 }
 
 .stock-badge {
-  display: inline-block;
+  display: flex;
   padding: 5px 10px;
   background-color: #e8f5e9;
   color: #2e7d32;
@@ -203,7 +203,7 @@ h1.detail-title {
 
 /* Botão de Compra */
 .btn-buy {
-  background-color: #8cbf75; /* Verde SmartCart */
+  background-color: #a0b179; /* Verde SmartCart */
   color: white;
   border: none;
   padding: 15px 40px;
@@ -217,9 +217,9 @@ h1.detail-title {
 }
 
 .btn-buy:hover {
-  background-color: #7aa866;
+  background-color: #aebb80;
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(140, 191, 117, 0.4);
+  box-shadow: 0 4px 10px #a0b179;
 }
 
 .btn-back {

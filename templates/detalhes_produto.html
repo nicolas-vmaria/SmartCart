@@ -210,9 +210,9 @@
           tecnologia e conforto." }}
         </p>
 
-        <button class="btn-buy" onclick="window.location.href='/orcamento'">
+        <a class="btn-buy" href="{{ url_for('orcamento', produto_id=produto.id) }}">
           Fazer orçamento
-        </button>
+        </a>
 
         <a href="/produtos" class="btn-back">Voltar para a loja</a>
       </div>

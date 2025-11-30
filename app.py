@@ -18,7 +18,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3406", database="smart_cart"
+    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -29,11 +29,11 @@ def hash(txt):
 
 
 # Criptogrando a senha do admin
-senha_admin = "0123"
-objeto_hash = hashlib.sha256()
-objeto_hash.update(senha_admin.encode("utf-8"))
-senha_admin = objeto_hash.hexdigest()
-print(senha_admin)
+# senha_admin = "admin123"
+# objeto_hash = hashlib.sha256()
+# objeto_hash.update(senha_admin.encode("utf-8"))
+# senha_admin = objeto_hash.hexdigest()
+# print(senha_admin)
 
 
 @lm.user_loader
@@ -197,7 +197,7 @@ def editar_usuario(id):
     flash("Usuario atualizado com sucesso!", "sucesso")
     return redirect(url_for("admin_users"))
 
-
+ 
 app.route("/admin/criar_produto", methods=["POST"])
 @login_required
 def criar_produto():
@@ -219,8 +219,8 @@ def criar_produto():
 @app.route("/excluir_produto/<int:id>")
 @login_required
 def excluir_produto(id):
-    cursor.execute("DELETE FROM Orcamentos WHERE id_produto = %s", (id,))
     cursor.execute("DELETE FROM Pedidos WHERE id_produto = %s", (id,))
+    cursor.execute("DELETE FROM Orcamentos WHERE id_produto = %s", (id,))
     cursor.execute("DELETE FROM Produtos WHERE id = %s", (id,))
     conexao.commit()
 
@@ -303,8 +303,11 @@ def admin_orcamentos():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
+    
+    cursor.execute("SELECT * FROM Orcamentos")
+    orcamentos = cursor.fetchall()
 
-    return render_template("orcamentosAdmin.html")
+    return render_template("orcamentosAdmin.html", user=current_user, orcamentos=orcamentos)
 
 
 @app.route("/conta")
@@ -421,8 +424,7 @@ def pedidos():
             p.data_pedido,
             p.id_orcamento,
             pr.id_imagem AS produto_imagem, -- A imagem ainda buscamos da tabela de produtos original
-            (p.preco_unitario * p.quantidade) AS total_item,
-            o.forma_pagamento
+            (p.preco_unitario * p.quantidade) AS total_item
         FROM Pedidos p
         JOIN Produtos pr ON p.id_produto = pr.id
         JOIN Orcamentos o ON p.id_orcamento = o.id
@@ -440,9 +442,16 @@ def pedidos():
 @login_required
 def orcamento():
     if request.method == "GET":
+        produto_id = request.args.get("produto_id", type=int)
+
         cursor.execute("SELECT * FROM Produtos ORDER BY nome")
         produtos = cursor.fetchall()
-        return render_template("orcamento.html", user=current_user, produtos=produtos)
+
+        if not produtos:
+            flash("Nenhum produto disponível para orçamento no momento.", "erro")
+            return redirect(url_for("index"))
+
+        return render_template("orcamento.html", user=current_user, produtos=produtos, produto_id=produto_id)
     elif request.method == "POST":
         nome_empresa = request.form["nomeEmpresa"]
         cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
@@ -451,15 +460,27 @@ def orcamento():
         numero = request.form["numero"]
         complemento = request.form["complemento"]
         cep = request.form["cep"].replace("-", "")
-        produtos = request.form["produtos"]
+        id_produto = request.form["produtos"]
         quantidades = request.form["quantidades"].replace(".", "")
         prazo_entrega = request.form["prazo"]
 
+        cursor.execute("SELECT nome, preco FROM Produtos WHERE id = %s", (id_produto,))
+        produto_info = cursor.fetchone()
+
+        if not produto_info:
+            flash("Produto inválido selecionado.", "erro")
+            return redirect(url_for("orcamento"))
+
+        preco = produto_info["preco"]
+        nome_produto = produto_info["nome"]
+
+        
+
         cursor.execute(
-            "INSERT INTO Orcamentos (id_usuario, id_produto, nome_empresa, cnpj, email, endereco, numero, complemento, cep, produtos, quantidades, prazo_entrega) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO Orcamentos (id_usuario, id_produto, nome_empresa, cnpj, email, endereco, numero, complemento, cep, nome_produto, quantidades, prazo_entrega) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             (
                 current_user.id,
-                produtos,
+                id_produto,
                 nome_empresa,
                 cnpj,
                 email,
@@ -467,18 +488,13 @@ def orcamento():
                 numero,
                 complemento,
                 cep,
-                produtos,
+                nome_produto,
                 quantidades,
                 prazo_entrega,
             ),
         )
         conexao.commit()
 
-        cursor.execute("SELECT preco FROM Produtos WHERE id = %s", (produtos,))
-        preco = cursor.fetchone()["preco"]
-
-        cursor.execute("select nome from Produtos where id = %s", (produtos,))
-        nome_produto = cursor.fetchone()["nome"]
 
         id_orcamento = cursor.lastrowid
 
@@ -486,7 +502,7 @@ def orcamento():
             "INSERT INTO Pedidos (id_usuario, id_produto, id_orcamento, nome_produto, quantidade, preco_unitario, status) VALUES (%s, %s, %s, %s, %s, %s, %s)",
             (
                 current_user.id,
-                produtos,
+                id_produto,
                 id_orcamento,
                 nome_produto,
                 quantidades,
@@ -658,6 +674,18 @@ def listar_produtos():
         produtos=produtos_lista,
         current_sort=sort_option,
     )
+
+@app.route("/produtos/<int:id>")
+@login_required
+def produto_detalhes(id):
+    cursor.execute("SELECT * FROM Produtos WHERE id = %s", (id,))
+    produto = cursor.fetchone()
+
+    if not produto:
+        flash("Produto não encontrado.", "erro")
+        return redirect(url_for("listar_produtos"))
+
+    return render_template("detalhes_produto.html", user=current_user, produto=produto)
 
 
 if __name__ == "__main__":

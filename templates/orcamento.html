@@ -286,6 +286,9 @@
               {% for p in produtos %}
               <option
                 value="{{ p.id }}"
+                {% if p.id == produto_id %}
+                  selected
+                {% endif %}
                 data-preco="{{ p.preco }}"
                 data-estoque="{{ p.estoque }}"
               >
