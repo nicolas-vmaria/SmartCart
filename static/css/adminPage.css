@@ -545,3 +545,10 @@ td button:active {
     cursor: pointer;
     transform: scale(1.1);
 }
+
+.status-orcamento{
+  font-family: montserrat;
+  width: 150px;
+  height: 30px;
+  border-radius: 10px;
+}

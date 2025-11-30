@@ -67,7 +67,7 @@ CREATE TABLE Pedidos (
 
 
 insert into Produtos (nome, preco, estoque, id_imagem) values
-("SmartCart", 649.00, 5000, "img1"),
+("SmartCart", 649.00, 5000, "img1.png"),
 ("DoubleCart", 760.00, 1000, "img2"),
 ("SmartGlide", 490.00, 800, "img3"),
 ("SmartConfort ", 399.00, 50, "img4"),
