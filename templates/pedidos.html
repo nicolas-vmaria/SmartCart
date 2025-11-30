@@ -341,7 +341,11 @@
             </div>
 
             <div class="card-actions">
-              <a href="{{ url_for('pagamento', id=pedido.id) }}">Ir para Pagamento</a>
+              <a
+                href="/pagamento/{{ p.id }}"
+                class="btn btn-pay"
+                title="Pagar Pedido"
+              >
                 <svg
                   width="20"
                   height="20"
@@ -382,6 +386,65 @@
               </a>
             </div>
           </div>
+          {% elif p.status == "Em análise"%}
+           <div class="order-card">
+            <div class="card-header">
+              <span class="status-success">{{ p.status }}</span>
+              <span class="order-id">Pedido #{{ p.id }}</span>
+            </div>
+
+            <div class="card-body">
+              <div class="product-image">
+                <img
+                  src="../static/img/{{p.produto_imagem}}"
+                  alt="{{ p.produto_nome }}"
+                  onerror="this.style.display='none'"
+                />
+              </div>
+
+              <div class="product-details">
+                <h2 class="product-name">{{ p.nome_produto }}</h2>
+                <p class="product-qty">
+                  Quantidade: <strong>{{ p.quantidade }}</strong>
+                </p>
+              </div>
+
+              <div class="product-price">
+                <span class="label">Total</span>
+                <span class="value valor-para-formatar">
+                  {{ p.preco_unitario * p.quantidade }}
+                </span>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              
+
+              <a
+                href="/excluir_pedido/{{ p.id }}"
+                class="btn btn-delete"
+                title="Cancelar Pedido"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  ></path>
+                </svg>
+                Cancelar
+              </a>
+            </div>
+          </div>
+
           {% endif %} {% endfor %}
         </div>
 

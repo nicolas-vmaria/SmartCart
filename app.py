@@ -156,7 +156,8 @@ def pagamento_realizado(id):
 def excluir_pedido(id):
     cursor.execute(
         "DELETE FROM Pedidos WHERE id = %s AND id_usuario = %s", (id, current_user.id)
-    )
+)
+    cursor.execute( "DELETE FROM Orcamentos WHERE id = %s AND id_usuario = %s", (id, current_user.id))
     conexao.commit()
 
     flash("Pedido excluído com sucesso!", "sucesso")
@@ -349,6 +350,23 @@ def admin_orcamentos():
     orcamentos = cursor.fetchall()
 
     return render_template("orcamentosAdmin.html", user=current_user, orcamentos=orcamentos)
+
+@app.route("/atualizar_status", methods=["POST"])
+@login_required
+def atualizar_status():
+    if not current_user.is_admin:
+        flash("Acesso negado: Vocês não tem permissões de administrador.", "erro")
+        return redirect(url_for("index"))
+
+    id_orcamento = request.form["id_orcamento"]
+    novo_status = request.form["novo_status"]
+
+    cursor.execute("UPDATE Orcamentos SET status = %s WHERE id = %s", (novo_status, id_orcamento))
+    cursor.execute("UPDATE Pedidos SET status = %s WHERE id_orcamento = %s", (novo_status, id_orcamento))
+    conexao.commit()
+    flash(f"Status do pedido {id_orcamento} atualizado para {novo_status}", "sucesso")
+
+    return redirect(url_for("admin_orcamentos"))
 
 
 @app.route("/conta")
