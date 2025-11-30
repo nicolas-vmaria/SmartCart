@@ -13,15 +13,14 @@ from flask_login import (
 
 import hashlib
 import re
-import qrcode
-import crcmod
+
 
 app = Flask(__name__)
 app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3306", database="smart_cart"
+    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
