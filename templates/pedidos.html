@@ -444,7 +444,29 @@
               </a>
             </div>
           </div>
+          {% elif p.status == "Entregue"%}
+                     <div class="order-card">
+            <div class="card-header">
+              <span class="status-success">{{ p.status }}</span>
+              <span class="order-id">Pedido #{{ p.id }}</span>
+            </div>
 
+            <div class="card-body">
+              <div class="product-image">
+                <img
+                  src="../static/img/{{p.produto_imagem}}"
+                  alt="{{ p.produto_nome }}"
+                  onerror="this.style.display='none'"
+                />
+              </div>
+
+              <div class="product-details">
+                <h2 class="product-name">{{ p.nome_produto }}</h2>
+                <p class="product-qty">
+                  Quantidade: <strong>{{ p.quantidade }}</strong>
+                </p>
+              </div>
+          </div>
           {% endif %} {% endfor %}
         </div>
 
