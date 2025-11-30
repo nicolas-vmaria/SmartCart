@@ -15,7 +15,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+  font-family: montserrat;
 }
 
 body {
@@ -99,7 +99,7 @@ body {
 .tab-btn.active {
   background-color: white;
   color: var(--cor-botao-hover);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* Conteúdo das Abas */
@@ -117,8 +117,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* --- Estilos PIX --- */
@@ -273,7 +279,7 @@ body {
   color: var(--cor-botao-hover);
   font-size: 0.9rem;
   font-weight: 600;
-  background: rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.5);
   padding: 10px;
   border-radius: 10px;
   width: fit-content;
@@ -294,7 +300,7 @@ body {
   .payment-main {
     padding: 30px;
   }
-  
+
   .summary-row.total {
     font-size: 2rem;
   }
@@ -313,18 +319,18 @@ button:disabled,
   width: 100%;
   padding: 15px;
   padding-right: 45px; /* Espaço extra na direita para a setinha não ficar em cima do texto */
-  
+
   border-radius: var(--radius-input); /* Usa seus 10px definidos no :root */
   border: 1px solid #ddd;
   background-color: #f9f9f9;
-  
-  font-family: 'Poppins', sans-serif;
+
+  font-family: "Poppins", sans-serif;
   font-size: 1rem;
   color: var(--cor-texto);
-  
+
   cursor: pointer;
   transition: all 0.3s ease;
-  
+
   /* Comandos essenciais para permitir customização total */
   appearance: none;
   -webkit-appearance: none;
@@ -355,32 +361,38 @@ button:disabled,
   display: none; /* Começa escondido */
   margin-top: 12px;
   padding: 12px 15px;
-  
+
   /* Usando as variáveis do seu tema */
   background-color: #a0b179; /* Fundo verde clarinho (#f6ffcf) */
   color: var(--cor-texto);
   border: 1px solid var(--cor-botao); /* Borda verde (#a0b179) */
   border-radius: var(--radius-input);
-  
+
   font-size: 0.9rem;
   font-weight: 600;
   text-align: center;
-  
+
   /* Pequena animação para aparecer suavemente */
   animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Classe para bloquear o clique no link */
 .link-bloqueado {
-    pointer-events: none;      /* Impede o clique */
-    cursor: not-allowed;       /* Mostra ícone de proibido */
-    opacity: 0.6;              /* Deixa transparente */
-    background-color: #ccc !important; /* Fundo cinza (opcional, ajusta ao seu tema) */
-    color: #666 !important;
-    box-shadow: none !important;
+  pointer-events: none; /* Impede o clique */
+  cursor: not-allowed; /* Mostra ícone de proibido */
+  opacity: 0.6; /* Deixa transparente */
+  background-color: #ccc !important; /* Fundo cinza (opcional, ajusta ao seu tema) */
+  color: #666 !important;
+  box-shadow: none !important;
 }

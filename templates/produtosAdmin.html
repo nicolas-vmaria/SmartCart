@@ -302,7 +302,10 @@
                         <td>{{ p.nome }}</td>
                         <td>
                             <div class="img-produto">
-                                <img src="{{ p.id_imagem }}" alt="Imagem do Produto">
+                                <img
+                                src="../static/img/{{ p.id_imagem }}"
+                                alt="{{ p.nome }}"
+                                />
                             </div>
                         </td>
                         <td>{{ p.nome }}</td>

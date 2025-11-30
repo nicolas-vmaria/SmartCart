@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meus pedidos - SmartCart</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,12 +13,7 @@
 
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-    />
-
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/pedidos.css') }}"
+      href="{{ url_for('static', filename='css/detalhesProduto.css') }}"
     />
   </head>
   <body>
@@ -56,6 +51,8 @@
         {% if user.is_authenticated %}
 
         <div class="dropdown">
+          <!-- AGORA É UM DIV, NÃO UM <li> -->
+
           <div class="dropdown-trigger">
             <p>Olá, <b>{{ user.primeiro_nome }}</b></p>
 
@@ -153,6 +150,8 @@
           </ul>
         </div>
 
+        {% else %}
+        <a href="/login">Entrar</a>
         {% endif %}
 
         <script>
@@ -174,267 +173,49 @@
       </div>
     </nav>
 
-    {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
-    mensagens %} {% for categoria, msg in mensagens %}
-    <p class="msg {{ categoria }}">{{ msg }}</p>
-    {% endfor %} {% endif %} {% endwith %}
-
-    <script>
-      const flashMessages = document.querySelectorAll(".msg");
-      const displayTime = 4000;
-
-      flashMessages.forEach((message) => {
-        setTimeout(() => {
-          message.style.transition = "opacity 0.5s ease";
-          message.style.opacity = "0";
-
-          setTimeout(() => {
-            if (message && message.parentNode) {
-              message.parentNode.removeChild(message);
-            }
-          }, 500);
-        }, displayTime);
-      });
-    </script>
-
-    <section class="main-orders">
-      <div class="content-wrapper">
-        <h1 class="page-title">Meus Pedidos</h1>
-
-        {% if pedidos %}
-
-        <div class="orders-list">
-          {% for p in pedidos %} {% if p.status == "Pendente" %}
-          <div class="order-card">
-            <div class="card-header">
-              <span class="status-success">{{ p.status }}</span>
-              <span class="order-id">Pedido #{{ p.id }}</span>
-            </div>
-
-            <div class="card-body">
-              <div class="product-image">
-                <img
-                  src="../static/img/{{p.produto_imagem}}"
-                  alt="{{ p.produto_nome }}"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-
-              <div class="product-details">
-                <h2 class="product-name">{{ p.nome_produto }}</h2>
-                <p class="product-qty">
-                  Quantidade: <strong>{{ p.quantidade }}</strong>
-                </p>
-              </div>
-
-              <div class="product-price">
-                <span class="label">Total</span>
-                <span class="value valor-para-formatar">
-                  {{ p.preco_unitario * p.quantidade }}
-                </span>
-              </div>
-            </div>
-
-            <div class="card-actions">
-              <a
-                href="/excluir_pedido/{{ p.id }}"
-                class="btn btn-delete"
-                title="Cancelar Pedido"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  ></path>
-                </svg>
-                Cancelar
-              </a>
-            </div>
-          </div>
-          {% elif p.status == "Pago" %}
-          <div class="order-card">
-            <div class="card-header">
-              <span class="status-success">{{ p.status }}</span>
-              <span class="order-id">Pedido #{{ p.id }}</span>
-            </div>
-
-            <div class="card-body">
-              <div class="product-image">
-                <img
-                  src="../static/img/{{p.produto_imagem}}"
-                  alt="{{ p.produto_nome }}"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-
-              <div class="product-details">
-                <h2 class="product-name">{{ p.nome_produto }}</h2>
-                <p class="product-qty">
-                  Quantidade: <strong>{{ p.quantidade }}</strong>
-                </p>
-              </div>
-            </div>
-
-            <div class="card-actions">
-              <a
-                href="/excluir_pedido/{{ p.id }}"
-                class="btn btn-delete"
-                title="Cancelar Pedido"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  ></path>
-                </svg>
-                Excluir
-              </a>
-            </div>
-          </div>
-          {% elif p.status == "Respondido" %}
-          <div class="order-card">
-            <div class="card-header">
-              <span class="status-success">{{ p.status }}</span>
-              <span class="order-id">Pedido #{{ p.id }}</span>
-            </div>
-
-            <div class="card-body">
-              <div class="product-image">
-                <img
-                  src="../static/img/{{p.produto_imagem}}"
-                  alt="{{ p.produto_nome }}"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-
-              <div class="product-details">
-                <h2 class="product-name">{{ p.nome_produto }}</h2>
-                <p class="product-qty">
-                  Quantidade: <strong>{{ p.quantidade }}</strong>
-                </p>
-              </div>
-
-              <div class="product-price">
-                <span class="label">Total</span>
-                <span class="value valor-para-formatar">
-                  {{ p.preco_unitario * p.quantidade }}
-                </span>
-              </div>
-            </div>
-
-            <div class="card-actions">
-              <a
-                href="/pagamento/{{ p.id }}"
-                class="btn btn-pay"
-                title="Pagar Pedido"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <rect x="2" y="5" width="20" height="14" rx="2" />
-                  <line x1="2" y1="10" x2="22" y2="10" />
-                </svg>
-                Pagar Agora
-              </a>
-
-              <a
-                href="/excluir_pedido/{{ p.id }}"
-                class="btn btn-delete"
-                title="Cancelar Pedido"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  ></path>
-                </svg>
-                Cancelar
-              </a>
-            </div>
-          </div>
-          {% endif %} {% endfor %}
-        </div>
-
-        {% else %}
-        <div class="empty-state">
-          <svg
-            width="64"
-            height="64"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#ccc"
-            stroke-width="1.5"
-          >
-            <path d="M21 8v13H3V8M1 3h22v5H1z" />
-            <path d="M10 12h4" />
-          </svg>
-          <p>Você ainda não possui nenhum pedido.</p>
-          <a href="/orcamento" class="btn-shop">Faça um novo orçamento</a>
-        </div>
-        {% endif %}
+    <div class="product-detail-container">
+      <!-- Lado Esquerdo: Imagem -->
+      <div class="detail-image-wrapper">
+        <img
+          src="../static/img/{{ produto.id_imagem }}"
+          alt="{{ produto.nome }}"
+        />
       </div>
-    </section>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // 1. Seleciona todos os elementos que têm o preço
-        const elementosPreco = document.querySelectorAll(
-          ".valor-para-formatar"
-        );
 
-        // 2. Formatador padrão brasileiro (R$)
-        const formatador = new Intl.NumberFormat("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        });
+      <!-- Lado Direito: Textos -->
+      <div class="detail-info-wrapper">
+        <div class="breadcrumb">
+          <a href="/produtos">Produtos</a> > <span>{{ produto.nome }}</span>
+        </div>
 
-        // 3. Passa por cada pedido e formata o valor
-        elementosPreco.forEach((elemento) => {
-          // Pega o texto que veio do Python (ex: "1500.0" ou "1500.5")
-          let valorTexto = elemento.innerText;
+        <h1 class="detail-title">{{ produto.nome }}</h1>
 
-          // Converte para número decimal
-          let valorNumerico = parseFloat(valorTexto);
+        <!-- Lógica de Estoque -->
+        {% if produto.estoque < 100 %}
+        <span class="stock-badge low-stock"
+          >Poucas unidades: Apenas {{ produto.estoque }} restantes!</span
+        >
+        {% else %}
+        <span class="stock-badge">Em Estoque</span>
+        {% endif %}
 
-          // Se for um número válido, substitui o texto pelo valor formatado (ex: R$ 1.500,50)
-          if (!isNaN(valorNumerico)) {
-            elemento.innerText = formatador.format(valorNumerico);
-          }
-        });
-      });
-    </script>
+        <div class="detail-price">R$ {{ "%.2f"|format(produto.preco) }}</div>
+
+        <p class="detail-description">
+          <!-- Se você tiver coluna descrição no banco, use produto.descricao. 
+                     Caso contrário, coloquei um texto genérico abaixo -->
+          {{ produto.descricao if produto.descricao else "Lorem ipsum dolor sit
+          amet, consectetur adipiscing elit. Este é um produto de alta qualidade
+          da SmartCart, desenvolvido para facilitar o seu dia a dia com
+          tecnologia e conforto." }}
+        </p>
+
+        <button class="btn-buy" onclick="window.location.href='/orcamento'">
+          Fazer orçamento
+        </button>
+
+        <a href="/produtos" class="btn-back">Voltar para a loja</a>
+      </div>
+    </div>
   </body>
 </html>

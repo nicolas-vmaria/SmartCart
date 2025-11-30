@@ -18,7 +18,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3306", database="smart_cart"
+    host="localhost", user="root", password="", port="3406", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -67,6 +67,24 @@ def unauthorized():
 @app.route("/")
 def index():
     return render_template("index.html", user=current_user)
+
+@app.route("/produto/<int:id>")
+def detalhes_produto(id):
+    # 1. Busca o produto específico pelo ID
+    # Ajuste o ? ou %s dependendo do seu banco (SQLite usa ?, MySQL usa %s)
+    cursor.execute("SELECT * FROM Produtos WHERE id = %s", (id,)) 
+    produto = cursor.fetchone()
+
+    # Se não achar o produto, redireciona ou mostra erro 404
+    if not produto:
+        return "Produto não encontrado", 404
+
+    # 2. Renderiza a nova página passando os dados desse produto
+    return render_template(
+        "detalhes_produto.html",
+        produto=produto,
+        user=current_user # Mantém o user para o header funcionar
+    )
 
 
 @app.route("/pagamento/<int:id>")

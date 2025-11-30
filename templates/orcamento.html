@@ -40,7 +40,9 @@
       <ul>
         <li><a href="/produtos">Produto</a></li>
         <li><a href="/sobre">Sobre Nós</a></li>
+
         <li><a href="/orcamento">Orçamento</a></li>
+
         <li><a href="/contato">Contato</a></li>
       </ul>
 
@@ -266,12 +268,29 @@
 
           <div class="form-group">
             <label for="produtos">Selecione o Produto:</label>
-            <select name="produtos" id="produtos" class="campo-obrigatorio" required >
-              <option value="" disabled selected data-preco="0" data-estoque="0">
+            <select
+              name="produtos"
+              id="produtos"
+              class="campo-obrigatorio"
+              required
+            >
+              <option
+                value=""
+                disabled
+                selected
+                data-preco="0"
+                data-estoque="0"
+              >
                 Escolha o produto desejado
               </option>
               {% for p in produtos %}
-              <option value="{{ p.id }}" data-preco="{{ p.preco }}" data-estoque="{{ p.estoque }}">{{ p.nome }} - {{ p.preco }}</option>
+              <option
+                value="{{ p.id }}"
+                data-preco="{{ p.preco }}"
+                data-estoque="{{ p.estoque }}"
+              >
+                {{ p.nome }} - {{ p.preco }}
+              </option>
               {% endfor %}
             </select>
           </div>
@@ -288,7 +307,8 @@
                 min="1"
                 required
               />
-              <p><span id="label-preco">Preço Total: </span>
+              <p>
+                <span id="label-preco">Preço Total: </span>
                 <span id="preco-total">R$ 0,00</span>
               </p>
             </div>
@@ -1026,71 +1046,66 @@
         quantidade.value = n;
       });
 
-      
-      
+      const selectProduto = document.getElementById("produtos");
+      const inputQuantidade = document.getElementById("quantidade");
+      const spanTotal = document.getElementById("preco-total");
+      const labelPreco = document.getElementById("label-preco"); // NOVO ELEMENTO
+      const btnEnviar = document.getElementById("btn-enviar");
 
-  const selectProduto = document.getElementById('produtos');
-  const inputQuantidade = document.getElementById('quantidade');
-  const spanTotal = document.getElementById('preco-total');
-  const labelPreco = document.getElementById('label-preco'); // NOVO ELEMENTO
-  const btnEnviar = document.getElementById('btn-enviar');
+      function atualizarOrcamento() {
+        const opcao = selectProduto.options[selectProduto.selectedIndex];
 
-  function atualizarOrcamento() {
-    const opcao = selectProduto.options[selectProduto.selectedIndex];
-    
-    let preco = parseFloat(opcao.getAttribute('data-preco')) || 0;
-    let estoque = parseFloat(opcao.getAttribute('data-estoque')) || 0;
+        let preco = parseFloat(opcao.getAttribute("data-preco")) || 0;
+        let estoque = parseFloat(opcao.getAttribute("data-estoque")) || 0;
 
-    let valorDigitado = inputQuantidade.value;
-    valorDigitado = valorDigitado.replace(/\./g, ''); 
-    valorDigitado = valorDigitado.replace(',', '.'); 
-    let quantidade = parseFloat(valorDigitado) || 0;
+        let valorDigitado = inputQuantidade.value;
+        valorDigitado = valorDigitado.replace(/\./g, "");
+        valorDigitado = valorDigitado.replace(",", ".");
+        let quantidade = parseFloat(valorDigitado) || 0;
 
-    // --- LÓGICA DO IF / ELSE ---
+        // --- LÓGICA DO IF / ELSE ---
 
-    // CASO DE ERRO (Sem estoque)
-    if (quantidade > estoque && selectProduto.value !== "") {
-        
-        // 1. Esconde o texto "Preço Total:"
-        labelPreco.style.display = "none";
+        // CASO DE ERRO (Sem estoque)
+        if (quantidade > estoque && selectProduto.value !== "") {
+          // 1. Esconde o texto "Preço Total:"
+          labelPreco.style.display = "none";
 
-        // 2. Mostra o aviso
-        spanTotal.innerText = "Estoque Indisponível (Máx: " + estoque + ")";
-        spanTotal.style.color = "red";
-        spanTotal.style.fontWeight = "bold";
-        
-        // 3. Bloqueia botão
-        btnEnviar.disabled = true;
-        btnEnviar.style.opacity = "0.5";
-        btnEnviar.style.cursor = "not-allowed";
+          // 2. Mostra o aviso
+          spanTotal.innerText = "Estoque Indisponível (Máx: " + estoque + ")";
+          spanTotal.style.color = "red";
+          spanTotal.style.fontWeight = "bold";
 
-    } else {
-        // CASO DE SUCESSO (Tudo certo)
-        
-        let total = preco * quantidade;
+          // 3. Bloqueia botão
+          btnEnviar.disabled = true;
+          btnEnviar.style.opacity = "0.5";
+          btnEnviar.style.cursor = "not-allowed";
+        } else {
+          // CASO DE SUCESSO (Tudo certo)
 
-        // 1. Mostra o texto "Preço Total:" de volta
-        labelPreco.style.display = "inline";
+          let total = preco * quantidade;
 
-        // 2. Mostra o valor formatado
-        spanTotal.innerText = total.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL'
-        });
-        
-        // Reseta estilos
-        spanTotal.style.color = "inherit"; 
-        spanTotal.style.fontWeight = "normal";
-        
-        // 3. Libera botão
-        btnEnviar.disabled = false;
-        btnEnviar.style.opacity = "1";
-        btnEnviar.style.cursor = "pointer";
-    }
-  }
+          // 1. Mostra o texto "Preço Total:" de volta
+          labelPreco.style.display = "inline";
 
-  selectProduto.addEventListener('change', atualizarOrcamento);
-  inputQuantidade.addEventListener('input', atualizarOrcamento);
-</script>
+          // 2. Mostra o valor formatado
+          spanTotal.innerText = total.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          });
+
+          // Reseta estilos
+          spanTotal.style.color = "inherit";
+          spanTotal.style.fontWeight = "normal";
+
+          // 3. Libera botão
+          btnEnviar.disabled = false;
+          btnEnviar.style.opacity = "1";
+          btnEnviar.style.cursor = "pointer";
+        }
+      }
+
+      selectProduto.addEventListener("change", atualizarOrcamento);
+      inputQuantidade.addEventListener("input", atualizarOrcamento);
+    </script>
   </body>
 </html>

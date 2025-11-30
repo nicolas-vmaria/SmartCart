@@ -206,7 +206,7 @@
                         </svg>
                     </label>
     
-                    <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" class="product-img">
+                    <img src="../static/img/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" onclick="window.location.href='/produto/{{ produto.id }}'"> 
                 </div>
                 <div class="product-info">
                     <h3 class="product-title">{{ produto.nome }}</h3>                 
@@ -226,8 +226,7 @@
                         </svg>
                     </label>
     
-                    <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" class="product-img">
-                </div>
+                    <img src="../static/img/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" onclick="window.location.href='/produto/{{ produto.id }}'">                </div>
                 <div class="product-info">
                     <h3 class="product-title">{{ produto.nome }}</h3>                 
                     <div class="product-price">R$ {{ "%.2f"|format(produto.preco) }}</div>
@@ -320,8 +319,7 @@
                       d="M 37.5 0 C 16.789062 0 0 16.789062 0 37.5 C 0 58.210938 16.789062 75 37.5 75 C 58.210938 75 75 58.210938 75 37.5 C 75 16.789062 58.210938 0 37.5 0 Z M 37.5 0 "
                       clip-rule="nonzero"
                     />
-                  </clipPath>
-                  <clipPath id="117559e62c">
+                  </clipPath>                  <clipPath id="117559e62c">
                     <path
                       d="M 0 0 L 75 0 L 75 75 L 0 75 Z M 0 0 "
                       clip-rule="nonzero"
