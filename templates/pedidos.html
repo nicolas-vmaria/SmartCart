@@ -207,7 +207,7 @@
           {% for p in pedidos %} {% if p.status == "Pendente" %}
           <div class="order-card">
             <div class="card-header">
-              <span class="status-success">{{ p.status }}</span>
+              <span class="status-pendente">{{ p.status }}</span>
               <span class="order-id">Pedido #{{ p.id }}</span>
             </div>
 
@@ -263,7 +263,7 @@
           {% elif p.status == "Pago" %}
           <div class="order-card">
             <div class="card-header">
-              <span class="status-success">{{ p.status }}</span>
+              <span class="status-pago">{{ p.status }}</span>
               <span class="order-id">Pedido #{{ p.id }}</span>
             </div>
 
@@ -341,11 +341,7 @@
             </div>
 
             <div class="card-actions">
-              <a
-                href="/pagamento/{{ p.id }}"
-                class="btn btn-pay"
-                title="Pagar Pedido"
-              >
+              <a href="{{ url_for('pagamento', id=pedido.id) }}">Ir para Pagamento</a>
                 <svg
                   width="20"
                   height="20"

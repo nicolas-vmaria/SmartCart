@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 import mysql.connector
 import smtplib
 import email.message
-from models import Usuario
+from models import Usuario, Payload
 from flask_login import (
     LoginManager,
     login_required,
@@ -10,8 +10,11 @@ from flask_login import (
     logout_user,
     current_user,
 )
+
 import hashlib
 import re
+import qrcode
+import crcmod
 
 app = Flask(__name__)
 app.secret_key = "chaveteste"
@@ -95,7 +98,46 @@ def pagamento(id):
     )
     pedido = cursor.fetchone()
 
-    return render_template("pagamento.html", user=current_user, pedido=pedido)
+    if not pedido:
+        flash("Pedido não encontrado.", "erro")
+        return redirect(url_for("pedidos"))
+    
+    try:
+        if 'preco_unitario' not in pedido or 'quantidade' not in pedido:
+            raise ValueError("O pedido não contém informações de preço ou quantidade.")
+    
+        valor_total = float(pedido['preco_unitario']) * int(pedido['quantidade'])
+    except Exception as e:
+        flash(f"Erro ao calcular o valor do pedido: {e}", "erro")
+        return redirect(url_for("pedidos"))
+    
+    CHAVE_PIX = "09425859922"
+    NOME_RECEBEDOR = "SmartCart Vendas"
+    CIDADE_RECEBEDOR = "Joiville"
+    TXID = f"PEDIDO{pedido['id']}"
+    nome_arquivo_imagem = f"pix_pedido_{pedido['id']}.png"
+
+    try:
+        gerador = Payload(
+            nome=NOME_RECEBEDOR,
+            chavepix=CHAVE_PIX,
+            valor=f"{valor_total:.2f}",
+            cidade=CIDADE_RECEBEDOR,
+            txtId=TXID,
+            diretorio="static",
+            nome_arquivo=nome_arquivo_imagem
+        )
+
+        gerador.gerarPayload()
+
+        img_path = url_for("static", filename=nome_arquivo_imagem)
+
+    except Exception as e:
+        flash(f"Erro ao gerar o QR Code PIX: {e}", "erro")
+        return redirect(url_for("pedidos"))
+
+
+    return render_template("pagamento.html", user=current_user, pedido=pedido, img_path=img_path, valor_total=valor_total)
 
 @app.route("/pagamento_realizado/<int:id>")
 @login_required
