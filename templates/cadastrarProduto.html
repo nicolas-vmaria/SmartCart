@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/cadastrarAdmin.css') }}">
+    <title>Cadastrar produto - SmartCart</title>
+</head>
+
+<body>
+    <a class="voltar" href="/admin/produtos"><img src="/static/img/Seta.png" alt="" /></a>
+
+    <main>
+        <h1>Cadastro de Produto</h1>
+        <form id="form-cadastro-produto" action="/admin/cadastrarProduto" method="POST" enctype="multipart/form-data">
+            <div class="top-container-cadastro">
+                <div id="image-container" title="Dê um clique duplo para adicionar uma imagem">
+                    <span class="placeholder-text">Dê um clique duplo aqui<br>para adicionar uma imagem</span>
+                    <img id="preview-image" src="" alt="Sua imagem aparecerá aqui">
+                </div>
+                <input type="file" id="file-input" name="imagem" accept="image/*" style="display: none;">
+                <div class="input-container-all">
+                    <div class="input-container">
+                        <label for="">Nome do Produto:</label>
+                        <input type="text" id="input-nome" name="nome" required>
+                    </div>
+                    <div class="input-container-numbers">
+                        <div class="input-container">
+                            <label for="">Preço do Produto:</label>
+                            <input type="number" id="input-preço" name="preco" step="0.01" min="0" required>
+                        </div>
+                        <div class="input-container">
+                            <label for="">Estoque:</label>
+                            <input type="number" id="input-preço" name="estoque" min="0" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="description-container">
+                <textarea name="descricao" id="" maxlength="500" placeholder="Conte mais sobre o produto. Max: 500 Caracteres"></textarea>
+            </div>
+            <div class="container-button">
+                <input type="submit" value="Cadastrar Produto">
+            </div>
+        </form>
+    </main>
+
+    <script>
+        // Selecionando os elementos
+        const container = document.getElementById('image-container');
+        const fileInput = document.getElementById('file-input');
+        const previewImage = document.getElementById('preview-image');
+        const placeholderText = document.querySelector('.placeholder-text');
+
+        // 3. O evento de Clique Duplo (dblclick)
+        container.addEventListener('dblclick', function () {
+            fileInput.click(); // Simula um clique no input de arquivo escondido
+        });
+
+        // 4. Quando o usuário seleciona um arquivo
+        fileInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                // FileReader para ler o arquivo sem enviar para servidor
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    // Define a fonte da imagem como o resultado da leitura
+                    previewImage.src = e.target.result;
+
+                    // Exibe a imagem e esconde o texto
+                    previewImage.style.display = 'block';
+                    placeholderText.style.display = 'none';
+
+                    // Opcional: Remove a borda tracejada para ficar mais bonito
+                    container.style.border = "none";
+                }
+
+                reader.readAsDataURL(file); // Lê o arquivo como URL de dados
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -31,13 +31,12 @@ CREATE TABLE Orcamentos (
     numero VARCHAR(20) NOT NULL,
     complemento VARCHAR(100),
     cep VARCHAR(8) NOT NULL,
-    nome_produto TEXT NOT NULL,
     quantidades INT NOT NULL,
     prazo_entrega DATE NOT NULL,
     FOREIGN KEY (id_usuario)
         REFERENCES Usuario (id),
     FOREIGN KEY (id_produto)
-        REFERENCES Produtos (id)
+        REFERENCES Produtos (id),
     status VARCHAR(50) DEFAULT 'Pendente',
     FOREIGN KEY (id_usuario)
         REFERENCES Usuario (id),
@@ -61,7 +60,6 @@ CREATE TABLE Pedidos (
     nome_produto VARCHAR(100) NOT NULL,
     quantidade INT NOT NULL,
     preco_unitario DECIMAL(10 , 2 ) NOT NULL,
-    preco_unitario DECIMAL(10 , 2 ) NOT NULL,
     status VARCHAR(50) DEFAULT 'Pendente',
     data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_usuario)
@@ -69,7 +67,7 @@ CREATE TABLE Pedidos (
     FOREIGN KEY (id_produto)
         REFERENCES Produtos (id),
     FOREIGN KEY (id_orcamento)
-        REFERENCES Orcamentos (id)
+        REFERENCES Orcamentos (id),
     FOREIGN KEY (id_usuario)
         REFERENCES Usuario (id),
     FOREIGN KEY (id_produto)
@@ -96,5 +94,6 @@ update Pedidos set status = "Respondido" WHERE id = 10;
 
 select * from Orcamentos;
 select * from Usuario;
+select * from Produtos;
 
 

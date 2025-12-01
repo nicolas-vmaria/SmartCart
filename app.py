@@ -22,7 +22,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
+    host="localhost", user="root", password="", port="3306", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -225,23 +225,70 @@ def excluir_usuario(id):
     return redirect(url_for("admin_users"))
 
 
-
- 
-app.route("/admin/criar_produto", methods=["POST"])
+@app.route("/admin/cadastrarProduto")
 @login_required
-def criar_produto():
+def cadastroProduto():
+    return render_template("cadastrarProduto.html")
+ 
+@app.route("/admin/cadastrarProduto", methods=["POST"])
+@login_required
+def cadastrar_produto():
+    # Coleta os dados do formulário
     nome = request.form["nome"]
-    preco = request.form["preco"]
     estoque = request.form["estoque"]
-    id_imagem = request.form["id_imagem"]
+    arquivo = request.files.get("imagem")
+    descricao = request.form.get("descricao", "Sem descrição")
 
-    cursor.execute(
-        "INSERT INTO Produtos (nome, preco, estoque, id_imagem) VALUES (%s, %s, %s, %s)",
-        (nome, preco, estoque, id_imagem),
-    )
-    conexao.commit()
+    print(descricao)
 
-    flash("Produto criado com sucesso!", "sucesso")
+    preco_texto = request.form["preco"].replace(",", ".")
+    try:
+        preco = float(preco_texto)
+    except ValueError:
+        return "Erro: O preço digitado é inválido", 400
+    
+    nome_imagem = None # Começa vazio
+
+    print(f"Dados recebidos: Nome={nome}, Preço={preco}")
+
+    # --- LÓGICA DE UPLOAD DE ARQUIVO ---
+    if arquivo and arquivo.filename != "":
+        try:
+            nome_imagem = secure_filename(arquivo.filename)
+            diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+            pasta_uploads = os.path.join(diretorio_atual, 'static', 'uploads')
+            
+            if not os.path.exists(pasta_uploads):
+                os.makedirs(pasta_uploads)
+
+            caminho_final = os.path.join(pasta_uploads, nome_imagem)
+            arquivo.save(caminho_final)
+            print(f"Imagem salva em: {caminho_final}")
+        except Exception as e:
+            print(f"Erro ao salvar imagem: {e}")
+            
+    try:
+        if nome_imagem:
+            
+            cursor.execute(
+                "INSERT INTO Produtos (nome, preco, estoque, id_imagem, descricao) VALUES (%s, %s, %s, %s, %s)",
+                (nome, preco, estoque, nome_imagem, descricao)
+            )
+        else:
+            cursor.execute(
+                "INSERT INTO Produtos (nome, preco, estoque, descricao) VALUES (%s, %s, %s, %s)",
+                (nome, preco, estoque, descricao)
+            )
+
+        conexao.commit()
+        print("Produto inserido no banco com sucesso!")
+        flash("Produto criado com sucesso!", "sucesso")
+
+    except Exception as e:
+        conexao.rollback() # Cancela se der erro no SQL
+        print(f"Erro ao inserir no banco: {e}")
+        return "Erro ao cadastrar no banco de dados", 500
+
     return redirect(url_for("admin_produtos"))
 
 
@@ -337,7 +384,6 @@ def atualizar_status():
     flash(f"Status do pedido {id_orcamento} atualizado para {novo_status}", "sucesso")
 
     return redirect(url_for("admin_orcamentos"))
-
 
 @app.route("/conta")
 @login_required
