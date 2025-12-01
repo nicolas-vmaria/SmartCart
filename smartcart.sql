@@ -16,7 +16,7 @@ CREATE TABLE Produtos (
     preco DECIMAL(10 , 2 ) NOT NULL,
     estoque INT DEFAULT 0,
     id_imagem VARCHAR(30),
-    descricao VARCHAR(200) NOT NULL
+    descricao VARCHAR(500) NOT NULL
 );
 
 CREATE TABLE Orcamentos (
