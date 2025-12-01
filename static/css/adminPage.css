@@ -562,6 +562,14 @@ td button:active {
   box-sizing: border-box;
 }
 
+.form-editar #edit-descricao{
+  font-family: montserrat;
+  border-radius: 10px;
+  padding: 10px;
+  width: 100%;
+  resize: none;
+}
+
 .container-button-modal{
   width: 100%;
   display: flex;

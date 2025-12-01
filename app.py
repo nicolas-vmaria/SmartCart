@@ -199,6 +199,7 @@ def excluir_usuario(id):
     return redirect(url_for("admin_users"))
 
 
+
 @app.route("/admin/cadastrarProduto")
 @login_required
 def cadastroProduto():
@@ -834,12 +835,19 @@ def api_produto(id):
 def api_atualizar_produto(id):
     try:
         nome = request.form.get("nome")
-        preco = float(request.form.get("preco"))
-        estoque = int(request.form.get("estoque"))
-
+        # É uma boa prática verificar se os valores não são None antes de converter
+        preco_str = request.form.get("preco")
+        estoque_str = request.form.get("estoque")
+        
+        # Converte de forma segura, tratando a possibilidade de valor vazio ou nulo
+        preco = float(preco_str) if preco_str else 0.0
+        estoque = int(estoque_str) if estoque_str else 0
+        
+        descricao = request.form.get("descricao") # Descrição capturada corretamente
         arquivo = request.files.get("imagem")
         nome_imagem = None
 
+        # --- Lógica de Salvamento de Arquivo (Mantida) ---
         print(f"Arquivo recebido: {arquivo}")
 
         if arquivo and arquivo.filename != "":
@@ -852,7 +860,7 @@ def api_atualizar_produto(id):
             # 3. Define a pasta uploads baseada no diretório atual
             pasta_uploads = os.path.join(diretorio_atual, "static", "uploads")
 
-            # 4. CRUCIAL: Cria a pasta se ela não existir (o save falha se a pasta não existir)
+            # 4. CRUCIAL: Cria a pasta se ela não existir
             if not os.path.exists(pasta_uploads):
                 os.makedirs(pasta_uploads)
                 print(f"Pasta criada: {pasta_uploads}")
@@ -871,23 +879,27 @@ def api_atualizar_produto(id):
                     500,
                 )
 
-        # Atualização no Banco de Dados
+        # --- Atualização no Banco de Dados (CORRIGIDA) ---
         if nome_imagem:
-            cursor.execute(
-                "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, id_imagem=%s WHERE id=%s",
-                (nome, preco, estoque, nome_imagem, id),
-            )
+            # SQL CORRIGIDO: Inclui 'descricao' e 'id_imagem'. Total de 6 placeholders (%s).
+            sql = "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, descricao=%s, id_imagem=%s WHERE id=%s"
+            # Parâmetros CORRIGIDOS: Ordem correta (nome, preco, estoque, descricao, nome_imagem, id)
+            params = (nome, preco, estoque, descricao, nome_imagem, id)
+            
+            cursor.execute(sql, params)
         else:
-            cursor.execute(
-                "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s WHERE id=%s",
-                (nome, preco, estoque, id),
-            )
+            # SQL CORRIGIDO: Inclui 'descricao'. Total de 5 placeholders (%s).
+            sql = "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, descricao=%s WHERE id=%s"
+            # Parâmetros CORRIGIDOS: Ordem correta (nome, preco, estoque, descricao, id)
+            params = (nome, preco, estoque, descricao, id)
+            
+            cursor.execute(sql, params)
 
         conexao.commit()
         return jsonify({"mensagem": "Produto atualizado com sucesso!"}), 200
 
     except Exception as e:
-        print(f"ERRO NO SERVIDOR: {e}")  # Vai aparecer no terminal do Flask
+        print(f"ERRO NO SERVIDOR: {e}") 
         return jsonify({"erro": str(e)}), 500
 
 

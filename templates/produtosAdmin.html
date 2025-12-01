@@ -420,6 +420,11 @@
                         </div>
 
                         <div>
+                            <label for="descricao">Descricao:</label>
+                            <textarea type="text" id="edit-descricao" name="descricao" value="" required></textarea>
+                        </div>
+
+                        <div>
                             <label for="id_imagem">Imagem:</label>
                             <input id="id_imagem" type="file" name="imagem" accept=".png">
                         </div>
@@ -454,6 +459,7 @@
                 document.getElementById("edit-id").value = produto.id;
                 document.getElementById("edit-nome").value = produto.nome;
                 document.getElementById("edit-preco").value = produto.preco;
+                document.getElementById("edit-descricao").value = produto.descricao;
                 document.getElementById("edit-estoque").value = produto.estoque;
 
 
@@ -498,6 +504,7 @@
             const nome = document.getElementById("edit-nome").value
             const preco = document.getElementById("edit-preco").value
             const estoque = document.getElementById("edit-estoque").value
+            const descricao = document.getElementById("edit-descricao").value
 
             const input = document.getElementById("id_imagem")
 
@@ -505,6 +512,7 @@
             formData.append("nome", nome);
             formData.append("preco", preco);
             formData.append("estoque", estoque);
+            formData.append("descricao", descricao);
 
             if (input.files.length > 0) {
                 formData.append("imagem", input.files[0]); // arquivo real
