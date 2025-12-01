@@ -13,8 +13,7 @@ from flask_login import (
 
 import hashlib
 import re
-import qrcode
-import crcmod
+
 import os
 from werkzeug.utils import secure_filename
 
@@ -23,7 +22,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3306", database="smart_cart"
+    host="localhost", user="root", password="12345678", port="3306", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -167,7 +166,8 @@ def pagamento_realizado(id):
 def excluir_pedido(id):
     cursor.execute(
         "DELETE FROM Pedidos WHERE id = %s AND id_usuario = %s", (id, current_user.id)
-    )
+)
+    cursor.execute( "DELETE FROM Orcamentos WHERE id = %s AND id_usuario = %s", (id, current_user.id))
     conexao.commit()
 
     flash("Pedido excluído com sucesso!", "sucesso")
@@ -225,29 +225,6 @@ def excluir_usuario(id):
     return redirect(url_for("admin_users"))
 
 
-@app.route("/editar_usuario/<int:id>", methods=["POST"])
-@login_required
-def editar_usuario(id):
-    nome = request.form["nome"]
-    cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
-    telefone = (
-        request.form["tel"]
-        .replace("(", "")
-        .replace(")", "")
-        .replace("-", "")
-        .replace(" ", "")
-    )
-    email = request.form["email"]
-    senha = request.form["senha"]
-
-    cursor.execute(
-        "UPDATE Usuario SET nome=%s, cnpj=%s, telefone=%s, email=%s, senha=%s WHERE id = %s",
-        (nome, cnpj, telefone, email, senha, id),
-    )
-    conexao.commit()
-
-    flash("Usuario atualizado com sucesso!", "sucesso")
-    return redirect(url_for("admin_users"))
 
  
 app.route("/admin/criar_produto", methods=["POST"])
@@ -279,23 +256,6 @@ def excluir_produto(id):
     flash("Produto excluído com sucesso!", "sucesso")
     return redirect(url_for("admin_produtos"))
 
-
-@app.route("/editar_produto/<int:id>", methods=["POST"])
-@login_required
-def editar_produto(id):
-    nome = request.form["nome"]
-    preco = request.form["preco"]
-    estoque = request.form["estoque"]
-    id_imagem = request.form["id_imagem"]
-
-    cursor.execute(
-        "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, id_imagem=%s WHERE id = %s",
-        (nome, preco, estoque, id_imagem, id),
-    )
-    conexao.commit()
-
-    flash("Produto atualizado com sucesso!", "sucesso")
-    return redirect(url_for("admin_produtos"))
 
 
 @app.route("/admin/")
@@ -360,6 +320,23 @@ def admin_orcamentos():
     orcamentos = cursor.fetchall()
 
     return render_template("orcamentosAdmin.html", user=current_user, orcamentos=orcamentos)
+
+@app.route("/atualizar_status", methods=["POST"])
+@login_required
+def atualizar_status():
+    if not current_user.is_admin:
+        flash("Acesso negado: Vocês não tem permissões de administrador.", "erro")
+        return redirect(url_for("index"))
+
+    id_orcamento = request.form["id_orcamento"]
+    novo_status = request.form["novo_status"]
+
+    cursor.execute("UPDATE Orcamentos SET status = %s WHERE id = %s", (novo_status, id_orcamento))
+    cursor.execute("UPDATE Pedidos SET status = %s WHERE id_orcamento = %s", (novo_status, id_orcamento))
+    conexao.commit()
+    flash(f"Status do pedido {id_orcamento} atualizado para {novo_status}", "sucesso")
+
+    return redirect(url_for("admin_orcamentos"))
 
 
 @app.route("/conta")

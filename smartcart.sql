@@ -15,7 +15,8 @@ CREATE TABLE Produtos (
     nome VARCHAR(100) NOT NULL,
     preco DECIMAL(10 , 2 ) NOT NULL,
     estoque INT DEFAULT 0,
-    id_imagem VARCHAR(30)
+    id_imagem VARCHAR(30),
+    descricao VARCHAR(200) NOT NULL
 );
 
 CREATE TABLE Orcamentos (
@@ -30,9 +31,14 @@ CREATE TABLE Orcamentos (
     numero VARCHAR(20) NOT NULL,
     complemento VARCHAR(100),
     cep VARCHAR(8) NOT NULL,
-    produtos TEXT NOT NULL,
+    nome_produto TEXT NOT NULL,
     quantidades INT NOT NULL,
     prazo_entrega DATE NOT NULL,
+    FOREIGN KEY (id_usuario)
+        REFERENCES Usuario (id),
+    FOREIGN KEY (id_produto)
+        REFERENCES Produtos (id)
+    status VARCHAR(50) DEFAULT 'Pendente',
     FOREIGN KEY (id_usuario)
         REFERENCES Usuario (id),
     FOREIGN KEY (id_produto)
@@ -55,8 +61,15 @@ CREATE TABLE Pedidos (
     nome_produto VARCHAR(100) NOT NULL,
     quantidade INT NOT NULL,
     preco_unitario DECIMAL(10 , 2 ) NOT NULL,
+    preco_unitario DECIMAL(10 , 2 ) NOT NULL,
     status VARCHAR(50) DEFAULT 'Pendente',
     data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario)
+        REFERENCES Usuario (id),
+    FOREIGN KEY (id_produto)
+        REFERENCES Produtos (id),
+    FOREIGN KEY (id_orcamento)
+        REFERENCES Orcamentos (id)
     FOREIGN KEY (id_usuario)
         REFERENCES Usuario (id),
     FOREIGN KEY (id_produto)
@@ -76,11 +89,12 @@ insert into Produtos (nome, preco, estoque, id_imagem) values
 
 ALTER TABLE Usuario ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
 
-
-select * from Produtos;
-
-update Usuario set is_admin = 1 where id = 2;
-
 insert into Usuario (nome, cnpj, telefone, email, senha, is_admin)
 values ("Caio", "12345678909876", "47992451974", "boing@gmail.com", "cb889e05f91275a69d2fb0f7ee4af3b92dae9a0e6ecfcf597bda893a49fb2673", true);
+
+update Pedidos set status = "Respondido" WHERE id = 10;
+
+select * from Orcamentos;
+select * from Usuario;
+
 

@@ -470,20 +470,20 @@ td button:active {
   height: 80px;
 }
 
-.containerM{
+.containerM {
     font-family: montserrat;
-    display: none;
-    height: 80vh;
-    justify-content: center;
+  display: none;
+  height: 80vh;
+  justify-content: center;
     align-items: center;
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    background-color: rgba(0, 0, 0, 0.582);
-    width: 100%;
-    height: 100%;
-    animation: aparecer 0.3s ease;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.582);
+  width: 100%;
+  height: 100%;
+  animation: aparecer 0.3s ease;
 }
 
 .fechar{
@@ -496,8 +496,14 @@ td button:active {
 }
 
 @keyframes aparecer {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .card-editar-produto{
@@ -524,14 +530,14 @@ td button:active {
     border-radius: 30px ; 
 }
 
-.form-editar{
-    display: flex;
-    flex-direction: column;
+.form-editar {
+  display: flex;
+  flex-direction: column;
     width: 100%;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .form-editar div{
@@ -584,7 +590,7 @@ td button:active {
   transform: scale(1.1);
 }
 
-.status-orcamento{
+.status-orcamento {
   font-family: montserrat;
   width: 150px;
   height: 30px;

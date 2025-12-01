@@ -253,6 +253,28 @@
             </li>
           </ul>
         </div>
+            {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
+    mensagens %} {% for categoria, msg in mensagens %}
+    <p class="msg {{ categoria }}">{{ msg }}</p>
+    {% endfor %} {% endif %} {% endwith %}
+
+    <script>
+      const flashMessages = document.querySelectorAll(".msg");
+      const displayTime = 4000;
+
+      flashMessages.forEach((message) => {
+        setTimeout(() => {
+          message.style.transition = "opacity 0.5s ease";
+          message.style.opacity = "0";
+
+          setTimeout(() => {
+            if (message && message.parentNode) {
+              message.parentNode.removeChild(message);
+            }
+          }, 500);
+        }, displayTime);
+      });
+    </script>
 
         <div class="sair" onclick="window.location.href=('/logout')">
           <div class="sair-button">
@@ -388,13 +410,29 @@
                         <td>{{ o.email }}</td>
                         <td>{{ o.nome_produto }}</td>
                         <td>
-                          <select name="status" class="status-orcamento">
-                          <option value="" disabled>Status do Orçamento</option>
-                          <option value="">Em análise</option>
-                          <option value="">Em andamento</option>
-                          <option value="">Respondido</option>
-                          <option value="">Em Entrega</option>
-                        </select>
+                            <select name="novo_status" id="" class="status-orcamento-ajax" data-id="{{ o.id }}">
+
+                              {% if o.status == "Pendente"%}
+                              <option value="Pendente" selected disabled>Pendente</option>
+                              <option value="Em análise" {% if o.status == 'Em análise'%} selected {% endif %}>Em análise</option>
+                              <option value="Respondido" {% if o.status == 'Respondido'%} selected {% endif %}>Respondido</option>
+                              <option value="Entregue" {% if o.status == 'Entregue'%} selected {% endif %}>Entregue</option>
+                              {% elif o.status == "Em análise" %}
+                              <option value="Em análise" selected disabled>Em análise</option>
+                              <option value="Respondido" {% if o.status == 'Respondido'%} selected {% endif %}>Respondido</option>
+                              <option value="Entregue" {% if o.status == 'Entregue'%} selected {% endif %}>Entregue</option>
+                              {% elif o.status == "Respondido" %}
+                              <option value="Respondido" selected disabled>Respondido</option>
+                              <option value="Entregue" {% if o.status == 'Entregue'%} selected {% endif %}>Entregue</option>
+                              {% elif o.status == "Entregue" %}
+                              <option value="Entregue" selected disabled>Entregue</option>
+                              {% else %}
+                              <option value="Respondido" {% if o.status == 'Respondido'%} selected {% endif %}>Respondido</option>
+                              <option value="Entregue" {% if o.status == 'Entregue'%} selected {% endif %}>Entregue</option>
+                              {% endif %}
+                              
+                            </select>
+                            <span class="status-msg" id="msg-{{ o.id }}"></span>
                       </td>
                     </tr>
                     {% endfor %}
@@ -482,5 +520,37 @@
     // Remova ou ignore os Listeners de 'input' do seu código original,
     // pois eles só fazem sentido para campos de formulário (inputs), não para células de tabela (td).
     // O código acima aplica a máscara uma única vez ao carregar a página.
+
+document.querySelectorAll('.status-orcamento-ajax').forEach(item => {
+    item.addEventListener('change', function() {
+        var id = this.getAttribute('data-id');
+        var novoStatus = this.value;
+        var formData = new FormData();
+        formData.append('id_orcamento', id);
+        formData.append('novo_status', novoStatus);
+
+        fetch("{{ url_for('atualizar_status') }}", {
+            method: "POST",
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                // SUCESSO (Código 200)
+            } else {
+                // ERRO DO SERVIDOR (404, 500, 403)
+                response.text().then(text => {
+                    console.error("Erro do servidor:", text); // Veja no F12
+                    msg.innerText = "Erro!";
+                    msg.style.color = "red";
+                    alert("Erro ao salvar: " + text); // Mostra o erro na tela
+                });
+            }
+        }).catch(error => {
+            // ERRO DE REDE OU URL ERRADA
+            console.error("Erro de rede:", error);
+            msg.innerText = "Erro Rede";
+            msg.style.color = "red";
+        });
+    });
+});
     </script>
 </html>
