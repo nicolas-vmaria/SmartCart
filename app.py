@@ -186,44 +186,6 @@ def excluir_pedido(id):
     return redirect(url_for("pedidos"))
 
 
-@app.route("/admin/criar_usuario", methods=["POST"])
-@login_required
-def criar_usuario():
-    nome = request.form["nome"]
-    cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
-    telefone = (
-        request.form["tel"]
-        .replace("(", "")
-        .replace(")", "")
-        .replace("-", "")
-        .replace(" ", "")
-    )
-    email = request.form["email"]
-    senha = request.form["senha"]
-
-    objeto_hash = hashlib.sha256()
-    objeto_hash.update(senha.encode("utf-8"))
-    senha_criptografada = objeto_hash.hexdigest()
-
-    cursor.execute(
-        "SELECT * FROM Usuario WHERE cnpj = %s OR email = %s",
-        (cnpj, email),
-    )
-    usuario_existente = cursor.fetchone()
-
-    if usuario_existente:
-        erro = "Usuário já cadastrado"
-        return redirect(f"/admin/criar_usuario?erro={erro}")
-
-    cursor.execute(
-        "INSERT INTO Usuario (nome, cnpj, telefone, email, senha, is_admin) VALUES (%s, %s, %s, %s, %s, %s)",
-        (nome, cnpj, telefone, email, senha_criptografada, True),
-    )
-    conexao.commit()
-
-    flash("Usuario criado com sucesso!", "sucesso")
-    return redirect(url_for("admin_users"))
-
 
 @app.route("/excluir_usuario/<int:id>")
 @login_required
@@ -347,25 +309,58 @@ def excluir_produto(id):
 @app.route("/admin/")
 @login_required
 def admin():
+    # 1. Verificação de Permissão
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
 
+    # 2. Execução das Consultas para Estatísticas Gerais
+    
+    # Total de Usuários Normais (não administradores)
     cursor.execute("SELECT COUNT(*) AS total_usuarios FROM Usuario WHERE is_admin = 0")
     total_usuarios = cursor.fetchone()["total_usuarios"]
+    
+    # Total de Produtos
     cursor.execute("SELECT COUNT(*) AS total_produtos FROM Produtos")
     total_produtos = cursor.fetchone()["total_produtos"]
+    
+    # Total de Pedidos Pendentes
     cursor.execute(
-        "SELECT COUNT(*) AS total_pedidos FROM Pedidos WHERE status = 'Pendente'"
+        "SELECT COUNT(*) AS total_pedidos_pendentes FROM Pedidos WHERE status = 'Pendente'"
     )
-    total_pedidos = cursor.fetchone()["total_pedidos"]
+    total_pedidos = cursor.fetchone()["total_pedidos_pendentes"] 
+    
+    # 3. Cálculo do Total de Vendas Concluídas ('Pago' ou 'Entregue')
+    
+    # COMANDO SQL: Soma (preço unitário * quantidade) para todos os pedidos concluídos.
+    sql_query_total_vendas = "SELECT SUM(preco_unitario * quantidade) AS total_vendas_pagas FROM Pedidos WHERE status IN ('Pago', 'Entregue');"
 
+    # Executa a consulta no banco de dados
+    cursor.execute(sql_query_total_vendas)
+    
+    # Recupera o resultado
+    resultado_vendas = cursor.fetchone()
+    
+    # Extrai o valor. Usa 'or 0' para garantir que seja 0 se a soma retornar NULL.
+    total_vendas_numerico = resultado_vendas["total_vendas_pagas"] or 0
+    
+    # 4. Formatação do Valor como Moeda Brasileira (R$)
+    
+    # Formatação para R$ (Ex: 10.500,45)
+    total_vendas_formatado = "R$ " + \
+        "{:,.2f}".format(total_vendas_numerico) \
+        .replace(",", "X").replace(".", ",").replace("X", ".")
+
+    # 5. Renderização do Template
+    
+    # Passamos todas as variáveis para o template, incluindo o total de vendas formatado.
     return render_template(
         "adminPage.html",
         user=current_user,
         total_usuarios=total_usuarios,
         total_produtos=total_produtos,
         total_pedidos=total_pedidos,
+        total_vendas=total_vendas_formatado, # Variável que será usada no HTML
     )
 
 

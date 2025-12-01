@@ -28,7 +28,7 @@
                         </div>
                         <div class="input-container">
                             <label for="telefone">Telefone:</label>
-                            <input type="text" id="input-preço" name="telefone" min="0" required>
+                            <input type="text" id="input-telefone" name="telefone" min="0" required>
                         </div>
                     </div>
                 </div>
@@ -44,7 +44,55 @@
             </div>
         </form>
     </main>
+    <script>
+        let tel = document.getElementById("input-telefone");
 
+        tel.addEventListener("input", () => {
+          let v = tel.value.replace(/\D/g, "");
+
+          v = v.substring(0, 11);
+
+          if (v.length > 6 && v.length <= 10){
+            v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2$3")
+          }  else if( v.length === 11) {
+            v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
+          } else if (v.length > 2) {
+            v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2")
+          } else if (v.length === 2) {
+            v = `( ${v}`;
+          } else {
+            v = v
+          }
+         
+          tel.value = v;
+        });
+
+        let cnpj = document.getElementById("input-preço");
+
+        cnpj.addEventListener("input", () => {
+        let n = cnpj.value.replace(/\D/g, "");
+
+        n = n.substring(0, 14);
+
+        if (n.length > 12) {
+          n = n.replace(
+            /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
+            "$1.$2.$3/$4-$5"
+          );
+        } else if (n.length > 8) {
+          n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
+        } else if (n.length > 5) {
+          n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
+        } else if (n.length > 2) {
+          n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
+        } else {
+          n = n.replace(/(\d{0,2})/, "$1");
+        }
+
+        cnpj.value = n;
+      });
+
+    </script>
 </body>
 
 </html>
