@@ -7,8 +7,6 @@ body {
     overflow: hidden;
     font-family: montserrat;
     color: #4e4f3d;
-
-
 }
 
 main {
@@ -18,6 +16,15 @@ main {
     box-sizing: border-box;
     width: 860px;
     height: 80%;
+}
+
+.main-usuario{
+    border: 1px solid #dcdcdc;
+    border-radius: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 500px;
+    height: 580px;
 }
 
 .voltar {
@@ -85,6 +92,15 @@ main {
     height: 250px;
 }
 
+.input-container-all-produto{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 50px;
+    width: 100%;
+    height: 250px;
+}
+
 .input-container #input-nome{
     width: 500px;
     height: 40px;
@@ -95,7 +111,25 @@ main {
 }
 
 .input-container #input-preço{
-    width: 230px;
+    width: 220px;
+    height: 40px;
+    border: 1px solid black;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 8px;
+}
+
+.input-container #input-email{
+    width: 100%;
+    height: 40px;
+    border: 1px solid black;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 8px;
+}
+
+.input-container #input-nome-produto{
+    width: 100%;
     height: 40px;
     border: 1px solid black;
     padding: 10px;
@@ -106,6 +140,12 @@ main {
 .input-container-numbers{
     display: flex;
     width: 500px;
+    justify-content: space-between;
+}
+
+.input-container-numbers-produto{
+    display: flex;
+    width: 100%;
     justify-content: space-between;
 }
 
@@ -129,14 +169,14 @@ main {
     resize: none;
 }
 
-.container-button{
-    margin-top: 10px;
+.container-button-produto{
+    margin-top: 20px;
     width: 100%;
     display: flex;
     justify-content: center;
 }
 
-.container-button input{
+.container-button-produto input{
     width: 300px;
     height: 60px;
     border: none;

@@ -22,7 +22,7 @@ app.secret_key = "chaveteste"
 lm = LoginManager(app)
 
 conexao = mysql.connector.connect(
-    host="localhost", user="root", password="", port="3306", database="smart_cart"
+    host="localhost", user="root", password="", port="3406", database="smart_cart"
 )
 cursor = conexao.cursor(dictionary=True)
 
@@ -41,7 +41,7 @@ def hash(txt):
 
 
 # Criptogrando a senha do admin
-# senha_admin = "admin123"
+# senha_admin = "admin"
 # objeto_hash = hashlib.sha256()
 # objeto_hash.update(senha_admin.encode("utf-8"))
 # senha_admin = objeto_hash.hexdigest()
@@ -291,6 +291,33 @@ def cadastrar_produto():
 
     return redirect(url_for("admin_produtos"))
 
+@app.route("/admin/cadastrarUsuario")
+@login_required
+def cadastroUsuario():
+    return render_template("cadastrarUsuario.html")
+ 
+@app.route("/admin/cadastrarUsuario", methods=["POST"])
+@login_required
+def cadastrar_usuario():
+    
+    nome = request.form.get("nome")
+    cnpj = request.form["cnpj"]
+    telefone = request.form.get("telefone")
+    email = request.form.get("email")
+    
+    senha = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" 
+
+    
+    is_admin = 1
+    
+    cursor.execute(
+        "INSERT INTO Usuario (nome, cnpj, telefone, email, senha, is_admin) VALUES (%s, %s, %s, %s, %s, %s)",
+        (nome, cnpj, telefone, email, senha, is_admin)
+    )
+    
+    conexao.commit()
+    
+    return redirect(url_for("admin_users"))
 
 @app.route("/excluir_produto/<int:id>")
 @login_required
