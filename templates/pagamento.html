@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pagamento - SmartCart</title>
+    <link rel="icon" type="png" href="/static/img/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -76,11 +77,15 @@
 
           <div class="qr-container">
             {% if img_path %}
-            <img src="{{ img_path }}" alt="QR Code Pix"  />
+            <img src="{{ img_path }}" alt="QR Code Pix" />
             {% endif %}
           </div>
 
-          <a class="btn-action" href="/pagamento_realizado/{{ pedido.id }}" style="text-decoration: none;">
+          <a
+            class="btn-action"
+            href="/pagamento_realizado/{{ pedido.id }}"
+            style="text-decoration: none"
+          >
             Simular Pagamento.
           </a>
         </div>
@@ -93,97 +98,96 @@
           </div>
           <form class="card-form">
             <div class="form-group">
-                <label>Número do Cartão</label>
-                <input 
-                    type="text" 
-                    placeholder="0000 0000 0000 0000" 
-                    id="cartao" 
-                    class="campo-obrigatorio" 
-                    maxlength="19"
-                    required 
-                />
+              <label>Número do Cartão</label>
+              <input
+                type="text"
+                placeholder="0000 0000 0000 0000"
+                id="cartao"
+                class="campo-obrigatorio"
+                maxlength="19"
+                required
+              />
             </div>
-        
+
             <div class="form-group">
-                <label>Nome no Cartão</label>
-                <input 
-                    type="text" 
-                    placeholder="Como impresso no cartão" 
-                    class="campo-obrigatorio" 
-                    required 
-                />
+              <label>Nome no Cartão</label>
+              <input
+                type="text"
+                placeholder="Como impresso no cartão"
+                class="campo-obrigatorio"
+                required
+              />
             </div>
-        
+
             <div class="form-row">
-                <div class="form-group" style="flex: 1">
-                    <label>Validade</label>
-                    <input 
-                        type="text" 
-                        placeholder="MM/AA" 
-                        id="validade" 
-                        class="campo-obrigatorio" 
-                        maxlength="5"
-                        required 
-                    />
-                </div>
-                <div class="form-group" style="flex: 1">
-                    <label>CVV</label>
-                    <input 
-                        type="text" 
-                        placeholder="123" 
-                        maxlength="3" 
-                        id="cvv" 
-                        class="campo-obrigatorio" 
-                        required 
-                    />
-                </div>
+              <div class="form-group" style="flex: 1">
+                <label>Validade</label>
+                <input
+                  type="text"
+                  placeholder="MM/AA"
+                  id="validade"
+                  class="campo-obrigatorio"
+                  maxlength="5"
+                  required
+                />
+              </div>
+              <div class="form-group" style="flex: 1">
+                <label>CVV</label>
+                <input
+                  type="text"
+                  placeholder="123"
+                  maxlength="3"
+                  id="cvv"
+                  class="campo-obrigatorio"
+                  required
+                />
+              </div>
             </div>
 
             <div class="form-group">
-              <input 
-    type="hidden" 
-    id="valor-total-pedido" 
-    value="{{ pedido.preco_unitario * pedido.quantidade }}" 
-  />
+              <input
+                type="hidden"
+                id="valor-total-pedido"
+                value="{{ pedido.preco_unitario * pedido.quantidade }}"
+              />
 
-          <label for="parcelas">Condição de Pagamento:</label>
-          <select name="parcelas" id="parcelas" required>
-            <option value="" disabled selected>Escolha as parcelas</option>
-            
-            <option value="1">1x (À vista)</option>
-            <option value="2">2x (Sem Juros)</option>
-            <option value="3">3x (Sem Juros)</option>
-            <option value="4">4x (Sem Juros)</option>
-            <option value="5">5x (Sem Juros)</option>
+              <label for="parcelas">Condição de Pagamento:</label>
+              <select name="parcelas" id="parcelas" required>
+                <option value="" disabled selected>Escolha as parcelas</option>
 
-            <option value="6">6x (Com Juros)</option>
-            <option value="7">7x (Com Juros)</option>
-            <option value="8">8x (Com Juros)</option>
-            <option value="9">9x (Com Juros)</option>
-            <option value="10">10x (Com Juros)</option>
-            <option value="11">11x (Com Juros)</option>
-            <option value="12">12x (Com Juros)</option>
-          </select>
+                <option value="1">1x (À vista)</option>
+                <option value="2">2x (Sem Juros)</option>
+                <option value="3">3x (Sem Juros)</option>
+                <option value="4">4x (Sem Juros)</option>
+                <option value="5">5x (Sem Juros)</option>
 
-              <p id="info-parcela" class="msg-parcela">
-                  </p>
+                <option value="6">6x (Com Juros)</option>
+                <option value="7">7x (Com Juros)</option>
+                <option value="8">8x (Com Juros)</option>
+                <option value="9">9x (Com Juros)</option>
+                <option value="10">10x (Com Juros)</option>
+                <option value="11">11x (Com Juros)</option>
+                <option value="12">12x (Com Juros)</option>
+              </select>
+
+              <p id="info-parcela" class="msg-parcela"></p>
             </div>
-        
+
             <a
-                class="link-bloqueado btn-action" 
-                style="max-width: 100%; margin-top: 10px; text-decoration: none;"  
-                href="/pagamento_realizado/{{pedido.id}}"
-                id="btn-pagar" 
-                disabled
+              class="link-bloqueado btn-action"
+              style="max-width: 100%; margin-top: 10px; text-decoration: none"
+              href="/pagamento_realizado/{{pedido.id}}"
+              id="btn-pagar"
+              disabled
             >
-                {{ pedido.preco_unitario * pedido.quantidade}}
-          </a>
-        </form>
+              {{ pedido.preco_unitario * pedido.quantidade}}
+            </a>
+          </form>
         </div>
       </div>
 
       <!-- Lado Direito: Resumo -->
-       
+
       <div class="payment-summary">
         <h2 class="summary-title">Resumo do Pedido</h2>
 
@@ -199,7 +203,9 @@
 
         <div class="summary-row total">
           <span class="total-label">Valor Total a Pagar</span>
-          <span class="value valor-para-formatar"> {{ pedido.preco_unitario * pedido.quantidade }} </span>
+          <span class="value valor-para-formatar">
+            {{ pedido.preco_unitario * pedido.quantidade }}
+          </span>
         </div>
 
         <div class="secure-badge">
@@ -253,16 +259,14 @@
 
         if (n.length > 2) {
           n = n.replace(/(\d{2})(\d{0,2})/, "$1/$2");
-        }  else if (n.length > 0) {
+        } else if (n.length > 0) {
           n = n;
         } else {
           n = "";
         }
-        
 
         validade.value = n;
       });
-
 
       // Função para trocar abas
       function switchTab(tabName) {
@@ -299,22 +303,24 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         // 1. Seleciona todos os elementos que têm o preço
-        const elementosPreco = document.querySelectorAll(".valor-para-formatar");
-    
+        const elementosPreco = document.querySelectorAll(
+          ".valor-para-formatar"
+        );
+
         // 2. Formatador padrão brasileiro (R$)
-        const formatador = new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL'
+        const formatador = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         });
-    
+
         // 3. Passa por cada pedido e formata o valor
         elementosPreco.forEach((elemento) => {
           // Pega o texto que veio do Python (ex: "1500.0" ou "1500.5")
           let valorTexto = elemento.innerText;
-    
+
           // Converte para número decimal
           let valorNumerico = parseFloat(valorTexto);
-    
+
           // Se for um número válido, substitui o texto pelo valor formatado (ex: R$ 1.500,50)
           if (!isNaN(valorNumerico)) {
             elemento.innerText = formatador.format(valorNumerico);
@@ -322,259 +328,264 @@
         });
       });
 
- document.addEventListener("DOMContentLoaded", () => {
-    // --- 1. CONFIGURAÇÃO INICIAL E FORMATADORES ---
-    const formatador = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. CONFIGURAÇÃO INICIAL E FORMATADORES ---
+        const formatador = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
 
-    // Elementos principais
-    const btnPagar = document.getElementById("btn-pagar");
-    const selectParcelas = document.getElementById('parcelas');
-    const infoParcela = document.getElementById('info-parcela');
-    const inputTotalHidden = document.getElementById('valor-total-pedido');
-    const camposObrigatorios = document.querySelectorAll(".campo-obrigatorio");
+        // Elementos principais
+        const btnPagar = document.getElementById("btn-pagar");
+        const selectParcelas = document.getElementById("parcelas");
+        const infoParcela = document.getElementById("info-parcela");
+        const inputTotalHidden = document.getElementById("valor-total-pedido");
+        const camposObrigatorios =
+          document.querySelectorAll(".campo-obrigatorio");
 
-    // Formata valores soltos na tela (se houver)
-    const elementosPreco = document.querySelectorAll(".valor-para-formatar");
-    elementosPreco.forEach((elemento) => {
-        let valorNumerico = parseFloat(elemento.innerText);
-        if (!isNaN(valorNumerico)) {
+        // Formata valores soltos na tela (se houver)
+        const elementosPreco = document.querySelectorAll(
+          ".valor-para-formatar"
+        );
+        elementosPreco.forEach((elemento) => {
+          let valorNumerico = parseFloat(elemento.innerText);
+          if (!isNaN(valorNumerico)) {
             elemento.innerText = formatador.format(valorNumerico);
-        }
-    });
+          }
+        });
 
-    // --- 2. FUNÇÃO DE CÁLCULO DAS PARCELAS ---
-    function atualizarMensagemParcela() {
-        if (!selectParcelas) return;
+        // --- 2. FUNÇÃO DE CÁLCULO DAS PARCELAS ---
+        function atualizarMensagemParcela() {
+          if (!selectParcelas) return;
 
-        const numParcelas = parseInt(selectParcelas.value);
-        let valorTotal = parseFloat(inputTotalHidden ? inputTotalHidden.value : 0);
+          const numParcelas = parseInt(selectParcelas.value);
+          let valorTotal = parseFloat(
+            inputTotalHidden ? inputTotalHidden.value : 0
+          );
 
-        // Se não tiver parcela válida selecionada, esconde a mensagem
-        if (!numParcelas || isNaN(numParcelas)) {
+          // Se não tiver parcela válida selecionada, esconde a mensagem
+          if (!numParcelas || isNaN(numParcelas)) {
             infoParcela.style.display = "none";
-            return; 
-        }
+            return;
+          }
 
-        let textoJuros = "Sem Juros";
-        let valorFinal = valorTotal;
+          let textoJuros = "Sem Juros";
+          let valorFinal = valorTotal;
 
-        // Regra do Juros (Acima de 6x)
-        if (numParcelas >= 6) {
-            valorFinal = valorTotal * 1.10; // +10%
+          // Regra do Juros (Acima de 6x)
+          if (numParcelas >= 6) {
+            valorFinal = valorTotal * 1.1; // +10%
             textoJuros = "Com Juros";
-        }
+          }
 
-        let valorParcela = valorFinal / numParcelas;
+          let valorParcela = valorFinal / numParcelas;
 
-        // Atualiza texto do botão Pagar
-        if (btnPagar) {
+          // Atualiza texto do botão Pagar
+          if (btnPagar) {
             btnPagar.innerText = `Pagar ${formatador.format(valorFinal)}`;
-        }
+          }
 
-        // Mostra a caixinha verde com detalhes
-        infoParcela.style.display = "block";
-        infoParcela.innerHTML = `
+          // Mostra a caixinha verde com detalhes
+          infoParcela.style.display = "block";
+          infoParcela.innerHTML = `
             Mensalidade: <strong>${numParcelas}x</strong> de 
-            <span style="color: #4e4f3d; font-weight: 800;">${formatador.format(valorParcela)}</span> 
-            <br><span style="font-size: 0.85em; color: #666">(${textoJuros} - Total: ${formatador.format(valorFinal)})</span>
+            <span style="color: #4e4f3d; font-weight: 800;">${formatador.format(
+              valorParcela
+            )}</span> 
+            <br><span style="font-size: 0.85em; color: #666">(${textoJuros} - Total: ${formatador.format(
+            valorFinal
+          )})</span>
         `;
-    }
+        }
 
-    // --- 3. FUNÇÃO DE VALIDAÇÃO (BLOQUEIA O BOTÃO) ---
-    function validarFormulario() {
-        if (!btnPagar) return;
+        // --- 3. FUNÇÃO DE VALIDAÇÃO (BLOQUEIA O BOTÃO) ---
+        function validarFormulario() {
+          if (!btnPagar) return;
 
-        let formularioValido = true;
+          let formularioValido = true;
 
-        // A) Verifica campos de texto (Cartão, Validade, etc.)
-        camposObrigatorios.forEach((campo) => {
+          // A) Verifica campos de texto (Cartão, Validade, etc.)
+          camposObrigatorios.forEach((campo) => {
             // Ignora o select por enquanto, foca nos inputs de texto
-            if (campo.tagName !== 'SELECT' && campo.value.trim() === "") {
-                formularioValido = false;
+            if (campo.tagName !== "SELECT" && campo.value.trim() === "") {
+              formularioValido = false;
             }
-        });
+          });
 
-        // B) VERIFICAÇÃO ESPECÍFICA DO SELECT DE PARCELAS
-        // Se o valor for vazio (opção padrão "Escolha as parcelas"), bloqueia
-        if (selectParcelas.value === "") {
+          // B) VERIFICAÇÃO ESPECÍFICA DO SELECT DE PARCELAS
+          // Se o valor for vazio (opção padrão "Escolha as parcelas"), bloqueia
+          if (selectParcelas.value === "") {
             formularioValido = false;
-        }
+          }
 
-        // C) Aplica o bloqueio ou libera o botão
-        if (formularioValido) {
+          // C) Aplica o bloqueio ou libera o botão
+          if (formularioValido) {
             btnPagar.classList.remove("link-bloqueado"); // Libera
-        } else {
-            btnPagar.classList.add("link-bloqueado");    // Bloqueia
+          } else {
+            btnPagar.classList.add("link-bloqueado"); // Bloqueia
+          }
         }
-    }
 
-    // --- 4. ADICIONA OS EVENTOS (LISTENERS) ---
-    
-    // Para campos de texto (enquanto digita)
-    camposObrigatorios.forEach((campo) => {
-        campo.addEventListener("input", validarFormulario);
-    });
+        // --- 4. ADICIONA OS EVENTOS (LISTENERS) ---
 
-    // Para o Select de Parcelas (quando muda)
-    if (selectParcelas) {
-        selectParcelas.addEventListener("change", () => {
+        // Para campos de texto (enquanto digita)
+        camposObrigatorios.forEach((campo) => {
+          campo.addEventListener("input", validarFormulario);
+        });
+
+        // Para o Select de Parcelas (quando muda)
+        if (selectParcelas) {
+          selectParcelas.addEventListener("change", () => {
             atualizarMensagemParcela(); // Recalcula o valor
-            validarFormulario();        // Verifica se pode liberar o botão
-        });
-    }
-
-    // Inicialização
-    if (btnPagar) {
-        // Formata o texto inicial do botão
-        let valorInicial = parseFloat(inputTotalHidden ? inputTotalHidden.value : 0);
-        if(valorInicial > 0) {
-             btnPagar.innerText = `Pagar ${formatador.format(valorInicial)}`;
+            validarFormulario(); // Verifica se pode liberar o botão
+          });
         }
-        
-        // Garante que comece bloqueado
-        validarFormulario();
-    }
-});
 
+        // Inicialização
+        if (btnPagar) {
+          // Formata o texto inicial do botão
+          let valorInicial = parseFloat(
+            inputTotalHidden ? inputTotalHidden.value : 0
+          );
+          if (valorInicial > 0) {
+            btnPagar.innerText = `Pagar ${formatador.format(valorInicial)}`;
+          }
 
-  // 1. Selecionando todos os elementos
-  const selectProduto = document.getElementById('produtos');
-  const inputQuantidade = document.getElementById('quantidade');
-  const selectParcelas = document.getElementById('parcelas'); // NOVO
-  
-  const spanTotal = document.getElementById('preco-total');
-  const labelPreco = document.getElementById('label-preco');
-  const infoParcela = document.getElementById('info-parcela'); // NOVO
-  const btnEnviar = document.getElementById('btn-enviar');
-
-  // Variável para guardar o total atualizado e usar no cálculo da parcela
-  let totalCalculadoGlobal = 0; 
-
-  // --- FUNÇÃO PRINCIPAL (Roda quando muda qualquer coisa) ---
-  function atualizarTudo() {
-    
-    // 1. Coleta dados do produto
-    const opcao = selectProduto.options[selectProduto.selectedIndex];
-    let preco = parseFloat(opcao.getAttribute('data-preco')) || 0;
-    let estoque = parseFloat(opcao.getAttribute('data-estoque')) || 0;
-
-    // 2. Trata a quantidade (tira pontos e vira número)
-    let valorDigitado = inputQuantidade.value;
-    valorDigitado = valorDigitado.replace(/\./g, '').replace(',', '.');
-    let quantidade = parseFloat(valorDigitado) || 0;
-
-    // 3. VERIFICAÇÃO DE ESTOQUE
-    if (quantidade > estoque && selectProduto.value !== "") {
-        // --- DEU ERRO (Sem Estoque) ---
-        labelPreco.style.display = "none";
-        infoParcela.style.display = "none"; // Esconde a info da parcela também
-        
-        spanTotal.innerText = "Estoque Indisponível (Máx: " + estoque + ")";
-        spanTotal.style.color = "red";
-        spanTotal.style.fontWeight = "bold";
-        
-        btnEnviar.disabled = true;
-        btnEnviar.style.opacity = "0.5";
-        btnEnviar.style.cursor = "not-allowed";
-        
-        totalCalculadoGlobal = 0; // Zera o total
-
-    } else {
-        // --- SUCESSO (Estoque OK) ---
-        totalCalculadoGlobal = preco * quantidade;
-
-        // Mostra Preço Total
-        labelPreco.style.display = "inline";
-        spanTotal.innerText = totalCalculadoGlobal.toLocaleString('pt-BR', {
-          style: 'currency', currency: 'BRL'
-        });
-        spanTotal.style.color = "inherit"; 
-        spanTotal.style.fontWeight = "normal";
-        
-        // Libera botão
-        btnEnviar.disabled = false;
-        btnEnviar.style.opacity = "1";
-        btnEnviar.style.cursor = "pointer";
-
-        // Chama a função para atualizar o texto da parcela lá em baixo
-        calcularParcelaDetalhada();
-    }
-  }
-
-  // --- LÓGICA DE CÁLCULO DAS PARCELAS ---
-  document.addEventListener("DOMContentLoaded", () => {
-    
-    // 1. Seleciona os elementos
-    const selectParcelas = document.getElementById('parcelas');
-    const infoParcela = document.getElementById('info-parcela');
-    const inputTotalHidden = document.getElementById('valor-total-pedido');
-    const btnPagar = document.getElementById('btn-pagar');
-
-    // 2. Função que calcula e mostra a mensagem
-    function atualizarMensagemParcela() {
-      // Pega o número de parcelas escolhido
-      const numParcelas = parseInt(selectParcelas.value);
-      
-      // Pega o valor total do pedido (do campo invisível)
-      // Se não achar o campo (por segurança), usa 0
-      let valorTotal = parseFloat(inputTotalHidden ? inputTotalHidden.value : 0);
-
-      // Se não tiver parcela selecionada ou valor for 0, esconde a mensagem e sai
-      if (!numParcelas || valorTotal <= 0) {
-        infoParcela.style.display = "none";
-        return;
-      }
-
-      let textoJuros = "Sem Juros";
-      let valorFinal = valorTotal;
-
-      // --- REGRA DO JUROS (Acima de 5x) ---
-      if (numParcelas >= 6) {
-        valorFinal = valorTotal * 1.10; // Adiciona 10%
-        textoJuros = "Com Juros";
-      }
-
-      // Calcula valor de cada prestação
-      let valorParcela = valorFinal / numParcelas;
-
-      // Formata para Real Brasileiro
-      let valorFormatado = valorParcela.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      });
-      
-      let totalFinalFormatado = valorFinal.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
+          // Garante que comece bloqueado
+          validarFormulario();
+        }
       });
 
-      // --- EXIBE A MENSAGEM ---
-      infoParcela.style.display = "block";
-      
-      // Atualiza o texto do botão para mostrar o total correto (com ou sem juros)
-      btnPagar.innerText = `Pagar ${totalFinalFormatado}`;
+      // 1. Selecionando todos os elementos
+      const selectProduto = document.getElementById("produtos");
+      const inputQuantidade = document.getElementById("quantidade");
+      const selectParcelas = document.getElementById("parcelas"); // NOVO
 
-      // Escreve a mensagem bonitinha no box verde
-      infoParcela.innerHTML = `
+      const spanTotal = document.getElementById("preco-total");
+      const labelPreco = document.getElementById("label-preco");
+      const infoParcela = document.getElementById("info-parcela"); // NOVO
+      const btnEnviar = document.getElementById("btn-enviar");
+
+      // Variável para guardar o total atualizado e usar no cálculo da parcela
+      let totalCalculadoGlobal = 0;
+
+      // --- FUNÇÃO PRINCIPAL (Roda quando muda qualquer coisa) ---
+      function atualizarTudo() {
+        // 1. Coleta dados do produto
+        const opcao = selectProduto.options[selectProduto.selectedIndex];
+        let preco = parseFloat(opcao.getAttribute("data-preco")) || 0;
+        let estoque = parseFloat(opcao.getAttribute("data-estoque")) || 0;
+
+        // 2. Trata a quantidade (tira pontos e vira número)
+        let valorDigitado = inputQuantidade.value;
+        valorDigitado = valorDigitado.replace(/\./g, "").replace(",", ".");
+        let quantidade = parseFloat(valorDigitado) || 0;
+
+        // 3. VERIFICAÇÃO DE ESTOQUE
+        if (quantidade > estoque && selectProduto.value !== "") {
+          // --- DEU ERRO (Sem Estoque) ---
+          labelPreco.style.display = "none";
+          infoParcela.style.display = "none"; // Esconde a info da parcela também
+
+          spanTotal.innerText = "Estoque Indisponível (Máx: " + estoque + ")";
+          spanTotal.style.color = "red";
+          spanTotal.style.fontWeight = "bold";
+
+          btnEnviar.disabled = true;
+          btnEnviar.style.opacity = "0.5";
+          btnEnviar.style.cursor = "not-allowed";
+
+          totalCalculadoGlobal = 0; // Zera o total
+        } else {
+          // --- SUCESSO (Estoque OK) ---
+          totalCalculadoGlobal = preco * quantidade;
+
+          // Mostra Preço Total
+          labelPreco.style.display = "inline";
+          spanTotal.innerText = totalCalculadoGlobal.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          });
+          spanTotal.style.color = "inherit";
+          spanTotal.style.fontWeight = "normal";
+
+          // Libera botão
+          btnEnviar.disabled = false;
+          btnEnviar.style.opacity = "1";
+          btnEnviar.style.cursor = "pointer";
+
+          // Chama a função para atualizar o texto da parcela lá em baixo
+          calcularParcelaDetalhada();
+        }
+      }
+
+      // --- LÓGICA DE CÁLCULO DAS PARCELAS ---
+      document.addEventListener("DOMContentLoaded", () => {
+        // 1. Seleciona os elementos
+        const selectParcelas = document.getElementById("parcelas");
+        const infoParcela = document.getElementById("info-parcela");
+        const inputTotalHidden = document.getElementById("valor-total-pedido");
+        const btnPagar = document.getElementById("btn-pagar");
+
+        // 2. Função que calcula e mostra a mensagem
+        function atualizarMensagemParcela() {
+          // Pega o número de parcelas escolhido
+          const numParcelas = parseInt(selectParcelas.value);
+
+          // Pega o valor total do pedido (do campo invisível)
+          // Se não achar o campo (por segurança), usa 0
+          let valorTotal = parseFloat(
+            inputTotalHidden ? inputTotalHidden.value : 0
+          );
+
+          // Se não tiver parcela selecionada ou valor for 0, esconde a mensagem e sai
+          if (!numParcelas || valorTotal <= 0) {
+            infoParcela.style.display = "none";
+            return;
+          }
+
+          let textoJuros = "Sem Juros";
+          let valorFinal = valorTotal;
+
+          // --- REGRA DO JUROS (Acima de 5x) ---
+          if (numParcelas >= 6) {
+            valorFinal = valorTotal * 1.1; // Adiciona 10%
+            textoJuros = "Com Juros";
+          }
+
+          // Calcula valor de cada prestação
+          let valorParcela = valorFinal / numParcelas;
+
+          // Formata para Real Brasileiro
+          let valorFormatado = valorParcela.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          });
+
+          let totalFinalFormatado = valorFinal.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          });
+
+          // --- EXIBE A MENSAGEM ---
+          infoParcela.style.display = "block";
+
+          // Atualiza o texto do botão para mostrar o total correto (com ou sem juros)
+          btnPagar.innerText = `Pagar ${totalFinalFormatado}`;
+
+          // Escreve a mensagem bonitinha no box verde
+          infoParcela.innerHTML = `
         Mensalidade: <strong>${numParcelas}x</strong> de 
         <span style="color: #4e4f3d; font-weight: 800;">${valorFormatado}</span> 
         <br><span style="font-size: 0.85em; color: #666">(${textoJuros} - Total: ${totalFinalFormatado})</span>
       `;
-    }
+        }
 
-    // 3. Adiciona o ouvinte de evento
-    if (selectParcelas) {
-        selectParcelas.addEventListener('change', atualizarMensagemParcela);
-    }
-  });
-
-  
-
-
-
+        // 3. Adiciona o ouvinte de evento
+        if (selectParcelas) {
+          selectParcelas.addEventListener("change", atualizarMensagemParcela);
+        }
+      });
     </script>
   </body>
 </html>

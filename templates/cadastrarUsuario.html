@@ -1,75 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/cadastrarAdmin.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="png" href="/static/img/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename='css/cadastrarAdmin.css') }}"
+    />
     <title>Cadastrar produto - SmartCart</title>
-</head>
+  </head>
 
-<body>
-    <a class="voltar" href="/admin/produtos"><img src="/static/img/Seta.png" alt="" /></a>
+  <body>
+    <a class="voltar" href="/admin/produtos"
+      ><img src="/static/img/Seta.png" alt=""
+    /></a>
 
     <main class="main-usuario">
-        <h1>Cadastro de Usuário Admin</h1>
-        <form id="form-cadastro-produto" action="/admin/cadastrarUsuario" method="POST" enctype="multipart/form-data">
-            <div class="top-container-cadastro">
-                
-                <div class="input-container-all-produto">
-                    <div class="input-container">
-                        <label for="nome">Nome:</label>
-                        <input type="text" id="input-nome-produto" name="nome" required>
-                    </div>
-                    <div class="input-container-numbers-produto">
-                        <div class="input-container">
-                            <label for="cnpj">CNPJ:</label>
-                            <input type="text" id="input-preço" name="cnpj" step="0.01" min="0" required>
-                        </div>
-                        <div class="input-container">
-                            <label for="telefone">Telefone:</label>
-                            <input type="text" id="input-telefone" name="telefone" min="0" required>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
+      <h1>Cadastro de Usuário Admin</h1>
+      <form
+        id="form-cadastro-produto"
+        action="/admin/cadastrarUsuario"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <div class="top-container-cadastro">
+          <div class="input-container-all-produto">
             <div class="input-container">
-                <label for="email">Email:</label>
-                <input type="email" name="email" id="input-email" required>
+              <label for="nome">Nome:</label>
+              <input type="text" id="input-nome-produto" name="nome" required />
             </div>
+            <div class="input-container-numbers-produto">
+              <div class="input-container">
+                <label for="cnpj">CNPJ:</label>
+                <input
+                  type="text"
+                  id="input-preço"
+                  name="cnpj"
+                  step="0.01"
+                  min="0"
+                  required
+                />
+              </div>
+              <div class="input-container">
+                <label for="telefone">Telefone:</label>
+                <input
+                  type="text"
+                  id="input-telefone"
+                  name="telefone"
+                  min="0"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <div class="container-button-produto">
-                <input type="submit" value="Cadastrar Produto">
-            </div>
-        </form>
+        <div class="input-container">
+          <label for="email">Email:</label>
+          <input type="email" name="email" id="input-email" required />
+        </div>
+
+        <div class="container-button-produto">
+          <input type="submit" value="Cadastrar Produto" />
+        </div>
+      </form>
     </main>
     <script>
-        let tel = document.getElementById("input-telefone");
+      let tel = document.getElementById("input-telefone");
 
-        tel.addEventListener("input", () => {
-          let v = tel.value.replace(/\D/g, "");
+      tel.addEventListener("input", () => {
+        let v = tel.value.replace(/\D/g, "");
 
-          v = v.substring(0, 11);
+        v = v.substring(0, 11);
 
-          if (v.length > 6 && v.length <= 10){
-            v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2$3")
-          }  else if( v.length === 11) {
-            v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
-          } else if (v.length > 2) {
-            v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2")
-          } else if (v.length === 2) {
-            v = `( ${v}`;
-          } else {
-            v = v
-          }
-         
-          tel.value = v;
-        });
+        if (v.length > 6 && v.length <= 10) {
+          v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2$3");
+        } else if (v.length === 11) {
+          v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+        } else if (v.length > 2) {
+          v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2");
+        } else if (v.length === 2) {
+          v = `( ${v}`;
+        } else {
+          v = v;
+        }
 
-        let cnpj = document.getElementById("input-preço");
+        tel.value = v;
+      });
 
-        cnpj.addEventListener("input", () => {
+      let cnpj = document.getElementById("input-preço");
+
+      cnpj.addEventListener("input", () => {
         let n = cnpj.value.replace(/\D/g, "");
 
         n = n.substring(0, 14);
@@ -91,8 +113,6 @@
 
         cnpj.value = n;
       });
-
     </script>
-</body>
-
+  </body>
 </html>
