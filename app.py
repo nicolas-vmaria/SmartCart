@@ -200,6 +200,34 @@ def excluir_usuario(id):
 
 
 
+@app.route("/admin/cadastrarUsuario")
+@login_required
+def cadastroUsuario():
+    return render_template("cadastrarUsuario.html")
+ 
+@app.route("/admin/cadastrarUsuario", methods=["POST"])
+@login_required
+def cadastrar_usuario():
+    
+    nome = request.form.get("nome")
+    cnpj = request.form["cnpj"]
+    telefone = request.form.get("telefone")
+    email = request.form.get("email")
+    
+    senha = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" 
+
+    
+    is_admin = 1
+    
+    cursor.execute(
+        "INSERT INTO Usuario (nome, cnpj, telefone, email, senha, is_admin) VALUES (%s, %s, %s, %s, %s, %s)",
+        (nome, cnpj, telefone, email, senha, is_admin)
+    )
+    
+    conexao.commit()
+    
+    return redirect(url_for("admin_users"))
+
 @app.route("/admin/cadastrarProduto")
 @login_required
 def cadastroProduto():
