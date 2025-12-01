@@ -460,9 +460,10 @@ footer {
   height: 40px;
 }
 
-#fdp-container svg {
-  width: 70px;
-  height: 70px;
+#fdp-container img {
+  width: 400px;
+  height: 100px;
+  border-radius: 10px;
 }
 
 #foot-info {

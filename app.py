@@ -32,8 +32,10 @@ ALLOWED_EXTENSIONS = {"png"}
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+
 def arquivo_permitido(nome):
     return "." in nome and nome.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def hash(txt):
     hash_obj = hashlib.sha256(txt.encode("utf-8"))
@@ -80,11 +82,12 @@ def unauthorized():
 def index():
     return render_template("index.html", user=current_user)
 
+
 @app.route("/produto/<int:id>")
 def detalhes_produto(id):
     # 1. Busca o produto específico pelo ID
     # Ajuste o ? ou %s dependendo do seu banco (SQLite usa ?, MySQL usa %s)
-    cursor.execute("SELECT * FROM Produtos WHERE id = %s", (id,)) 
+    cursor.execute("SELECT * FROM Produtos WHERE id = %s", (id,))
     produto = cursor.fetchone()
 
     # Se não achar o produto, redireciona ou mostra erro 404
@@ -95,7 +98,7 @@ def detalhes_produto(id):
     return render_template(
         "detalhes_produto.html",
         produto=produto,
-        user=current_user # Mantém o user para o header funcionar
+        user=current_user,  # Mantém o user para o header funcionar
     )
 
 
@@ -110,16 +113,16 @@ def pagamento(id):
     if not pedido:
         flash("Pedido não encontrado.", "erro")
         return redirect(url_for("pedidos"))
-    
+
     try:
-        if 'preco_unitario' not in pedido or 'quantidade' not in pedido:
+        if "preco_unitario" not in pedido or "quantidade" not in pedido:
             raise ValueError("O pedido não contém informações de preço ou quantidade.")
-    
-        valor_total = float(pedido['preco_unitario']) * int(pedido['quantidade'])
+
+        valor_total = float(pedido["preco_unitario"]) * int(pedido["quantidade"])
     except Exception as e:
         flash(f"Erro ao calcular o valor do pedido: {e}", "erro")
         return redirect(url_for("pedidos"))
-    
+
     CHAVE_PIX = "09425859922"
     NOME_RECEBEDOR = "SmartCart Vendas"
     CIDADE_RECEBEDOR = "Joiville"
@@ -134,7 +137,7 @@ def pagamento(id):
             cidade=CIDADE_RECEBEDOR,
             txtId=TXID,
             diretorio="static",
-            nome_arquivo=nome_arquivo_imagem
+            nome_arquivo=nome_arquivo_imagem,
         )
 
         gerador.gerarPayload()
@@ -145,8 +148,14 @@ def pagamento(id):
         flash(f"Erro ao gerar o QR Code PIX: {e}", "erro")
         return redirect(url_for("pedidos"))
 
+    return render_template(
+        "pagamento.html",
+        user=current_user,
+        pedido=pedido,
+        img_path=img_path,
+        valor_total=valor_total,
+    )
 
-    return render_template("pagamento.html", user=current_user, pedido=pedido, img_path=img_path, valor_total=valor_total)
 
 @app.route("/pagamento_realizado/<int:id>")
 @login_required
@@ -166,8 +175,11 @@ def pagamento_realizado(id):
 def excluir_pedido(id):
     cursor.execute(
         "DELETE FROM Pedidos WHERE id = %s AND id_usuario = %s", (id, current_user.id)
-)
-    cursor.execute( "DELETE FROM Orcamentos WHERE id = %s AND id_usuario = %s", (id, current_user.id))
+    )
+    cursor.execute(
+        "DELETE FROM Orcamentos WHERE id = %s AND id_usuario = %s",
+        (id, current_user.id),
+    )
     conexao.commit()
 
     flash("Pedido excluído com sucesso!", "sucesso")
@@ -229,7 +241,8 @@ def excluir_usuario(id):
 @login_required
 def cadastroProduto():
     return render_template("cadastrarProduto.html")
- 
+
+
 @app.route("/admin/cadastrarProduto", methods=["POST"])
 @login_required
 def cadastrar_produto():
@@ -246,8 +259,8 @@ def cadastrar_produto():
         preco = float(preco_texto)
     except ValueError:
         return "Erro: O preço digitado é inválido", 400
-    
-    nome_imagem = None # Começa vazio
+
+    nome_imagem = None  # Começa vazio
 
     print(f"Dados recebidos: Nome={nome}, Preço={preco}")
 
@@ -256,8 +269,8 @@ def cadastrar_produto():
         try:
             nome_imagem = secure_filename(arquivo.filename)
             diretorio_atual = os.path.dirname(os.path.abspath(__file__))
-            pasta_uploads = os.path.join(diretorio_atual, 'static', 'uploads')
-            
+            pasta_uploads = os.path.join(diretorio_atual, "static", "uploads")
+
             if not os.path.exists(pasta_uploads):
                 os.makedirs(pasta_uploads)
 
@@ -266,18 +279,18 @@ def cadastrar_produto():
             print(f"Imagem salva em: {caminho_final}")
         except Exception as e:
             print(f"Erro ao salvar imagem: {e}")
-            
+
     try:
         if nome_imagem:
-            
+
             cursor.execute(
                 "INSERT INTO Produtos (nome, preco, estoque, id_imagem, descricao) VALUES (%s, %s, %s, %s, %s)",
-                (nome, preco, estoque, nome_imagem, descricao)
+                (nome, preco, estoque, nome_imagem, descricao),
             )
         else:
             cursor.execute(
                 "INSERT INTO Produtos (nome, preco, estoque, descricao) VALUES (%s, %s, %s, %s)",
-                (nome, preco, estoque, descricao)
+                (nome, preco, estoque, descricao),
             )
 
         conexao.commit()
@@ -285,7 +298,7 @@ def cadastrar_produto():
         flash("Produto criado com sucesso!", "sucesso")
 
     except Exception as e:
-        conexao.rollback() # Cancela se der erro no SQL
+        conexao.rollback()  # Cancela se der erro no SQL
         print(f"Erro ao inserir no banco: {e}")
         return "Erro ao cadastrar no banco de dados", 500
 
@@ -329,7 +342,6 @@ def excluir_produto(id):
 
     flash("Produto excluído com sucesso!", "sucesso")
     return redirect(url_for("admin_produtos"))
-
 
 
 @app.route("/admin/")
@@ -389,11 +401,14 @@ def admin_orcamentos():
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
-    
+
     cursor.execute("SELECT * FROM Orcamentos")
     orcamentos = cursor.fetchall()
 
-    return render_template("orcamentosAdmin.html", user=current_user, orcamentos=orcamentos)
+    return render_template(
+        "orcamentosAdmin.html", user=current_user, orcamentos=orcamentos
+    )
+
 
 @app.route("/atualizar_status", methods=["POST"])
 @login_required
@@ -405,12 +420,18 @@ def atualizar_status():
     id_orcamento = request.form["id_orcamento"]
     novo_status = request.form["novo_status"]
 
-    cursor.execute("UPDATE Orcamentos SET status = %s WHERE id = %s", (novo_status, id_orcamento))
-    cursor.execute("UPDATE Pedidos SET status = %s WHERE id_orcamento = %s", (novo_status, id_orcamento))
+    cursor.execute(
+        "UPDATE Orcamentos SET status = %s WHERE id = %s", (novo_status, id_orcamento)
+    )
+    cursor.execute(
+        "UPDATE Pedidos SET status = %s WHERE id_orcamento = %s",
+        (novo_status, id_orcamento),
+    )
     conexao.commit()
     flash(f"Status do pedido {id_orcamento} atualizado para {novo_status}", "sucesso")
 
     return redirect(url_for("admin_orcamentos"))
+
 
 @app.route("/conta")
 @login_required
@@ -553,7 +574,12 @@ def orcamento():
             flash("Nenhum produto disponível para orçamento no momento.", "erro")
             return redirect(url_for("index"))
 
-        return render_template("orcamento.html", user=current_user, produtos=produtos, produto_id=produto_id)
+        return render_template(
+            "orcamento.html",
+            user=current_user,
+            produtos=produtos,
+            produto_id=produto_id,
+        )
     elif request.method == "POST":
         nome_empresa = request.form["nomeEmpresa"]
         cnpj = request.form["cnpj"].replace(".", "").replace("/", "").replace("-", "")
@@ -576,8 +602,6 @@ def orcamento():
         preco = produto_info["preco"]
         nome_produto = produto_info["nome"]
 
-        
-
         cursor.execute(
             "INSERT INTO Orcamentos (id_usuario, id_produto, nome_empresa, cnpj, email, endereco, numero, complemento, cep, nome_produto, quantidades, prazo_entrega) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             (
@@ -596,7 +620,6 @@ def orcamento():
             ),
         )
         conexao.commit()
-
 
         id_orcamento = cursor.lastrowid
 
@@ -777,6 +800,7 @@ def listar_produtos():
         current_sort=sort_option,
     )
 
+
 @app.route("/produtos/<int:id>")
 @login_required
 def produto_detalhes(id):
@@ -789,6 +813,7 @@ def produto_detalhes(id):
 
     return render_template("detalhes_produto.html", user=current_user, produto=produto)
 
+
 @app.route("/api/users/<int:id>")
 @login_required
 def api_user(id):
@@ -796,9 +821,10 @@ def api_user(id):
     users = cursor.fetchone()
     if users:
         return jsonify(users)
-    
+
     else:
         return jsonify({"erro": "Usuario não encontrado"}), 404
+
 
 @app.route("/api/users/<int:id>", methods=["POST"])
 @login_required
@@ -809,7 +835,7 @@ def api_atualizar_user(id):
     email = request.form.get("email")
     senha = request.form.get("senha")
 
-        # ATENÇÃO: Confirme se o nome da tabela é 'Usuarios' mesmo
+    # ATENÇÃO: Confirme se o nome da tabela é 'Usuarios' mesmo
     cursor.execute(
         """
         UPDATE Usuario
@@ -819,8 +845,9 @@ def api_atualizar_user(id):
         (nome, cnpj, telefone, email, senha, id),
     )
     conexao.commit()
-        
+
     return jsonify({"mensagem": "Usuário atualizado com sucesso!"}), 200
+
 
 @app.route("/api/produtos/<int:id>")
 @login_required
@@ -829,7 +856,7 @@ def api_produto(id):
     produto = cursor.fetchone()
     if produto:
         return jsonify(produto)
-    
+
     else:
         return jsonify({"erro": "Produto não encontrado"}), 404
 
@@ -840,7 +867,7 @@ def api_atualizar_produto(id):
     try:
         nome = request.form.get("nome")
         preco = float(request.form.get("preco"))
-        estoque = int(request.form.get("estoque")) 
+        estoque = int(request.form.get("estoque"))
 
         arquivo = request.files.get("imagem")
         nome_imagem = None
@@ -848,49 +875,53 @@ def api_atualizar_produto(id):
         print(f"Arquivo recebido: {arquivo}")
 
         if arquivo and arquivo.filename != "":
-        # 1. Limpa o nome do arquivo para evitar erros de sistema
+            # 1. Limpa o nome do arquivo para evitar erros de sistema
             nome_imagem = secure_filename(arquivo.filename)
-        
-        # 2. Descobre o diretório onde este arquivo .py está rodando
+
+            # 2. Descobre o diretório onde este arquivo .py está rodando
             diretorio_atual = os.path.dirname(os.path.abspath(__file__))
-        
-        # 3. Define a pasta uploads baseada no diretório atual
-            pasta_uploads = os.path.join(diretorio_atual, 'static', 'uploads')
-        
-        # 4. CRUCIAL: Cria a pasta se ela não existir (o save falha se a pasta não existir)
+
+            # 3. Define a pasta uploads baseada no diretório atual
+            pasta_uploads = os.path.join(diretorio_atual, "static", "uploads")
+
+            # 4. CRUCIAL: Cria a pasta se ela não existir (o save falha se a pasta não existir)
             if not os.path.exists(pasta_uploads):
                 os.makedirs(pasta_uploads)
                 print(f"Pasta criada: {pasta_uploads}")
 
-        # 5. Define o caminho completo
+            # 5. Define o caminho completo
             caminho_final = os.path.join(pasta_uploads, nome_imagem)
-        
-        # 6. Salva e printa para confirmação
+
+            # 6. Salva e printa para confirmação
             try:
                 arquivo.save(caminho_final)
                 print(f"SUCESSO! Arquivo salvo em: {caminho_final}")
             except Exception as e:
                 print(f"ERRO AO SALVAR ARQUIVO: {e}")
-                return jsonify({"erro": f"Erro ao salvar arquivo no disco: {str(e)}"}), 500
-        
+                return (
+                    jsonify({"erro": f"Erro ao salvar arquivo no disco: {str(e)}"}),
+                    500,
+                )
+
         # Atualização no Banco de Dados
         if nome_imagem:
             cursor.execute(
-            "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, id_imagem=%s WHERE id=%s",
-            (nome, preco, estoque, nome_imagem, id)
+                "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, id_imagem=%s WHERE id=%s",
+                (nome, preco, estoque, nome_imagem, id),
             )
         else:
             cursor.execute(
                 "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s WHERE id=%s",
-                (nome, preco, estoque, id)
+                (nome, preco, estoque, id),
             )
-            
+
         conexao.commit()
         return jsonify({"mensagem": "Produto atualizado com sucesso!"}), 200
 
     except Exception as e:
-        print(f"ERRO NO SERVIDOR: {e}") # Vai aparecer no terminal do Flask
+        print(f"ERRO NO SERVIDOR: {e}")  # Vai aparecer no terminal do Flask
         return jsonify({"erro": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
