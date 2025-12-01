@@ -15,6 +15,8 @@ import hashlib
 import re
 import qrcode
 import crcmod
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "chaveteste"
@@ -25,6 +27,14 @@ conexao = mysql.connector.connect(
 )
 cursor = conexao.cursor(dictionary=True)
 
+
+UPLOAD_FOLDER = "uploads"
+ALLOWED_EXTENSIONS = {"png"}
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+def arquivo_permitido(nome):
+    return "." in nome and nome.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def hash(txt):
     hash_obj = hashlib.sha256(txt.encode("utf-8"))
@@ -731,7 +741,7 @@ def produto_detalhes(id):
 
 @app.route("/api/users/<int:id>")
 @login_required
-def api_produto(id):
+def api_user(id):
     cursor.execute("SELECT * FROM Usuario WHERE id=%s", (id,))
     users = cursor.fetchone()
     if users:
@@ -740,7 +750,97 @@ def api_produto(id):
     else:
         return jsonify({"erro": "Usuario não encontrado"}), 404
 
+@app.route("/api/users/<int:id>", methods=["POST"])
+@login_required
+def api_atualizar_user(id):
+    nome = request.form.get("nome")
+    cnpj = request.form.get("cnpj")
+    telefone = request.form.get("telefone")
+    email = request.form.get("email")
+    senha = request.form.get("senha")
 
+        # ATENÇÃO: Confirme se o nome da tabela é 'Usuarios' mesmo
+    cursor.execute(
+        """
+        UPDATE Usuario
+        SET nome=%s, cnpj=%s, telefone=%s, email=%s, senha=%s 
+        WHERE id=%s
+        """,
+        (nome, cnpj, telefone, email, senha, id),
+    )
+    conexao.commit()
+        
+    return jsonify({"mensagem": "Usuário atualizado com sucesso!"}), 200
+
+@app.route("/api/produtos/<int:id>")
+@login_required
+def api_produto(id):
+    cursor.execute("SELECT * FROM Produtos WHERE id=%s", (id,))
+    produto = cursor.fetchone()
+    if produto:
+        return jsonify(produto)
+    
+    else:
+        return jsonify({"erro": "Produto não encontrado"}), 404
+
+
+@app.route("/api/produtos/<int:id>", methods=["POST"])
+@login_required
+def api_atualizar_produto(id):
+    try:
+        nome = request.form.get("nome")
+        preco = float(request.form.get("preco"))
+        estoque = int(request.form.get("estoque")) 
+
+        arquivo = request.files.get("imagem")
+        nome_imagem = None
+
+        print(f"Arquivo recebido: {arquivo}")
+
+        if arquivo and arquivo.filename != "":
+        # 1. Limpa o nome do arquivo para evitar erros de sistema
+            nome_imagem = secure_filename(arquivo.filename)
+        
+        # 2. Descobre o diretório onde este arquivo .py está rodando
+            diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+        
+        # 3. Define a pasta uploads baseada no diretório atual
+            pasta_uploads = os.path.join(diretorio_atual, 'static', 'uploads')
+        
+        # 4. CRUCIAL: Cria a pasta se ela não existir (o save falha se a pasta não existir)
+            if not os.path.exists(pasta_uploads):
+                os.makedirs(pasta_uploads)
+                print(f"Pasta criada: {pasta_uploads}")
+
+        # 5. Define o caminho completo
+            caminho_final = os.path.join(pasta_uploads, nome_imagem)
+        
+        # 6. Salva e printa para confirmação
+            try:
+                arquivo.save(caminho_final)
+                print(f"SUCESSO! Arquivo salvo em: {caminho_final}")
+            except Exception as e:
+                print(f"ERRO AO SALVAR ARQUIVO: {e}")
+                return jsonify({"erro": f"Erro ao salvar arquivo no disco: {str(e)}"}), 500
+        
+        # Atualização no Banco de Dados
+        if nome_imagem:
+            cursor.execute(
+            "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, id_imagem=%s WHERE id=%s",
+            (nome, preco, estoque, nome_imagem, id)
+            )
+        else:
+            cursor.execute(
+                "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s WHERE id=%s",
+                (nome, preco, estoque, id)
+            )
+            
+        conexao.commit()
+        return jsonify({"mensagem": "Produto atualizado com sucesso!"}), 200
+
+    except Exception as e:
+        print(f"ERRO NO SERVIDOR: {e}") # Vai aparecer no terminal do Flask
+        return jsonify({"erro": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

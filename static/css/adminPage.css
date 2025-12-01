@@ -5,6 +5,7 @@ body {
   background-color: rgb(243, 243, 243);
   display: flex;
   flex-direction: row;
+  overflow-x: hidden;
 }
 
 main {
@@ -12,6 +13,7 @@ main {
 }
 
 .sidebar {
+  position: fixed;
   background-color: #a0b179;
   height: 100%;
   width: 500px;
@@ -136,6 +138,7 @@ a {
   height: 100%;
   align-items: center;
   justify-content: center;
+  margin-left: 500px;
 }
 
 #info-main-screen {
@@ -183,6 +186,7 @@ th {
 }
 
 table {
+  margin-top: 20px;
   border-collapse: collapse;
   border: 1px solid #b7b7b7;
   border-radius: 15px;
@@ -467,9 +471,11 @@ td button:active {
 }
 
 .containerM{
+    font-family: montserrat;
     display: none;
     height: 80vh;
     justify-content: center;
+    align-items: center;
     position: fixed;
     z-index: 999;
     left: 0;
@@ -480,13 +486,13 @@ td button:active {
     animation: aparecer 0.3s ease;
 }
 
-.fechar {
+.fechar{
   float: right;
   font-size: 40px;
-  cursor: pointer;
+  cursor: pointer;  
   position: fixed;
   left: 35%;
-  top: 16%;
+  top: 14%;
 }
 
 @keyframes aparecer {
@@ -494,48 +500,76 @@ td button:active {
   to { transform: translateY(0); opacity: 1; }
 }
 
-.card-editar{
+.card-editar-produto{
     display: flex;
-    background-color: rgb(51, 51, 51);
+    background-color: #aabb84;
+    color: #4e4f3d;
     width: 600px;
-    height: 600px;
-    margin-top: 150px;
-    
+    height: 700px;
     align-items: center;
-    justify-content: center;
-    border-radius:10px ;
-    box-shadow: 10px 0px 200px black;
-    
+    padding: 50px;
+    box-sizing: border-box;
+    border-radius: 30px ; 
+}
+
+.card-editar-user{
+    display: flex;
+    background-color: #aabb84;
+    color: #4e4f3d;
+    width: 600px;
+    height: 700px;
+    align-items: center;
+    padding: 50px;
+    box-sizing: border-box;
+    border-radius: 30px ; 
 }
 
 .form-editar{
     display: flex;
     flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     font-size: 20px;
+}
+
+.form-editar div{
+  width: 100%;
 }
 
 .form-editar h1{
     text-align: center;
 }
 
-    
-
 .form-editar label{
-    margin-top: 10px;
+  width: 100%;
 }
+
 .form-editar input{
-    padding: 15px 15px;
-    border-radius: 10px;
-    border: none;
-    width: 400px;
+  font-family: montserrat;
+  font-size: 12pt;
+  padding: 20px;
+  border-radius: 10px;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
 }
+
+.container-button-modal{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
 .form-editar button{
-    width: 200px;
-    margin-top: 20px;
-    margin-left: 125px;
-    background-color: #640292;
+    width: 300px;
+    font-family: montserrat;
+    background-color: #4e4f3d;
     color: white;
-    height: 40px;
+    height: 60px;
     border: none;
     border-radius: 8px;
     font-weight: bold;
@@ -543,7 +577,11 @@ td button:active {
 }
 .form-editar button:hover{
     cursor: pointer;
-    transform: scale(1.1);
+    transform: scale(0.9);
+}
+
+.form-editar button:active{
+  transform: scale(1.1);
 }
 
 .status-orcamento{

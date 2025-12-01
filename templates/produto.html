@@ -206,7 +206,7 @@
                         </svg>
                     </label>
     
-                    <img src="../static/img/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" > 
+                    <img src="{{ url_for('static', filename='uploads/' + produto.id_imagem) }}" alt="{{ produto.nome }}" class="product-img" > 
                 </div>
                 <div class="product-info">
                     <h3 class="product-title">{{ produto.nome }}</h3>                 
@@ -226,7 +226,7 @@
                         </svg>
                     </label>
     
-                    <img src="../static/img/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" >                </div>
+                    <img src="../static/uploads/{{produto.id_imagem}}" alt="{{ produto.nome }}" class="product-img" >                </div>
                 <div class="product-info">
                     <h3 class="product-title">{{ produto.nome }}</h3>                 
                     <div class="product-price">R$ {{ "%.2f"|format(produto.preco) }}</div>

@@ -302,7 +302,7 @@
 
                         <td>
                             <div class="img-produto">
-                                <img src="../static/img/{{ p.id_imagem }}" alt="{{ p.nome }}" />
+                                <img src="../static/uploads/{{ p.id_imagem }}" alt="{{ p.nome }}" />
                             </div>
                         </td>
 
@@ -310,7 +310,7 @@
                         <td>{{ p.estoque }} un.</td>
                         <td>R$ {{ p.preco }}</td>
                         <td>
-                            <a data-id="{{ p.id }}">
+                            <button class="editar" data-id="{{ p.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -334,7 +334,7 @@
                                     </g>
 
                                 </svg>
-                            </a>
+                            </button>
                             <a href="/excluir_produto/{{ p.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -372,26 +372,37 @@
             </div>
 
             <div id="containerM" class="containerM">
-                <div id="card-editar" class="card-editar">
+                <div id="card-editar" class="card-editar-produto">
                     <span class="fechar">&times;</span>
 
                     <form id="form-editar" class="form-editar">
                         <h1>Editar Produto</h1>
                         <input type="hidden" id="edit-id" onsubmit="return false;" />
 
-                        <label for="nome">Nome:</label>
-                        <input type="text" id="edit-nome" name="nome" value="" required />
+                        <div>
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="edit-nome" name="nome" value="" required />
+                        </div>
 
-                        <label for="preco">Preco:</label>
-                        <input type="number" id="edit-preco" name="preco" step="0.01" value="" required />
+                        
+                        <div>
+                            <label for="preco">Preco:</label>
+                            <input type="number" id="edit-preco" name="preco" step="0.01" value="" required />
+                        </div>
 
-                        <label for="categoria">Categoria:</label>
-                        <input type="text" id="edit-categoria" name="categoria" value="" required />
+                        <div>
+                            <label for="estoque">Estoque:</label>
+                            <input type="number" id="edit-estoque" name="estoque" value="" required />
+                        </div>
 
-                        <label for="estoque">Estoque:</label>
-                        <input type="number" id="edit-estoque" name="estoque" value="" required />
+                        <div>
+                            <label for="id_imagem">Imagem:</label>
+                            <input id="id_imagem" type="file" name="imagem" accept=".png">
+                        </div>
 
+                        <div class="container-button-modal">
                         <button type="submit">Salvar</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -411,7 +422,7 @@
         // Função pra abrir o modal com os dados do produto
         async function abrirModalEdicao(id) {
             try {
-                const res = await fetch(`/api/produto/${id}`);
+                const res = await fetch(`/api/produtos/${id}`);
                 if (!res.ok) throw new Error("Erro ao buscar produto!");
 
                 const produto = await res.json();
@@ -419,8 +430,9 @@
                 document.getElementById("edit-id").value = produto.id;
                 document.getElementById("edit-nome").value = produto.nome;
                 document.getElementById("edit-preco").value = produto.preco;
-                document.getElementById("edit-categoria").value = produto.categoria;
                 document.getElementById("edit-estoque").value = produto.estoque;
+
+
 
                 modal.style.display = "flex";
             } catch (err) {
@@ -443,20 +455,40 @@
             });
         });
 
+
+        let nomeArquivo = "";
+
+        const input = document.getElementById("id_imagem");
+        input.addEventListener("change", () => {
+            if (input.files.length > 0) {
+                nomeArquivo = input.files[0].name;
+            } else {
+                nomeArquivo = "";
+            }
+        });
         // Enviar atualização pro backend
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const id = document.getElementById("edit-id").value;
-            const nome = document.getElementById("edit-nome").value;
-            const preco = document.getElementById("edit-preco").value;
-            const categoria = document.getElementById("edit-categoria").value;
-            const estoque = document.getElementById("edit-estoque").value;
+            const id = document.getElementById("edit-id").value
+            const nome = document.getElementById("edit-nome").value
+            const preco = document.getElementById("edit-preco").value
+            const estoque = document.getElementById("edit-estoque").value
 
-            const res = await fetch(`/api/produto/${id}`, {
+            const input = document.getElementById("id_imagem")
+
+            const formData = new FormData();
+            formData.append("nome", nome);
+            formData.append("preco", preco);
+            formData.append("estoque", estoque);
+
+            if (input.files.length > 0) {
+                formData.append("imagem", input.files[0]); // arquivo real
+            }
+
+            const res = await fetch(`/api/produtos/${id}`, {
                 method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({ nome, preco, categoria, estoque }),
+                body: formData
             });
 
             if (res.ok) {
