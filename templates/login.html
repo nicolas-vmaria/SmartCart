@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Login - SmartCart</title>
+    <link rel="icon" type="png" href="/static/img/favicon.ico" />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/login.css')
@@ -48,14 +49,11 @@
           <button type="submit">Login</button>
           {% if request.args.get('erro') %}
           <p style="color: red"><b>{{ request.args.get('erro') }}</b></p>
-          {% endif %}
-          {% with mensagens = get_flashed_messages(with_categories=True) %}
-            {% if mensagens %}
-              {% for categoria, msg in mensagens %}
-              <p class="msg {{ categoria }}">{{ msg }}</p>
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
+          {% endif %} {% with mensagens =
+          get_flashed_messages(with_categories=True) %} {% if mensagens %} {%
+          for categoria, msg in mensagens %}
+          <p class="msg {{ categoria }}">{{ msg }}</p>
+          {% endfor %} {% endif %} {% endwith %}
         </form>
         <p class="conta">Não tem conta? <a href="/cadastro">Cadastrar-se</a></p>
       </div>

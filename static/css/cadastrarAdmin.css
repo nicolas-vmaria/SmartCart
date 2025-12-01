@@ -196,3 +196,59 @@ main {
 .container-button input:active{
     transform: scale(0.9);
 }
+
+.container-button{
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.container-button input{
+    width: 300px;
+    height: 60px;
+    border: none;
+    border-radius: 15px;
+    background-color: #a0b179;
+    font-family: montserrat;
+    font-weight: 600;
+    color: #4e4f3d;
+    font-size: 12pt;
+    transition: transform 0.1s ease;
+}
+
+.container-button input:hover{
+    transform: scale(1.05);
+}
+
+.container-button input:active{
+    transform: scale(0.9);
+}
+
+.container-button-produto{
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.container-button-produto input{
+    width: 300px;
+    height: 60px;
+    border: none;
+    border-radius: 15px;
+    background-color: #a0b179;
+    font-family: montserrat;
+    font-weight: 600;
+    color: #4e4f3d;
+    font-size: 12pt;
+    transition: transform 0.1s ease;
+}
+
+.container-button input:hover{
+    transform: scale(1.05);
+}
+
+.container-button input:active{
+    transform: scale(0.9);
+}
