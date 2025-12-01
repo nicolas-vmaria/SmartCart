@@ -151,6 +151,9 @@
           <ul class="dropdown-menu">
             <li><a href="/conta">Minha conta</a></li>
             <li><a href="/pedidos">Meus pedidos</a></li>
+            {% if current_user.is_admin %}
+            <li><a href="/admin">Administração</a></li>
+            {% endif %}
             <li><a href="/logout">Sair</a></li>
           </ul>
         </div>
@@ -535,7 +538,6 @@
 
             // Ignora campos desabilitados ou CPFs (que não mudam)
             if (!isCPF && !input.disabled) {
-              
               let currentValue = input.value;
               let originalValue = originalValues[input.name];
 
@@ -549,10 +551,10 @@
               if (isSenha) {
                 // Se o campo senha NÃO estiver vazio, significa que o usuário quer alterar
                 if (currentValue.trim() !== "") {
-                    profileData[input.name] = currentValue;
-                    isChanged = true;
+                  profileData[input.name] = currentValue;
+                  isChanged = true;
                 }
-              } 
+              }
               // --- LÓGICA DOS OUTROS CAMPOS ---
               else {
                 // Compara se mudou em relação ao original
