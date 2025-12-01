@@ -189,27 +189,27 @@
             </div>
         </section>
         {% with mensagens = get_flashed_messages(with_categories=True) %} {% if
-            mensagens %} {% for categoria, msg in mensagens %}
-            <p class="msg {{ categoria }}">{{ msg }}</p>
-            {% endfor %} {% endif %} {% endwith %}
+        mensagens %} {% for categoria, msg in mensagens %}
+        <p class="msg {{ categoria }}">{{ msg }}</p>
+        {% endfor %} {% endif %} {% endwith %}
 
-                <script>
+        <script>
             const flashMessages = document.querySelectorAll(".msg");
             const displayTime = 4000;
 
             flashMessages.forEach((message) => {
                 setTimeout(() => {
-                message.style.transition = "opacity 0.5s ease";
-                message.style.opacity = "0";
+                    message.style.transition = "opacity 0.5s ease";
+                    message.style.opacity = "0";
 
-                setTimeout(() => {
-                    if (message && message.parentNode) {
-                    message.parentNode.removeChild(message);
-                    }
-                }, 500);
+                    setTimeout(() => {
+                        if (message && message.parentNode) {
+                            message.parentNode.removeChild(message);
+                        }
+                    }, 500);
                 }, displayTime);
             });
-    </script>
+        </script>
 
 
         <section id="main-screen">
@@ -247,7 +247,7 @@
                         </i>
                         <input type="search" placeholder="Pesquisar usuário" name="" id="">
                     </div>
-                    
+
 
                     <div class="action-buttons-group">
                         <button id="button-filter">
@@ -308,8 +308,8 @@
                         <td>{{ user.email }}</td>
                         <td>
 
-                        
-                            <a data-id="{{ user.id }}">
+
+                            <button class="editar" data-id="{{ user.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
@@ -333,13 +333,13 @@
                                     </g>
 
                                 </svg>
-                            </a>
+                            </button>
                             <a href="/excluir_usuario/{{ user.id }}">
                                 <!DOCTYPE svg
                                     PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 
                                 <!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
-                                <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" 
+                                <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
 
                                     <g id="SVGRepo_bgCarrier" stroke-width="0" />
@@ -367,118 +367,199 @@
                     </tr>
                     {% endfor %}
                 </table>
-            </h1>
+                </h1>
 
             </div>
             {% else %}
             <div class="notfound-container">
                 <h1>Não há produtos criados</h1>
-            </div> 
+            </div>
             {% endif %}
 
             <div id="containerM" class="containerM">
-          <div id="card-editar" class="card-editar">
-            <span class="fechar">&times;</span>
+                <div id="card-editar" class="card-editar-user">
+                    <span class="fechar">&times;</span>
 
-            <form id="form-editar" class="form-editar">
-              <h1>Editar Produto</h1>
-              <input type="hidden" id="edit-id" onsubmit="return false;" />
+                    <form id="form-editar" class="form-editar">
+                        <h1>Editar Usuário</h1>
+                        <input type="hidden" id="edit-id" onsubmit="return false;" />
 
-              <label for="nome">Nome:</label>
-              <input type="text" id="edit-nome" name="nome" value="" required />
+                        <div>
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="edit-nome" name="nome" value="" required />
+                        </div>
 
-              <label for="preco">Preco:</label>
-              <input type="number" id="edit-preco" name="preco" step="0.01" value="" required />
+                        <div>
+                        <label for="cnpj">CNPJ:</label>
+                        <input type="text" id="edit-cnpj" name="cnpj" value="" required />
+                        </div>
 
-              <label for="categoria">Categoria:</label>
-              <input type="text" id="edit-categoria" name="categoria" value="" required />
+                        <div>
+                        <label for="telefone">Telefone:</label>
+                        <input type="text" id="edit-telefone" name="telefone" value="" required />
+                        </div>
 
-              <label for="estoque">Estoque:</label>
-              <input type="number" id="edit-estoque" name="estoque" value="" required />
+                        <div>
+                        <label for="email">email:</label>
+                        <input type="email" id="edit-email" name="email" value="" required />
+                        </div>
 
-              <button type="submit">Salvar</button>
-            </form>
-          </div>
-        </div>
+                        <div>
+                            <label for="senha">senha:</label>
+                            <input type="password" id="edit-senha" name="senha" value="" required />
+                        </div>
+
+                        <div class="container-button-modal">
+                            <button type="submit">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
         </section>
     </main>
-    <script src="/static/js/script.js"></script>
+    <script>
+        const modal = document.getElementById("containerM");
+        const fechar = document.querySelector(".fechar");
+        const form = document.getElementById("form-editar");
+
+        // Função pra abrir o modal com os dados do produto
+        async function abrirModalEdicao(id) {
+            try {
+                const res = await fetch(`/api/users/${id}`);
+                if (!res.ok) throw new Error("Erro ao buscar produto!");
+
+                const users = await res.json();
+
+                document.getElementById("edit-id").value = users.id;
+                document.getElementById("edit-nome").value = users.nome;
+                document.getElementById("edit-cnpj").value = users.cnpj;
+                document.getElementById("edit-telefone").value = users.telefone;
+                document.getElementById("edit-email").value = users.email;
+                document.getElementById("edit-senha").value = users.senha;
+
+                modal.style.display = "flex";
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // Fecha o modal
+        fechar.onclick = () => (modal.style.display = "none");
+        window.onclick = (e) => {
+            if (e.target === modal) modal.style.display = "none";
+        };
+
+        // Quando clicar em "Editar"
+        document.querySelectorAll(".editar").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const id = btn.dataset.id;
+                abrirModalEdicao(id);
+            });
+        });
+
+        // Enviar atualização pro backend
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById("edit-id").value
+            const nome = document.getElementById("edit-nome").value
+            const cnpj = document.getElementById("edit-cnpj").value
+            const telefone = document.getElementById("edit-telefone").value
+            const email = document.getElementById("edit-email").value
+            const senha = document.getElementById("edit-senha").value
+
+            const res = await fetch(`/api/users/${id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ id, nome, cnpj, telefone, email, senha }),
+            });
+
+            if (res.ok) {
+                alert("Produto atualizado com sucesso!");
+                modal.style.display = "none";
+                location.reload();
+            } else {
+                alert("Erro ao atualizar produto!");
+            }
+        });
+    </script>
     <script>
         // As funções applyCnpjMask e applyTelMask precisam ser modificadas
-    // para trabalhar com o textContent de uma célula de tabela (TD).
+        // para trabalhar com o textContent de uma célula de tabela (TD).
 
-    // Função adaptada para formatar o TEXTO de um elemento
-    function formatCnpjText(element) {
-        let n = element.textContent.replace(/\D/g, "");
+        // Função adaptada para formatar o TEXTO de um elemento
+        function formatCnpjText(element) {
+            let n = element.textContent.replace(/\D/g, "");
 
-        n = n.substring(0, 14);
+            n = n.substring(0, 14);
 
-        if (n.length > 12) {
-          n = n.replace(
-            /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
-            "$1.$2.$3/$4-$5"
-          );
-        } else if (n.length > 8) {
-          n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
-        } else if (n.length > 5) {
-          n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
-        } else if (n.length > 2) {
-          n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
-        } else {
-          n = n.replace(/(\d{0,2})/, "$1");
+            if (n.length > 12) {
+                n = n.replace(
+                    /(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,
+                    "$1.$2.$3/$4-$5"
+                );
+            } else if (n.length > 8) {
+                n = n.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
+            } else if (n.length > 5) {
+                n = n.replace(/(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
+            } else if (n.length > 2) {
+                n = n.replace(/(\d{2})(\d{0,3})/, "$1.$2");
+            } else {
+                n = n.replace(/(\d{0,2})/, "$1");
+            }
+
+            element.textContent = n; // Define o texto formatado de volta ao elemento
         }
 
-        element.textContent = n; // Define o texto formatado de volta ao elemento
-    }
+        // Função adaptada para formatar o TEXTO de um elemento
+        function formatTelText(element) {
+            let v = element.textContent.replace(/\D/g, "");
 
-    // Função adaptada para formatar o TEXTO de um elemento
-    function formatTelText(element) {
-        let v = element.textContent.replace(/\D/g, "");
+            v = v.substring(0, 11);
 
-        v = v.substring(0, 11);
+            if (v.length === 11) {
+                v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+            } else if (v.length > 6) {
+                // Para telefones fixos ou incompletos (opcional)
+                v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+            } else if (v.length > 2) {
+                v = v.replace(/(\d{2})(\d{0,})/, "($1) $2");
+            } else if (v.length > 0) {
+                v = `(${v}`;
+            } else {
+                v = "";
+            }
 
-        if (v.length === 11) {
-            v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
-        } else if (v.length > 6) {
-            // Para telefones fixos ou incompletos (opcional)
-            v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
-        } else if (v.length > 2) {
-            v = v.replace(/(\d{2})(\d{0,})/, "($1) $2");
-        } else if (v.length > 0) {
-            v = `(${v}`;
-        } else {
-            v = "";
+            element.textContent = v; // Define o texto formatado de volta ao elemento
         }
 
-        element.textContent = v; // Define o texto formatado de volta ao elemento
-    }
+        // APLICAÇÃO DA MÁSCARA AO CARREGAR A PÁGINA
+        document.addEventListener("DOMContentLoaded", () => {
+            // ... seu código do dropdown (deixe-o aqui) ...
 
-    // APLICAÇÃO DA MÁSCARA AO CARREGAR A PÁGINA
-    document.addEventListener("DOMContentLoaded", () => {
-        // ... seu código do dropdown (deixe-o aqui) ...
+            const cnpjElements = document.querySelectorAll(".cnpj-data");
+            const telElements = document.querySelectorAll(".tel-data");
 
-        const cnpjElements = document.querySelectorAll(".cnpj-data");
-        const telElements = document.querySelectorAll(".tel-data");
+            // Itera sobre *todos* os elementos com a classe "cnpj-data"
+            cnpjElements.forEach(element => {
+                if (element.textContent.trim().length > 0) {
+                    formatCnpjText(element);
+                }
+            });
 
-        // Itera sobre *todos* os elementos com a classe "cnpj-data"
-        cnpjElements.forEach(element => {
-            if (element.textContent.trim().length > 0) {
-                formatCnpjText(element);
-            }
+            // Itera sobre *todos* os elementos com a classe "tel-data"
+            telElements.forEach(element => {
+                if (element.textContent.trim().length > 0) {
+                    formatTelText(element);
+                }
+            });
         });
 
-        // Itera sobre *todos* os elementos com a classe "tel-data"
-        telElements.forEach(element => {
-            if (element.textContent.trim().length > 0) {
-                formatTelText(element);
-            }
-        });
-    });
-
-    // Remova ou ignore os Listeners de 'input' do seu código original,
-    // pois eles só fazem sentido para campos de formulário (inputs), não para células de tabela (td).
-    // O código acima aplica a máscara uma única vez ao carregar a página.
+        // Remova ou ignore os Listeners de 'input' do seu código original,
+        // pois eles só fazem sentido para campos de formulário (inputs), não para células de tabela (td).
+        // O código acima aplica a máscara uma única vez ao carregar a página.
     </script>
 </body>
 
