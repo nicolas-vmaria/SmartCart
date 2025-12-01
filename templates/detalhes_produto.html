@@ -146,6 +146,9 @@
           <ul class="dropdown-menu">
             <li><a href="/conta">Minha conta</a></li>
             <li><a href="/pedidos">Meus pedidos</a></li>
+            {% if current_user.is_admin %}
+            <li><a href="/admin">Administração</a></li>
+            {% endif %}
             <li><a href="/logout">Sair</a></li>
           </ul>
         </div>
@@ -210,7 +213,11 @@
           tecnologia e conforto." }}
         </p>
 
-        <a class="btn-buy" href="{{ url_for('orcamento', produto_id=produto.id) }}" style="text-decoration: none;">
+        <a
+          class="btn-buy"
+          href="{{ url_for('orcamento', produto_id=produto.id) }}"
+          style="text-decoration: none"
+        >
           Fazer orçamento
         </a>
 
