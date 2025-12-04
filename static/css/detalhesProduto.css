@@ -173,7 +173,7 @@ h1.detail-title {
 
 .detail-price {
   font-size: 2rem;
-  color: #aebb80; /* O verde do seu site */
+  color: rgb(19, 201, 19); /* O verde do seu site */
   font-weight: bold;
   margin: 15px 0;
 }
