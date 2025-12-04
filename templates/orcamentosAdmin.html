@@ -328,20 +328,20 @@
         
                 <table>
                     <tr>
-                        <th>Id</th>
                         <th>Nome da Empresa</th>
+                        <th>Valor total</th>
                         <th>CNPJ</th>
-                        <th>Email</th>
+                        <th>Quantidades</th>
                         <th>Produto</th>
                         <th>Status</th>
                         
                     </tr>
                     {% for o in orcamentos %}
                     <tr>
-                        <td>{{ o.id }}</td>
                         <td>{{ o.nome_empresa }}</td>
+                        <td>{{ o.total_orcamento }}</td>
                         <td class="cnpj-data">{{ o.cnpj }}</td>
-                        <td>{{ o.email }}</td>
+                        <td>{{ o.quantidades }}</td>
                         <td>{{ o.nome_produto }}</td>
                         <td>
                             <select name="novo_status" id="" class="status-orcamento-ajax" data-id="{{ o.id }}">

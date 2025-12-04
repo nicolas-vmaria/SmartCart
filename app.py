@@ -395,15 +395,53 @@ def admin_produtos():
 @app.route("/admin/orcamentos")
 @login_required
 def admin_orcamentos():
+    """
+    Exibe a lista de orçamentos para administradores, calculando 
+    o valor total e a quantidade total de pedidos para cada um.
+    """
+    
+    # 1. Verificação de Permissão de Administrador
     if not current_user.is_admin:
         flash("Acesso negado: Você não tem permissões de administrador.", "erro")
         return redirect(url_for("index"))
+    
+    # 2. Consulta SQL Otimizada
+    # Calcula o total do orçamento (SUM(preco * quantidade)) e a quantidade total de itens (SUM(quantidade)) 
+    # de todos os Pedidos associados a cada Orcamento.
+    query = """
+    SELECT
+        o.*,
+        SUM(p.preco_unitario * p.quantidade) AS total_orcamento,
+        SUM(p.quantidade) AS total_quantidade 
+    FROM
+        Orcamentos o
+    LEFT JOIN
+        Pedidos p ON o.id = p.id_orcamento
+    GROUP BY
+        o.id
+    ORDER BY
+        o.id DESC;
+    """
+    
+    # Executa a consulta principal
+    cursor.execute(query)
+    # orcamentos_com_total é uma lista onde cada item tem agora as colunas:
+    # id, nome_da_empresa, cnpj, status, total_orcamento, total_quantidade, etc.
+    orcamentos_com_total = cursor.fetchall()
 
-    cursor.execute("SELECT * FROM Orcamentos")
-    orcamentos = cursor.fetchall()
-
+    # 3. Cálculo Opcional do Total Geral de Vendas (para fins estatísticos/exibição)
+    cursor.execute("SELECT SUM(preco_unitario * quantidade) AS total FROM Pedidos")
+    resultado_vendas = cursor.fetchone()
+    
+    # Usa 0.00 se o resultado for NULL (ex: não há pedidos)
+    total_vendas_numerico = resultado_vendas["total"] if resultado_vendas and resultado_vendas["total"] else 0.00
+    
+    # 4. Renderização do Template
     return render_template(
-        "orcamentosAdmin.html", user=current_user, orcamentos=orcamentos
+        "orcamentosAdmin.html",
+        user=current_user,
+        total_vendas_numerico=total_vendas_numerico,
+        orcamentos=orcamentos_com_total, # Variável principal contendo os orçamentos e seus totais
     )
 
 
