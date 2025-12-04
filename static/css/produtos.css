@@ -32,7 +32,7 @@ nav ul {
 nav a {
   text-decoration: none;
   color: #4e4f3d;
-  font-size: 20px;
+  font-size:23px;
 }
 
 .logo svg {
@@ -252,7 +252,7 @@ nav p {
 }
 
 .product-title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   color: #4e4f3d;
   margin-bottom: 8px;
@@ -266,9 +266,10 @@ nav p {
 }
 
 .product-price {
-  font-size: 16px;
+  font-size: 25px;
   font-weight: 700;
-  color: #a0b179;
+  color: rgb(19, 201, 19);
+
 }
 
 /* --- FOOTER --- */

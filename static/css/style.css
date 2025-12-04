@@ -31,7 +31,7 @@ nav ul {
 nav a {
   text-decoration: none;
   color: #4e4f3d;
-  font-size: 20px;
+  font-size:23px;
 }
 
 .logo svg {
@@ -188,16 +188,17 @@ nav p {
   height: 600px;
 }
 
-.text {
+.coluna-text {
   display: flex;
   flex-direction: column;
+  color: #4e4f3d;
 }
 
-.text h1 {
+.coluna-text h1 {
   font-size: 40px;
 }
 
-.text p {
+.coluna-text p {
   font-size: 25px;
   width: 800px;
 }
@@ -214,6 +215,7 @@ nav p {
   width: 1700px;
   justify-content: left;
   margin-bottom: 50px;
+  color: #4e4f3d;
 }
 
 .swiper {
