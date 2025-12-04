@@ -186,7 +186,6 @@ def excluir_pedido(id):
     return redirect(url_for("pedidos"))
 
 
-
 @app.route("/excluir_usuario/<int:id>")
 @login_required
 def excluir_usuario(id):
@@ -199,34 +198,34 @@ def excluir_usuario(id):
     return redirect(url_for("admin_users"))
 
 
-
 @app.route("/admin/cadastrarUsuario")
 @login_required
 def cadastroUsuario():
     return render_template("cadastrarUsuario.html")
- 
+
+
 @app.route("/admin/cadastrarUsuario", methods=["POST"])
 @login_required
 def cadastrar_usuario():
-    
+
     nome = request.form.get("nome")
     cnpj = request.form["cnpj"]
     telefone = request.form.get("telefone")
     email = request.form.get("email")
-    
-    senha = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" 
 
-    
+    senha = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+
     is_admin = 1
-    
+
     cursor.execute(
         "INSERT INTO Usuario (nome, cnpj, telefone, email, senha, is_admin) VALUES (%s, %s, %s, %s, %s, %s)",
-        (nome, cnpj, telefone, email, senha, is_admin)
+        (nome, cnpj, telefone, email, senha, is_admin),
     )
-    
+
     conexao.commit()
-    
+
     return redirect(url_for("admin_users"))
+
 
 @app.route("/admin/cadastrarProduto")
 @login_required
@@ -317,44 +316,44 @@ def admin():
         return redirect(url_for("index"))
 
     # 2. Execução das Consultas para Estatísticas Gerais
-    
+
     # Total de Usuários Normais (não administradores)
     cursor.execute("SELECT COUNT(*) AS total_usuarios FROM Usuario WHERE is_admin = 0")
     total_usuarios = cursor.fetchone()["total_usuarios"]
-    
+
     # Total de Produtos
     cursor.execute("SELECT COUNT(*) AS total_produtos FROM Produtos")
     total_produtos = cursor.fetchone()["total_produtos"]
-    
+
     # Total de Pedidos Pendentes
     cursor.execute(
         "SELECT COUNT(*) AS total_pedidos_pendentes FROM Pedidos WHERE status = 'Pendente'"
     )
-    total_pedidos = cursor.fetchone()["total_pedidos_pendentes"] 
-    
+    total_pedidos = cursor.fetchone()["total_pedidos_pendentes"]
+
     # 3. Cálculo do Total de Vendas Concluídas ('Pago' ou 'Entregue')
-    
+
     # COMANDO SQL: Soma (preço unitário * quantidade) para todos os pedidos concluídos.
     sql_query_total_vendas = "SELECT SUM(preco_unitario * quantidade) AS total_vendas_pagas FROM Pedidos WHERE status IN ('Pago', 'Entregue');"
 
     # Executa a consulta no banco de dados
     cursor.execute(sql_query_total_vendas)
-    
+
     # Recupera o resultado
     resultado_vendas = cursor.fetchone()
-    
+
     # Extrai o valor. Usa 'or 0' para garantir que seja 0 se a soma retornar NULL.
     total_vendas_numerico = resultado_vendas["total_vendas_pagas"] or 0
-    
+
     # 4. Formatação do Valor como Moeda Brasileira (R$)
-    
+
     # Formatação para R$ (Ex: 10.500,45)
-    total_vendas_formatado = "R$ " + \
-        "{:,.2f}".format(total_vendas_numerico) \
-        .replace(",", "X").replace(".", ",").replace("X", ".")
+    total_vendas_formatado = "R$ " + "{:,.2f}".format(total_vendas_numerico).replace(
+        ",", "X"
+    ).replace(".", ",").replace("X", ".")
 
     # 5. Renderização do Template
-    
+
     # Passamos todas as variáveis para o template, incluindo o total de vendas formatado.
     return render_template(
         "adminPage.html",
@@ -362,7 +361,7 @@ def admin():
         total_usuarios=total_usuarios,
         total_produtos=total_produtos,
         total_pedidos=total_pedidos,
-        total_vendas=total_vendas_formatado, # Variável que será usada no HTML
+        total_vendas=total_vendas_formatado,  # Variável que será usada no HTML
     )
 
 
@@ -866,12 +865,12 @@ def api_atualizar_produto(id):
         # É uma boa prática verificar se os valores não são None antes de converter
         preco_str = request.form.get("preco")
         estoque_str = request.form.get("estoque")
-        
+
         # Converte de forma segura, tratando a possibilidade de valor vazio ou nulo
         preco = float(preco_str) if preco_str else 0.0
         estoque = int(estoque_str) if estoque_str else 0
-        
-        descricao = request.form.get("descricao") # Descrição capturada corretamente
+
+        descricao = request.form.get("descricao")  # Descrição capturada corretamente
         arquivo = request.files.get("imagem")
         nome_imagem = None
 
@@ -913,21 +912,21 @@ def api_atualizar_produto(id):
             sql = "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, descricao=%s, id_imagem=%s WHERE id=%s"
             # Parâmetros CORRIGIDOS: Ordem correta (nome, preco, estoque, descricao, nome_imagem, id)
             params = (nome, preco, estoque, descricao, nome_imagem, id)
-            
+
             cursor.execute(sql, params)
         else:
             # SQL CORRIGIDO: Inclui 'descricao'. Total de 5 placeholders (%s).
             sql = "UPDATE Produtos SET nome=%s, preco=%s, estoque=%s, descricao=%s WHERE id=%s"
             # Parâmetros CORRIGIDOS: Ordem correta (nome, preco, estoque, descricao, id)
             params = (nome, preco, estoque, descricao, id)
-            
+
             cursor.execute(sql, params)
 
         conexao.commit()
         return jsonify({"mensagem": "Produto atualizado com sucesso!"}), 200
 
     except Exception as e:
-        print(f"ERRO NO SERVIDOR: {e}") 
+        print(f"ERRO NO SERVIDOR: {e}")
         return jsonify({"erro": str(e)}), 500
 
 
