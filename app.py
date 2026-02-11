@@ -42,14 +42,6 @@ def hash(txt):
     return hash_obj.hexdigest()
 
 
-# Criptogrando a senha do admin
-# senha_admin = "admin123"
-# objeto_hash = hashlib.sha256()
-# objeto_hash.update(senha_admin.encode("utf-8"))
-# senha_admin = objeto_hash.hexdigest()
-# print(senha_admin)
-
-
 @lm.user_loader
 def user_loader(id):
     cursor.execute("SELECT * FROM Usuario WHERE id = %s", (id,))
@@ -136,7 +128,7 @@ def pagamento(id):
             valor=f"{valor_total:.2f}",
             cidade=CIDADE_RECEBEDOR,
             txtId=TXID,
-            diretorio="static",
+            diretorio='static',
             nome_arquivo=nome_arquivo_imagem,
         )
 

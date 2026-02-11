@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&family=BBH+Sans+Hegarty&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
 
@@ -207,18 +207,26 @@
         {% if pedidos %}
 
         <div class="orders-list">
-          {% for p in pedidos %} {% if p.status == "Pendente" %}
+          {% for p in pedidos %}
           <div class="order-card">
+            {% if p.status == "Entregue" %}
+            <div class="opacidade"></div>
+            {% endif %}
+
             <div class="card-header">
-              <span class="status-pendente">{{ p.status }}</span>
+              <span
+                class="status-badge status-{{ p.status|lower|replace(' ', '-') }}"
+              >
+                {{ p.status }}
+              </span>
               <span class="order-id">Pedido #{{ p.id }}</span>
             </div>
 
             <div class="card-body">
               <div class="product-image">
                 <img
-                  src="../static/uploads/{{p.produto_imagem}}"
-                  alt="{{ p.produto_nome }}"
+                  src="{{ url_for('static', filename='uploads/' + p.produto_imagem) }}"
+                  alt="{{ p.nome_produto }}"
                   onerror="this.style.display='none'"
                 />
               </div>
@@ -238,132 +246,17 @@
               </div>
             </div>
 
+            {% if p.status != "Entregue" %}
             <div class="card-actions">
-              <a
-                href="/excluir_pedido/{{ p.id }}"
-                class="btn btn-delete"
-                title="Cancelar Pedido"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  ></path>
-                </svg>
-                Cancelar
-              </a>
-            </div>
-          </div>
-          {% elif p.status == "Pago" %}
-          <div class="order-card">
-            <div class="card-header">
-              <span class="status-pago">{{ p.status }}</span>
-              <span class="order-id">Pedido #{{ p.id }}</span>
-            </div>
-
-            <div class="card-body">
-              <div class="product-image">
-                <img
-                  src="../static/uploads/{{p.produto_imagem}}"
-                  alt="{{ p.produto_nome }}"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-
-              <div class="product-details">
-                <h2 class="product-name">{{ p.nome_produto }}</h2>
-                <p class="product-qty">
-                  Quantidade: <strong>{{ p.quantidade }}</strong>
-                </p>
-              </div>
-            </div>
-
-            <div class="card-actions">
-              <a
-                href="/excluir_pedido/{{ p.id }}"
-                class="btn btn-delete"
-                title="Cancelar Pedido"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  ></path>
-                </svg>
-                Excluir
-              </a>
-            </div>
-          </div>
-          {% elif p.status == "Respondido" %}
-          <div class="order-card">
-            <div class="card-header">
-              <span class="status-success">{{ p.status }}</span>
-              <span class="order-id">Pedido #{{ p.id }}</span>
-            </div>
-
-            <div class="card-body">
-              <div class="product-image">
-                <img
-                  src="../static/uploads/{{p.produto_imagem}}"
-                  alt="{{ p.produto_nome }}"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-
-              <div class="product-details">
-                <h2 class="product-name">{{ p.nome_produto }}</h2>
-                <p class="product-qty">
-                  Quantidade: <strong>{{ p.quantidade }}</strong>
-                </p>
-              </div>
-
-              <div class="product-price">
-                <span class="label">Total</span>
-                <span class="value valor-para-formatar">
-                  {{ p.preco_unitario * p.quantidade }}
-                </span>
-              </div>
-            </div>
-
-            <div class="card-actions">
+              {% if p.status == "Respondido" %}
               <a
                 href="/pagamento/{{ p.id }}"
                 class="btn btn-pay"
                 title="Pagar Pedido"
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <rect x="2" y="5" width="20" height="14" rx="2" />
-                  <line x1="2" y1="10" x2="22" y2="10" />
-                </svg>
                 Pagar Agora
               </a>
+              {% endif %}
 
               <a
                 href="/excluir_pedido/{{ p.id }}"
@@ -385,95 +278,13 @@
                     d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
                   ></path>
                 </svg>
-                Cancelar
+                {% if p.status == "Pago" %} Excluir {% else %} Cancelar {% endif
+                %}
               </a>
             </div>
+            {% endif %}
           </div>
-          {% elif p.status == "Em análise"%}
-           <div class="order-card">
-            <div class="card-header">
-              <span class="status-success">{{ p.status }}</span>
-              <span class="order-id">Pedido #{{ p.id }}</span>
-            </div>
-
-            <div class="card-body">
-              <div class="product-image">
-                <img
-                  src="../static/uploads/{{p.produto_imagem}}"
-                  alt="{{ p.produto_nome }}"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-
-              <div class="product-details">
-                <h2 class="product-name">{{ p.nome_produto }}</h2>
-                <p class="product-qty">
-                  Quantidade: <strong>{{ p.quantidade }}</strong>
-                </p>
-              </div>
-
-              <div class="product-price">
-                <span class="label">Total</span>
-                <span class="value valor-para-formatar">
-                  {{ p.preco_unitario * p.quantidade }}
-                </span>
-              </div>
-            </div>
-
-            <div class="card-actions">
-              
-
-              <a
-                href="/excluir_pedido/{{ p.id }}"
-                class="btn btn-delete"
-                title="Cancelar Pedido"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  ></path>
-                </svg>
-                Cancelar
-              </a>
-            </div>
-          </div>
-          {% elif p.status == "Entregue"%}
-          <div class="order-card">
-            <div class="opacidade"></div>
-
-            <div class="card-header">
-              <span class="status-entregue">{{ p.status }}</span>
-              <span class="order-id">Pedido #{{ p.id }}</span>
-            </div>
-
-            <div class="card-body">
-              <div class="product-image">
-                <img
-                  src="../static/uploads/{{p.produto_imagem}}"
-                  alt="{{ p.produto_nome }}"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-
-              <div class="product-details">
-                <h2 class="product-name">{{ p.nome_produto }}</h2>
-                <p class="product-qty">
-                  Quantidade: <strong>{{ p.quantidade }}</strong>
-                </p>
-              </div>
-          
-          </div>
-          {% endif %} {% endfor %}
+          {% endfor %}
         </div>
 
         {% else %}
