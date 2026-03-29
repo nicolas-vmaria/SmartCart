@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-verde-claro: #E9FF75;
+  --color-verde-escuro: #18572C;
+}
+
+.mySwiper {
+  --swiper-navigation-color: #18572C;
+  --swiper-pagination-color: #18572C;
+}
+
+*{
+  font-family: Gabarito;
+  
+}
+
+body{
+  margin: 0;
+  padding: 0;
+}
