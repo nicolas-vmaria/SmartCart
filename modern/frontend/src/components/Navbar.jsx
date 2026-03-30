@@ -18,7 +18,7 @@ export default function Navbar() {
                 <li ><Link className="text-verde-claro transition-all hover:bg-green-800 hover:text-gray-100 rounded-full px-5 py-1" to="/contato" >Contato</Link></li>
             </ul>
 
-            <Link to={'/'}><FaCartShopping className="w-10 h-auto m-5 text-verde-claro transition-all hover:text-[#F8FFC2]" /></Link>
+            <Link to={'/carrinho'}><FaCartShopping className="w-10 h-auto m-5 text-verde-claro transition-all hover:text-[#F8FFC2]" /></Link>
 
         </nav>
     )

@@ -5,6 +5,8 @@ import Produtos from "./pages/Produtos"
 import SobreNos from "./pages/SobreNos"
 import Contato from "./pages/Contato"
 import Footer from "./components/Footer"
+import ScrollToTop from "./components/ScrollToTop"
+import Cart from "./pages/Cart"
 
 
 
@@ -16,6 +18,7 @@ function App() {
     <>
       <BrowserRouter>
 
+      <ScrollToTop />
       <Navbar />
       
         <div className="pt-20">
@@ -24,6 +27,7 @@ function App() {
           <Route path="/produtos" element={<Produtos />}></Route>
           <Route path="/sobre-nos" element={<SobreNos />}></Route>
           <Route path="/contato" element={<Contato />}></Route>
+          <Route path="/carrinho" element={<Cart />}></Route>
         </Routes>
         </div>
 
