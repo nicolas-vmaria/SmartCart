@@ -1,0 +1,75 @@
+import { useState } from "react"
+import {Link, useNavigate} from 'react-router-dom'
+
+import logo from '../assets/smartcart-logo-transparente.png'
+
+export default function Register() {
+
+    const navigate = useNavigate() 
+
+    const [checked, setChecked] = useState(false)
+
+    const checkSVG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m4.5 12.75 6 6 9-13.5'/%3E%3C%2Fsvg%3E")`
+
+    function handleSubmit(){
+        navigate('/')
+    }
+
+    return (
+        <main className="flex bg-gray-100">
+
+            <Link to={"/"}><img src={logo} alt="SmartCart Logo" className='w-40 h-auto absolute right-10 top-0' /></Link>
+
+            <section className="flex flex-col justify-center w-[800px] h-screen bg-white p-20 ">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-10 ">
+                    <h1 className="text-3xl self-start text-red py-10 ">Crie sua conta hoje mesmo!</h1>
+
+                    <div className="flex flex-col">
+                        <label className="text-[13pt] ml-1 font-bold">Nome:</label>
+                        <input type="text" className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira seu nome:" required />
+                    </div>
+                    <div className="flex flex-col">
+                        <label className="text-[13pt] ml-1 font-bold">E-mail:</label>
+                        <input type="email" className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira seu email:" required />
+                    </div>
+                    <div className="flex flex-col">
+                        <label className="text-[13pt] ml-1 font-bold">Senha:</label>
+                        <input type="password" className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira sua senha:" required />
+                    </div>
+
+                    <div className="flex gap-3">
+                        <input
+                            type="checkbox"
+                            checked={checked}
+                            required
+                            onChange={() => setChecked(!checked)}
+                            style={{ backgroundImage: checked ? checkSVG : 'none' }}
+                            className="appearance-none w-6 h-6 border-2 border-gray-300 rounded cursor-pointer checked:bg-verde-escuro checked:border-red  bg-[length:20px_20px]"
+                        />
+
+                        <p>Li e concordo com os <Link to={'/'} className="font-bold text-red cursor-pointer hover:underline">Termos de Uso</Link> e <Link to={'/'} className="font-bold text-red cursor-pointer hover:underline">Política de Privacidade.</Link></p>
+                    </div>
+
+                    <button className='bg-verde-escuro text-white h-15 rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-[#A11515] cursor-pointer'>Cadastre-se</button>
+                </form>
+
+                <p className="pt-5">Já possui uma conta? <Link to={'/login'} className="font-bold hover:text-red cursor-pointer hover:underline">Faça o login!</Link></p>
+
+                <div className='flex w-full justify-center items-center py-5'>
+                    <hr className='border-1 border-gray-400 w-full ' />
+                    <p className='mr-5 ml-5 text-gray-400'>ou</p>
+                    <hr className='border-1 border-gray-400 w-full ' />
+                </div>
+
+                <div className='flex flex-col gap-2 justify-center w-full'>
+                    <button className='border-1 border-gray-200 h-10 rounded-4xl '>Conectar com Google</button>
+                    <button className='border-1 border-gray-200 h-10 rounded-4xl '>Conectar com Google</button>
+
+                </div>
+            </section>
+            <section className="flex-1 w-full bg-verde-escuro bg-cover bg-center bg-no-repeat">
+
+            </section>
+        </main>
+    )
+}

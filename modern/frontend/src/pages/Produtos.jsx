@@ -22,7 +22,7 @@ export default function Produtos(){
 
 function BenefitsBar(){
     return (
-        <div className="flex gap-30 py-10 px-10 justify-center">
+        <div className="flex flex-wrap gap-30 py-10 px-10 justify-center">
             <div className="flex items-center gap-5">
                 <FaTruck className="text-6xl text-verde-escuro" />
                 
