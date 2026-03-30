@@ -18,12 +18,14 @@ function App() {
 
       <Navbar />
       
+        <div className="pt-20">
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/produtos" element={<Produtos />}></Route>
           <Route path="/sobre-nos" element={<SobreNos />}></Route>
           <Route path="/contato" element={<Contato />}></Route>
         </Routes>
+        </div>
 
         <Footer />
 

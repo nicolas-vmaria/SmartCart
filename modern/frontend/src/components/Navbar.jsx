@@ -6,7 +6,7 @@ import { FaCartShopping } from "react-icons/fa6";
 
 export default function Navbar() {
     return (
-        <nav className="flex items-center justify-between h-20 px-10   bg-verde-escuro ">
+        <nav className="flex items-center justify-between h-20 px-10 fixed w-full  bg-verde-escuro z-1000 ">
             
             <Link to={'/'}><img className="w-40" src={logo} alt="" /></Link>
 

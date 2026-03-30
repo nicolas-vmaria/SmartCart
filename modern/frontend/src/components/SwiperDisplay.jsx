@@ -27,6 +27,7 @@ export default function SwiperDisplay({ title }) {
                 <SwiperSlide>
                     <Product />
                 </SwiperSlide>
+                
 
 
 
