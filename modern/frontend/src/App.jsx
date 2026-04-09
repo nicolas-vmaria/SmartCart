@@ -1,5 +1,5 @@
 import Navbar from "./components/Navbar"
-import { Route, Routes, BrowserRouter, useLocation } from "react-router-dom"
+import { Route, Routes, BrowserRouter, useLocation, Outlet } from "react-router-dom"
 import Home from "./pages/Home"
 import Produtos from "./pages/Produtos"
 import SobreNos from "./pages/SobreNos"
@@ -10,12 +10,14 @@ import Cart from "./pages/Cart"
 import ProductDetail from "./pages/ProductDetail"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import AdminHome from "./pages/admin/AdminHome"
+import AdminMenu from "./pages/admin/AdminMenu"
 
-const hideNavRoutes = ['/login', '/register', '/not-found']
+const hideNavRoutes = ['/login', '/register', '/not-found', '/admin']
 
 function Layout() {
   const location = useLocation()
-  const hideNav = hideNavRoutes.includes(location.pathname)
+  const hideNav = hideNavRoutes.includes(location.pathname) || location.pathname.startsWith('/admin')
 
   return (
     <>
@@ -33,11 +35,26 @@ function Layout() {
           <Route path="/produto/:id" element={<ProductDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="home" index element={<AdminHome />}></Route>
+          </Route>
         </Routes>
       </div>
 
       {!hideNav && <Footer />}
     </>
+  )
+}
+
+function AdminLayout() {
+  return (
+    <main className="flex">
+    <AdminMenu />
+
+      <section className="p-10 box-border w-full">
+        <Outlet />
+      </section>
+    </main>
   )
 }
 

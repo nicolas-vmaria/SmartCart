@@ -13,7 +13,7 @@ export default function ProductDetail() {
 
     const minusCont = () => {
         if (cont === 1) {
-            cont = 1
+            setCont(1)
         } else {
             setCont(cont - 1)
         }
