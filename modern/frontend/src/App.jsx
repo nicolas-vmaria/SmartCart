@@ -21,9 +21,17 @@ import AdminManageUsers from "./pages/admin/AdminManageUsers"
 import AdminRoles from "./pages/admin/AdminRoles"
 import AdminSettings from "./pages/admin/AdminSettings"
 import AdminProfile from "./pages/admin/AdminProfile"
+import AdminCurriculos from "./pages/admin/AdminCurriculos"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 import { useEffect } from "react"
 import Checkout from "./pages/Checkout"
+import UserProfile from "./pages/UserProfile"
+import Politicas from "./pages/Politicas"
+import Sobre from "./pages/Sobre"
+import Candidatura from "./pages/Candidatura"
+import ForgotPassword from "./pages/ForgotPassword"
+import CategoriaGrid from "./pages/CategoriaGrid"
+import OrderConfirmation from "./pages/OrderConfirmation"
 
 function Layout() {
   return (
@@ -80,11 +88,20 @@ function App() {
             <Route path="/carrinho" element={<Cart />} />
             <Route path="/produto/:id" element={<ProductDetail />} />
             <Route path="/checkout/:id" element={<Checkout />}/>
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/politicas" element={<Politicas />} />
+            <Route path="/politicas/:slug" element={<Politicas />} />
+            <Route path="/sobre" element={<Sobre />} />
+            <Route path="/sobre/:slug" element={<Sobre />} />
+            <Route path="/candidatura/:slug" element={<Candidatura />} />
+            <Route path="/produtos/categoria/:slug" element={<CategoriaGrid />} />
+            <Route path="/pedido/confirmado" element={<OrderConfirmation />} />
           </Route>
 
           {/* Rotas sem Navbar */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminHome />} />
             <Route path="clients" element={<AdminClients />} />
@@ -95,6 +112,7 @@ function App() {
             <Route path="roles" element={<AdminRoles />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="profile" element={<AdminProfile />} />
+            <Route path="curriculos" element={<AdminCurriculos />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

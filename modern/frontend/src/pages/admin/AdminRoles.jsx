@@ -9,6 +9,7 @@ const SECTIONS = [
     { key: 'pedidos',       label: 'Pedidos' },
     { key: 'categorias',    label: 'Categorias' },
     { key: 'papeis',        label: 'Papéis' },
+    { key: 'curriculos',    label: 'Currículos'},
     { key: 'usuarios',      label: 'Usuários' },
     { key: 'configuracoes', label: 'Configurações' },
 ]
@@ -95,7 +96,11 @@ export default function AdminRoles() {
 
     function openEdit(role) {
         setEditing(role.id)
-        setForm({ name: role.name, description: role.description, color: role.color, permissions: JSON.parse(JSON.stringify(role.permissions)) })
+        const base = emptyPerms()
+        const merged = Object.fromEntries(
+            SECTIONS.map(s => [s.key, role.permissions[s.key] ?? base[s.key]])
+        )
+        setForm({ name: role.name, description: role.description, color: role.color, permissions: merged })
         setShowModal(true)
     }
 
@@ -222,7 +227,7 @@ export default function AdminRoles() {
                                                     <td className="py-2 text-xs font-medium text-gray-600 dark:text-(--admin-text)">{s.label}</td>
                                                     {ACTIONS.map(a => (
                                                         <td key={a.key} className="py-2 text-center">
-                                                            {role.permissions[s.key][a.key]
+                                                            {role.permissions[s.key]?.[a.key]
                                                                 ? <Check size={14} className="mx-auto text-verde-escuro dark:text-(--admin-accent)" />
                                                                 : <X size={14} className="mx-auto text-gray-200 dark:text-(--admin-border)" />
                                                             }

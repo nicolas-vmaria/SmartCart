@@ -1,4 +1,20 @@
+import { Link } from 'react-router-dom'
 
+const sobreLinks = [
+    { label: 'Quem Somos',          slug: 'quem-somos'           },
+    { label: 'Perguntas Frequentes',slug: 'perguntas-frequentes' },
+    { label: 'Seja um Franqueado',  slug: 'seja-um-franqueado'   },
+    { label: 'Nossas Lojas',        slug: 'nossas-lojas'         },
+    { label: 'Trabalhe Conosco',    slug: 'trabalhe-conosco'     },
+]
+
+const politicasLinks = [
+    { label: 'Privacidade',       slug: 'privacidade'       },
+    { label: 'Termos de Uso',     slug: 'termos-de-uso'     },
+    { label: 'Trocas e Devolução',slug: 'trocas-e-devolucao'},
+    { label: 'Entrega e Frete',   slug: 'entrega-e-frete'   },
+    { label: 'Pagamento',         slug: 'pagamento'         },
+]
 
 export default function Footer() {
   return (
@@ -15,11 +31,11 @@ export default function Footer() {
             </h2>
             <hr className="border-white/20 mb-4" />
             <ul className="space-y-2">
-              {["Quem Somos", "Perguntas Frequentes", "Seja um Franqueado", "Nossas Lojas", "Trabalhe Conosco"].map((item) => (
-                <li key={item}>
-                  <a href="" className="text-sm hover:text-verde-claro transition-colors duration-200">
-                    {item}
-                  </a>
+              {sobreLinks.map(({ label, slug }) => (
+                <li key={slug}>
+                  <Link to={`/sobre/${slug}`} className="text-sm hover:text-verde-claro transition-colors duration-200">
+                    {label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -49,11 +65,11 @@ export default function Footer() {
             </h2>
             <hr className="border-white/20 mb-4" />
             <ul className="space-y-2">
-              {["Privacidade", "Termos de Uso", "Trocas e Devolução", "Entrega e Frete", "Pagamento"].map((item) => (
-                <li key={item}>
-                  <a href="" className="text-sm hover:text-verde-claro transition-colors duration-200">
-                    {item}
-                  </a>
+              {politicasLinks.map(({ label, slug }) => (
+                <li key={slug}>
+                  <Link to={`/politicas/${slug}`} className="text-sm hover:text-verde-claro transition-colors duration-200">
+                    {label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -101,12 +117,12 @@ export default function Footer() {
 
             <div className="flex flex-wrap gap-2">
               {[
-                { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg", alt: "Visa" },
-                { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg", alt: "Mastercard" },
-                { src: "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/amex.svg", alt: "American Express" },
-                { src: "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/elo.svg", alt: "Elo" },
-                { src: "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/pix.svg", alt: "Pix" },
-                { src: "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/hipercard.svg", alt: "Hipercard" },
+                { src: "https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/visa.svg",       alt: "Visa"             },
+                { src: "https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/mastercard.svg", alt: "Mastercard"       },
+                { src: "https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/amex.svg",       alt: "American Express" },
+                { src: "https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/elo.svg",        alt: "Elo"              },
+                { src: "https://cdn.simpleicons.org/pix/32BCAD",                            alt: "Pix"              },
+                { src: "https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/hipercard.svg",  alt: "Hipercard"        },
               ].map(({ src, alt }) => (
                 <div key={alt}
                   className="bg-white rounded px-2 py-1 flex items-center justify-center w-12 h-8">
@@ -122,7 +138,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/20">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-verde-claro/50">
-          <p>© 2025 Peccato. Todos os direitos reservados.</p>
+          <p>© 2025 SmartCart. Todos os direitos reservados.</p>
           <p>De segunda à quinta-feira, das 8h às 18h.</p>
           <p>CNPJ: 26.636.428/0001-19</p>
         </div>

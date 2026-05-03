@@ -5,10 +5,10 @@ import { FiChevronDown } from "react-icons/fi";
 import { LuShoppingCart, LuPackage, LuWrench, LuBuilding2 } from "react-icons/lu";
 
 const categorias = [
-    { label: 'Carrinhos Inteligentes', descricao: 'Linha completa SmartCart', icon: <LuShoppingCart />, to: '/produtos' },
-    { label: 'Acessórios',            descricao: 'Complementos e periféricos', icon: <LuPackage />,      to: '/produtos' },
-    { label: 'Peças de Reposição',    descricao: 'Manutenção e suporte',       icon: <LuWrench />,       to: '/produtos' },
-    { label: 'Soluções Empresariais', descricao: 'Para redes e atacadistas',   icon: <LuBuilding2 />,    to: '/produtos' },
+    { label: 'Carrinhos Inteligentes', descricao: 'Linha completa SmartCart', icon: <LuShoppingCart />, to: '/produtos/categoria/carrinhos-inteligentes' },
+    { label: 'Acessórios',            descricao: 'Complementos e periféricos', icon: <LuPackage />,      to: '/produtos/categoria/acessorios' },
+    { label: 'Peças de Reposição',    descricao: 'Manutenção e suporte',       icon: <LuWrench />,       to: '/produtos/categoria/pecas-de-reposicao' },
+    { label: 'Soluções Empresariais', descricao: 'Para redes e atacadistas',   icon: <LuBuilding2 />,    to: '/produtos/categoria/solucoes-empresariais' },
 ]
 
 export default function Navbar() {

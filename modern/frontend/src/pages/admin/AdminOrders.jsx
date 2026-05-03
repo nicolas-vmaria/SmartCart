@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
-import { Search, Trash2, Eye, X, SlidersHorizontal, FileText } from 'lucide-react'
+import { Search, Trash2, Eye, X, SlidersHorizontal, FileText, Check } from 'lucide-react'
+import ConfirmDialog from '../../components/ConfirmDialog'
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js'
 
@@ -42,13 +43,13 @@ function DualRangeSlider({ valueMin, valueMax, onChange }) {
 }
 
 const initialOrders = [
-    { id: '#1042', client: 'João Silva', product: 'Smart Cart Pro', quantity: 2, value: 2598.00, date: '02/05/2026', hour: '13:12', payment: 'Cartão de crédito', status: 'Entregue' },
-    { id: '#1041', client: 'Maria Santos', product: 'Smart Cart Air', quantity: 1, value: 899.00, date: '01/05/2026', hour: '09:45', payment: 'Pix', status: 'Em trânsito' },
-    { id: '#1040', client: 'Pedro Oliveira', product: 'Cabo de Recarga', quantity: 3, value: 267.00, date: '30/04/2026', hour: '17:30', payment: 'Boleto', status: 'Pendente' },
-    { id: '#1039', client: 'Ana Costa', product: 'Smart Basket Pro', quantity: 1, value: 2199.00, date: '29/04/2026', hour: '11:08', payment: 'Cartão de débito', status: 'Entregue' },
-    { id: '#1038', client: 'Carlos Mendes', product: 'Smart Cart Pro', quantity: 1, value: 1299.00, date: '28/04/2026', hour: '14:55', payment: 'Pix', status: 'Cancelado' },
-    { id: '#1037', client: 'Lucas Ferreira', product: 'Suporte de Bateria', quantity: 4, value: 596.00, date: '27/04/2026', hour: '08:20', payment: 'Cartão de crédito', status: 'Pendente' },
-    { id: '#1036', client: 'Beatriz Lima', product: 'Smart Cart Air', quantity: 2, value: 1798.00, date: '26/04/2026', hour: '16:03', payment: 'Boleto', status: 'Em trânsito' },
+    { id: '#1042', client: 'João Silva',    date: '02/05/2026', hour: '13:12', payment: 'Cartão de crédito', status: 'Entregue',    value: 2797.00, items: [{ nome: 'SmartCart Pro 100', qty: 1, preco: 2499.00 }, { nome: 'Suporte Smartphone', qty: 2, preco: 149.00 }] },
+    { id: '#1041', client: 'Maria Santos',  date: '01/05/2026', hour: '09:45', payment: 'Pix',                status: 'Em trânsito', value: 899.00,  items: [{ nome: 'SmartCart Lite', qty: 1, preco: 899.00 }] },
+    { id: '#1040', client: 'Pedro Oliveira',date: '30/04/2026', hour: '17:30', payment: 'Boleto',             status: 'Pendente',    value: 617.80,  items: [{ nome: 'Cabo de Dados USB-C', qty: 3, preco: 39.90 }, { nome: 'Capa Protetora Display', qty: 2, preco: 49.90 }, { nome: 'Kit Sinalizadores LED', qty: 2, preco: 79.00 }] },
+    { id: '#1039', client: 'Ana Costa',     date: '29/04/2026', hour: '11:08', payment: 'Cartão de débito',  status: 'Entregue',    value: 2199.00, items: [{ nome: 'SmartCart Ultra 200', qty: 1, preco: 2199.00 }] },
+    { id: '#1038', client: 'Carlos Mendes', date: '28/04/2026', hour: '14:55', payment: 'Pix',                status: 'Cancelado',   value: 1628.00, items: [{ nome: 'SmartCart Pro 100', qty: 1, preco: 1299.00 }, { nome: 'Sacola Térmica Premium', qty: 1, preco: 89.90 }, { nome: 'Scanner Wireless Add-on', qty: 1, preco: 399.00 }] },
+    { id: '#1037', client: 'Lucas Ferreira',date: '27/04/2026', hour: '08:20', payment: 'Cartão de crédito', status: 'Pendente',    value: 596.00,  items: [{ nome: 'Kit Rodízios (4un)', qty: 2, preco: 189.00 }, { nome: 'Cabo de Dados USB-C', qty: 2, preco: 39.90 }] },
+    { id: '#1036', client: 'Beatriz Lima',  date: '26/04/2026', hour: '16:03', payment: 'Boleto',             status: 'Em trânsito', value: 1798.00, items: [{ nome: 'SmartCart Lite', qty: 2, preco: 899.00 }] },
 ]
 
 const statusStyle = {
@@ -65,6 +66,7 @@ export default function AdminOrders() {
     const [showFilters, setShowFilters] = useState(false)
     const [filters, setFilters] = useState({ status: 'Todos', payment: 'Todos', valueMin: 0, valueMax: 3000, dateFrom: '', dateTo: '' })
     const [detail, setDetail] = useState(null)
+    const [confirmCancel, setConfirmCancel] = useState(false)
     const filterRef = useRef(null)
 
     useEffect(() => {
@@ -94,7 +96,8 @@ export default function AdminOrders() {
         const counts = {}
         orders.forEach(o => {
             const [day, m, y] = o.date.split('/').map(Number)
-            if (m - 1 === month && y === year) counts[day] = (counts[day] || 0) + o.quantity
+            const totalQty = o.items.reduce((acc, i) => acc + i.qty, 0)
+            if (m - 1 === month && y === year) counts[day] = (counts[day] || 0) + totalQty
         })
 
         const labels = Array.from({ length: daysInMonth }, (_, i) => String(i + 1).padStart(2, '0'))
@@ -116,7 +119,7 @@ export default function AdminOrders() {
     const filtered = orders.filter(o => {
         const matchSearch = o.id.toLowerCase().includes(search.toLowerCase()) ||
             o.client.toLowerCase().includes(search.toLowerCase()) ||
-            o.product.toLowerCase().includes(search.toLowerCase())
+            o.items.some(i => i.nome.toLowerCase().includes(search.toLowerCase()))
         const matchStatus = filters.status === 'Todos' || o.status === filters.status
         const matchPayment = filters.payment === 'Todos' || o.payment === filters.payment
         const matchValue = o.value >= filters.valueMin && o.value <= filters.valueMax
@@ -153,7 +156,6 @@ export default function AdminOrders() {
     }
 
     function generateInvoice(order) {
-        const unitPrice = (order.value / order.quantity).toFixed(2).replace('.', ',')
         const total = order.value.toFixed(2).replace('.', ',')
 
         const html = `
@@ -217,12 +219,13 @@ export default function AdminOrders() {
                 </tr>
             </thead>
             <tbody>
+                ${order.items.map(item => `
                 <tr>
-                    <td>${order.product}</td>
-                    <td>${order.quantity}</td>
-                    <td>R$ ${unitPrice}</td>
-                    <td>R$ ${total}</td>
-                </tr>
+                    <td>${item.nome}</td>
+                    <td>${item.qty}</td>
+                    <td>R$ ${item.preco.toFixed(2).replace('.', ',')}</td>
+                    <td>R$ ${(item.preco * item.qty).toFixed(2).replace('.', ',')}</td>
+                </tr>`).join('')}
                 <tr class="total-row">
                     <td colspan="3">Total</td>
                     <td>R$ ${total}</td>
@@ -244,9 +247,30 @@ export default function AdminOrders() {
         win.document.close()
     }
 
+    const stats = {
+        total:     orders.length,
+        novos:     orders.filter(o => o.status === 'Em trânsito').length,
+        analise:   orders.filter(o => o.status === 'Pendente').length,
+        aprovados: orders.filter(o => o.status === 'Entregue').length,
+    }
+
     return (
         <main>
             <AdminHeader title="Pedidos" description="Acompanhe e gerencie todos os pedidos da loja." />
+
+            <div className="grid grid-cols-4 gap-4 mt-5">
+                {[
+                    { label: 'Total',      valor: stats.total,     cor: 'text-gray-800 dark:text-(--admin-text)' },
+                    { label: 'Em trânsito', valor: stats.novos,    cor: 'text-blue-600'                          },
+                    { label: 'Pendentes',  valor: stats.analise,   cor: 'text-red-600'                           },
+                    { label: 'Entregues',  valor: stats.aprovados, cor: 'text-green-600'                         },
+                ].map(({ label, valor, cor }) => (
+                    <div key={label} className="bg-white dark:bg-(--admin-card) border border-gray-200 dark:border-(--admin-border) rounded-2xl p-5">
+                        <p className="text-sm text-gray-400 dark:text-(--admin-text-muted)">{label}</p>
+                        <p className={`text-3xl font-bold mt-1 ${cor}`}>{valor}</p>
+                    </div>
+                ))}
+            </div>
 
             <div className="mt-5 bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5">
                 <div className="flex items-center gap-3 mb-5">
@@ -352,8 +376,7 @@ export default function AdminOrders() {
                             </th>
                             <th className="pb-3 font-medium">Pedido</th>
                             <th className="pb-3 font-medium">Cliente</th>
-                            <th className="pb-3 font-medium">Produto</th>
-                            <th className="pb-3 font-medium">Qtd.</th>
+                            <th className="pb-3 font-medium">Itens</th>
                             <th className="pb-3 font-medium">Valor</th>
                             <th className="pb-3 font-medium">Data e hora</th>
                             <th className="pb-3 font-medium">Pagamento</th>
@@ -369,8 +392,14 @@ export default function AdminOrders() {
                                 </td>
                                 <td className="py-3 font-medium text-verde-escuro dark:text-(--admin-accent)">{order.id}</td>
                                 <td className="py-3 text-gray-600 dark:text-(--admin-text)">{order.client}</td>
-                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">{order.product}</td>
-                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">{order.quantity}</td>
+                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">
+                                    <span>{order.items[0].nome}</span>
+                                    {order.items.length > 1 && (
+                                        <span className="ml-1.5 text-xs bg-gray-100 dark:bg-(--admin-hover) text-gray-500 dark:text-(--admin-text-muted) px-1.5 py-0.5 rounded-full font-medium">
+                                            +{order.items.length - 1}
+                                        </span>
+                                    )}
+                                </td>
                                 <td className="py-3 text-gray-600 dark:text-(--admin-text)">R${order.value.toFixed(2).replace('.', ',')}</td>
                                 <td className="py-3 text-gray-600 dark:text-(--admin-text)">{`${order.date} - ${order.hour}`}</td>
                                 <td className="py-3 text-gray-600 dark:text-(--admin-text)">{order.payment}</td>
@@ -404,69 +433,157 @@ export default function AdminOrders() {
                 </div>
             </div>
 
+            {confirmCancel && (
+                <ConfirmDialog
+                    title="Cancelar pedido"
+                    message={`Tem certeza que deseja cancelar o pedido ${detail?.id}? Essa ação não pode ser desfeita.`}
+                    confirmLabel="Sim, cancelar"
+                    cancelLabel="Voltar"
+                    variant="danger"
+                    onConfirm={() => {
+                        setOrders(prev => prev.map(o => o.id === detail.id ? { ...o, status: 'Cancelado' } : o))
+                        setDetail(prev => ({ ...prev, status: 'Cancelado' }))
+                        setConfirmCancel(false)
+                    }}
+                    onCancel={() => setConfirmCancel(false)}
+                />
+            )}
+
             {detail && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-sm shadow-xl dark:shadow-black/40">
-                        <div className="flex items-center justify-between mb-5">
-                            <h2 className="text-verde-escuro dark:text-(--admin-accent) font-bold text-xl">Pedido {detail.id}</h2>
-                            <button onClick={() => setDetail(null)} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-400 dark:text-(--admin-text-muted)">
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-lg shadow-xl dark:shadow-black/40 max-h-[90vh] overflow-y-auto">
+
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 className="text-verde-escuro dark:text-(--admin-accent) font-bold text-xl">Pedido {detail.id}</h2>
+                                <p className="text-xs text-gray-400 dark:text-(--admin-text-muted) mt-0.5">{detail.date} às {detail.hour}</p>
+                            </div>
+                            <button onClick={() => setDetail(null)} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-400 dark:text-(--admin-text-muted) cursor-pointer">
                                 <X size={18} />
                             </button>
                         </div>
 
-                        <div className="flex flex-col gap-3 text-sm">
+                        {/* Timeline de processo */}
+                        {detail.status !== 'Cancelado' ? (
+                            <div className="mb-6 bg-gray-50 dark:bg-(--admin-bg) rounded-xl p-4">
+                                <p className="text-xs font-bold text-gray-400 dark:text-(--admin-text-muted) uppercase tracking-wider mb-4">Progresso do pedido</p>
+                                {(() => {
+                                    const etapas = [
+                                        { label: 'Pendente',    desc: 'Aguardando' },
+                                        { label: 'Em trânsito', desc: 'A caminho'  },
+                                        { label: 'Entregue',    desc: 'Finalizado' },
+                                    ]
+                                    const order = ['Pendente', 'Em trânsito', 'Entregue']
+                                    const currentIdx = order.indexOf(detail.status)
+
+                                    return (
+                                        <div className="flex flex-col gap-3">
+                                            {/* Dots + linhas */}
+                                            <div className="flex items-center">
+                                                {etapas.map((etapa, i) => {
+                                                    const done   = i <= currentIdx
+                                                    const active = i === currentIdx
+                                                    const lineActive = i < currentIdx
+                                                    return (
+                                                        <div key={etapa.label} className="flex items-center flex-1 last:flex-none">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setOrders(prev => prev.map(o => o.id === detail.id ? { ...o, status: etapa.label } : o))
+                                                                    setDetail(prev => ({ ...prev, status: etapa.label }))
+                                                                }}
+                                                                className="flex flex-col items-center gap-1.5 cursor-pointer group shrink-0"
+                                                            >
+                                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300
+                                                                    ${done ? 'bg-verde-escuro border-verde-escuro dark:bg-(--admin-accent) dark:border-(--admin-accent)' : 'bg-white dark:bg-(--admin-card) border-gray-200 dark:border-(--admin-border) group-hover:border-verde-escuro'}`}>
+                                                                    {done
+                                                                        ? <Check size={13} className="text-white" />
+                                                                        : <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-(--admin-border)" />
+                                                                    }
+                                                                </div>
+                                                                <div className="text-center">
+                                                                    <p className={`text-xs font-bold whitespace-nowrap ${active ? 'text-verde-escuro dark:text-(--admin-accent)' : done ? 'text-gray-600 dark:text-(--admin-text)' : 'text-gray-400 dark:text-(--admin-text-muted)'}`}>
+                                                                        {etapa.label}
+                                                                    </p>
+                                                                    <p className="text-[10px] text-gray-400 dark:text-(--admin-text-muted)">{etapa.desc}</p>
+                                                                </div>
+                                                            </button>
+
+                                                            {i < etapas.length - 1 && (
+                                                                <div className="flex-1 h-0.5 mx-2 mb-6 bg-gray-200 dark:bg-(--admin-border) overflow-hidden rounded-full">
+                                                                    <div className={`h-full bg-verde-escuro dark:bg-(--admin-accent) transition-all duration-500 ${lineActive ? 'w-full' : 'w-0'}`} />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    )
+                                })()}
+                                <p className="text-[10px] text-gray-400 dark:text-(--admin-text-muted) text-center">Clique em uma etapa para avançar o status</p>
+                            </div>
+                        ) : (
+                            <div className="mb-6 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-xl p-4 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                                    <X size={16} className="text-red-500" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-red-600 dark:text-red-400">Pedido cancelado</p>
+                                    <p className="text-xs text-red-400 dark:text-red-500">Este pedido foi cancelado e não pode ser processado.</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Detalhes */}
+                        <div className="flex flex-col gap-3 text-sm bg-gray-50 dark:bg-(--admin-bg) rounded-xl p-4 mb-4">
                             <div className="flex justify-between">
                                 <span className="text-gray-400 dark:text-(--admin-text-muted)">Cliente</span>
                                 <span className="font-medium text-gray-700 dark:text-(--admin-text)">{detail.client}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-400 dark:text-(--admin-text-muted)">Produto</span>
-                                <span className="font-medium text-gray-700 dark:text-(--admin-text)">{detail.product}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-400 dark:text-(--admin-text-muted)">Quantidade</span>
-                                <span className="font-medium text-gray-700 dark:text-(--admin-text)">{detail.quantity}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-400 dark:text-(--admin-text-muted)">Valor</span>
-                                <span className="font-medium text-gray-700 dark:text-(--admin-text)">R${detail.value.toFixed(2).replace('.', ',')}</span>
-                            </div>
-                            <div className="flex justify-between">
                                 <span className="text-gray-400 dark:text-(--admin-text-muted)">Pagamento</span>
                                 <span className="font-medium text-gray-700 dark:text-(--admin-text)">{detail.payment}</span>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-400 dark:text-(--admin-text-muted)">Data</span>
-                                <span className="font-medium text-gray-700 dark:text-(--admin-text)">{`${detail.date} - ${detail.hour}`}</span>
+
+                            <div className="border-t border-gray-200 dark:border-(--admin-border) pt-3 flex flex-col gap-2">
+                                <span className="text-xs font-bold text-gray-400 dark:text-(--admin-text-muted) uppercase tracking-wider">Itens do pedido</span>
+                                {detail.items.map((item, i) => (
+                                    <div key={i} className="flex justify-between items-center">
+                                        <div>
+                                            <p className="font-medium text-gray-700 dark:text-(--admin-text)">{item.nome}</p>
+                                            <p className="text-xs text-gray-400 dark:text-(--admin-text-muted)">Qtd: {item.qty}</p>
+                                        </div>
+                                        <span className="font-medium text-gray-700 dark:text-(--admin-text)">
+                                            R${(item.preco * item.qty).toFixed(2).replace('.', ',')}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-400 dark:text-(--admin-text-muted)">Status</span>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyle[detail.status]}`}>{detail.status}</span>
+
+                            <div className="flex justify-between border-t border-gray-200 dark:border-(--admin-border) pt-2 font-bold">
+                                <span className="text-gray-700 dark:text-(--admin-text)">Total</span>
+                                <span className="text-gray-700 dark:text-(--admin-text)">R${detail.value.toFixed(2).replace('.', ',')}</span>
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => generateInvoice(detail)}
-                            className="mt-5 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-verde-escuro text-verde-escuro dark:text-(--admin-accent) dark:border-(--admin-accent) text-sm font-medium hover:bg-green-50 dark:hover:bg-(--admin-hover) transition-all"
-                        >
-                            <FileText size={15} />
-                            Gerar Nota Fiscal
-                        </button>
+                        {/* Ações */}
+                        <div className="flex flex-col gap-2">
+                            <button
+                                onClick={() => generateInvoice(detail)}
+                                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-verde-escuro text-verde-escuro dark:text-(--admin-accent) dark:border-(--admin-accent) text-sm font-medium hover:bg-green-50 dark:hover:bg-(--admin-hover) transition-all cursor-pointer"
+                            >
+                                <FileText size={15} /> Gerar Nota Fiscal
+                            </button>
 
-                        <div className="mt-4 flex flex-col gap-2">
-                            <p className="text-xs text-gray-400 dark:text-(--admin-text-muted) font-medium">Alterar status</p>
-                            <div className="flex flex-wrap gap-2">
-                                {['Pendente', 'Em trânsito', 'Entregue', 'Cancelado'].map(s => (
-                                    <button key={s}
-                                        onClick={() => {
-                                            setOrders(prev => prev.map(o => o.id === detail.id ? { ...o, status: s } : o))
-                                            setDetail(prev => ({ ...prev, status: s }))
-                                        }}
-                                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${detail.status === s ? statusStyle[s] + ' border-transparent' : 'border-gray-200 dark:border-(--admin-border) text-gray-500 dark:text-(--admin-text-muted) hover:bg-gray-50 dark:hover:bg-(--admin-hover)'}`}>
-                                        {s}
-                                    </button>
-                                ))}
-                            </div>
+                            {detail.status !== 'Cancelado' && (
+                                <button
+                                    onClick={() => setConfirmCancel(true)}
+                                    className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-red-200 dark:border-red-900/40 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-950/20 transition-all cursor-pointer"
+                                >
+                                    <X size={15} /> Cancelar pedido
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

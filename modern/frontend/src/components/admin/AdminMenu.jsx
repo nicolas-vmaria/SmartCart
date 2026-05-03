@@ -1,7 +1,20 @@
-import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const linkClass = "cursor-pointer flex gap-2 items-center h-10 px-2 rounded-md transition-all hover:bg-gray-100 dark:text-(--admin-text) dark:hover:bg-(--admin-hover) outline-none"
+
+// Mock notification counts — replace with real data when backend is ready
+const NOTIF_PEDIDOS = 5
+const NOTIF_CURRICULOS = 3
+
+function Badge({ count }) {
+    if (!count) return null
+    return (
+        <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-5 text-center leading-tight">
+            {count > 99 ? '99+' : count}
+        </span>
+    )
+}
 
 export default function AdminMenu() {
     return (
@@ -25,7 +38,8 @@ export default function AdminMenu() {
                             <Link to="/admin/clients" className={linkClass}><Users size={18} />Clientes</Link>
                             <Link to="/admin/products" className={linkClass}><Package size={18} />Produtos</Link>
                             <Link to="/admin/categories" className={linkClass}><Tag size={18} />Categorias</Link>
-                            <Link to="/admin/orders" className={linkClass}><ClipboardList size={18} />Pedidos</Link>
+                            <Link to="/admin/orders" className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={NOTIF_PEDIDOS} /></Link>
+                            <Link to="/admin/curriculos" className={linkClass}><FileUser size={18} />Currículos<Badge count={NOTIF_CURRICULOS} /></Link>
                         </div>
                     </ul>
 

@@ -1,109 +1,157 @@
 import { Link } from "react-router-dom"
 import { useState } from "react"
+import { ShoppingCart, Trash2 } from "lucide-react"
+import { FaCartShopping } from "react-icons/fa6"
 
-function CartItem() {
+const initialItems = [
+    { id: 1, titulo: 'SmartCart Pro 100', sku: 'SC-100', preco: 2499.00 },
+    { id: 2, titulo: 'Suporte para Smartphone', sku: 'ACC-HOLDER', preco: 149.00 },
+]
 
-    const valor = 232
-
-    const src = false
-
-    const [cont, setCont] = useState(1)
-
-    const minusCont = () => {
-        if (cont === 1){
-            setCont(1)
-        } else {
-            setCont(cont - 1)
-        }
-        
-    }
-
-    const plusCont = () => {
-        setCont(cont + 1)
-    }
-
+function CartItem({ item, qtd, onMinus, onPlus, onRemove }) {
     return (
-        <div className="flex bg-gray-100 p-10 shadow-2xl  rounded-2xl">
-            {src ?
-                <img className="w-40 h-40 rounded-2xl border-0 outline-none border-gray-100 bg-white" src="" alt="" />
-                : <div className="w-40 h-40 rounded-2xl border-2 border-gray-200 bg-white flex justify-center items-center font-black"> Sem Imagem </div>
-            }
-            <div className="flex w-full items-center justify-between">
-                <div className="flex flex-col justify-center gap-5 ml-5">
+        <div className="flex bg-gray-100 p-8 rounded-2xl gap-6 items-center">
+            <div className="w-36 h-36 rounded-2xl border-2 border-gray-200 bg-white flex justify-center items-center shrink-0">
+                <FaCartShopping className="text-gray-300 text-4xl" />
+            </div>
 
-                    <h1 className="text-2xl font-bold">Título</h1>
-
-                    <p className="text-gray-500">SKU: 0000</p>
-
+            <div className="flex w-full items-center justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-xl font-bold">{item.titulo}</h1>
+                    <p className="text-gray-500 text-sm">SKU: {item.sku}</p>
                 </div>
 
-                <div className="">
-                    <h1 className="font-bold text-xl">R${valor * cont}</h1>
+                <p className="font-bold text-xl w-32 text-right">
+                    {(item.preco * qtd).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </p>
+
+                <div className="flex text-lg">
+                    <button onClick={onMinus} className="flex justify-center items-center bg-white w-9 h-9 border border-gray-200 rounded-l-xl border-r-0 cursor-pointer hover:bg-gray-50 transition-colors">-</button>
+                    <div className="flex justify-center items-center bg-white w-9 h-9 border border-gray-200 font-medium">{qtd}</div>
+                    <button onClick={onPlus} className="flex justify-center items-center bg-white w-9 h-9 border border-gray-200 rounded-r-xl border-l-0 cursor-pointer hover:bg-gray-50 transition-colors">+</button>
                 </div>
 
-                <div className="flex text-xl">
-                    <button onClick={minusCont} className="flex justify-center items-center bg-white w-8 border-1 rounded-l-2xl border-r-0 border-gray-200 cursor-pointer hover:bg-gray-100">-</button>
-                    <div className="flex justify-center items-center bg-white w-8 border-1 border-gray-200">{cont}</div>
-                    <button onClick={plusCont} className="flex justify-center items-center bg-white w-8 border-1 rounded-r-2xl border-l-0 border-gray-200 cursor-pointer hover:bg-gray-100">+</button>
-                </div>
+                <button onClick={onRemove} className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer p-1">
+                    <Trash2 size={18} />
+                </button>
+            </div>
+        </div>
+    )
+}
 
-                <div className=" text-xl text-black cursor-pointer select-none transition-all hover:scale-130 ">
-                    X
+function EmptyCart() {
+    return (
+        <div className="flex flex-col items-center justify-center gap-6 py-24 text-center">
+            <div className="relative">
+                <div className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center">
+                    <ShoppingCart size={52} className="text-gray-300" />
                 </div>
+                <div className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-verde-escuro flex items-center justify-center text-verde-claro text-xs font-bold">
+                    0
+                </div>
+            </div>
+
+            <div>
+                <h2 className="text-2xl font-bold text-gray-800">Seu carrinho está vazio</h2>
+                <p className="text-gray-400 mt-2 text-sm max-w-xs">
+                    Você ainda não adicionou nenhum produto. Explore nossa loja e encontre o SmartCart ideal para você.
+                </p>
+            </div>
+
+            <div className="flex gap-3">
+                <Link
+                    to="/produtos"
+                    className="bg-verde-escuro text-verde-claro px-6 py-3 rounded-full font-bold text-sm hover:opacity-90 transition-all"
+                >
+                    Ver produtos
+                </Link>
+                <Link
+                    to="/"
+                    className="border border-gray-200 text-gray-600 px-6 py-3 rounded-full font-bold text-sm hover:border-gray-400 transition-all"
+                >
+                    Voltar ao início
+                </Link>
             </div>
         </div>
     )
 }
 
 export default function Cart() {
+    const [items, setItems] = useState(initialItems)
+    const [qtds, setQtds] = useState(() => Object.fromEntries(initialItems.map(i => [i.id, 1])))
 
-    
+    function changeQtd(id, delta) {
+        setQtds(prev => ({ ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta) }))
+    }
+
+    function removeItem(id) {
+        setItems(prev => prev.filter(i => i.id !== id))
+    }
+
+    const subtotal = items.reduce((acc, i) => acc + i.preco * (qtds[i.id] ?? 1), 0)
+    const entrega = items.length > 0 ? 29.90 : 0
+    const total = subtotal + entrega
 
     return (
-        <main className='min-h-screen w-full flex justify-center gap-20 p-10'>
-
-
+        <main className="min-h-screen w-full flex justify-center gap-20 p-10">
 
             <section className="flex flex-col w-[70%]">
+                <h1 className="text-4xl py-5 self-start font-bold">
+                    Carrinho
+                    {items.length > 0 && (
+                        <span className="ml-3 text-xl font-normal text-gray-400">({items.length} {items.length === 1 ? 'item' : 'itens'})</span>
+                    )}
+                </h1>
 
-                <h1 className="text-4xl py-5 self-start font-bold">Carrinho</h1>
-                <CartItem />
-
-
-
+                {items.length === 0 ? (
+                    <EmptyCart />
+                ) : (
+                    <div className="flex flex-col gap-4">
+                        {items.map(item => (
+                            <CartItem
+                                key={item.id}
+                                item={item}
+                                qtd={qtds[item.id] ?? 1}
+                                onMinus={() => changeQtd(item.id, -1)}
+                                onPlus={() => changeQtd(item.id, +1)}
+                                onRemove={() => removeItem(item.id)}
+                            />
+                        ))}
+                    </div>
+                )}
             </section>
 
             <section className="flex items-start mt-20 w-[20%]">
-                <div className="bg-gray-100 shadow-2xl p-5 rounded-2xl w-full ">
+                <div className="bg-gray-100 shadow-2xl p-5 rounded-2xl w-full">
                     <h1 className="text-2xl font-bold">Resumo do pedido</h1>
 
-                    <input type="text" placeholder="Insira o código do cupom:" className="bg-white border-1 p-5 border-gray-200 rounded-xl w-full mt-3 h-10" />
+                    <input type="text" placeholder="Insira o código do cupom:" className="bg-white border border-gray-200 rounded-xl w-full mt-3 h-10 px-4 text-sm outline-none focus:border-verde-escuro transition-colors" />
 
-                    <div className="flex flex-col gap-1  my-5">
-
-                        <div className="flex justify-between">
-                            <h1 className="font-bold">Subtotal:</h1>
-                            <h1>R$500</h1>
+                    <div className="flex flex-col gap-1 my-5">
+                        <div className="flex justify-between text-sm">
+                            <span className="font-bold">Subtotal:</span>
+                            <span>{subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                         </div>
-                        <div className="flex justify-between">
-                            <h1 className="font-bold">Desconto:</h1>
-                            <h1>R$20</h1>
-                        </div>
-                        <div className="flex justify-between">
-                            <h1 className="font-bold">Taxa de Entrega:</h1>
-                            <h1>R$20</h1>
+                        <div className="flex justify-between text-sm">
+                            <span className="font-bold">Taxa de entrega:</span>
+                            <span>{entrega > 0 ? entrega.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}</span>
                         </div>
                     </div>
 
                     <hr />
 
-                    <div className="flex justify-between my-5 ">
-                        <h1 className="font-bold">Total:</h1>
-                        <h1>R$520</h1>
+                    <div className="flex justify-between my-5 font-bold text-lg">
+                        <span>Total:</span>
+                        <span>{total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                     </div>
 
-
-                    <Link to="/checkout/1" className="flex items-center justify-center bg-verde-escuro text-white h-12 w-full rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro cursor-pointer">Checkout</Link>
+                    <Link
+                        to="/checkout/1"
+                        className={`flex items-center justify-center bg-verde-escuro text-white h-12 w-full rounded-xl transition-all hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro font-bold
+                            ${items.length === 0 ? 'opacity-40 pointer-events-none' : ''}`}
+                    >
+                        Finalizar compra
+                    </Link>
                 </div>
             </section>
         </main>

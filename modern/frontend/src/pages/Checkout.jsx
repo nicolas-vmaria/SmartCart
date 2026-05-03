@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { FaTruck, FaCreditCard, FaCheckCircle } from "react-icons/fa"
 import { FaPix } from "react-icons/fa6"
 import { MdOutlineReceipt } from "react-icons/md"
@@ -264,6 +264,7 @@ function OrderSummary() {
 export default function Checkout() {
     const [step, setStep] = useState(1)
     const [paymentMethod, setPaymentMethod] = useState('pix')
+    const navigate = useNavigate()
 
     const [delivery, setDelivery] = useState({
         nome: '', email: '', telefone: '', cep: '',
@@ -277,7 +278,17 @@ export default function Checkout() {
     const handleDeliveryChange = (field, value) => setDelivery(prev => ({ ...prev, [field]: value }))
     const handleCardChange = (field, value) => setCardData(prev => ({ ...prev, [field]: value }))
 
-    const next = () => setStep(s => Math.min(s + 1, 3))
+    const pedidoId = `#SC-${String(Math.floor(10000 + Math.random() * 90000))}`
+
+    const next = () => {
+        if (step === 2) {
+            navigate('/pedido/confirmado', {
+                state: { pedidoId, delivery, paymentMethod, total: 'R$ 2.528,90' }
+            })
+            return
+        }
+        setStep(s => s + 1)
+    }
     const back = () => setStep(s => Math.max(s - 1, 1))
 
     return (

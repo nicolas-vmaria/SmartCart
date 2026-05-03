@@ -1,8 +1,19 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
 import logo from '../assets/smartcart-logo-transparente-preto.png'
+import Toast from '../components/Toast'
 
 export default function Login() {
+    const [toast, setToast] = useState(null)
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        // Troque pela lógica real quando tiver backend
+        setToast({ message: 'E-mail ou senha incorretos.', type: 'warning' })
+    }
+
     return (
         <main className="flex justify-center items-center h-screen bg-gray-50  ">
 
@@ -13,7 +24,7 @@ export default function Login() {
                     <p className='text-gray-500'>Faça login na sua Conta</p>
                 </div>
 
-                <form onSubmit={(e) => e.preventDefault()} className='flex flex-col gap-5 w-full '>
+                <form onSubmit={handleSubmit} className='flex flex-col gap-5 w-full '>
                     <div>
                         <label htmlFor="" className='text-[13pt] font-bold ml-1'>E-mail:</label>
                         <input type="email" placeholder='Digite seu e-mail' required className='bg-white w-full h-15 p-5 box-border rounded-xl border-1  border-gray-200' />
@@ -41,6 +52,9 @@ export default function Login() {
 
                 </div>
             </div>
+
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+            
         </main>
     )
 }
