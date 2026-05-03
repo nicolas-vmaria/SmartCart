@@ -11,7 +11,15 @@ import ProductDetail from "./pages/ProductDetail"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import AdminHome from "./pages/admin/AdminHome"
-import AdminMenu from "./pages/admin/AdminMenu"
+import AdminMenu from "./components/admin/AdminMenu"
+import AdminClients from "./pages/admin/AdminClients"
+import AdminProducts from "./pages/admin/AdminProducts"
+import AdminOrders from "./pages/admin/AdminOrders"
+import AdminCategories from "./pages/admin/AdminCategories"
+import AdminManageUsers from "./pages/admin/AdminManageUsers"
+import AdminRoles from "./pages/admin/AdminRoles"
+import AdminSettings from "./pages/admin/AdminSettings"
+import { ThemeProvider } from "./context/ThemeContext"
 
 const hideNavRoutes = ['/login', '/register', '/not-found', '/admin']
 
@@ -36,7 +44,14 @@ function Layout() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminLayout />}>
-            <Route path="home" index element={<AdminHome />}></Route>
+            <Route index element={<AdminHome />} />
+            <Route path="clients" element={<AdminClients />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="manage-users" element={<AdminManageUsers />} />
+            <Route path="roles" element={<AdminRoles />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Routes>
       </div>
@@ -49,9 +64,8 @@ function Layout() {
 function AdminLayout() {
   return (
     <main className="flex">
-    <AdminMenu />
-
-      <section className="p-10 box-border w-full">
+      <AdminMenu />
+      <section className="p-10 box-border w-full bg-gray-50 dark:bg-(--admin-bg) ml-80 min-h-screen">
         <Outlet />
       </section>
     </main>
@@ -60,9 +74,11 @@ function AdminLayout() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Layout />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Layout />
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 

@@ -1,9 +1,24 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-verde-claro: #E9FF75;
   --color-verde-escuro: #18572C;
   --color-verde-escuro-escarlate: #349954;
+}
+
+.dark {
+  --admin-bg:           #080808;   /* fundo – preto */
+  --admin-sidebar:      #101010;   /* sidebar – quase preto */
+  --admin-card:         #141414;   /* cards e modais */
+  --admin-border:       #242424;   /* bordas sutis */
+  --admin-text:         #e8e8e8;   /* texto principal – branco suave */
+  --admin-text-muted:   #666666;   /* texto secundário */
+  --admin-accent:       #97db57;   /* verde vibrante – detalhe */
+  --admin-accent-soft:  #0d1f12;   /* fundo suave de badges verdes */
+  --admin-hover:        #1a1a1a;   /* hover dos itens de menu */
+  --admin-input:        #101010;   /* fundo de inputs */
 }
 
 .mySwiper {
@@ -19,4 +34,9 @@
 body{
   margin: 0;
   padding: 0;
+}
+
+.dark body {
+  background-color: var(--admin-bg);
+  color-scheme: dark;
 }
