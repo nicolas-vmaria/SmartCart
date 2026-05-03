@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { useState } from "react"
 
 function CartItem() {
@@ -10,7 +11,7 @@ function CartItem() {
 
     const minusCont = () => {
         if (cont === 1){
-            cont = 1
+            setCont(1)
         } else {
             setCont(cont - 1)
         }
@@ -102,7 +103,7 @@ export default function Cart() {
                     </div>
 
 
-                    <button className="bg-verde-escuro text-white h-12 w-full rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro cursor-pointer">Checkout</button>
+                    <Link to="/checkout/1" className="flex items-center justify-center bg-verde-escuro text-white h-12 w-full rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro cursor-pointer">Checkout</Link>
                 </div>
             </section>
         </main>

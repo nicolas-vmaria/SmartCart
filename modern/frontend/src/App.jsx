@@ -23,6 +23,7 @@ import AdminSettings from "./pages/admin/AdminSettings"
 import AdminProfile from "./pages/admin/AdminProfile"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 import { useEffect } from "react"
+import Checkout from "./pages/Checkout"
 
 function Layout() {
   return (
@@ -78,6 +79,7 @@ function App() {
             <Route path="/contato" element={<Contato />} />
             <Route path="/carrinho" element={<Cart />} />
             <Route path="/produto/:id" element={<ProductDetail />} />
+            <Route path="/checkout/:id" element={<Checkout />}/>
           </Route>
 
           {/* Rotas sem Navbar */}
