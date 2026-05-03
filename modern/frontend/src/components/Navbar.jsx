@@ -7,7 +7,7 @@ import { FaCartShopping } from "react-icons/fa6";
 export default function Navbar() {
     return (
         <nav className="flex items-center justify-between h-20 px-10 fixed w-full  bg-verde-escuro z-1000 ">
-            
+
             <Link to={'/'}><img className="w-40" src={logo} alt="" /></Link>
 
 
@@ -18,8 +18,11 @@ export default function Navbar() {
                 <li ><Link className="text-verde-claro transition-all hover:bg-green-800 hover:text-gray-100 rounded-full px-5 py-1" to="/contato" >Contato</Link></li>
             </ul>
 
-            <Link to={'/carrinho'}><FaCartShopping className="w-10 h-auto m-5 text-verde-claro transition-all hover:text-[#F8FFC2]" /></Link>
-
+            <div className="flex items-center gap-5">
+                <Link to="/login" className="btn-border-draw text-verde-claro flex items-center h-10 px-5 rounded-full transition-all duration-300">Login</Link>
+                <Link to="/register" className="text-verde-claro border-2 border-verde-claro flex items-center h-10 p-5 rounded-full transition-all cursor-pointer hover:bg-verde-claro hover:text-verde-escuro">Entrar</Link>
+                <Link to={'/carrinho'}><FaCartShopping className="w-10 h-auto m-5 text-verde-claro transition-all hover:text-[#F8FFC2]" /></Link>
+            </div>
         </nav>
     )
 }

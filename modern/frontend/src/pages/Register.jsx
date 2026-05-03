@@ -50,7 +50,7 @@ export default function Register() {
                         <p>Li e concordo com os <Link to={'/'} className="font-bold text-red cursor-pointer hover:underline">Termos de Uso</Link> e <Link to={'/'} className="font-bold text-red cursor-pointer hover:underline">Política de Privacidade.</Link></p>
                     </div>
 
-                    <button className='bg-verde-escuro text-white h-15 rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-[#A11515] cursor-pointer'>Cadastre-se</button>
+                    <button className='bg-verde-escuro text-white h-15 rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer'>Cadastre-se</button>
                 </form>
 
                 <p className="pt-5">Já possui uma conta? <Link to={'/login'} className="font-bold hover:text-red cursor-pointer hover:underline">Faça o login!</Link></p>

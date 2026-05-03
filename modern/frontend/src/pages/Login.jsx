@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-import logo from '../assets/smartcart-logo-transparente.png'
+import logo from '../assets/smartcart-logo-transparente-preto.png'
 
 export default function Login() {
     return (
@@ -24,7 +24,7 @@ export default function Login() {
                         <Link to={"/forgot-password"} className='text-[13pt] hover:underline'>Esqueceu a senha?</Link>
                     </div>
 
-                    <button className='bg-verde-escuro text-white h-15 rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-[#A11515]  cursor-pointer'>Login</button>
+                    <button className='bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro  cursor-pointer'>Login</button>
 
                     <p className='text-[13pt]'>Não tem uma conta? <Link to={'/register'} className='font-bold hover:underline hover:text-red cursor-pointer'>Cadastre-se</Link></p>
                 </form>
@@ -37,7 +37,7 @@ export default function Login() {
 
                 <div className='flex flex-col gap-2 justify-center w-full'>
                     <button className='border-1 border-gray-200 h-10 rounded-4xl w-full'>Conectar com Google</button>
-                    <button className='border-1 border-gray-200 h-10 rounded-4xl w-full'>Conectar com Google</button>
+                    <button className='border-1 border-gray-200 h-10 rounded-4xl w-full'>Conectar com Apple</button>
 
                 </div>
             </div>

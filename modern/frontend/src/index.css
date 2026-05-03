@@ -36,3 +36,20 @@ body{
   padding: 0;
 }
 
+.btn-border-draw {
+  position: relative;
+}
+.btn-border-draw::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  border: 2px solid #E9FF75;
+  clip-path: inset(0 100% 0 0 round 9999px);
+  transition: clip-path 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.btn-border-draw:hover::after {
+  clip-path: inset(0 0% 0 0 round 9999px);
+}
+

@@ -1,5 +1,5 @@
 import Navbar from "./components/Navbar"
-import { Route, Routes, BrowserRouter, useLocation, Outlet } from "react-router-dom"
+import { Route, Routes, BrowserRouter, Outlet } from "react-router-dom"
 import Home from "./pages/Home"
 import Produtos from "./pages/Produtos"
 import SobreNos from "./pages/SobreNos"
@@ -10,6 +10,7 @@ import Cart from "./pages/Cart"
 import ProductDetail from "./pages/ProductDetail"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import NotFound from "./pages/NotFound"
 import AdminHome from "./pages/admin/AdminHome"
 import AdminMenu from "./components/admin/AdminMenu"
 import AdminClients from "./pages/admin/AdminClients"
@@ -23,43 +24,15 @@ import AdminProfile from "./pages/admin/AdminProfile"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 import { useEffect } from "react"
 
-const hideNavRoutes = ['/login', '/register', '/not-found', '/admin']
-
 function Layout() {
-  const location = useLocation()
-  const hideNav = hideNavRoutes.includes(location.pathname) || location.pathname.startsWith('/admin')
-
   return (
     <>
       <ScrollToTop />
-
-      {!hideNav && <Navbar />}
-
-      <div className={!hideNav ? 'pt-20' : ''}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/produtos" element={<Produtos />} />
-          <Route path="/sobre-nos" element={<SobreNos />} />
-          <Route path="/contato" element={<Contato />} />
-          <Route path="/carrinho" element={<Cart />} />
-          <Route path="/produto/:id" element={<ProductDetail />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminHome />} />
-            <Route path="clients" element={<AdminClients />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="categories" element={<AdminCategories />} />
-            <Route path="manage-users" element={<AdminManageUsers />} />
-            <Route path="roles" element={<AdminRoles />} />
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="profile" element={<AdminProfile />} />
-          </Route>
-        </Routes>
+      <Navbar />
+      <div className="pt-20">
+        <Outlet />
       </div>
-
-      {!hideNav && <Footer />}
+      <Footer />
     </>
   )
 }
@@ -95,7 +68,34 @@ function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
-        <Layout />
+        <ScrollToTop />
+        <Routes>
+          {/* Rotas com Navbar + Footer */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/produtos" element={<Produtos />} />
+            <Route path="/sobre-nos" element={<SobreNos />} />
+            <Route path="/contato" element={<Contato />} />
+            <Route path="/carrinho" element={<Cart />} />
+            <Route path="/produto/:id" element={<ProductDetail />} />
+          </Route>
+
+          {/* Rotas sem Navbar */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminHome />} />
+            <Route path="clients" element={<AdminClients />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="manage-users" element={<AdminManageUsers />} />
+            <Route path="roles" element={<AdminRoles />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="profile" element={<AdminProfile />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </ThemeProvider>
   )
