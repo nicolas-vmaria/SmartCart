@@ -3,16 +3,16 @@ import AdminHeader from "../../components/admin/AdminHeader"
 import { Search, Trash2, Pencil, X, UserPlus, SlidersHorizontal, Check, Shield } from 'lucide-react'
 
 const initialUsers = [
-    { id: 1, name: 'Ciclano da Silva', email: 'ciclano@smartcart.com', role: 'Administrador', roleColor: 'bg-purple-100 text-purple-700', status: 'Ativo', createdAt: '10/01/2025' },
-    { id: 2, name: 'João Gerente',     email: 'joao@smartcart.com',    role: 'Gerente',       roleColor: 'bg-blue-100 text-blue-700',   status: 'Ativo', createdAt: '15/02/2025' },
-    { id: 3, name: 'Ana Paula',        email: 'ana@smartcart.com',     role: 'Funcionário',   roleColor: 'bg-yellow-100 text-yellow-700', status: 'Ativo', createdAt: '03/03/2025' },
-    { id: 4, name: 'Carlos Souza',     email: 'carlos@smartcart.com',  role: 'Funcionário',   roleColor: 'bg-yellow-100 text-yellow-700', status: 'Inativo', createdAt: '20/04/2025' },
-    { id: 5, name: 'Marina Costa',    email: 'marina@smartcart.com',  role: 'Gerente',       roleColor: 'bg-blue-100 text-blue-700',   status: 'Ativo', createdAt: '01/05/2025' },
+    { id: 1, name: 'Ciclano da Silva', email: 'ciclano@smartcart.com', role: 'Administrador', roleColor: 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300', status: 'Ativo', createdAt: '10/01/2025' },
+    { id: 2, name: 'João Gerente',     email: 'joao@smartcart.com',    role: 'Gerente',       roleColor: 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300',   status: 'Ativo', createdAt: '15/02/2025' },
+    { id: 3, name: 'Ana Paula',        email: 'ana@smartcart.com',     role: 'Funcionário',   roleColor: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300', status: 'Ativo', createdAt: '03/03/2025' },
+    { id: 4, name: 'Carlos Souza',     email: 'carlos@smartcart.com',  role: 'Funcionário',   roleColor: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300', status: 'Inativo', createdAt: '20/04/2025' },
+    { id: 5, name: 'Marina Costa',    email: 'marina@smartcart.com',  role: 'Gerente',       roleColor: 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300',   status: 'Ativo', createdAt: '01/05/2025' },
 ]
 
 const roles = ['Administrador', 'Gerente', 'Funcionário']
-const roleColors = { 'Administrador': 'bg-purple-100 text-purple-700', 'Gerente': 'bg-blue-100 text-blue-700', 'Funcionário': 'bg-yellow-100 text-yellow-700' }
-const statusStyle = { 'Ativo': 'bg-green-100 text-green-700', 'Inativo': 'bg-red-100 text-red-700' }
+const roleColors = { 'Administrador': 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300', 'Gerente': 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300', 'Funcionário': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300' }
+const statusStyle = { 'Ativo': 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Inativo': 'bg-red-100 text-red-700 dark:bg-red-500/25 dark:text-red-300' }
 
 const emptyForm = { name: '', email: '', role: 'Funcionário', status: 'Ativo' }
 

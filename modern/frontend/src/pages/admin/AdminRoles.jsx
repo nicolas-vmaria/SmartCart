@@ -33,7 +33,7 @@ const initialRoles = [
         id: 1,
         name: 'Administrador',
         description: 'Acesso total ao sistema. Pode gerenciar todos os recursos e configurações.',
-        color: 'bg-purple-100 text-purple-700',
+        color: 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300',
         users: 2,
         permissions: fullPerms(),
     },
@@ -41,7 +41,7 @@ const initialRoles = [
         id: 2,
         name: 'Gerente',
         description: 'Gerencia produtos, pedidos e clientes. Não acessa papéis nem configurações.',
-        color: 'bg-blue-100 text-blue-700',
+        color: 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300',
         users: 4,
         permissions: Object.fromEntries(SECTIONS.map(s => [
             s.key,
@@ -54,7 +54,7 @@ const initialRoles = [
         id: 3,
         name: 'Funcionário',
         description: 'Visualiza e atualiza pedidos e produtos. Sem permissão para criar ou excluir.',
-        color: 'bg-yellow-100 text-yellow-700',
+        color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300',
         users: 8,
         permissions: Object.fromEntries(SECTIONS.map(s => [
             s.key,
@@ -64,16 +64,16 @@ const initialRoles = [
 ]
 
 function buildEmptyForm() {
-    return { name: '', description: '', color: 'bg-gray-100 text-gray-700', permissions: emptyPerms() }
+    return { name: '', description: '', color: 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200', permissions: emptyPerms() }
 }
 
 const colorOptions = [
-    { value: 'bg-purple-100 text-purple-700', dot: 'bg-purple-400' },
-    { value: 'bg-blue-100 text-blue-700',     dot: 'bg-blue-400' },
-    { value: 'bg-green-100 text-green-700',   dot: 'bg-green-500' },
-    { value: 'bg-yellow-100 text-yellow-700', dot: 'bg-yellow-400' },
-    { value: 'bg-red-100 text-red-700',       dot: 'bg-red-400' },
-    { value: 'bg-gray-100 text-gray-700',     dot: 'bg-gray-400' },
+    { value: 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300', dot: 'bg-purple-400' },
+    { value: 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300',     dot: 'bg-blue-400' },
+    { value: 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300',   dot: 'bg-green-500' },
+    { value: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300', dot: 'bg-yellow-400' },
+    { value: 'bg-red-100 text-red-700 dark:bg-red-500/25 dark:text-red-300',       dot: 'bg-red-400' },
+    { value: 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200',     dot: 'bg-gray-400' },
 ]
 
 function permCount(permissions) {

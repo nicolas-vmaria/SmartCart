@@ -11,8 +11,8 @@ const initialClients = [
 ]
 
 const statusStyle = {
-    'Ativo': 'bg-green-100 text-green-700',
-    'Inativo': 'bg-red-100 text-red-700',
+    'Ativo': 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300',
+    'Inativo': 'bg-red-100 text-red-700 dark:bg-red-500/25 dark:text-red-300',
 }
 
 const emptyForm = { name: '', email: '', phone: '', status: 'Ativo' }

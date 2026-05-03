@@ -19,7 +19,7 @@ import AdminCategories from "./pages/admin/AdminCategories"
 import AdminManageUsers from "./pages/admin/AdminManageUsers"
 import AdminRoles from "./pages/admin/AdminRoles"
 import AdminSettings from "./pages/admin/AdminSettings"
-import { ThemeProvider } from "./context/ThemeContext"
+import { ThemeProvider, useTheme } from "./context/ThemeContext"
 
 const hideNavRoutes = ['/login', '/register', '/not-found', '/admin']
 
@@ -62,8 +62,9 @@ function Layout() {
 }
 
 function AdminLayout() {
+  const { dark } = useTheme()
   return (
-    <main className="flex">
+    <main className={`flex${dark ? ' dark' : ''}`}>
       <AdminMenu />
       <section className="p-10 box-border w-full bg-gray-50 dark:bg-(--admin-bg) ml-80 min-h-screen">
         <Outlet />

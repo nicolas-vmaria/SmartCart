@@ -6,11 +6,14 @@ export function ThemeProvider({ children }) {
     const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark')
 
     useEffect(() => {
+        // Só aplica background no body para evitar o branco nos cantos do sidebar
         if (dark) {
-            document.documentElement.classList.add('dark')
+            document.body.style.backgroundColor = '#080808'
+            document.body.style.colorScheme = 'dark'
             localStorage.setItem('theme', 'dark')
         } else {
-            document.documentElement.classList.remove('dark')
+            document.body.style.backgroundColor = ''
+            document.body.style.colorScheme = ''
             localStorage.setItem('theme', 'light')
         }
     }, [dark])

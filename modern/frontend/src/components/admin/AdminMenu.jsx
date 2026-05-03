@@ -41,10 +41,14 @@ export default function AdminMenu() {
                 </div>
             </div>
 
-            <div className={linkClass}>
-                <LogOut size={18} />
-                <p>Sair</p>
-            </div>
+            
+                <Link to="/" className={linkClass}>
+
+                    <LogOut size={18} />
+                    <p>Sair</p>
+
+                </Link>
+        
         </aside>
     )
 }
