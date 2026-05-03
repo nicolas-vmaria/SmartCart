@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
-import { Search, Trash2, Pencil, X, UserPlus, SlidersHorizontal, Check, Shield } from 'lucide-react'
+import { Search, Trash2, Pencil, X, UserPlus, SlidersHorizontal, Check, Shield, KeyRound } from 'lucide-react'
 
 const initialUsers = [
     { id: 1, name: 'Ciclano da Silva', email: 'ciclano@smartcart.com', role: 'Administrador', roleColor: 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300', status: 'Ativo', createdAt: '10/01/2025' },
@@ -25,6 +25,8 @@ export default function AdminManageUsers() {
     const [form, setForm] = useState(emptyForm)
     const [editing, setEditing] = useState(null)
     const [filters, setFilters] = useState({ role: 'Todos', status: 'Todos' })
+    const [resetTarget, setResetTarget] = useState(null)
+    const [resetDone, setResetDone] = useState(false)
     const filterRef = useRef(null)
 
     useEffect(() => {
@@ -70,6 +72,21 @@ export default function AdminManageUsers() {
         setEditing(user.id)
         setForm({ name: user.name, email: user.email, role: user.role, status: user.status })
         setShowModal(true)
+    }
+
+    function openReset(user) {
+        setResetTarget(user)
+        setResetDone(false)
+    }
+
+    function closeReset() {
+        setResetTarget(null)
+        setResetDone(false)
+    }
+
+    function handleReset() {
+        setResetDone(true)
+        setTimeout(closeReset, 1500)
     }
 
     function closeModal() {
@@ -199,9 +216,12 @@ export default function AdminManageUsers() {
                                     </span>
                                 </td>
                                 <td className="py-3 text-gray-400 dark:text-(--admin-text-muted)">{user.createdAt}</td>
-                                <td className="py-3">
-                                    <button onClick={() => openEdit(user)} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
+                                <td className="py-3 flex items-center gap-1">
+                                    <button onClick={() => openEdit(user)} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)" title="Editar usuário">
                                         <Pencil size={15} />
+                                    </button>
+                                    <button onClick={() => openReset(user)} className="p-1.5 rounded-md hover:bg-orange-50 dark:hover:bg-orange-950/30 cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-orange-500 dark:hover:text-orange-400" title="Resetar senha">
+                                        <KeyRound size={15} />
                                     </button>
                                 </td>
                             </tr>
@@ -214,6 +234,49 @@ export default function AdminManageUsers() {
                     </tbody>
                 </table>
             </div>
+
+            {resetTarget && (
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-sm shadow-xl dark:shadow-black/40">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-verde-escuro dark:text-(--admin-accent) font-bold text-xl">Resetar senha</h2>
+                            <button onClick={closeReset} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-400 dark:text-(--admin-text-muted)">
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        {resetDone ? (
+                            <div className="flex items-center justify-center gap-2 py-4 text-verde-escuro dark:text-(--admin-accent) font-medium">
+                                <Check size={18} /> Senha redefinida com sucesso!
+                            </div>
+                        ) : (
+                            <>
+                                <p className="text-sm text-gray-500 dark:text-(--admin-text-muted) mb-2">
+                                    A senha de <span className="font-semibold text-gray-700 dark:text-(--admin-text)">{resetTarget.name}</span> será redefinida para a senha padrão:
+                                </p>
+                                <div className="bg-gray-50 dark:bg-(--admin-hover) border border-gray-200 dark:border-(--admin-border) rounded-lg px-4 py-3 mb-5 flex items-center justify-between">
+                                    <span className="font-mono text-sm text-gray-700 dark:text-(--admin-text) tracking-widest">admin@1234</span>
+                                    <KeyRound size={14} className="text-gray-400 dark:text-(--admin-text-muted)" />
+                                </div>
+                                <p className="text-xs text-gray-400 dark:text-(--admin-text-muted) mb-5">
+                                    O usuário deverá alterar a senha no primeiro acesso.
+                                </p>
+                                <div className="flex gap-3">
+                                    <button onClick={closeReset}
+                                        className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-(--admin-border) text-sm text-gray-500 dark:text-(--admin-text-muted) hover:bg-gray-50 dark:hover:bg-(--admin-hover) transition-all">
+                                        Cancelar
+                                    </button>
+                                    <button onClick={handleReset}
+                                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro dark:bg-(--admin-accent) text-white dark:text-black text-sm font-medium hover:opacity-90 transition-all">
+                                        <KeyRound size={14} />
+                                        Confirmar reset
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {showModal && (
                 <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">

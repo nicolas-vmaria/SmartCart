@@ -19,6 +19,7 @@ import AdminCategories from "./pages/admin/AdminCategories"
 import AdminManageUsers from "./pages/admin/AdminManageUsers"
 import AdminRoles from "./pages/admin/AdminRoles"
 import AdminSettings from "./pages/admin/AdminSettings"
+import AdminProfile from "./pages/admin/AdminProfile"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 
 const hideNavRoutes = ['/login', '/register', '/not-found', '/admin']
@@ -52,6 +53,7 @@ function Layout() {
             <Route path="manage-users" element={<AdminManageUsers />} />
             <Route path="roles" element={<AdminRoles />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="profile" element={<AdminProfile />} />
           </Route>
         </Routes>
       </div>

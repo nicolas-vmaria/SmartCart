@@ -7,7 +7,7 @@ export default function AdminMenu() {
     return (
         <aside className="w-80 h-screen bg-white dark:bg-(--admin-sidebar) fixed flex flex-col justify-between p-5 text-verde-escuro shadow-2xl dark:shadow-black/60 rounded-tr-2xl rounded-br-2xl z-10">
             <div>
-                <div className="flex items-center gap-2">
+                <Link to="/admin/profile" className="flex items-center gap-2 p-2 rounded-xl hover:bg-gray-100">
                     <div className="flex border border-verde-escuro dark:border-(--admin-border) aspect-square w-12 h-12 rounded-full justify-center items-center">
                         <p className="dark:text-(--admin-text)">user</p>
                     </div>
@@ -15,7 +15,7 @@ export default function AdminMenu() {
                         <h1 className="font-bold text-xl text-verde-escuro dark:text-(--admin-accent)">Ciclano da Silva</h1>
                         <p className="text-verde-escuro dark:text-(--admin-text-muted)">Admin</p>
                     </div>
-                </div>
+                </Link>
 
                 <div>
                     <ul className="flex flex-col gap-2 py-5">
