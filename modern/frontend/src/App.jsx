@@ -21,6 +21,7 @@ import AdminRoles from "./pages/admin/AdminRoles"
 import AdminSettings from "./pages/admin/AdminSettings"
 import AdminProfile from "./pages/admin/AdminProfile"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
+import { useEffect } from "react"
 
 const hideNavRoutes = ['/login', '/register', '/not-found', '/admin']
 
@@ -65,6 +66,21 @@ function Layout() {
 
 function AdminLayout() {
   const { dark } = useTheme()
+
+  useEffect(() => {
+    if (dark) {
+      document.body.style.backgroundColor = '#080808'
+      document.body.style.colorScheme = 'dark'
+    } else {
+      document.body.style.backgroundColor = ''
+      document.body.style.colorScheme = ''
+    }
+    return () => {
+      document.body.style.backgroundColor = ''
+      document.body.style.colorScheme = ''
+    }
+  }, [dark])
+
   return (
     <main className={`flex${dark ? ' dark' : ''}`}>
       <AdminMenu />

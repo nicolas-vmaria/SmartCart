@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
-import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus } from 'lucide-react'
+import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink } from 'lucide-react'
 
 const initialProducts = [
     { id: 1, name: 'Smart Cart Pro', category: 'Carrinho', price: 1299.00, stock: 45, status: 'Ativo' },
@@ -228,10 +228,14 @@ export default function AdminProducts() {
                                         {product.status}
                                     </span>
                                 </td>
-                                <td className="py-3">
-                                    <button onClick={() => openEdit(product)} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
+                                <td className="py-3 flex items-center gap-1">
+                                    <button onClick={() => openEdit(product)} title="Editar produto" className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                         <Pencil size={15} />
                                     </button>
+                                    <a href={`/produto/${product.id}`} target="_blank" rel="noreferrer" title="Ver no site"
+                                        className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
+                                        <ExternalLink size={15} />
+                                    </a>
                                 </td>
                             </tr>
                         ))}
