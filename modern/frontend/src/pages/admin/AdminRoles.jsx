@@ -10,6 +10,8 @@ const SECTIONS = [
     { key: 'categorias',    label: 'Categorias' },
     { key: 'papeis',        label: 'Papéis' },
     { key: 'curriculos',    label: 'Currículos'},
+    { key: 'cupons',        label: 'Cupons' },
+    { key: 'relatorios',    label: 'Relatórios' },
     { key: 'usuarios',      label: 'Usuários' },
     { key: 'configuracoes', label: 'Configurações' },
 ]

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser } from 'lucide-react'
+import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const linkClass = "cursor-pointer flex gap-2 items-center h-10 px-2 rounded-md transition-all hover:bg-gray-100 dark:text-(--admin-text) dark:hover:bg-(--admin-hover) outline-none"
@@ -40,6 +40,8 @@ export default function AdminMenu() {
                             <Link to="/admin/categories" className={linkClass}><Tag size={18} />Categorias</Link>
                             <Link to="/admin/orders" className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={NOTIF_PEDIDOS} /></Link>
                             <Link to="/admin/curriculos" className={linkClass}><FileUser size={18} />Currículos<Badge count={NOTIF_CURRICULOS} /></Link>
+                            <Link to="/admin/cupons" className={linkClass}><Ticket size={18} />Cupons</Link>
+                            <Link to="/admin/relatorios" className={linkClass}><BarChart2 size={18} />Relatórios</Link>
                         </div>
                     </ul>
 

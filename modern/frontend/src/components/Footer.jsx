@@ -48,13 +48,16 @@ export default function Footer() {
             </h2>
             <hr className="border-white/20 mb-4" />
             <ul className="space-y-2">
-              {["Minha Conta", "Meus Pedidos"].map((item) => (
-                <li key={item}>
-                  <a href="" className="text-sm hover:text-verde-claro transition-colors duration-200">
-                    {item}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <Link to="/profile" className="text-sm hover:text-verde-claro transition-colors duration-200">
+                  Minha Conta
+                </Link>
+              </li>
+              <li>
+                <a href="" className="text-sm hover:text-verde-claro transition-colors duration-200">
+                  Meus Pedidos
+                </a>
+              </li>
             </ul>
           </div>
 

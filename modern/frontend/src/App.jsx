@@ -32,6 +32,8 @@ import Candidatura from "./pages/Candidatura"
 import ForgotPassword from "./pages/ForgotPassword"
 import CategoriaGrid from "./pages/CategoriaGrid"
 import OrderConfirmation from "./pages/OrderConfirmation"
+import AdminCupons from "./pages/admin/AdminCupons"
+import AdminRelatorios from "./pages/admin/AdminRelatorios"
 
 function Layout() {
   return (
@@ -113,6 +115,8 @@ function App() {
             <Route path="settings" element={<AdminSettings />} />
             <Route path="profile" element={<AdminProfile />} />
             <Route path="curriculos" element={<AdminCurriculos />} />
+            <Route path="cupons" element={<AdminCupons />} />
+            <Route path="relatorios" element={<AdminRelatorios />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
