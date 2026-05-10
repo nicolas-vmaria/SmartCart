@@ -9,9 +9,10 @@ class Connection {
             $name = $_ENV['DB_NAME'];
             $user = $_ENV['DB_USER'];
             $pass = $_ENV['DB_PASS'];
+            $port = $_ENV['DB_PORT'] ?? '3306';
 
             self::$instance = new PDO(
-                "mysql:host=$host;dbname=$name;charset=utf8mb4",
+                "mysql:host=$host;port=$port;dbname=$name;charset=utf8mb4",
                 $user,
                 $pass,
                 [
