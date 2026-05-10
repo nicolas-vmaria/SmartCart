@@ -5,7 +5,7 @@ import * as THREE from 'three'
 
 const MAT_WHEEL  = new THREE.MeshStandardMaterial({ color: '#0a0a0a', roughness: 0.9, metalness: 0.1 })
 const MAT_HANDLE = new THREE.MeshStandardMaterial({ color: '#0a0a0a', roughness: 0.3, metalness: 0.8 })
-const MAT_BASKET = new THREE.MeshStandardMaterial({ color: '#18572C', roughness: 0.3, metalness: 0.5 })
+const MAT_BASKET = new THREE.MeshStandardMaterial({ color: '#5F9936', roughness: 0.3, metalness: 0.5 })
 
 function CartModel({ onLoaded }) {
   const group = useRef()
