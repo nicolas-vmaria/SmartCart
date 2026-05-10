@@ -29,6 +29,19 @@ O **SmartCart** é um sistema desenvolvido para modernizar a experiência de com
 - Composer
 - MySQL
 
+### Instalando PHP e Composer via Scoop (Windows)
+
+Caso não tenha o PHP e o Composer instalados, a forma mais simples no Windows é via [Scoop](https://scoop.sh/):
+
+```powershell
+# Instala o Scoop
+irm get.scoop.sh | iex
+
+# Instala PHP 8.2 e Composer
+scoop bucket add versions
+scoop install php82 composer
+```
+
 ---
 
 ## Como rodar o projeto

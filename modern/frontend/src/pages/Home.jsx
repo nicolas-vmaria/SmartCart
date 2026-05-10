@@ -1,4 +1,4 @@
-import carrinho from '../assets/carrinho.png'
+import SmartCart3D from '../components/SmartCart3D'
 
 import { FaTruck } from "react-icons/fa6";
 import { FiClock } from "react-icons/fi";
@@ -30,8 +30,8 @@ export default function Home() {
                     </Link>
                 </div>
 
-                <div>
-                    <img className='w-150' src={carrinho} alt="" />
+                <div className='w-150 h-150 shrink-0'>
+                    <SmartCart3D />
                 </div>
             </section>
 
