@@ -22,6 +22,8 @@ import AdminRoles from "./pages/admin/AdminRoles"
 import AdminSettings from "./pages/admin/AdminSettings"
 import AdminProfile from "./pages/admin/AdminProfile"
 import AdminCurriculos from "./pages/admin/AdminCurriculos"
+import AdminLogin from "./pages/admin/AdminLogin"
+import ProtectedRoute from "./components/admin/ProtectedRoute"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 import { useEffect } from "react"
 import Checkout from "./pages/Checkout"
@@ -104,19 +106,22 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminHome />} />
-            <Route path="clients" element={<AdminClients />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="categories" element={<AdminCategories />} />
-            <Route path="manage-users" element={<AdminManageUsers />} />
-            <Route path="roles" element={<AdminRoles />} />
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="profile" element={<AdminProfile />} />
-            <Route path="curriculos" element={<AdminCurriculos />} />
-            <Route path="cupons" element={<AdminCupons />} />
-            <Route path="relatorios" element={<AdminRelatorios />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminHome />} />
+              <Route path="clients" element={<AdminClients />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="manage-users" element={<AdminManageUsers />} />
+              <Route path="roles" element={<AdminRoles />} />
+              <Route path="settings" element={<AdminSettings />} />
+              <Route path="profile" element={<AdminProfile />} />
+              <Route path="curriculos" element={<AdminCurriculos />} />
+              <Route path="cupons" element={<AdminCupons />} />
+              <Route path="relatorios" element={<AdminRelatorios />} />
+            </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

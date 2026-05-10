@@ -1,11 +1,13 @@
 <?php
 
 require_once __DIR__ . '/../service/AdminCurriculoService.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class AdminCurriculoController {
     private AdminCurriculoService $service;
 
     public function __construct() {
+        AuthMiddleware::handle();
         $this->service = new AdminCurriculoService();
     }
 
@@ -13,11 +15,11 @@ class AdminCurriculoController {
         echo json_encode($this->service->getAllCurriculos());
     }
 
-    public function updateStatus($id) {
+    public function updateStatus(string $id) {
         echo json_encode($this->service->updateStatus($id));
     }
 
-    public function destroy($id) {
+    public function destroy(string $id) {
         echo json_encode($this->service->deleteCurriculo($id));
     }
 }

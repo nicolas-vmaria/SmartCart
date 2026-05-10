@@ -58,7 +58,7 @@ export default function AdminMenu() {
             </div>
 
             
-                <Link to="/" className={linkClass}>
+                <Link to="/" onClick={() => {localStorage.clear()}} className={linkClass}>
 
                     <LogOut size={18} />
                     <p>Sair</p>

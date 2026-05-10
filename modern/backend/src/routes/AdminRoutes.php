@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../controller/AdminAuthController.php';
 require_once __DIR__ . '/../controller/AdminProductController.php';
 require_once __DIR__ . '/../controller/AdminOrderController.php';
 require_once __DIR__ . '/../controller/AdminClientController.php';
@@ -7,6 +8,9 @@ require_once __DIR__ . '/../controller/AdminCategoryController.php';
 require_once __DIR__ . '/../controller/AdminUserController.php';
 require_once __DIR__ . '/../controller/AdminCurriculoController.php';
 require_once __DIR__ . '/../controller/AdminCouponController.php';
+
+// Auth
+$router->post('/admin/auth/login', [AdminAuthController::class, 'login']);
 
 // Produtos
 $router->get('/admin/product',          [AdminProductController::class, 'index']);

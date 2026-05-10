@@ -1,11 +1,13 @@
 <?php
 
 require_once __DIR__ . '/../service/AdminUserService.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class AdminUserController {
     private AdminUserService $service;
 
     public function __construct() {
+        AuthMiddleware::handle();
         $this->service = new AdminUserService();
     }
 
@@ -13,11 +15,11 @@ class AdminUserController {
         echo json_encode($this->service->getAllUsers());
     }
 
-    public function updateRole($id) {
+    public function updateRole(string $id) {
         echo json_encode($this->service->updateUserRole($id));
     }
 
-    public function destroy($id) {
+    public function destroy(string $id) {
         echo json_encode($this->service->deleteUser($id));
     }
 
@@ -29,7 +31,7 @@ class AdminUserController {
         echo json_encode($this->service->createRole());
     }
 
-    public function destroyRole($id) {
+    public function destroyRole(string $id) {
         echo json_encode($this->service->deleteRole($id));
     }
 }
