@@ -2,31 +2,27 @@ Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /api/v2/
+    RewriteBase /
 
-    # Allow direct access to existing files and directories
+    # Responde OPTIONS direto (preflight CORS)
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^ - [R=204,L]
+
+    # Passa arquivos e pastas existentes direto
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
 
-    # Route everything else to index.php
+    # Tudo o mais vai para o index.php
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
 
-# Security headers
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
-</IfModule>
-
-# CORS for API
-<IfModule mod_headers.c>
     Header always set Access-Control-Allow-Origin "http://localhost:5173"
     Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
     Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
     Header always set Access-Control-Allow-Credentials "true"
-
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^ - [R=204,L]
 </IfModule>

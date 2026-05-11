@@ -52,7 +52,17 @@ mysql -u root -p < modern/backend/database/schema.sql
 ```bash
 cd modern/backend
 Copy-Item .env.example .env   # preencha as variáveis no .env
-./start.ps1                   # habilita OpenSSL, instala dependências e sobe o servidor
+```
+
+**Opção A — XAMPP** (recomendado):
+```powershell
+./setup-xampp.ps1   # apenas na primeira vez
+./start-xampp.ps1   # toda vez que for rodar
+```
+
+**Opção B — PHP built-in** (Scoop):
+```powershell
+./start.ps1
 ```
 
 ### 4. Frontend
