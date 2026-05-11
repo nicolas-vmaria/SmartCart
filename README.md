@@ -1,50 +1,38 @@
 # SmartCart
 
-> Um carrinho de supermercado inteligente que automatiza e otimiza a experiência de compra do cliente.
+Carrinho de supermercado inteligente que identifica produtos automaticamente, calcula o total em tempo real e permite pagamento sem fila.
 
-![Status do Projeto](https://img.shields.io/badge/Status-Em%20Desenvolvimento-green)
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-green)
 ![Licença](https://img.shields.io/badge/License-MIT-blue)
 
 ---
 
-## Sobre o Projeto
+## Stack
 
-O **SmartCart** é um sistema desenvolvido para modernizar a experiência de compras em supermercados. O projeto consiste em um carrinho inteligente capaz de identificar e contabilizar automaticamente os produtos colocados ou retirados de seu interior, eliminando filas e permitindo que o cliente acompanhe o valor total em tempo real.
-
----
-
-## Tecnologias
-
-- **Frontend:** React + Vite + Tailwind CSS
-- **Backend:** PHP 8.2
-- **Banco de Dados:** MySQL
-- **Autenticação:** JWT
+| Camada | Tecnologia |
+|--------|-----------|
+| Frontend | React 19 + Vite + Tailwind CSS |
+| Backend | PHP 8.2 |
+| Banco de dados | MySQL |
+| Autenticação | JWT |
 
 ---
 
 ## Pré-requisitos
 
-- [Node.js](https://nodejs.org/) (v18+)
-- PHP 8.2+
-- Composer
+- Node.js v18+
+- PHP 8.2+ e Composer
 - MySQL
 
-### Instalando PHP e Composer via Scoop (Windows)
-
-Caso não tenha o PHP e o Composer instalados, a forma mais simples no Windows é via [Scoop](https://scoop.sh/):
-
-```powershell
-# Instala o Scoop
-irm get.scoop.sh | iex
-
-# Instala PHP 8.2 e Composer
-scoop bucket add versions
-scoop install php82 composer
-```
+> **Windows com Scoop:**
+> ```powershell
+> scoop bucket add versions
+> scoop install php82 composer
+> ```
 
 ---
 
-## Como rodar o projeto
+## Instalação
 
 ### 1. Clone o repositório
 
@@ -53,80 +41,41 @@ git clone https://github.com/nicolas-vmaria/SmartCart.git
 cd SmartCart
 ```
 
-### 2. Frontend
+### 2. Banco de dados
 
 ```bash
-cd modern/frontend
-npm install
+mysql -u root -p < modern/backend/database/schema.sql
 ```
-
-Crie o arquivo `.env` com base no `.env.example`:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Inicie o servidor de desenvolvimento:
-
-```bash
-npm run dev
-```
-
-O frontend estará disponível em `http://localhost:5173`.
-
----
 
 ### 3. Backend
 
 ```bash
 cd modern/backend
-composer install
+Copy-Item .env.example .env   # preencha as variáveis no .env
+./start.ps1                   # habilita OpenSSL, instala dependências e sobe o servidor
 ```
 
-Crie o arquivo `.env` com base no `.env.example`:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Preencha as variáveis no `.env`:
-
-```env
-JWT_SECRET=sua_chave_secreta_aqui
-
-DB_HOST=localhost
-DB_NAME=smartcart
-DB_USER=root
-DB_PASS=sua_senha_aqui
-DB_PORT=3306
-```
-
-### 4. Banco de Dados
-
-Execute o script SQL no MySQL para criar as tabelas:
+### 4. Frontend
 
 ```bash
-mysql -u root -p < database/schema.sql
+cd modern/frontend
+Copy-Item .env.example .env   # defina VITE_API_URL=http://localhost:3001
+npm install
+npm run dev
 ```
-
-Ou abra o arquivo `database/schema.sql` no MySQL Workbench e execute.
-
-### 5. Inicie o servidor PHP
-
-```bash
-cd modern/backend/public
-php -S localhost:3001 index.php
-```
-
-O backend estará disponível em `http://localhost:3001`.
 
 ---
 
-## Acesso Admin
+## Acessos
 
-Após rodar o SQL, um administrador padrão é criado:
+| | URL | Credenciais |
+|-|-----|-------------|
+| Site | http://localhost:5173 | — |
+| Admin | http://localhost:5173/admin/login | admin@smartcart.com / admin123 |
+| API | http://localhost:3001 | — |
 
-- **E-mail:** admin@smartcart.com
-- **Senha:** admin123
+---
 
-Acesse o painel em `http://localhost:5173/admin/login`.
+## Documentação
+
+Documentação técnica completa em [`docs/architecture/`](./docs/architecture/).
