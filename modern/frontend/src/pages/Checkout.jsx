@@ -51,6 +51,18 @@ function Field({ label, children }) {
 const inputCls = "border border-gray-200 rounded-xl p-3 focus:outline-none focus:border-verde-escuro transition-colors"
 
 function DeliveryStep({ data, onChange }) {
+
+    const findCep = async (e) => {
+        const res = await fetch(`https://viacep.com.br/ws/${e}/json/`)
+        const data = await res.json()
+
+        if(!data.erro){
+            onChange('endereco', data.logradouro)
+            onChange('cidade', data.localidade)
+            onChange('estado', data.uf)
+        }
+    }
+
     return (
         <div className="flex flex-col gap-5">
             <div>
@@ -69,7 +81,7 @@ function DeliveryStep({ data, onChange }) {
                     <input className={inputCls} placeholder="(11) 99999-9999" value={data.telefone} onChange={e => onChange('telefone', e.target.value)} />
                 </Field>
                 <Field label="CEP">
-                    <input className={inputCls} placeholder="00000-000" maxLength={9} value={data.cep} onChange={e => onChange('cep', e.target.value)} />
+                    <input className={inputCls} placeholder="00000-000" maxLength={9} value={data.cep} onChange={e => { onChange('cep', e.target.value); if (e.target.value.replace(/\D/g, '').length === 8) findCep(e.target.value) }} />
                 </Field>
                 <Field label="Endereço">
                     <input className={`${inputCls} col-span-2`} placeholder="Rua, Avenida..." value={data.endereco} onChange={e => onChange('endereco', e.target.value)} />
