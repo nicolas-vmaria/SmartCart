@@ -34,14 +34,24 @@ JWT_SECRET=smartcart_839283810381fjsakjdkjakjwjd@*#(@*kajkdj
 | Variável | Exemplo | Descrição |
 |----------|---------|-----------|
 | `VITE_API_URL` | `http://localhost:3001` | URL base da API do backend |
+| `VITE_GROQ_KEY` | `gsk_...` | Chave da API do Groq para o assistente de IA |
 
 **Exemplo de arquivo:**
 
 ```env
 VITE_API_URL=http://localhost:3001
+VITE_GROQ_KEY=gsk_sua_chave_aqui
 ```
 
 > Variáveis do Vite precisam começar com `VITE_` para ficarem acessíveis no código via `import.meta.env`.
+
+### Obtendo a chave do Groq
+
+1. Acesse [console.groq.com](https://console.groq.com)
+2. Vá em **API Keys → Create API Key**
+3. Cole o valor em `VITE_GROQ_KEY` no `.env`
+
+> A chave do Groq fica exposta no bundle do frontend — adequado para desenvolvimento. Em produção, as chamadas devem passar por um endpoint no backend.
 
 ---
 

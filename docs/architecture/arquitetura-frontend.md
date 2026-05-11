@@ -13,6 +13,7 @@
 | Chart.js | 4.5 | Gráficos no admin |
 | Swiper | 12.1 | Carrossel de imagens |
 | React Three Fiber | — | Modelo 3D na home |
+| Groq SDK | 0.x | Chat de IA (assistente virtual) |
 
 ---
 
@@ -24,7 +25,8 @@ src/
 │   ├── config.js         ← exporta API_URL do .env
 │   ├── api.js            ← re-exporta funções de auth
 │   ├── adminApi.js       ← instância Axios com interceptor JWT
-│   └── authService.js    ← função loginAdmin()
+│   ├── authService.js    ← função loginAdmin()
+│   └── IaAssistant.js    ← integração com Groq (assistente virtual)
 │
 ├── assets/               ← imagens, logos, fotos do carrossel
 │
@@ -34,6 +36,7 @@ src/
 │   ├── SmartCart3D.jsx   ← modelo 3D interativo (React Three Fiber)
 │   ├── Toast.jsx
 │   ├── ConfirmDialog.jsx
+│   ├── AiChat.jsx        ← chat flutuante do assistente virtual (todas as páginas de cliente)
 │   └── admin/
 │       ├── AdminMenu.jsx       ← sidebar do painel admin
 │       ├── AdminHeader.jsx     ← cabeçalho das páginas admin
@@ -124,11 +127,14 @@ Envoltas por `ProtectedRoute` (verifica `admin_token`) e `AdminLayout` (sidebar 
 ```
 components/pages
       │
-      ▼
-  api/adminApi.js          ← Axios com base URL + interceptor JWT
-      │
-      ▼
-  api/authService.js       ← funções por domínio (loginAdmin, etc.)
+      ├──────────────────────────────────┐
+      ▼                                  ▼
+  api/adminApi.js                  api/IaAssistant.js
+  Axios com base URL + JWT         Groq SDK (chat IA)
+      │                                  │
+      ▼                                  ▼
+  api/authService.js            console.groq.com (LLM)
+  funções por domínio
       │
       ▼
   Backend PHP (localhost:3001)
@@ -153,6 +159,8 @@ O sistema não usa Redux ou Zustand. O estado é local por página via `useState
 | Context | Dados | Quem usa |
 |---------|-------|----------|
 | `ThemeContext` | `dark: boolean`, `setDark()` | AdminLayout, AdminSettings |
+
+O histórico do chat de IA (`AiChat.jsx`) é mantido em memória local via `useState` e reinicia a cada carregamento de página.
 
 ---
 
