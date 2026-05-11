@@ -34,6 +34,7 @@ import Candidatura from "./pages/Candidatura"
 import ForgotPassword from "./pages/ForgotPassword"
 import CategoriaGrid from "./pages/CategoriaGrid"
 import OrderConfirmation from "./pages/OrderConfirmation"
+import AiChat from "./components/AiChat"
 import AdminCupons from "./pages/admin/AdminCupons"
 import AdminRelatorios from "./pages/admin/AdminRelatorios"
 import AdminHelp from "./pages/admin/AdminHelp"
@@ -47,6 +48,7 @@ function Layout() {
         <Outlet />
       </div>
       <Footer />
+      <AiChat />
     </>
   )
 }
