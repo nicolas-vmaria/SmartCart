@@ -37,9 +37,9 @@ if ($changed) {
 }
 
 # 3. Adiciona Listen e VirtualHost se ainda nao existir
-$vhosts = Get-Content $VHOSTS -Raw
+$vhostsContent = Get-Content $VHOSTS -Raw
 
-if ($vhosts -notmatch "VirtualHost \*:$PORT") {
+if ($vhostsContent -notmatch "VirtualHost \*:$PORT") {
     $block = @"
 
 # SmartCart Backend
