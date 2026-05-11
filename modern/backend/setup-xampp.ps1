@@ -38,14 +38,25 @@ if ($http -notmatch "Listen $PORT") {
     Write-Host "Listen $PORT adicionado ao httpd.conf." -ForegroundColor Green
 }
 
+# 3. Forca Apache a usar o PHP do XAMPP (evita conflito com Scoop/outros PHPs no PATH)
+if ($http -notmatch "PHPIniDir") {
+    $http = $http + "`nPHPIniDir `"$XAMPP/php`"`n"
+    $changed = $true
+    Write-Host "PHPIniDir apontado para o PHP do XAMPP." -ForegroundColor Green
+}
+
 if ($changed) {
     $http | Set-Content $HTTPCONF -Encoding UTF8
 }
 
-# 3. Limpa entradas antigas do SmartCart no vhosts e reescreve corretamente
-$vhostsContent = Get-Content $VHOSTS -Raw
+# 3. Descobre o caminho do php.ini do PHP ativo (Scoop ou outro)
+$phpIni = (php -r "echo php_ini_loaded_file();")
+$phpDir = Split-Path $phpIni -Parent
 
-# Remove bloco antigo se existir (garante que nao fique duplicado ou corrompido)
+Write-Host "PHP ativo: $(php -r 'echo PHP_VERSION;') — ini: $phpIni" -ForegroundColor DarkGray
+
+# 4. Limpa entradas antigas do SmartCart no vhosts e reescreve corretamente
+$vhostsContent = Get-Content $VHOSTS -Raw
 $vhostsContent = $vhostsContent -replace "(?s)# SmartCart Backend.*?</VirtualHost>", ""
 
 $block = @"
@@ -53,6 +64,7 @@ $block = @"
 # SmartCart Backend
 <VirtualHost *:$PORT>
     DocumentRoot "$ROOT"
+    SetEnv PHPRC "$phpDir"
     <Directory "$ROOT">
         Options Indexes FollowSymLinks
         AllowOverride All
