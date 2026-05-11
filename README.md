@@ -24,11 +24,6 @@ Carrinho de supermercado inteligente que identifica produtos automaticamente, ca
 - PHP 8.2+ e Composer
 - MySQL
 
-> **Windows com Scoop:**
-> ```powershell
-> scoop bucket add versions
-> scoop install php82 composer
-> ```
 
 ---
 
@@ -51,19 +46,12 @@ mysql -u root -p < modern/backend/database/schema.sql
 
 ```bash
 cd modern/backend
+composer install
 Copy-Item .env.example .env   # preencha as variáveis no .env
+cd public
+php -S localhost:3001 index.php
 ```
 
-**Opção A — XAMPP** (recomendado):
-```powershell
-./setup-xampp.ps1   # apenas na primeira vez
-./start-xampp.ps1   # toda vez que for rodar
-```
-
-**Opção B — PHP built-in** (Scoop):
-```powershell
-./start.ps1
-```
 
 ### 4. Frontend
 
