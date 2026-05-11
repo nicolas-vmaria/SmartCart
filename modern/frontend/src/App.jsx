@@ -36,6 +36,7 @@ import CategoriaGrid from "./pages/CategoriaGrid"
 import OrderConfirmation from "./pages/OrderConfirmation"
 import AdminCupons from "./pages/admin/AdminCupons"
 import AdminRelatorios from "./pages/admin/AdminRelatorios"
+import AdminHelp from "./pages/admin/AdminHelp"
 
 function Layout() {
   return (
@@ -121,6 +122,7 @@ function App() {
               <Route path="curriculos" element={<AdminCurriculos />} />
               <Route path="cupons" element={<AdminCupons />} />
               <Route path="relatorios" element={<AdminRelatorios />} />
+              <Route path="help" element={<AdminHelp />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

@@ -51,7 +51,7 @@ export default function AdminMenu() {
                         <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Admin</h1>
                         <Link to="/admin/manage-users" className={linkClass}><UserCog size={18} />Gerenciar usuários</Link>
                         <Link to="/admin/roles" className={linkClass}><ShieldCheck size={18} />Gerenciar Pápeis</Link>
-                        <li className={`list-none ${linkClass}`}><HelpCircle size={18} />Ajuda</li>
+                        <Link to="/admin/help" className={linkClass}><HelpCircle size={18} />Ajuda</Link>
                         <Link to="/admin/settings" className={linkClass}><Settings size={18} />Configurações</Link>
                     </ul>
                 </div>
