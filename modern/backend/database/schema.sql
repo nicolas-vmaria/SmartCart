@@ -19,6 +19,7 @@ CREATE TABLE Papeis (
 CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     papel_id INT NOT NULL,
+    is_admin boolean,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
