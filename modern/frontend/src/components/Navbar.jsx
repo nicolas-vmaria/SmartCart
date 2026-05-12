@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from '../assets/smartcart-logo-transparente.png'
 import { FaCartShopping } from "react-icons/fa6";
-import { FiChevronDown } from "react-icons/fi";
+import { FiChevronDown, FiMenu, FiX } from "react-icons/fi";
 import { LuShoppingCart, LuPackage, LuWrench, LuBuilding2 } from "react-icons/lu";
 
 const categorias = [
@@ -12,19 +13,27 @@ const categorias = [
 ]
 
 export default function Navbar() {
+    const [menuAberto, setMenuAberto] = useState(false);
+    const [produtosAberto, setProdutosAberto] = useState(false);
+
+    const fecharMenu = () => {
+        setMenuAberto(false);
+        setProdutosAberto(false);
+    };
+
     return (
-        <nav className="flex items-center justify-between h-20 px-10 fixed w-full bg-verde-escuro z-1000">
+        <nav className="flex items-center justify-between h-20 px-6 md:px-10 fixed w-full bg-verde-escuro z-50">
 
-            <Link to="/"><img className="w-40" src={logo} alt="" /></Link>
+            <Link to="/" onClick={fecharMenu}><img className="w-36 md:w-40" src={logo} alt="" /></Link>
 
-            <ul className="flex gap-20 items-center">
+            {/* Menu desktop */}
+            <ul className="hidden md:flex gap-20 items-center">
                 <li>
                     <Link className="text-verde-claro transition-all hover:bg-green-800 hover:text-gray-100 rounded-full px-5 py-1" to="/">
                         Home
                     </Link>
                 </li>
 
-                {/* Produtos com dropdown */}
                 <li className="relative group">
                     <Link
                         to="/produtos"
@@ -34,7 +43,6 @@ export default function Navbar() {
                         <FiChevronDown className="transition-transform duration-300 group-hover:rotate-180" />
                     </Link>
 
-                    {/* Dropdown */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
                         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 w-72">
                             {categorias.map(({ label, descricao, icon, to }) => (
@@ -68,10 +76,78 @@ export default function Navbar() {
                 </li>
             </ul>
 
-            <div className="flex items-center gap-5">
+            {/* Botões desktop */}
+            <div className="hidden md:flex items-center gap-5">
                 <Link to="/login" className="btn-border-draw text-verde-claro flex items-center h-10 px-5 rounded-full transition-all duration-300 hover:bg-white/10">Login</Link>
                 <Link to="/register" className="text-verde-claro border-2 border-verde-claro flex items-center h-10 p-5 rounded-full transition-all cursor-pointer hover:bg-verde-claro hover:text-verde-escuro">Cadastrar</Link>
                 <Link to="/carrinho"><FaCartShopping className="w-10 h-auto m-5 text-verde-claro transition-all hover:text-[#F8FFC2]" /></Link>
+            </div>
+
+            {/* Ícones mobile direita */}
+            <div className="flex md:hidden items-center gap-3">
+                <Link to="/carrinho" onClick={fecharMenu}>
+                    <FaCartShopping className="w-6 h-auto text-verde-claro" />
+                </Link>
+                <button onClick={() => setMenuAberto(v => !v)} className="text-verde-claro p-1">
+                    {menuAberto ? <FiX size={26} /> : <FiMenu size={26} />}
+                </button>
+            </div>
+
+            {/* Menu mobile */}
+            <div className={`md:hidden absolute top-20 left-0 w-full bg-verde-escuro border-t border-white/10 overflow-hidden transition-all duration-300 ${menuAberto ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="flex flex-col px-6 py-4 gap-1">
+                    <Link onClick={fecharMenu} to="/" className="text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors">
+                        Home
+                    </Link>
+
+                    {/* Produtos com submenu */}
+                    <div>
+                        <button
+                            onClick={() => setProdutosAberto(v => !v)}
+                            className="w-full text-left text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors flex items-center justify-between"
+                        >
+                            Produtos
+                            <FiChevronDown className={`transition-transform duration-300 ${produtosAberto ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        <div className={`overflow-hidden transition-all duration-300 ${produtosAberto ? 'max-h-96' : 'max-h-0'}`}>
+                            <div className="mt-1 ml-4 flex flex-col gap-1">
+                                {categorias.map(({ label, descricao, icon, to }) => (
+                                    <Link
+                                        key={label}
+                                        to={to}
+                                        onClick={fecharMenu}
+                                        className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-800 transition-colors"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-white/10 text-verde-claro flex items-center justify-center text-base shrink-0">
+                                            {icon}
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-sm text-verde-claro">{label}</p>
+                                            <p className="text-xs text-verde-claro/60">{descricao}</p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <Link onClick={fecharMenu} to="/sobre-nos" className="text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors">
+                        Sobre Nós
+                    </Link>
+                    <Link onClick={fecharMenu} to="/contato" className="text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors">
+                        Contato
+                    </Link>
+
+                    <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-white/10">
+                        <Link onClick={fecharMenu} to="/login" className="text-center text-verde-claro border border-verde-claro py-2 rounded-full hover:bg-white/10 transition-colors">
+                            Login
+                        </Link>
+                        <Link onClick={fecharMenu} to="/register" className="text-center text-verde-escuro bg-verde-claro py-2 rounded-full hover:opacity-90 transition-opacity font-semibold">
+                            Cadastrar
+                        </Link>
+                    </div>
+                </div>
             </div>
         </nav>
     )
