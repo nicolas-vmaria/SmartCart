@@ -70,7 +70,7 @@ export default function Navbar() {
 
             <div className="flex items-center gap-5">
                 <Link to="/login" className="btn-border-draw text-verde-claro flex items-center h-10 px-5 rounded-full transition-all duration-300 hover:bg-white/10">Login</Link>
-                <Link to="/register" className="text-verde-claro border-2 border-verde-claro flex items-center h-10 p-5 rounded-full transition-all cursor-pointer hover:bg-verde-claro hover:text-verde-escuro">Entrar</Link>
+                <Link to="/register" className="text-verde-claro border-2 border-verde-claro flex items-center h-10 p-5 rounded-full transition-all cursor-pointer hover:bg-verde-claro hover:text-verde-escuro">Cadastrar</Link>
                 <Link to="/carrinho"><FaCartShopping className="w-10 h-auto m-5 text-verde-claro transition-all hover:text-[#F8FFC2]" /></Link>
             </div>
         </nav>
