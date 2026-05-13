@@ -34,7 +34,7 @@ class AuthService {
             return ['error' => 'A senha deve ter pelo menos 8 caracteres'];
         }
 
-        $existing = $this->userRepository()->findByEmail($email);
+        $existing = $this->userRepository->findByEmail($email);
         if ($existing) {
             http_response_code(409);
             return ['error' => 'Já existe um usuário com esse e-mail'];
@@ -54,8 +54,14 @@ class AuthService {
             throw $e;
         }
 
+        $token = Jwt::generate([
+            'userId' => $user['id'],
+            'email'  => $user['email'],
+            'role'   => $user['role'],
+        ]);
+
         return [
-            'message' => 'Usuário cadastrado com sucesso',
+            'token' => $token,
             'user'    => [
                 'id'    => $user['id'],
                 'nome'  => $user['nome'],
