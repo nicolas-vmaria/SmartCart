@@ -21,7 +21,11 @@ class AuthController {
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
-        echo json_encode($this->service->register($body));
+        $result = $this->service->register($body);
+        if (is_array($result) && isset($result['user']) && !isset($result['error'])) {
+            http_response_code(201);
+        }
+        echo json_encode($result);
     }
 
     public function forgotPassword() {

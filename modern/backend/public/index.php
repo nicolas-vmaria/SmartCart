@@ -19,8 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Core
 require_once __DIR__ . '/../src/Core/Router.php';
 
-$router = new Router();
-
 // Routes
 require_once __DIR__ . '/../src/routes/HealthRoutes.php';
 require_once __DIR__ . '/../src/routes/AuthRoutes.php';
