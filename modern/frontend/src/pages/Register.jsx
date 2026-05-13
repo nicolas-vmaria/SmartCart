@@ -1,18 +1,37 @@
 import { useState } from "react"
-import {Link, useNavigate} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import logo from '../assets/smartcart-logo-transparente.png'
+import { registerUser } from "../lib"
+import Toast from "../components/Toast"
 
 export default function Register() {
 
-    const navigate = useNavigate() 
+    const navigate = useNavigate()
 
     const [checked, setChecked] = useState(false)
+    const [nome, setNome] = useState('')
+    const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
+    const [toast, setToast] = useState(null)
 
     const checkSVG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m4.5 12.75 6 6 9-13.5'/%3E%3C%2Fsvg%3E")`
 
-    function handleSubmit(){
-        navigate('/')
+    async function handleSubmit(e) {
+        e.preventDefault()
+
+        try {
+            const { data } = await registerUser(nome, email, senha)
+
+            localStorage.setItem('user_token', data.token)
+            navigate("/")
+            
+        } catch(err){
+            setToast({ message: err.response?.data?.error || "Erro ao conectar no servidor", type: 'error'})
+        }
+        
+
+        
     }
 
     return (
@@ -26,15 +45,15 @@ export default function Register() {
 
                     <div className="flex flex-col">
                         <label className="text-[13pt] ml-1 font-bold">Nome:</label>
-                        <input type="text" className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira seu nome:" required />
+                        <input type="text" onChange={(e) => setNome(e.target.value)} className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira seu nome:" required />
                     </div>
                     <div className="flex flex-col">
                         <label className="text-[13pt] ml-1 font-bold">E-mail:</label>
-                        <input type="email" className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira seu email:" required />
+                        <input type="email" onChange={(e) => setEmail(e.target.value)} className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira seu email:" required />
                     </div>
                     <div className="flex flex-col">
                         <label className="text-[13pt] ml-1 font-bold">Senha:</label>
-                        <input type="password" className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira sua senha:" required />
+                        <input type="password" onChange={(e) => setSenha(e.target.value)} className="bg-white h-15 border-1 border-gray-200 rounded-xl p-5 box-border" placeholder="Insira sua senha:" required />
                     </div>
 
                     <div className="flex gap-3">
@@ -70,6 +89,8 @@ export default function Register() {
             <section className="flex-1 w-full bg-verde-escuro bg-cover bg-center bg-no-repeat">
 
             </section>
+
+            {toast && <Toast message={toast.message} type={toast.type}/>}
         </main>
     )
 }
