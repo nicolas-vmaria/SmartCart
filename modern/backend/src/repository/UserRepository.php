@@ -21,4 +21,20 @@ class UserRepository {
 
         return $user ?: null;
     }
+
+    public function register(array $user): array {
+        $stmt = $this->db->prepare('
+            INSERT INTO Usuario (papel_id, is_admin, nome, email, senha)
+            VALUES (?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([
+            1,
+            false,
+            $user['nome'],
+            $user['email'],
+            $user['senha'],
+        ]);
+
+        return ['message' => 'Usuário registrado com sucesso'];
+    }
 }
