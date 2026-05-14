@@ -32,6 +32,7 @@ import Politicas from "./pages/Politicas"
 import Sobre from "./pages/Sobre"
 import Candidatura from "./pages/Candidatura"
 import ForgotPassword from "./pages/ForgotPassword"
+import ResetPassword from "./pages/ResetPassword"
 import CategoriaGrid from "./pages/CategoriaGrid"
 import OrderConfirmation from "./pages/OrderConfirmation"
 import AiChat from "./components/AiChat"
@@ -109,6 +110,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/admin" element={<AdminLayout />}>

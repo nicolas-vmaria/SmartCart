@@ -154,7 +154,17 @@ CREATE TABLE Aplicacao (
     FOREIGN KEY (trabalho_id) REFERENCES Trabalho(id)
 );
 
+CREATE TABLE Resetar_Senha(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    create_at DATETIME NOT NULL,
+    expire_at DATETIME NOT NULL
+);
+
 INSERT INTO Papeis (nome_papel) VALUES ('cliente'), ('admin');
 
 INSERT INTO Usuario (nome, email, senha, papel_id) VALUES
     ('Administrador', 'admin@smartcart.com', '$2y$12$WvfF5Xlh0Z3lx5H59oLFQucIp3kbiVKO8410b.xXjigcxp3XJMJOK', 2);
+
+select * from Usuario

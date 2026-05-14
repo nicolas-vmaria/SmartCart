@@ -29,10 +29,36 @@ class AuthController {
     }
 
     public function forgotPassword() {
-        echo json_encode($this->service->forgotPassword());
+        $raw = file_get_contents('php://input');
+        $body = json_decode($raw, true);
+        if(!is_array($body)){
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+        $result = $this->service->forgotPassword($body);
+        if(is_array($result) && isset($result['user']) && !isset($result['error'])){
+            http_response_code(201);
+        }
+
+        echo json_encode($result);
+
+        
     }
 
     public function resetPassword() {
-        echo json_encode($this->service->resetPassword());
+        $raw = file_get_contents('php://input');
+        $body = json_decode($raw, true);
+        if(!is_array($body)){
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+        $result = $this->service->resetPassword($body);
+        if(is_array($result) && isset($result['user']) && !isset($result['error'])){
+            http_response_code(201);
+        }
+
+        echo json_encode($result);
     }
 }

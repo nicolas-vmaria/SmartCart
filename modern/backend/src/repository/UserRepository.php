@@ -50,4 +50,16 @@ class UserRepository {
             throw $e;
         }
     }
+
+    public function updatePassword($email, $senha){
+        try{
+            $stmt = $this->db->prepare('
+                UPDATE Usuario SET senha = ? WHERE email = ?
+            ');
+
+            $stmt->execute([$senha, $email]);
+        }catch(PDOException $e){
+            throw new RuntimeException('ERRO_UPDATE_PASSWORD', 0, $e);
+        }
+    }
 }

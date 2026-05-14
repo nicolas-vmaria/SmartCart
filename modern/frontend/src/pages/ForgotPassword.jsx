@@ -1,15 +1,31 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../assets/smartcart-logo-transparente-preto.png'
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
+import { Mail, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react'
+import { forgotUser } from '../lib/api/authUser'
+import Toast from '../components/Toast'
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
+    const [toast, setToast] = useState(null)
     const [enviado, setEnviado] = useState(false)
+    const [loading, setLoading] = useState(false)
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
-        setEnviado(true)
+        setLoading(true)
+
+        try{
+            const { data } = await forgotUser(email)
+            setEnviado(true)
+            
+
+        }catch(err){
+            setToast({ message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
+            setLoading(false)
+        }
+        
+        
     }
 
     return (
@@ -51,6 +67,7 @@ export default function ForgotPassword() {
                                 <input
                                     type="email"
                                     required
+                                    disabled={loading}
                                     placeholder="Digite seu e-mail"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
@@ -60,9 +77,10 @@ export default function ForgotPassword() {
 
                             <button
                                 type="submit"
-                                className="bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer font-bold"
+                                disabled={loading}
+                                className="bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer font-bold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
                             >
-                                Enviar link de redefinição
+                                {loading ? <Loader2 size={20} className="animate-spin" /> : 'Enviar link de redefinição'}
                             </button>
                         </form>
 
@@ -72,6 +90,8 @@ export default function ForgotPassword() {
                     </>
                 )}
             </div>
+
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
         </main>
     )
 }
