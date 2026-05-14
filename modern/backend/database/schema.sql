@@ -164,7 +164,9 @@ CREATE TABLE Resetar_Senha(
 
 INSERT INTO Papeis (nome_papel) VALUES ('cliente'), ('admin');
 
+INSERT INTO Papeis (id, nome_papel) VALUES (1, 'cliente');
+
 INSERT INTO Usuario (nome, email, senha, papel_id) VALUES
     ('Administrador', 'admin@smartcart.com', '$2y$12$WvfF5Xlh0Z3lx5H59oLFQucIp3kbiVKO8410b.xXjigcxp3XJMJOK', 2);
+    
 
-select * from Usuario

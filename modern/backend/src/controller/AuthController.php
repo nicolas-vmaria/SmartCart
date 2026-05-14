@@ -10,7 +10,18 @@ class AuthController {
     }
 
     public function login() {
-        echo json_encode($this->service->login());
+        $raw = file_get_contents('php://input');
+        $body = json_decode($raw, true);
+        if (!is_array($body)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+        $result = $this->service->login($body);
+        if (is_array($result) && isset($result['user']) && !isset($result['error'])) {
+            http_response_code(201);
+        }
+        echo json_encode($result);
     }
 
     public function register() {

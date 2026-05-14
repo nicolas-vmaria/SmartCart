@@ -13,8 +13,41 @@ class AuthService {
         $this->forgotPasswordRepository = new forgotPasswordRepository();
     }
 
-    public function login() {
-        return ['message' => 'Login realizado com sucesso'];
+    public function login(array $body): array {
+        $email = isset($body['email']) ? trim((string)$body['email']) : '';
+        $senha = isset($body['senha']) ? (string)$body['senha'] : '';
+
+        if ($email === '' || $senha === '') {
+            http_response_code(400);
+            return ['error' => 'email e senha são obrigatórios'];
+        }
+
+        $user = $this->userRepository->findByEmail($email);
+
+        if(!$user || !password_verify($senha, $user['senha'])) {
+            http_response_code(401);
+            return ['error' => 'Credenciais inválidas'];
+        }
+
+        if($user['role'] !== "cliente") {
+            http_response_code(403);
+            return ['error' => 'Acesso negado para usuários admin'];
+        }
+
+        $token = Jwt::generate([
+            'userId' => $user['id'],
+            'email'  => $user['email'],
+            'role'   => $user['role'],
+        ]);
+
+        return [
+            'token' => $token,
+            'user'  => [
+                'id'    => $user['id'],
+                'nome'  => $user['nome'],
+                'email' => $user['email'],
+            ]
+        ];
     }
 
     
@@ -70,6 +103,7 @@ class AuthService {
                 'id'    => $user['id'],
                 'nome'  => $user['nome'],
                 'email' => $user['email'],
+                
             ],
         ];
     }
