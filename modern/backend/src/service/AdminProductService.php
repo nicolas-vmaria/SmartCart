@@ -24,8 +24,13 @@ class AdminProductService {
         $statusRaw    = $body['status'] ?? null;
         $status       = ($statusRaw === true || $statusRaw === 'true' || $statusRaw === 1 || $statusRaw === '1') ? 1 : 0;
 
+<<<<<<< HEAD
         if (!$nome || !$categoria_id || $preco === null || $estoque === null || !$descricao || !$foto_url) {
             throw new InvalidArgumentException("Todos os campos são obrigatórios.");
+=======
+        if (!$nome || !$categoria_id || !$preco || $estoque === null || $estoque === '' || !$status) {
+            throw new InvalidArgumentException("Campos obrigatórios ausentes: nome, categoria_id, preco, estoque, status");
+>>>>>>> d484cfefb55bc3308c0c27170c6a31cfc5804fd8
         }
 
         if (!is_numeric($preco) || $preco < 0) {
@@ -36,13 +41,20 @@ class AdminProductService {
             throw new InvalidArgumentException("O campo estoque deve ser um número positivo");
         }
 
+<<<<<<< HEAD
         $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $nome));
+=======
+        if($nome === '') {
+            throw new InvalidArgumentException("O campo nome não pode ser vazio");
+        }
+
+
+>>>>>>> d484cfefb55bc3308c0c27170c6a31cfc5804fd8
 
         $product = [
             "categoria_id" => $categoria_id,
-            "nome" => $nome,
-            "slug" => $slug,
-            'preco'     => $preco,
+            "nome"    => $nome,
+            'preco'   => $preco,
             'estoque'   => $estoque,
             'descricao' => $descricao,
             'foto_url'  => $foto_url,

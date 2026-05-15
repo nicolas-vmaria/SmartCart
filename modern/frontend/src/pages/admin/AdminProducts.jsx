@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink } from 'lucide-react'
+import { createProduct } from '../../lib/api/products'
+import { getCategories } from '../../lib/api/category'
+import Toast from '../../components/Toast'
 
 const initialProducts = [
     { id: 1, name: 'Smart Cart Pro', category: 'Carrinho', price: 1299.00, stock: 45, status: 'Ativo' },
@@ -15,12 +18,11 @@ const statusStyle = {
     'Inativo': 'bg-red-100 text-red-700 dark:bg-red-500/25 dark:text-red-300',
 }
 
-const emptyForm = { name: '', category: '', price: '', stock: '', status: 'Ativo', image: null }
-
-const categories = ['Carrinho', 'Cesta', 'Acessório']
+const emptyForm = { name: '', categoria_id: '', descricao: '', price: '', stock: '', status: 'Ativo', image: null }
 
 export default function AdminProducts() {
     const [products, setProducts] = useState(initialProducts)
+    const [categories, setCategories] = useState([])
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState([])
     const [showModal, setShowModal] = useState(false)
@@ -29,6 +31,7 @@ export default function AdminProducts() {
     const [editing, setEditing] = useState(null)
     const [filters, setFilters] = useState({ status: 'Todos', category: 'Todas', stock: 'Todos' })
     const filterRef = useRef(null)
+    const [toast, setToast] = useState(false)
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -38,6 +41,10 @@ export default function AdminProducts() {
         }
         document.addEventListener('mousedown', handleClickOutside)
         return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    useEffect(() => {
+        getCategories().then(({ data }) => setCategories(data)).catch(() => {})
     }, [])
 
     const activeFiltersCount = [
@@ -89,13 +96,20 @@ export default function AdminProducts() {
         setForm(emptyForm)
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
         if (!form.name || !form.price) return
+
         if (editing) {
             setProducts(prev => prev.map(p => p.id === editing ? { ...p, ...form, price: parseFloat(form.price), stock: parseInt(form.stock) || 0 } : p))
         } else {
-            setProducts(prev => [...prev, { ...form, id: Date.now(), price: parseFloat(form.price), stock: parseInt(form.stock) || 0 }])
+            try{
+                const {data} = await createProduct(form)
+
+                setToast({message: data.message, type: 'success'})
+            }catch(err){
+                setToast({message: err.response?.data?.error, type: 'error'})
+            }
         }
         closeModal()
     }
@@ -287,11 +301,11 @@ export default function AdminProducts() {
                                     placeholder="Nome do produto" />
                             </div>
                             <div className="flex flex-col gap-1">
-                                <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Categoria</label>
-                                <select value={form.category} onChange={e => setForm(prev => ({ ...prev, category: e.target.value }))}
+                                <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Categoria *</label>
+                                <select value={form.categoria_id} onChange={e => setForm(prev => ({ ...prev, categoria_id: e.target.value }))}
                                     className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all">
                                     <option value="">Selecione...</option>
-                                    {categories.map(c => <option key={c}>{c}</option>)}
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
                                 </select>
                             </div>
                             <div className="flex gap-3">
@@ -307,6 +321,12 @@ export default function AdminProducts() {
                                         className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all"
                                         placeholder="0" />
                                 </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Descrição</label>
+                                <textarea value={form.descricao} onChange={e => setForm(prev => ({ ...prev, descricao: e.target.value }))}
+                                    className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all resize-none"
+                                    placeholder="Descrição do produto" rows={3} />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Status</label>
@@ -331,6 +351,8 @@ export default function AdminProducts() {
                     </div>
                 </div>
             )}
+
+            {toast && <Toast message={toast.message} type={toast.type}/>}
         </main>
     )
 }

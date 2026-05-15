@@ -20,34 +20,34 @@ class AdminProductRepository {
 
     public function createProduct(array $product): array {
         try {
+            $status = $product['status'] === 'ativo' ? 1 : 0;
+
             $stmt = $this->db->prepare('
-                INSERT INTO Produtos (categoria_id, nome, slug, preco, estoque, descricao, foto_url, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Produtos (categoria_id, nome, preco, estoque, descricao, foto_url, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ');
 
             $stmt->execute([
                 $product['categoria_id'],
                 $product['nome'],
-                $product['slug'],
                 $product['preco'],
                 $product['estoque'],
                 $product['descricao'],
                 $product['foto_url'],
-                $product['status']
+                $status,
             ]);
 
             $id = (int)$this->db->lastInsertId();
 
             return [
-                'id' => $id,
-                'categoria_id' => $product['categoria_id'],
-                'nome' => $product['nome'],
-                'slug' => $product['slug'],
-                'preco' => $product['preco'],
-                'estoque' => $product['estoque'],
-                'descricao' => $product['descricao'],
-                'foto_url' => $product['foto_url'],
-                'status' => $product['status']
+                'id'          => $id,
+                'categoria_id'=> $product['categoria_id'],
+                'nome'        => $product['nome'],
+                'preco'       => $product['preco'],
+                'estoque'     => $product['estoque'],
+                'descricao'   => $product['descricao'],
+                'foto_url'    => $product['foto_url'],
+                'status'      => $product['status'],
             ];
         } catch(PDOException $e) {
             if(str_contains($e->getMessage(), 'ERRO_INSERT_PRODUCT') || $e->getCode() == 23000) {
