@@ -12,12 +12,14 @@ class AdminProductRepository {
     public function createProduct(array $product): array {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO Produto (nome, preco, estoque, descricao, foto_url, status)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO Produtos (categoria_id, nome, slug, preco, estoque, descricao, foto_url, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ');
 
             $stmt->execute([
+                $product['categoria_id'],
                 $product['nome'],
+                $product['slug'],
                 $product['preco'],
                 $product['estoque'],
                 $product['descricao'],
@@ -29,14 +31,20 @@ class AdminProductRepository {
 
             return [
                 'id' => $id,
+                'categoria_id' => $product['categoria_id'],
                 'nome' => $product['nome'],
+                'slug' => $product['slug'],
                 'preco' => $product['preco'],
                 'estoque' => $product['estoque'],
                 'descricao' => $product['descricao'],
                 'foto_url' => $product['foto_url'],
                 'status' => $product['status']
             ];
-        } catch(Exception $e) {
+        } catch(PDOException $e) {
+            if(str_contains($e->getMessage(), 'ERRO_INSERT_PRODUCT') || $e->getCode() == 23000) {
+                throw new RuntimeException("PRODUTO_JA_EXISTE", 0, $e);
+            }
+
             throw new RuntimeException('ERRO_INSERT_PRODUCT', 0, $e);
         }
 

@@ -47,8 +47,6 @@ class AdminCategoryService {
             return ['error' => 'Erro ao criar categoria'];
         }
         
-
-
         return ['message' => "Categoria '$nome' criada com sucesso"];
     }
 
