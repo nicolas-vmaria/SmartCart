@@ -9,6 +9,15 @@ class AdminProductRepository {
         $this->db = Connection::get();
     }
 
+    public function getAllProducts(): array {
+        try {
+            $stmt = $this->db->query('SELECT * FROM Produtos');
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new RuntimeException('ERRO_BUSCAR_PRODUTOS', 0, $e);
+        }
+    }
+
     public function createProduct(array $product): array {
         try {
             $stmt = $this->db->prepare('

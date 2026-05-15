@@ -10,7 +10,7 @@ class AdminProductService {
     }
 
     public function getAllProducts() {
-        return ['message' => 'Listando todos os produtos (admin)'];
+        return $this->repository->getAllProducts();
     }
 
     public function createProduct(array $body): array {
@@ -21,25 +21,20 @@ class AdminProductService {
         $estoque      = $body['estoque'] ?? null;
         $descricao    = trim((string)($body['descricao'] ?? ''));
         $foto_url     = trim((string)($body['foto_url'] ?? ''));
-        $status       = $body['status'] ?? 1;
+        $statusRaw    = $body['status'] ?? null;
+        $status       = ($statusRaw === true || $statusRaw === 'true' || $statusRaw === 1 || $statusRaw === '1') ? 1 : 0;
 
-        if (!$nome || !$categoria_id || !$preco || !$estoque || !$descricao || !$foto_url || !$status) {
-            throw new InvalidArgumentException("Todos os campos são obrigatórios: nome, categoria_id, preco, estoque, descricao, foto_url, status");
+        if (!$nome || !$categoria_id || $preco === null || $estoque === null || !$descricao || !$foto_url) {
+            throw new InvalidArgumentException("Todos os campos são obrigatórios.");
         }
 
         if (!is_numeric($preco) || $preco < 0) {
             throw new InvalidArgumentException("O campo preco deve ser um número positivo");
         }
 
-        if(!is_numeric($estoque) || $estoque < 0) {
+        if (!is_numeric($estoque) || $estoque < 0) {
             throw new InvalidArgumentException("O campo estoque deve ser um número positivo");
         }
-
-        if($nome === '') {
-            throw new InvalidArgumentException("O campo nome não pode ser vazio");
-        }
-
-
 
         $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $nome));
 
@@ -62,9 +57,10 @@ class AdminProductService {
             'message' => "Produto '$nome' criado com sucesso",
             'product' => $product
         ];
-        }
-
-        catch (RuntimeException $e) {
+        } catch(InvalidArgumentException $e) {
+            http_response_code(400);
+            return ['error' => $e->getMessage()];
+        } catch (RuntimeException $e) {
         if ($e->getMessage() === 'PRODUTO_JA_EXISTE') {
         http_response_code(409); 
         return ['error' => "Já existe um produto com o nome '{$product['nome']}'"];
