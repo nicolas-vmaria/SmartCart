@@ -12,13 +12,13 @@ class AdminCategoryRepository {
     public function insertCategory(array $category): array {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO Categoria (nome, slug, descricao)
+                INSERT INTO Categorias (nome, slug, descricao)
                 VALUES (?, ?, ?)
             ');
 
             $stmt->execute([
                 $category['nome'],
-                $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $category['nome'])),
+                $category['slug'],
                 $category['descricao']
             ]);
 
@@ -30,6 +30,11 @@ class AdminCategoryRepository {
                 'descricao' => $category['descricao']
             ];
         } catch(Exception $e) {
+            $msg = $e->getMessage();
+
+            if ($e->getCode() === '23000') {
+                throw new RuntimeException('CATEGORIA_JA_EXISTE', 0, $e);
+            }
             throw new RuntimeException('ERRO_INSERT_CATEGORY', 0, $e);
         }
 

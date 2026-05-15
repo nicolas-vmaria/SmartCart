@@ -29,16 +29,24 @@ class AdminCategoryService {
             }
 
         try {
+            $nome = isset($body['nome']) ? ucwords(trim(strtolower((string)$body['nome']))) : '';
+            $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $nome));
 
             $this->repository->insertCategory([
                 'nome' => $nome,
+                'slug' => $slug,
                 'descricao' => $descricao
             ]);
 
         } catch (Exception $e) {
-            http_response_code(500);
-            return ['error' => 'Erro ao criar categoria: ' . $e->getMessage()];
+            if ($e->getMessage() === 'CATEGORIA_JA_EXISTE') {
+            http_response_code(409);
+            return ['error' => "A categoria '$nome' já existe"];
         }
+            http_response_code(500);
+            return ['error' => 'Erro ao criar categoria'];
+        }
+        
 
 
         return ['message' => "Categoria '$nome' criada com sucesso"];

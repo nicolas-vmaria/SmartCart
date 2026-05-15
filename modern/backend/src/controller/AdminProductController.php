@@ -16,7 +16,18 @@ class AdminProductController {
     }
 
     public function store() {
-        echo json_encode($this->service->createProduct());
+        $raw = file_get_contents('php://input');
+        $body = json_decode($raw, true);
+        if (!is_array($body)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+        $result = $this->service->createProduct($body);
+        if (is_array($result) && isset($result['message']) && !isset($result['error'])) {
+            http_response_code(201);
+        }
+        echo json_encode($result);
     }
 
     public function update(string $id) {
