@@ -31,7 +31,7 @@ CREATE TABLE Usuario (
 CREATE TABLE Categorias (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pai_id INT NULL,
-    nome VARCHAR(100) NOT NULL,
+    nome VARCHAR(100) UNIQUE NOT NULL,
     slug VARCHAR(100) UNIQUE NOT NULL,
     descricao TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -167,4 +167,4 @@ INSERT INTO Papeis (nome_papel) VALUES ('cliente'), ('admin');
 INSERT INTO Usuario (nome, email, senha, papel_id) VALUES
     ('Administrador', 'admin@smartcart.com', '$2y$12$WvfF5Xlh0Z3lx5H59oLFQucIp3kbiVKO8410b.xXjigcxp3XJMJOK', 2);
 
-select * from Usuario
+select * from Categorias
