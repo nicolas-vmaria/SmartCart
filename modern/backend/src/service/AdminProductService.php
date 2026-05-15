@@ -24,14 +24,15 @@ class AdminProductService {
         $statusRaw    = $body['status'] ?? null;
         $status       = ($statusRaw === true || $statusRaw === 'true' || $statusRaw === 1 || $statusRaw === '1') ? 1 : 0;
 
-<<<<<<< HEAD
-        if (!$nome || !$categoria_id || $preco === null || $estoque === null || !$descricao || !$foto_url) {
-            throw new InvalidArgumentException("Todos os campos são obrigatórios.");
-=======
-        if (!$nome || !$categoria_id || !$preco || $estoque === null || $estoque === '' || !$status) {
-            throw new InvalidArgumentException("Campos obrigatórios ausentes: nome, categoria_id, preco, estoque, status");
->>>>>>> d484cfefb55bc3308c0c27170c6a31cfc5804fd8
-        }
+
+        if (
+                $nome === null || $nome === '' || 
+                $categoria_id === null || $categoria_id === '' || 
+                $preco === null || $preco === '' || 
+                $estoque === null || $estoque === ''
+            ) {
+                throw new InvalidArgumentException("Campos obrigatórios ausentes: nome, categoria_id, preco, estoque");
+            }
 
         if (!is_numeric($preco) || $preco < 0) {
             throw new InvalidArgumentException("O campo preco deve ser um número positivo");
@@ -41,19 +42,13 @@ class AdminProductService {
             throw new InvalidArgumentException("O campo estoque deve ser um número positivo");
         }
 
-<<<<<<< HEAD
+
         $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $nome));
-=======
-        if($nome === '') {
-            throw new InvalidArgumentException("O campo nome não pode ser vazio");
-        }
-
-
->>>>>>> d484cfefb55bc3308c0c27170c6a31cfc5804fd8
 
         $product = [
             "categoria_id" => $categoria_id,
             "nome"    => $nome,
+            'slug' => $slug,
             'preco'   => $preco,
             'estoque'   => $estoque,
             'descricao' => $descricao,
@@ -69,19 +64,19 @@ class AdminProductService {
             'message' => "Produto '$nome' criado com sucesso",
             'product' => $product
         ];
-        } catch(InvalidArgumentException $e) {
+        } catch(InvalidArgumentException $e){
             http_response_code(400);
             return ['error' => $e->getMessage()];
-        } catch (RuntimeException $e) {
-        if ($e->getMessage() === 'PRODUTO_JA_EXISTE') {
-        http_response_code(409); 
-        return ['error' => "Já existe um produto com o nome '{$product['nome']}'"];
-    }
+        }
+        catch (RuntimeException $e) {
+            if ($e->getMessage() === 'PRODUTO_JA_EXISTE') {
+                http_response_code(409); 
+                return ['error' => "Já existe um produto com o nome ou slug de '$nome'"];
+            }
 
-        http_response_code(500);
-        return ['error' => 'Erro interno ao criar produto: ' . $e->getMessage()];
-    }
-    
+            http_response_code(500);
+            return ['error' => 'Erro interno ao criar produto: ' . $e->getMessage()];
+        }
     }
 
     public function updateProduct($id) {

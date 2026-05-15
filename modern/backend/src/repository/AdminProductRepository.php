@@ -20,16 +20,17 @@ class AdminProductRepository {
 
     public function createProduct(array $product): array {
         try {
-            $status = $product['status'] === 'ativo' ? 1 : 0;
+            $status = (int)$product['status'];
 
             $stmt = $this->db->prepare('
-                INSERT INTO Produtos (categoria_id, nome, preco, estoque, descricao, foto_url, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Produtos (categoria_id, nome, slug, preco, estoque, descricao, foto_url, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ');
 
             $stmt->execute([
                 $product['categoria_id'],
                 $product['nome'],
+                $product['slug'],
                 $product['preco'],
                 $product['estoque'],
                 $product['descricao'],
@@ -50,12 +51,19 @@ class AdminProductRepository {
                 'status'      => $product['status'],
             ];
         } catch(PDOException $e) {
-            if(str_contains($e->getMessage(), 'ERRO_INSERT_PRODUCT') || $e->getCode() == 23000) {
+
+            if ($e->getCode() == 23000 && (str_contains($e->getMessage(), 'a foreign key constraint fails'))) {
+                throw new InvalidArgumentException("A categoria_id informada nao existe.");
+            }
+            
+            if ($e->getCode() == 23000 && (str_contains($e->getMessage(), 'Duplicate') || str_contains($e->getMessage(), 'key'))) {
                 throw new RuntimeException("PRODUTO_JA_EXISTE", 0, $e);
             }
+    
 
-            throw new RuntimeException('ERRO_INSERT_PRODUCT', 0, $e);
+            throw new RuntimeException('ERRO_INSERT_PRODUCT: ' . $e->getMessage(), 0, $e);
         }
-
     }
+
 }
+
