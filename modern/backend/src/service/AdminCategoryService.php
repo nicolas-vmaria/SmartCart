@@ -10,8 +10,16 @@ class AdminCategoryService {
         $this->repository = new AdminCategoryRepository();
     }
 
-    public function getAllCategories() {
-        return ['message' => 'Listando todas as categorias (admin)'];
+    public function getAllCategories(): array{
+        try{
+
+        $categories = $this->repository->getAllCategories();
+        return $categories;
+        } catch (Exception $e){
+            http_response_code(500);
+            return ['error' => 'Erro ao buscar categorias'];
+        }
+        
     }
 
     public function createCategory(array $body): array {

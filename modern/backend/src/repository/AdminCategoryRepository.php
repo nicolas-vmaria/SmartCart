@@ -9,6 +9,19 @@ class AdminCategoryRepository {
         $this->db = Connection::get();
     }
 
+    public function getAllCategories(): array{
+        try{
+            $stmt = $this->db->prepare('
+                select * from Categorias order by nome asc
+            ');
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(Exception $e){
+            throw new RuntimeException('ERRO_GET_CATEGORIES', 0, $e);
+        }
+    }
+
     public function insertCategory(array $category): array {
         try {
             $stmt = $this->db->prepare('
