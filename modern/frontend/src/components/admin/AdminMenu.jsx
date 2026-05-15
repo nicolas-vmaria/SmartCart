@@ -1,5 +1,8 @@
 import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2 } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import ConfirmDialog from '../../components/ConfirmDialog'
+
 
 const linkClass = "cursor-pointer flex gap-2 items-center h-10 px-2 rounded-md transition-all hover:bg-gray-100 dark:text-(--admin-text) dark:hover:bg-(--admin-hover) outline-none"
 
@@ -17,6 +20,13 @@ function Badge({ count }) {
 }
 
 export default function AdminMenu() {
+    const navigate = useNavigate()
+    const [confirm, setConfirm] = useState(false)
+
+    function closeAdmin() {
+        setConfirm(true)
+    }
+
     return (
         <aside className="w-80 h-screen bg-white dark:bg-(--admin-sidebar) fixed flex flex-col justify-between p-5 text-verde-escuro shadow-2xl dark:shadow-black/60 rounded-tr-2xl rounded-br-2xl z-10">
             <div>
@@ -58,13 +68,14 @@ export default function AdminMenu() {
             </div>
 
             
-                <Link to="/" onClick={() => {localStorage.clear()}} className={linkClass}>
+                <button onClick={closeAdmin} className={linkClass}>
 
                     <LogOut size={18} />
                     <p>Sair</p>
 
-                </Link>
+                </button>
         
+        {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/') }}/>}
         </aside>
     )
 }
