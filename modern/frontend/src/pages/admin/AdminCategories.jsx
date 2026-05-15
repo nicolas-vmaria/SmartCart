@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Plus, Pencil, Trash2, X, Check, Tag } from 'lucide-react'
+import { createCategory } from '../../lib/api/category'
+import Toast from '../../components/Toast'
 
 const initialCategories = [
     { id: 1, name: 'Carrinho', description: 'Carrinhos inteligentes para supermercado', products: 2 },
@@ -8,13 +10,14 @@ const initialCategories = [
     { id: 3, name: 'Acessório', description: 'Acessórios e peças para os produtos', products: 2 },
 ]
 
-const emptyForm = { name: '', description: '' }
+const emptyForm = { nome: '', descricao: '' }
 
 export default function AdminCategories() {
     const [categories, setCategories] = useState(initialCategories)
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editing, setEditing] = useState(null)
+    const [toast, setToast] = useState('')
 
     function openCreate() {
         setEditing(null)
@@ -24,18 +27,24 @@ export default function AdminCategories() {
 
     function openEdit(category) {
         setEditing(category.id)
-        setForm({ name: category.name, description: category.description })
+        setForm({ nome: category.name, descricao: category.description })
         setShowModal(true)
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
-        if (!form.name) return
+        if (!form.nome) return
 
         if (editing) {
             setCategories(prev => prev.map(c => c.id === editing ? { ...c, ...form } : c))
         } else {
-            setCategories(prev => [...prev, { ...form, id: Date.now(), products: 0 }])
+            try{
+                const { data } = await createCategory(form.nome, form.descricao)
+
+                setToast({message: data.message, type: 'success'})
+            } catch(err){
+                setToast({message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
+            }
         }
 
         setForm(emptyForm)
@@ -112,8 +121,8 @@ export default function AdminCategories() {
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Nome *</label>
                                 <input
                                     type="text"
-                                    value={form.name}
-                                    onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
+                                    value={form.nome}
+                                    onChange={e => setForm(prev => ({ ...prev, nome: e.target.value }))}
                                     className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all"
                                     placeholder="Nome da categoria"
                                 />
@@ -121,8 +130,8 @@ export default function AdminCategories() {
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Descrição</label>
                                 <textarea
-                                    value={form.description}
-                                    onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))}
+                                    value={form.descricao}
+                                    onChange={e => setForm(prev => ({ ...prev, descricao: e.target.value }))}
                                     className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all resize-none"
                                     placeholder="Descrição da categoria"
                                     rows={3}
@@ -144,6 +153,8 @@ export default function AdminCategories() {
                     </div>
                 </div>
             )}
+
+            {toast && <Toast message={toast.message} type={toast.type}/>}
         </main>
     )
 }

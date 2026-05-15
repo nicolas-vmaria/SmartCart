@@ -1,5 +1,5 @@
-import api from '../api'
+import { adminApi } from '../api'
 
 export function loginAdmin(email, senha) {
-    return api.post('/admin/auth/login', { email, senha })
+    return adminApi.post('/admin/auth/login', { email, senha })
 }
