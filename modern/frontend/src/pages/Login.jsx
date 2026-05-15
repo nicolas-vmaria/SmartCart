@@ -1,17 +1,30 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 import logo from '../assets/smartcart-logo-transparente-preto.png'
 import Toast from '../components/Toast'
+import { loginUser } from '../lib/api/authUser'
 
 export default function Login() {
     const [toast, setToast] = useState(null)
+    const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
 
-    const handleSubmit = (e) => {
+    const navigate = useNavigate()
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
-
-        // Troque pela lógica real quando tiver backend
-        setToast({ message: 'E-mail ou senha incorretos.', type: 'warning' })
+        
+        try{
+            const { data } = await loginUser(email, senha)
+            localStorage.setItem('user_token', data.token)
+            navigate('/')
+            
+        } catch (err){
+            setToast({ message: err.response?.data?.error || 'Falha ao conectar com servidor', type: 'error' })
+        }
+        
     }
 
     return (
@@ -27,11 +40,11 @@ export default function Login() {
                 <form onSubmit={handleSubmit} className='flex flex-col gap-5 w-full '>
                     <div>
                         <label htmlFor="" className='text-[13pt] font-bold ml-1'>E-mail:</label>
-                        <input type="email" placeholder='Digite seu e-mail' required className='bg-white w-full h-15 p-5 box-border rounded-xl border-1  border-gray-200' />
+                        <input type="email" placeholder='Digite seu e-mail' onChange={(e) => setEmail(e.target.value)} required className='bg-white w-full h-15 p-5 box-border rounded-xl border-1  border-gray-200' />
                     </div>
                     <div>
                         <label htmlFor="" className='text-[13pt] font-bold ml-1 mr-1'>Senha:</label>
-                        <input type="password" placeholder='Digite sua senha' required className='bg-white w-full h-15 p-5 box-border rounded-xl border-1  border-gray-200' />
+                        <input type="password" onChange={(e) => setSenha(e.target.value)} placeholder='Digite sua senha' required className='bg-white w-full h-15 p-5 box-border rounded-xl border-1  border-gray-200' />
                         <Link to={"/forgot-password"} className='text-[13pt] hover:underline'>Esqueceu a senha?</Link>
                     </div>
 

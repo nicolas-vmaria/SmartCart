@@ -167,7 +167,7 @@ class AuthService {
         $senha = isset($body['senha']) ? trim((string)$body['senha']) : '';
 
         try{
-            $registro = $this->forgotPasswordRepository->findToken(['token' => $token]);
+            $registro = $this->forgotPasswordRepository->findToken($token);
 
         }catch(Exception $e){
             return ['error' => 'Erro ao buscar token'];

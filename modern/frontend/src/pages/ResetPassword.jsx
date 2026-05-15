@@ -24,7 +24,7 @@ export default function ResetPassword() {
         }
 
         try{
-            const { data } = await resetPasswordUser(token, senha)
+            const { data } = await resetPasswordUser(senha, token)
             setConcluido(true)
         }catch(err){
             setToast({message: err.response?.data?.error || 'Erro ao conectar com servidor', type: 'error'})

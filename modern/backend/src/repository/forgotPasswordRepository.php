@@ -33,7 +33,7 @@ class forgotPasswordRepository{
                 SELECT * FROM Resetar_Senha WHERE token = ?
             ');
 
-            $stmt->execute($token);
+            $stmt->execute([$token]);
 
             return $stmt->fetch();
         } catch(Exception $e) {
