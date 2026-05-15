@@ -91,6 +91,8 @@ class AuthService {
             throw $e;
         }
 
+        $user = $this->userRepository->findByEmail($email);
+
         $token = Jwt::generate([
             'userId' => $user['id'],
             'email'  => $user['email'],

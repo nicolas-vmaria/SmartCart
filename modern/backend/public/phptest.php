@@ -1,1 +1,0 @@
-﻿<?php echo json_encode(["ini" => php_ini_loaded_file(), "scanned" => php_ini_scanned_files(), "pdo_mysql" => extension_loaded("pdo_mysql"), "ext_dir" => ini_get("extension_dir"), "loaded_ext" => get_loaded_extensions()], JSON_PRETTY_PRINT);
