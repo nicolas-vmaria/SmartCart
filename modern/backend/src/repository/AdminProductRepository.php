@@ -12,8 +12,8 @@ class AdminProductRepository {
     public function createProduct(array $product): array {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO Produto (nome, preco, estoque, descricao, preco, foto_url, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Produto (nome, preco, estoque, descricao, foto_url, status)
+                VALUES (?, ?, ?, ?, ?, ?)
             ');
 
             $stmt->execute([
@@ -21,7 +21,6 @@ class AdminProductRepository {
                 $product['preco'],
                 $product['estoque'],
                 $product['descricao'],
-                $product['preco'],
                 $product['foto_url'],
                 $product['status']
             ]);

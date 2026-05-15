@@ -24,7 +24,7 @@ class AdminCategoryController {
             return;
         }
         $result = $this->service->createCategory($body);
-        if (is_array($result) && isset($result['']) && !isset($result['error'])) {
+        if (is_array($result) && isset($result['message']) && !isset($result['error'])) {
             http_response_code(201);
         }
         echo json_encode($result);
