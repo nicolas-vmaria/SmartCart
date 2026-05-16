@@ -1,19 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Plus, Pencil, Trash2, X, Check, Tag } from 'lucide-react'
-import { createCategory } from '../../lib/api/category'
+import { createCategory, getCategories } from '../../lib/api/category'
 import Toast from '../../components/Toast'
 
-const initialCategories = [
-    { id: 1, name: 'Carrinho', description: 'Carrinhos inteligentes para supermercado', products: 2 },
-    { id: 2, name: 'Cesta', description: 'Cestas inteligentes para compras rápidas', products: 1 },
-    { id: 3, name: 'Acessório', description: 'Acessórios e peças para os produtos', products: 2 },
-]
+
 
 const emptyForm = { nome: '', descricao: '' }
 
 export default function AdminCategories() {
-    const [categories, setCategories] = useState(initialCategories)
+    const [categories, setCategories] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editing, setEditing] = useState(null)
@@ -31,6 +27,20 @@ export default function AdminCategories() {
         setShowModal(true)
     }
 
+    async function fetchCategories() {
+        try {
+            const { data } = await getCategories()
+            setCategories(data)
+            console.log(categories)
+        } catch(err) {
+            setToast({ message: 'Erro ao carregar categorias', type: 'error' })
+        }
+    }
+
+    useEffect(() => {
+        fetchCategories()
+    }, [])
+
     async function handleSubmit(e) {
         e.preventDefault()
         if (!form.nome) return
@@ -42,6 +52,7 @@ export default function AdminCategories() {
                 const { data } = await createCategory(form.nome, form.descricao)
 
                 setToast({message: data.message, type: 'success'})
+                await fetchCategories()
             } catch(err){
                 setToast({message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
             }
@@ -77,7 +88,7 @@ export default function AdminCategories() {
                                 <div className="w-9 h-9 rounded-lg bg-green-50 dark:bg-(--admin-hover) flex items-center justify-center text-verde-escuro dark:text-(--admin-accent)">
                                     <Tag size={16} />
                                 </div>
-                                <h3 className="font-bold text-verde-escuro dark:text-(--admin-accent) text-lg">{category.name}</h3>
+                                <h3 className="font-bold text-verde-escuro dark:text-(--admin-accent) text-lg">{category.nome}</h3>
                             </div>
                             <div className="flex gap-1">
                                 <button onClick={() => openEdit(category)}
@@ -91,7 +102,7 @@ export default function AdminCategories() {
                             </div>
                         </div>
 
-                        <p className="text-sm text-gray-500 dark:text-(--admin-text-muted) leading-relaxed">{category.description || 'Sem descrição.'}</p>
+                        <p className="text-sm text-gray-500 dark:text-(--admin-text-muted) leading-relaxed">{category.descricao || 'Sem descrição.'}</p>
 
                         <span className="text-xs text-gray-400 dark:text-(--admin-text-muted)">{category.products} produto(s)</span>
                     </div>

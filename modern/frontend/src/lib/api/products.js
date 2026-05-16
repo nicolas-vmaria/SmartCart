@@ -8,6 +8,10 @@ export function createProduct(form) {
         estoque:      form.stock,
         descricao:    form.descricao || null,
         foto_url:     form.image || null,
-        status:       form.status.toLowerCase(),
+        status:       form.status === 'Ativo' ? 1 : 0,
     })
+}
+
+export function getProduct(){
+    return adminApi.get('/admin/product')
 }

@@ -24,13 +24,18 @@ class AdminProductService {
         $statusRaw    = $body['status'] ?? null;
         $status       = ($statusRaw === true || $statusRaw === 'true' || $statusRaw === 1 || $statusRaw === '1') ? 1 : 0;
 
-<<<<<<< HEAD
-        if (!$nome || !$categoria_id || $preco === null || $estoque === null || !$descricao || !$foto_url) {
-            throw new InvalidArgumentException("Todos os campos são obrigatórios.");
-=======
-        if (!$nome || !$categoria_id || !$preco || $estoque === null || $estoque === '' || !$status) {
+        $slugBase = strtr(strtolower($nome), [
+            'á'=>'a','à'=>'a','ã'=>'a','â'=>'a','ä'=>'a',
+            'é'=>'e','è'=>'e','ê'=>'e','ë'=>'e',
+            'í'=>'i','ì'=>'i','î'=>'i','ï'=>'i',
+            'ó'=>'o','ò'=>'o','õ'=>'o','ô'=>'o','ö'=>'o',
+            'ú'=>'u','ù'=>'u','û'=>'u','ü'=>'u',
+            'ç'=>'c','ñ'=>'n',
+        ]);
+        $slug = trim(preg_replace('/[^a-z0-9]+/', '-', $slugBase), '-');
+
+        if (!$nome || !$categoria_id || !$preco || $estoque === null || $estoque === '' || $statusRaw === null) {
             throw new InvalidArgumentException("Campos obrigatórios ausentes: nome, categoria_id, preco, estoque, status");
->>>>>>> d484cfefb55bc3308c0c27170c6a31cfc5804fd8
         }
 
         if (!is_numeric($preco) || $preco < 0) {
@@ -41,19 +46,10 @@ class AdminProductService {
             throw new InvalidArgumentException("O campo estoque deve ser um número positivo");
         }
 
-<<<<<<< HEAD
-        $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $nome));
-=======
-        if($nome === '') {
-            throw new InvalidArgumentException("O campo nome não pode ser vazio");
-        }
-
-
->>>>>>> d484cfefb55bc3308c0c27170c6a31cfc5804fd8
-
         $product = [
             "categoria_id" => $categoria_id,
             "nome"    => $nome,
+            "slug"    => $slug,
             'preco'   => $preco,
             'estoque'   => $estoque,
             'descricao' => $descricao,
@@ -75,7 +71,7 @@ class AdminProductService {
         } catch (RuntimeException $e) {
         if ($e->getMessage() === 'PRODUTO_JA_EXISTE') {
         http_response_code(409); 
-        return ['error' => "Já existe um produto com o nome '{$product['nome']}'"];
+        return ['error' => "Já existe um produto com o nome '{$nome}'"];
     }
 
         http_response_code(500);

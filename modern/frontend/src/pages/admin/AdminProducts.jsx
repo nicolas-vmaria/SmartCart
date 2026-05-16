@@ -1,17 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink } from 'lucide-react'
-import { createProduct } from '../../lib/api/products'
+import { createProduct, getProduct } from '../../lib/api/products'
 import { getCategories } from '../../lib/api/category'
 import Toast from '../../components/Toast'
 
-const initialProducts = [
-    { id: 1, name: 'Smart Cart Pro', category: 'Carrinho', price: 1299.00, stock: 45, status: 'Ativo' },
-    { id: 2, name: 'Smart Cart Air', category: 'Carrinho', price: 899.00, stock: 30, status: 'Ativo' },
-    { id: 3, name: 'Smart Basket Pro', category: 'Cesta', price: 2199.00, stock: 12, status: 'Ativo' },
-    { id: 4, name: 'Suporte de Bateria', category: 'Acessório', price: 149.00, stock: 0, status: 'Inativo' },
-    { id: 5, name: 'Cabo de Recarga', category: 'Acessório', price: 89.00, stock: 80, status: 'Ativo' },
-]
+
 
 const statusStyle = {
     'Ativo':   'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300',
@@ -21,7 +15,7 @@ const statusStyle = {
 const emptyForm = { name: '', categoria_id: '', descricao: '', price: '', stock: '', status: 'Ativo', image: null }
 
 export default function AdminProducts() {
-    const [products, setProducts] = useState(initialProducts)
+    const [products, setProducts] = useState([])
     const [categories, setCategories] = useState([])
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState([])
@@ -29,7 +23,7 @@ export default function AdminProducts() {
     const [showFilters, setShowFilters] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editing, setEditing] = useState(null)
-    const [filters, setFilters] = useState({ status: 'Todos', category: 'Todas', stock: 'Todos' })
+    const [filters, setFilters] = useState({ status: 'Todos', categoria: 'Todas', stock: 'Todos' })
     const filterRef = useRef(null)
     const [toast, setToast] = useState(false)
 
@@ -43,26 +37,39 @@ export default function AdminProducts() {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
+    async function getProducts() {
+        try {
+            const { data } = await getProduct()
+            setProducts(data)
+        } catch(err) {
+            setToast({ message: err.response?.data?.error || 'Erro ao conectar com o servidor' })
+        }
+    }
+
+    useEffect(() => {
+        getProducts()
+    }, [])
+
     useEffect(() => {
         getCategories().then(({ data }) => setCategories(data)).catch(() => {})
     }, [])
 
     const activeFiltersCount = [
         filters.status !== 'Todos',
-        filters.category !== 'Todas',
+        filters.categoria !== 'Todas',
         filters.stock !== 'Todos',
     ].filter(Boolean).length
 
     const filtered = products.filter(p => {
-        const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())
-        const matchStatus = filters.status === 'Todos' || p.status === filters.status
-        const matchCategory = filters.category === 'Todas' || p.category === filters.category
+        const matchSearch = p.nome.toLowerCase().includes(search.toLowerCase()) || p.categoria.toLowerCase().includes(search.toLowerCase())
+        const matchStatus = filters.status === 'Todos' || (filters.status === 'Ativo' ? p.status == 1 : p.status == 0)
+        const matchcategoria = filters.categoria === 'Todas' || p.categoria === filters.categoria
         const matchStock =
             filters.stock === 'Todos' ? true :
             filters.stock === 'Sem estoque' ? p.stock === 0 :
             filters.stock === 'Baixo (1-10)' ? p.stock >= 1 && p.stock <= 10 :
             p.stock > 10
-        return matchSearch && matchStatus && matchCategory && matchStock
+        return matchSearch && matchStatus && matchcategoria && matchStock
     })
 
     const allSelected = filtered.length > 0 && filtered.every(p => selected.includes(p.id))
@@ -86,7 +93,7 @@ export default function AdminProducts() {
 
     function openEdit(product) {
         setEditing(product.id)
-        setForm({ name: product.name, category: product.category, price: product.price, stock: product.stock, status: product.status, image: product.image || null })
+        setForm({ name: product.name, categoria: product.categoria, price: product.price, stock: product.stock, status: product.status, image: product.image || null })
         setShowModal(true)
     }
 
@@ -105,17 +112,18 @@ export default function AdminProducts() {
         } else {
             try{
                 const {data} = await createProduct(form)
-
                 setToast({message: data.message, type: 'success'})
+                await getProducts()
             }catch(err){
                 setToast({message: err.response?.data?.error, type: 'error'})
             }
         }
+        
         closeModal()
     }
 
     function clearFilters() {
-        setFilters({ status: 'Todos', category: 'Todas', stock: 'Todos' })
+        setFilters({ status: 'Todos', categoria: 'Todas', stock: 'Todos' })
     }
 
     return (
@@ -160,10 +168,10 @@ export default function AdminProducts() {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label className="text-xs text-gray-400 dark:text-(--admin-text-muted) font-medium">Categoria</label>
-                                    {['Todas', ...categories].map(opt => (
-                                        <button key={opt} onClick={() => setFilters(prev => ({ ...prev, category: opt }))}
-                                            className={`text-left text-sm px-2 py-1 rounded-md transition-all ${filters.category === opt ? 'bg-green-50 text-verde-escuro font-medium' : 'text-gray-600 dark:text-(--admin-text) hover:bg-gray-50 dark:hover:bg-(--admin-hover)'}`}>
-                                            {opt}
+                                    {[{ id: 'todas', nome: 'Todas' }, ...categories].map(c => (
+                                        <button key={c.id} onClick={() => setFilters(prev => ({ ...prev, categoria: c.nome }))}
+                                            className={`text-left text-sm px-2 py-1 rounded-md transition-all ${filters.categoria === c.nome ? 'bg-green-50 text-verde-escuro font-medium' : 'text-gray-600 dark:text-(--admin-text) hover:bg-gray-50 dark:hover:bg-(--admin-hover)'}`}>
+                                            {c.nome}
                                         </button>
                                     ))}
                                 </div>
@@ -224,29 +232,29 @@ export default function AdminProducts() {
                                     <input type="checkbox" checked={selected.includes(product.id)} onChange={() => toggleOne(product.id)} className="cursor-pointer" />
                                 </td>
                                 <td className="py-3">
-                                    {product.image
-                                        ? <img src={product.image} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
+                                    {product.foto_url
+                                        ? <img src={product.foto_url} alt={product.nome} className="w-10 h-10 rounded-lg object-cover" />
                                         : <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-(--admin-hover) flex items-center justify-center text-gray-300 dark:text-(--admin-text-muted)"><ImagePlus size={16} /></div>
                                     }
                                 </td>
-                                <td className="py-3 font-medium text-verde-escuro dark:text-(--admin-accent)">{product.name}</td>
-                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">{product.category}</td>
-                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">R${product.price.toFixed(2).replace('.', ',')}</td>
+                                <td className="py-3 font-medium text-verde-escuro dark:text-(--admin-accent)">{product.nome}</td>
+                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">{product.categoria}</td>
+                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">R${parseFloat(product.preco).toFixed(2).replace('.', ',')}</td>
                                 <td className="py-3">
-                                    <span className={`font-medium ${product.stock === 0 ? 'text-red-500' : product.stock <= 10 ? 'text-yellow-500' : 'text-gray-600 dark:text-(--admin-text)'}`}>
-                                        {product.stock}
+                                    <span className={`font-medium ${product.estoque === 0 ? 'text-red-500' : product.estoque <= 10 ? 'text-yellow-500' : 'text-gray-600 dark:text-(--admin-text)'}`}>
+                                        {product.estoque}
                                     </span>
                                 </td>
                                 <td className="py-3">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyle[product.status]}`}>
-                                        {product.status}
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyle[product.status == 1 ? 'Ativo' : 'Inativo']}`}>
+                                        {product.status == 1 ? 'Ativo' : 'Inativo'}
                                     </span>
                                 </td>
                                 <td className="py-3 flex items-center gap-1">
                                     <button onClick={() => openEdit(product)} title="Editar produto" className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                         <Pencil size={15} />
                                     </button>
-                                    <a href={`/produto/${product.id}`} target="_blank" rel="noreferrer" title="Ver no site"
+                                    <a href={`/produto/${product.slug}`} target="_blank" rel="noreferrer" title="Ver no site"
                                         className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                         <ExternalLink size={15} />
                                     </a>
@@ -352,7 +360,7 @@ export default function AdminProducts() {
                 </div>
             )}
 
-            {toast && <Toast message={toast.message} type={toast.type}/>}
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(false)}/>}
         </main>
     )
 }

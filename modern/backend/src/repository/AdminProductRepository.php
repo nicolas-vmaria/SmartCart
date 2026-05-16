@@ -11,7 +11,11 @@ class AdminProductRepository {
 
     public function getAllProducts(): array {
         try {
-            $stmt = $this->db->query('SELECT * FROM Produtos');
+            $stmt = $this->db->query('
+                SELECT p.*, c.nome AS categoria, c.slug AS categoria_slug
+                FROM Produtos p
+                LEFT JOIN Categorias c ON p.categoria_id = c.id
+            ');
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             throw new RuntimeException('ERRO_BUSCAR_PRODUTOS', 0, $e);
@@ -20,16 +24,17 @@ class AdminProductRepository {
 
     public function createProduct(array $product): array {
         try {
-            $status = $product['status'] === 'ativo' ? 1 : 0;
+            $status = (int)$product['status'];
 
             $stmt = $this->db->prepare('
-                INSERT INTO Produtos (categoria_id, nome, preco, estoque, descricao, foto_url, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Produtos (categoria_id, nome, slug, preco, estoque, descricao, foto_url, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ');
 
             $stmt->execute([
                 $product['categoria_id'],
                 $product['nome'],
+                $product['slug'],
                 $product['preco'],
                 $product['estoque'],
                 $product['descricao'],

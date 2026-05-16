@@ -42,6 +42,7 @@ CREATE TABLE Produtos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     categoria_id INT NOT NULL,
     nome VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
     preco DECIMAL(10,2) NOT NULL,
     estoque INT DEFAULT 0,
     descricao TEXT,
