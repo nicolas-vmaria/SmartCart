@@ -58,11 +58,71 @@ class AdminCategoryService {
         return ['message' => "Categoria '$nome' criada com sucesso"];
     }
 
-    public function updateCategory($id) {
-        return ['message' => "Categoria $id atualizada"];
+    public function updateCategory(string $id, array $body): array {
+    $id = (int) $id;
+
+    if ($id <= 0) {
+        http_response_code(400);
+        return ['error' => 'ID inválido'];
     }
 
-    public function deleteCategory($id) {
-        return ['message' => "Categoria $id removida"];
+    $nome     = isset($body['nome'])     ? trim((string) $body['nome'])     : '';
+    $descricao = isset($body['descricao']) ? trim((string) $body['descricao']) : '';
+
+    if ($nome === '') {
+        http_response_code(400);
+        return ['error' => 'O campo nome é obrigatório'];
+    }
+
+    if ($descricao === '') {
+        http_response_code(400);
+        return ['error' => 'O campo descrição é obrigatório'];
+    }
+
+    try {
+        $nome  = ucwords(strtolower($nome));
+        $slug  = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $nome));
+
+        $updated = $this->repository->updateCategory($id, [
+            'nome'     => $nome,
+            'slug'     => $slug,
+            'descricao' => $descricao
+        ]);
+
+        if (!$updated) {
+            http_response_code(404);
+            return ['error' => 'Categoria não encontrada'];
+        }
+
+        return ['message' => "Categoria '$nome' atualizada com sucesso"];
+    } catch (Exception $e) {
+        if ($e->getMessage() === 'CATEGORIA_JA_EXISTE') {
+            http_response_code(409);
+            return ['error' => "Já existe uma categoria com o nome '$nome'"];
+        }
+        http_response_code(500);
+        return ['error' => 'Erro ao atualizar categoria'];
+    }
+}
+
+    public function deleteCategory(string $id): array {
+        $id = (int) $id;
+
+        if($id <= 0 ){
+            http_response_code(400);
+            return ['error' => 'ID inválido'];
+        }
+        try{
+            $deleted = $this->repository->deleteCategory($id);
+
+            if(!$deleted){
+                http_response_code(404);
+                return ['error' => 'Categoria não encontrada'];
+            }
+            return ['message' => 'Categoria removida com sucesso'];
+        }catch(Exception $e){
+            http_response_code(500);
+            return ['error' => 'Erro ao remover categoria'];
+        }
     }
 }

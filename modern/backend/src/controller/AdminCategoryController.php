@@ -31,10 +31,25 @@ class AdminCategoryController {
     }
 
     public function update(string $id) {
-        echo json_encode($this->service->updateCategory($id));
+    $raw  = file_get_contents('php://input');
+    $body = json_decode($raw, true);
+
+    if (!is_array($body)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+        return;
     }
 
+    echo json_encode($this->service->updateCategory($id, $body));
+}
+
     public function destroy(string $id) {
-        echo json_encode($this->service->deleteCategory($id));
+        $result = $this->service->deleteCategory($id);
+
+        if(!isset($result['error'])){
+            http_response_code(200);
+        }
+
+        echo json_encode($result);
     }
 }

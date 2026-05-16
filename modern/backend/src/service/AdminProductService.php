@@ -65,19 +65,18 @@ class AdminProductService {
             'message' => "Produto '$nome' criado com sucesso",
             'product' => $product
         ];
-        } catch(InvalidArgumentException $e) {
+        } catch(InvalidArgumentException $e){
             http_response_code(400);
             return ['error' => $e->getMessage()];
         } catch (RuntimeException $e) {
-        if ($e->getMessage() === 'PRODUTO_JA_EXISTE') {
-        http_response_code(409); 
-        return ['error' => "Já existe um produto com o nome '{$nome}'"];
-    }
+            if ($e->getMessage() === 'PRODUTO_JA_EXISTE') {
+                http_response_code(409);
+                return ['error' => "Já existe um produto com o nome ou slug de '$nome'"];
+            }
 
-        http_response_code(500);
-        return ['error' => 'Erro interno ao criar produto: ' . $e->getMessage()];
-    }
-    
+            http_response_code(500);
+            return ['error' => 'Erro interno ao criar produto: ' . $e->getMessage()];
+        }
     }
 
     public function updateProduct($id) {

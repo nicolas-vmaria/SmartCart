@@ -55,12 +55,19 @@ class AdminProductRepository {
                 'status'      => $product['status'],
             ];
         } catch(PDOException $e) {
-            if(str_contains($e->getMessage(), 'ERRO_INSERT_PRODUCT') || $e->getCode() == 23000) {
+
+            if ($e->getCode() == 23000 && (str_contains($e->getMessage(), 'a foreign key constraint fails'))) {
+                throw new InvalidArgumentException("A categoria_id informada nao existe.");
+            }
+            
+            if ($e->getCode() == 23000 && (str_contains($e->getMessage(), 'Duplicate') || str_contains($e->getMessage(), 'key'))) {
                 throw new RuntimeException("PRODUTO_JA_EXISTE", 0, $e);
             }
+    
 
-            throw new RuntimeException('ERRO_INSERT_PRODUCT', 0, $e);
+            throw new RuntimeException('ERRO_INSERT_PRODUCT: ' . $e->getMessage(), 0, $e);
         }
-
     }
+
 }
+
