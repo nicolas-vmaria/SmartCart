@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Plus, Pencil, Trash2, X, Check, Tag } from 'lucide-react'
-import { createCategory, getCategories } from '../../lib/api/category'
+import { createCategory, getCategories, deleteCategory as deleteCategoryApi, editCategory as editCategoryApi } from '../../lib/api/category'
 import Toast from '../../components/Toast'
+import ConfirmDialog from '../../components/ConfirmDialog'
 
 
 
@@ -14,6 +15,7 @@ export default function AdminCategories() {
     const [form, setForm] = useState(emptyForm)
     const [editing, setEditing] = useState(null)
     const [toast, setToast] = useState('')
+    const [confirmId, setConfirmId] = useState(null)
 
     function openCreate() {
         setEditing(null)
@@ -23,7 +25,7 @@ export default function AdminCategories() {
 
     function openEdit(category) {
         setEditing(category.id)
-        setForm({ nome: category.name, descricao: category.description })
+        setForm({ nome: category.nome, descricao: category.descricao })
         setShowModal(true)
     }
 
@@ -46,7 +48,7 @@ export default function AdminCategories() {
         if (!form.nome) return
 
         if (editing) {
-            setCategories(prev => prev.map(c => c.id === editing ? { ...c, ...form } : c))
+            editCategory(form)
         } else {
             try{
                 const { data } = await createCategory(form.nome, form.descricao)
@@ -63,8 +65,26 @@ export default function AdminCategories() {
         setEditing(null)
     }
 
-    function deleteCategory(id) {
-        setCategories(prev => prev.filter(c => c.id !== id))
+    async function deleteCategory(id) {
+        
+        try{
+            await deleteCategoryApi(id)
+            setToast({message: "Categoria removida com sucesso.", type: "success"})
+            await fetchCategories()
+        } catch(err){
+            setToast({message: err.response?.data?.error || "Erro ao conectar ao servidor", type: "error"})
+        }
+    }
+
+    async function editCategory(form) {
+        try{
+            await editCategoryApi(editing ,form)
+            setToast({message: "Categoria editada", type: "success"})
+        }catch(err){
+            setToast({message: err.response?.data?.error, type: "error"})
+        }
+
+        await fetchCategories()
     }
 
     return (
@@ -95,7 +115,7 @@ export default function AdminCategories() {
                                     className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                     <Pencil size={15} />
                                 </button>
-                                <button onClick={() => deleteCategory(category.id)}
+                                <button onClick={() => setConfirmId(category.id)}
                                     className="p-1.5 rounded-md hover:bg-red-950/40 transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-red-500">
                                     <Trash2 size={15} />
                                 </button>
@@ -104,7 +124,7 @@ export default function AdminCategories() {
 
                         <p className="text-sm text-gray-500 dark:text-(--admin-text-muted) leading-relaxed">{category.descricao || 'Sem descrição.'}</p>
 
-                        <span className="text-xs text-gray-400 dark:text-(--admin-text-muted)">{category.products} produto(s)</span>
+                        <span className="text-xs text-gray-400 dark:text-(--admin-text-muted)">{category.total_produtos ?? 0} produto(s)</span>
                     </div>
                 ))}
 
@@ -165,7 +185,17 @@ export default function AdminCategories() {
                 </div>
             )}
 
-            {toast && <Toast message={toast.message} type={toast.type}/>}
+            {confirmId && (
+                <ConfirmDialog
+                    title="Excluir categoria"
+                    message="Todos os produtos desta categoria também serão removidos. Deseja continuar?"
+                    confirmLabel="Excluir"
+                    onConfirm={() => { deleteCategory(confirmId); setConfirmId(null) }}
+                    onCancel={() => setConfirmId(null)}
+                />
+            )}
+
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(false)}/>}
         </main>
     )
 }

@@ -12,7 +12,10 @@ class AdminCategoryRepository {
     public function getAllCategories(): array{
         try{
             $stmt = $this->db->prepare('
-                select * from Categorias order by nome asc
+                SELECT c.*,
+                    (SELECT COUNT(*) FROM Produtos p WHERE p.categoria_id = c.id) AS total_produtos
+                FROM Categorias c
+                ORDER BY c.nome ASC
             ');
             $stmt->execute();
 
@@ -55,13 +58,24 @@ class AdminCategoryRepository {
 
     public function deleteCategory(int $id): bool{
         try{
-            $stmt = $this->db->prepare('
-                delete from Categorias where id = ?
-            ');
+            $this->db->beginTransaction();
+
+            $this->db->prepare('
+                DELETE FROM Itens_Carrinho WHERE produto_id IN (SELECT id FROM Produtos WHERE categoria_id = ?)
+            ')->execute([$id]);
+
+            $this->db->prepare('
+                DELETE FROM Produtos WHERE categoria_id = ?
+            ')->execute([$id]);
+
+            $stmt = $this->db->prepare('DELETE FROM Categorias WHERE id = ?');
             $stmt->execute([$id]);
+
+            $this->db->commit();
 
             return $stmt->rowCount() > 0;
         }catch(Exception $e){
+            $this->db->rollBack();
             throw new RuntimeException('ERRO_DELETE_CATEGORY', 0, $e);
         }
     }

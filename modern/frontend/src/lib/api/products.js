@@ -15,3 +15,7 @@ export function createProduct(form) {
 export function getProduct(){
     return adminApi.get('/admin/product')
 }
+
+export function deleteProduct(id){
+    return adminApi.delete(`/admin/product/${id}`)
+}
