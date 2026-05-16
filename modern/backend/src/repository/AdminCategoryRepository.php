@@ -52,4 +52,39 @@ class AdminCategoryRepository {
         }
 
     }
+
+    public function deleteCategory(int $id): bool{
+        try{
+            $stmt = $this->db->prepare('
+                delete from Categorias where id = ?
+            ');
+            $stmt->execute([$id]);
+
+            return $stmt->rowCount() > 0;
+        }catch(Exception $e){
+            throw new RuntimeException('ERRO_DELETE_CATEGORY', 0, $e);
+        }
+    }
+
+    public function updateCategory(int $id, array $data): bool {
+    try {
+        $stmt = $this->db->prepare('
+            UPDATE Categorias SET nome = ?, slug = ?, descricao = ? WHERE id = ?');
+
+        $stmt->execute([
+            $data['nome'],
+            $data['slug'],
+            $data['descricao'],
+            $id
+        ]);
+
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        if ($e->getCode() === '23000') {
+            throw new RuntimeException('CATEGORIA_JA_EXISTE', 0, $e);
+        }
+        throw new RuntimeException('ERRO_UPDATE_CATEGORY', 0, $e);
+    }
 }
+}
+
