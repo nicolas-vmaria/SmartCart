@@ -16,6 +16,8 @@ export default function AdminCategories() {
     const [editing, setEditing] = useState(null)
     const [toast, setToast] = useState('')
     const [confirmId, setConfirmId] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [submitting, setSubmitting] = useState(false)
 
     function openCreate() {
         setEditing(null)
@@ -33,9 +35,10 @@ export default function AdminCategories() {
         try {
             const { data } = await getCategories()
             setCategories(data)
-            console.log(categories)
         } catch(err) {
             setToast({ message: 'Erro ao carregar categorias', type: 'error' })
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -47,17 +50,19 @@ export default function AdminCategories() {
         e.preventDefault()
         if (!form.nome) return
 
-        if (editing) {
-            editCategory(form)
-        } else {
-            try{
+        setSubmitting(true)
+        try {
+            if (editing) {
+                await editCategory(form)
+            } else {
                 const { data } = await createCategory(form.nome, form.descricao)
-
                 setToast({message: data.message, type: 'success'})
                 await fetchCategories()
-            } catch(err){
-                setToast({message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
             }
+        } catch(err){
+            setToast({message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
+        } finally {
+            setSubmitting(false)
         }
 
         setForm(emptyForm)
@@ -78,13 +83,13 @@ export default function AdminCategories() {
 
     async function editCategory(form) {
         try{
-            await editCategoryApi(editing ,form)
+            await editCategoryApi(editing, form)
             setToast({message: "Categoria editada", type: "success"})
+            await fetchCategories()
         }catch(err){
             setToast({message: err.response?.data?.error, type: "error"})
+            throw err
         }
-
-        await fetchCategories()
     }
 
     return (
@@ -101,7 +106,12 @@ export default function AdminCategories() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {categories.map(category => (
+                {loading && (
+                    <div className="col-span-3 py-16 flex justify-center">
+                        <div className="w-6 h-6 border-2 border-verde-escuro border-t-transparent rounded-full animate-spin" />
+                    </div>
+                )}
+                {!loading && categories.map(category => (
                     <div key={category.id} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5 flex flex-col gap-3">
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-2">
@@ -128,7 +138,7 @@ export default function AdminCategories() {
                     </div>
                 ))}
 
-                {categories.length === 0 && (
+                {!loading && categories.length === 0 && (
                     <div className="col-span-3 py-16 text-center text-gray-400 dark:text-(--admin-text-muted)">
                         Nenhuma categoria cadastrada.
                     </div>
@@ -174,10 +184,13 @@ export default function AdminCategories() {
                                     className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-(--admin-border) text-sm text-gray-500 dark:text-(--admin-text-muted) hover:bg-gray-50 dark:hover:bg-(--admin-hover) transition-all">
                                     Cancelar
                                 </button>
-                                <button type="submit"
-                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all">
-                                    <Check size={15} />
-                                    {editing ? 'Salvar' : 'Criar'}
+                                <button type="submit" disabled={submitting}
+                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                                    {submitting
+                                        ? <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        : <Check size={15} />
+                                    }
+                                    {submitting ? 'Salvando...' : editing ? 'Salvar' : 'Criar'}
                                 </button>
                             </div>
                         </form>

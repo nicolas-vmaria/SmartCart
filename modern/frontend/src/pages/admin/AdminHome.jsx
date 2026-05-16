@@ -11,14 +11,17 @@ export default function AdminHome(){
 
     const [products, setProducts] = useState([])
     const [toast, setToast] = useState()
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         async function fetchProducts() {
             try {
                 const { data } = await getProduct()
-                setProducts(data)
+                setProducts(data.products ?? data)
             } catch(err) {
                 setToast({ message: "Erro ao puxar dados", type: "error" })
+            } finally {
+                setLoading(false)
             }
         }
         fetchProducts()
@@ -32,7 +35,7 @@ export default function AdminHome(){
                 <CardInfo icon={Banknote} title="Faturamento" info="R$153.932,33" />
                 <CardInfo icon={Users} title="Clientes" info="1.265" />
                 <CardInfo icon={ShoppingCart} title="Pedidos Novos" info="16" />
-                <CardInfo icon={Package} title="Produtos" info={products.length} />
+                <CardInfo icon={Package} title="Produtos" info={loading ? '...' : products.length} />
             </section>
 
             <section className="grid grid-cols-1 xl:grid-cols-2 gap-5">

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink } from 'lucide-react'
-import { createProduct, getProduct } from '../../lib/api/products'
+import { createProduct, getProduct, deleteProduct as deleteProductApi, editProduct } from '../../lib/api/products'
 import { getCategories } from '../../lib/api/category'
 import Toast from '../../components/Toast'
+import { uploadImage } from '../../lib/cloudinary'
 
 
 
@@ -26,6 +27,9 @@ export default function AdminProducts() {
     const [filters, setFilters] = useState({ status: 'Todos', categoria: 'Todas', stock: 'Todos' })
     const filterRef = useRef(null)
     const [toast, setToast] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const [submitting, setSubmitting] = useState(false)
+    const [uploadingImage, setUploadingImage] = useState(false)
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -40,9 +44,11 @@ export default function AdminProducts() {
     async function getProducts() {
         try {
             const { data } = await getProduct()
-            setProducts(data)
+            setProducts(data.products ?? data)
         } catch(err) {
             setToast({ message: err.response?.data?.error || 'Erro ao conectar com o servidor' })
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -86,14 +92,16 @@ export default function AdminProducts() {
         }
     }
 
-    function deleteSelected() {
-        setProducts(prev => prev.filter(p => !selected.includes(p.id)))
+    async function deleteSelected() {
+        await Promise.all(selected.map(id => deleteProductApi(id)))
         setSelected([])
+        await getProducts()
     }
 
     function openEdit(product) {
         setEditing(product.id)
-        setForm({ name: product.name, categoria: product.categoria, price: product.price, stock: product.stock, status: product.status, image: product.image || null })
+        setForm({ name: product.nome, categoria_id: product.categoria_id, descricao: product.descricao || '', price: product.preco, stock: product.estoque, status: product.status == 1 ? 'Ativo' : 'Inativo', image: product.foto_url || null })
+        
         setShowModal(true)
     }
 
@@ -107,23 +115,32 @@ export default function AdminProducts() {
         e.preventDefault()
         if (!form.name || !form.price) return
 
-        if (editing) {
-            setProducts(prev => prev.map(p => p.id === editing ? { ...p, ...form, price: parseFloat(form.price), stock: parseInt(form.stock) || 0 } : p))
-        } else {
-            try{
+        setSubmitting(true)
+        try {
+            if (editing) {
+                const {data} = await editProduct(editing, form)
+                setToast({message: data.message, type: "success"})
+                await getProducts()
+            } else {
                 const {data} = await createProduct(form)
                 setToast({message: data.message, type: 'success'})
                 await getProducts()
-            }catch(err){
-                setToast({message: err.response?.data?.error, type: 'error'})
             }
+            closeModal()
+        } catch(err) {
+            setToast({message: err.response?.data?.error, type: 'error'})
+        } finally {
+            setSubmitting(false)
         }
-        
-        closeModal()
     }
 
     function clearFilters() {
         setFilters({ status: 'Todos', categoria: 'Todas', stock: 'Todos' })
+    }
+
+    async function deleteProduct(id){
+        await deleteProductApi(id)
+        await getProducts()
     }
 
     return (
@@ -195,7 +212,7 @@ export default function AdminProducts() {
 
                     {selected.length > 0 && (
                         <button onClick={deleteSelected}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-950/40 text-red-400 text-sm font-medium hover:bg-red-900/50 transition-all">
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-all">
                             <Trash2 size={15} />
                             Excluir {selected.length} selecionado(s)
                         </button>
@@ -226,7 +243,14 @@ export default function AdminProducts() {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.map(product => (
+                        {loading && (
+                            <tr>
+                                <td colSpan={8} className="py-12 text-center">
+                                    <div className="flex justify-center"><div className="w-6 h-6 border-2 border-verde-escuro border-t-transparent rounded-full animate-spin" /></div>
+                                </td>
+                            </tr>
+                        )}
+                        {!loading && filtered.map(product => (
                             <tr key={product.id} className={`border-b border-gray-50 dark:border-(--admin-border) last:border-0 ${selected.includes(product.id) ? 'bg-gray-50 dark:bg-(--admin-hover)' : ''}`}>
                                 <td className="py-3 pr-3">
                                     <input type="checkbox" checked={selected.includes(product.id)} onChange={() => toggleOne(product.id)} className="cursor-pointer" />
@@ -254,6 +278,9 @@ export default function AdminProducts() {
                                     <button onClick={() => openEdit(product)} title="Editar produto" className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                         <Pencil size={15} />
                                     </button>
+                                    <button onClick={() => deleteProduct(product.id)} title="Excluir produto" className="p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20 cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-red-500">
+                                        <Trash2 size={15} />
+                                    </button>
                                     <a href={`/produto/${product.slug}`} target="_blank" rel="noreferrer" title="Ver no site"
                                         className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                         <ExternalLink size={15} />
@@ -261,7 +288,7 @@ export default function AdminProducts() {
                                 </td>
                             </tr>
                         ))}
-                        {filtered.length === 0 && (
+                        {!loading && filtered.length === 0 && (
                             <tr>
                                 <td colSpan={8} className="py-8 text-center text-gray-400 dark:text-(--admin-text-muted)">Nenhum produto encontrado.</td>
                             </tr>
@@ -284,20 +311,31 @@ export default function AdminProducts() {
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Foto do produto</label>
                                 <label className="cursor-pointer border-2 border-dashed border-gray-200 dark:border-(--admin-border) rounded-lg p-4 flex flex-col items-center gap-2 hover:border-verde-escuro transition-all">
-                                    {form.image
-                                        ? <img src={form.image} alt="preview" className="h-28 object-contain rounded-lg" />
-                                        : <>
-                                            <ImagePlus size={28} className="text-gray-300 dark:text-(--admin-text-muted)" />
-                                            <span className="text-sm text-gray-400 dark:text-(--admin-text-muted)">Clique para selecionar uma imagem</span>
+                                    {uploadingImage
+                                        ? <>
+                                            <div className="w-7 h-7 border-2 border-verde-escuro border-t-transparent rounded-full animate-spin" />
+                                            <span className="text-sm text-gray-400 dark:text-(--admin-text-muted)">Enviando imagem...</span>
                                           </>
+                                        : form.image
+                                            ? <img src={form.image} alt="preview" className="h-28 object-contain rounded-lg" />
+                                            : <>
+                                                <ImagePlus size={28} className="text-gray-300 dark:text-(--admin-text-muted)" />
+                                                <span className="text-sm text-gray-400 dark:text-(--admin-text-muted)">Clique para selecionar uma imagem</span>
+                                              </>
                                     }
                                     <input type="file" accept="image/*" className="hidden"
-                                        onChange={e => {
+                                        onChange={async e => {
                                             const file = e.target.files[0]
                                             if (!file) return
-                                            const reader = new FileReader()
-                                            reader.onload = ev => setForm(prev => ({ ...prev, image: ev.target.result }))
-                                            reader.readAsDataURL(file)
+                                            setUploadingImage(true)
+                                            try {
+                                                const url = await uploadImage(file)
+                                                setForm(prev => ({ ...prev, image: url }))
+                                            } catch {
+                                                setToast({ message: 'Erro ao fazer upload da imagem', type: 'error' })
+                                            } finally {
+                                                setUploadingImage(false)
+                                            }
                                         }}
                                     />
                                 </label>
@@ -350,9 +388,10 @@ export default function AdminProducts() {
                                     className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-(--admin-border) text-sm text-gray-500 dark:text-(--admin-text-muted) hover:bg-gray-50 dark:hover:bg-(--admin-hover) transition-all">
                                     Cancelar
                                 </button>
-                                <button type="submit"
-                                    className="flex-1 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all">
-                                    {editing ? 'Salvar' : 'Criar produto'}
+                                <button type="submit" disabled={submitting || uploadingImage}
+                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                                    {submitting && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                                    {submitting ? 'Salvando...' : editing ? 'Salvar' : 'Criar produto'}
                                 </button>
                             </div>
                         </form>

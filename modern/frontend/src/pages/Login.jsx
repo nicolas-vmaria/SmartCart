@@ -9,22 +9,24 @@ export default function Login() {
     const [toast, setToast] = useState(null)
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const navigate = useNavigate()
 
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        
+        setLoading(true)
         try{
             const { data } = await loginUser(email, senha)
             localStorage.setItem('user_token', data.token)
             navigate('/')
-            
+
         } catch (err){
             setToast({ message: err.response?.data?.error || 'Falha ao conectar com servidor', type: 'error' })
+        } finally {
+            setLoading(false)
         }
-        
     }
 
     return (
@@ -48,7 +50,10 @@ export default function Login() {
                         <Link to={"/forgot-password"} className='text-[13pt] hover:underline'>Esqueceu a senha?</Link>
                     </div>
 
-                    <button className='bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro  cursor-pointer'>Login</button>
+                    <button disabled={loading} className='bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2'>
+                        {loading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                        {loading ? 'Entrando...' : 'Login'}
+                    </button>
 
                     <p className='text-[13pt]'>Não tem uma conta? <Link to={'/register'} className='font-bold hover:underline hover:text-red cursor-pointer'>Cadastre-se</Link></p>
                 </form>

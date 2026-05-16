@@ -1,5 +1,20 @@
-CREATE DATABASE IF NOT EXISTS smartcart CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE smartcart;
+SET FOREIGN_KEY_CHECKS=0;
+
+DROP TABLE IF EXISTS Resetar_Senha;
+DROP TABLE IF EXISTS Aplicacao;
+DROP TABLE IF EXISTS Trabalho;
+DROP TABLE IF EXISTS Review;
+DROP TABLE IF EXISTS Itens_Pedido;
+DROP TABLE IF EXISTS Pedidos;
+DROP TABLE IF EXISTS Itens_Carrinho;
+DROP TABLE IF EXISTS Carrinhos;
+DROP TABLE IF EXISTS Cupons;
+DROP TABLE IF EXISTS Produtos;
+DROP TABLE IF EXISTS Categorias;
+DROP TABLE IF EXISTS Usuario;
+DROP TABLE IF EXISTS Papeis;
+
+SET FOREIGN_KEY_CHECKS=1;
 
 CREATE TABLE Papeis (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -155,15 +170,10 @@ CREATE TABLE Aplicacao (
     FOREIGN KEY (trabalho_id) REFERENCES Trabalho(id)
 );
 
-CREATE TABLE Resetar_Senha(
-	id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Resetar_Senha (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
     token VARCHAR(64) NOT NULL,
     create_at DATETIME NOT NULL,
     expire_at DATETIME NOT NULL
 );
-
-INSERT INTO Papeis (nome_papel) VALUES ('cliente'), ('admin');
-
-INSERT INTO Usuario (nome, email, senha, papel_id) VALUES
-    ('Administrador', 'admin@smartcart.com', '$2y$12$WvfF5Xlh0Z3lx5H59oLFQucIp3kbiVKO8410b.xXjigcxp3XJMJOK', 2);

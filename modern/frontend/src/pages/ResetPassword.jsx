@@ -14,6 +14,7 @@ export default function ResetPassword() {
     const [confirmar, setConfirmar] = useState('')
     const [concluido, setConcluido] = useState(false)
     const [toast, setToast] = useState(null)
+    const [loading, setLoading] = useState(false)
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -23,11 +24,14 @@ export default function ResetPassword() {
             return
         }
 
+        setLoading(true)
         try{
             const { data } = await resetPasswordUser(senha, token)
             setConcluido(true)
         }catch(err){
             setToast({message: err.response?.data?.error || 'Erro ao conectar com servidor', type: 'error'})
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -94,9 +98,11 @@ export default function ResetPassword() {
 
                     <button
                         type="submit"
-                        className="bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer font-bold"
+                        disabled={loading}
+                        className="bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer font-bold disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        Redefinir senha
+                        {loading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                        {loading ? 'Redefinindo...' : 'Redefinir senha'}
                     </button>
                 </form>
 

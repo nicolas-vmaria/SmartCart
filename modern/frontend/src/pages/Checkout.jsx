@@ -51,15 +51,20 @@ function Field({ label, children }) {
 const inputCls = "border border-gray-200 rounded-xl p-3 focus:outline-none focus:border-verde-escuro transition-colors"
 
 function DeliveryStep({ data, onChange }) {
+    const [loadingCep, setLoadingCep] = useState(false)
 
     const findCep = async (e) => {
-        const res = await fetch(`https://viacep.com.br/ws/${e}/json/`)
-        const data = await res.json()
-
-        if(!data.erro){
-            onChange('endereco', data.logradouro)
-            onChange('cidade', data.localidade)
-            onChange('estado', data.uf)
+        setLoadingCep(true)
+        try {
+            const res = await fetch(`https://viacep.com.br/ws/${e}/json/`)
+            const json = await res.json()
+            if(!json.erro){
+                onChange('endereco', json.logradouro)
+                onChange('cidade', json.localidade)
+                onChange('estado', json.uf)
+            }
+        } finally {
+            setLoadingCep(false)
         }
     }
 
@@ -81,7 +86,10 @@ function DeliveryStep({ data, onChange }) {
                     <input className={inputCls} placeholder="(11) 99999-9999" value={data.telefone} onChange={e => onChange('telefone', e.target.value)} />
                 </Field>
                 <Field label="CEP">
-                    <input className={inputCls} placeholder="00000-000" maxLength={9} value={data.cep} onChange={e => { onChange('cep', e.target.value); if (e.target.value.replace(/\D/g, '').length === 8) findCep(e.target.value) }} />
+                    <div className="relative">
+                        <input className={inputCls + ' w-full'} placeholder="00000-000" maxLength={9} value={data.cep} onChange={e => { onChange('cep', e.target.value); if (e.target.value.replace(/\D/g, '').length === 8) findCep(e.target.value) }} />
+                        {loadingCep && <div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-verde-escuro border-t-transparent rounded-full animate-spin" />}
+                    </div>
                 </Field>
                 <Field label="Endereço">
                     <input className={`${inputCls} col-span-2`} placeholder="Rua, Avenida..." value={data.endereco} onChange={e => onChange('endereco', e.target.value)} />

@@ -14,24 +14,22 @@ export default function Register() {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [toast, setToast] = useState(null)
+    const [loading, setLoading] = useState(false)
 
     const checkSVG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m4.5 12.75 6 6 9-13.5'/%3E%3C%2Fsvg%3E")`
 
     async function handleSubmit(e) {
         e.preventDefault()
-
+        setLoading(true)
         try {
             const { data } = await registerUser(nome, email, senha)
-
             localStorage.setItem('user_token', data.token)
             navigate("/")
-            
         } catch(err){
             setToast({ message: err.response?.data?.error || "Erro ao conectar no servidor", type: 'error'})
+        } finally {
+            setLoading(false)
         }
-        
-
-        
     }
 
     return (
@@ -69,7 +67,10 @@ export default function Register() {
                         <p>Li e concordo com os <Link to={'/'} className="font-bold text-red cursor-pointer hover:underline">Termos de Uso</Link> e <Link to={'/'} className="font-bold text-red cursor-pointer hover:underline">Política de Privacidade.</Link></p>
                     </div>
 
-                    <button className='bg-verde-escuro text-white h-15 rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer'>Cadastre-se</button>
+                    <button disabled={loading} className='bg-verde-escuro text-white h-15 rounded-xl transition-all hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2'>
+                        {loading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                        {loading ? 'Cadastrando...' : 'Cadastre-se'}
+                    </button>
                 </form>
 
                 <p className="pt-5">Já possui uma conta? <Link to={'/login'} className="font-bold hover:text-red cursor-pointer hover:underline">Faça o login!</Link></p>
