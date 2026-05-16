@@ -56,11 +56,11 @@ class AdminProductRepository {
             ];
         } catch(PDOException $e) {
 
-            if ($e->getCode() == 23000 && (str_contains($e->getMessage(), 'a foreign key constraint fails'))) {
+            if ($e->getCode() === '23000' && (str_contains($e->getMessage(), 'a foreign key constraint fails'))) {
                 throw new InvalidArgumentException("A categoria_id informada nao existe.");
             }
             
-            if ($e->getCode() == 23000 && (str_contains($e->getMessage(), 'Duplicate') || str_contains($e->getMessage(), 'key'))) {
+            if ($e->getCode() === '23000' && (str_contains($e->getMessage(), 'Duplicate') || str_contains($e->getMessage(), 'key'))) {
                 throw new RuntimeException("PRODUTO_JA_EXISTE", 0, $e);
             }
     
@@ -69,5 +69,70 @@ class AdminProductRepository {
         }
     }
 
-}
+    public function updateProduct(int $id, array $product): bool {
+        try {
+            $stmt = $this->db->prepare('
+            UPDATE Produtos SET categoria_id = ?, nome = ?, slug = ?, preco = ?, estoque = ?, descricao = ?, foto_url = ?, status = ?
+            WHERE id = ?
+            ');
+
+            $stmt->execute([
+                $product['categoria_id'],
+                $product['nome'],
+                $product['slug'],
+                $product['preco'],
+                $product['estoque'],
+                $product['descricao'],
+                $product['foto_url'],
+                $product['status'],
+                $id,
+            ]);
+
+            return $stmt->rowCount() > 0;
+        } catch(PDOException $e) {
+            if($e->getCode() == '23000' && (str_contains($e->getMessage(), 'a foreign key constraint fails'))) {
+                throw new InvalidArgumentException("A categoria_id informada nao existe.");
+            }
+
+            if($e->getCode() == '23000' && (str_contains($e->getMessage(), 'Duplicate') || str_contains($e->getMessage(), 'key'))) {
+                throw new RuntimeException("PRODUTO_JA_EXISTE", 0, $e);
+            }
+
+            throw new RuntimeException('ERRO_UPDATE_PRODUCT: ' . $e->getMessage(), 0, $e);
+            }
+        }
+
+        public function deleteProduct(int $id): bool {
+            try {
+                $this->db->beginTransaction();
+
+                $this->db->prepare('
+                    DELETE FROM Review WHERE produto_id = ?
+                ')->execute([$id]);
+
+                $this->db->prepare('
+                    DELETE FROM Itens_Carrinho WHERE produto_id = ?
+                ')->execute([$id]);
+
+                $this->db->prepare('
+                    DELETE FROM Itens_Pedido WHERE produto_id = ?
+                ')->execute([$id]);
+
+                $stmt = $this->db->prepare('
+                    DELETE FROM Produtos WHERE id = ?
+                ');
+                $stmt->execute([$id]);
+
+                $this->db->commit();
+                
+                
+                return $stmt->rowCount() > 0;
+            } catch(PDOException $e) {
+                $this->db->rollBack();
+                throw new RuntimeException('ERRO_DELETE_PRODUCT: ' . $e->getMessage(), 0, $e);
+            }
+        }
+    }
+            
+
 

@@ -2,8 +2,9 @@
 
 require_once __DIR__ . '/../service/AdminProductService.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/BaseController.php';
 
-class AdminProductController {
+class AdminProductController extends BaseController {
     private AdminProductService $service;
 
     public function __construct() {
@@ -12,29 +13,38 @@ class AdminProductController {
     }
 
     public function index() {
-        echo json_encode($this->service->getAllProducts());
+        $result = $this->service->getAllProducts();
+        $this->respond($result);
     }
 
     public function store() {
-        $raw = file_get_contents('php://input');
-        $body = json_decode($raw, true);
-        if (!is_array($body)) {
+        $body = $this->getBody();
+
+        if (!$body) {
             http_response_code(400);
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
+
         $result = $this->service->createProduct($body);
-        if (is_array($result) && isset($result['message']) && !isset($result['error'])) {
-            http_response_code(201);
-        }
-        echo json_encode($result);
+        $this->respond($result, 201);
     }
 
     public function update(string $id) {
-        echo json_encode($this->service->updateProduct($id));
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $result = $this->service->updateProduct($id, $body);
+        $this->respond($result);
     }
 
     public function destroy(string $id) {
-        echo json_encode($this->service->deleteProduct($id));
+        $result = $this->service->deleteProduct($id);
+        $this->respond($result);
     }
 }

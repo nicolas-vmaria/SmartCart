@@ -94,6 +94,8 @@ class AdminCategoryService {
             return ['error' => 'Categoria não encontrada'];
         }
 
+        http_response_code(200);
+
         return ['message' => "Categoria '$nome' atualizada com sucesso"];
     } catch (Exception $e) {
         if ($e->getMessage() === 'CATEGORIA_JA_EXISTE') {
