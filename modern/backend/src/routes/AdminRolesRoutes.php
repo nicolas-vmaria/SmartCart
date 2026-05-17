@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../controller/AdminUserController.php';
+require_once __DIR__ . '/../controller/AdminRolesController.php';
 
 $router->get('/admin/user',            [AdminUserController::class, 'index']);
 $router->put('/admin/user/{id}/role',  [AdminUserController::class, 'updateRole']);

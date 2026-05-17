@@ -1,9 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../service/AdminUserService.php';
+require_once __DIR__ . '/../service/AdminRolesService.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/BaseController.php';
 
-class AdminUserController {
+class AdminUserController extends BaseController {
     private AdminUserService $service;
 
     public function __construct() {
@@ -24,11 +25,21 @@ class AdminUserController {
     }
 
     public function roles() {
-        echo json_encode($this->service->getAllRoles());
+        $result = $this->service->getAllRoles();
+        $this->respond($result);
     }
 
     public function storeRole() {
-        echo json_encode($this->service->createRole());
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $result = $this->service->createRole($body);
+        $this->respond($result, 201);
     }
 
     public function destroyRole(string $id) {
