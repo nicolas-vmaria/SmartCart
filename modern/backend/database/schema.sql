@@ -19,7 +19,8 @@ SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE Papeis (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_papel VARCHAR(50) NOT NULL,
-    badge VARCHAR(100),
+    badge VARCHAR(255),
+    descricao TEXT,
     ver_dashboard BOOLEAN DEFAULT FALSE,
     ver_clientes BOOLEAN DEFAULT FALSE,
     ver_categorias BOOLEAN DEFAULT FALSE,

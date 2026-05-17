@@ -10,8 +10,8 @@ const initialUsers = [
     { id: 5, name: 'Marina Costa',    email: 'marina@smartcart.com',  role: 'Gerente',       roleColor: 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300',   status: 'Ativo', createdAt: '01/05/2025' },
 ]
 
-const roles = ['Administrador', 'Gerente', 'Funcionário']
-const roleColors = { 'Administrador': 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300', 'Gerente': 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300', 'Funcionário': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300' }
+
+
 const statusStyle = { 'Ativo': 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Inativo': 'bg-red-100 text-red-700 dark:bg-red-500/25 dark:text-red-300' }
 
 const emptyForm = { name: '', email: '', role: 'Funcionário', status: 'Ativo' }
@@ -95,15 +95,13 @@ export default function AdminManageUsers() {
         setForm(emptyForm)
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
         if (!form.name || !form.email) return
         if (editing) {
             setUsers(prev => prev.map(u => u.id === editing ? { ...u, ...form, roleColor: roleColors[form.role] } : u))
         } else {
-            const now = new Date()
-            const date = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`
-            setUsers(prev => [...prev, { ...form, id: Date.now(), roleColor: roleColors[form.role], createdAt: date }])
+            
         }
         closeModal()
     }
