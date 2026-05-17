@@ -1,7 +1,9 @@
 <?php
+require_once __DIR__ . '/BaseController.php';
 
-class HealthController {
+class HealthController extends BaseController {
     public function index() {
-        echo json_encode(['status' => 'ok', 'message' => 'API is healthy']);
+        $result = ['message' => 'OK'];
+        $this->respond($result);
     }
 }
