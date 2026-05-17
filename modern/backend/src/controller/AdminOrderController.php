@@ -7,7 +7,7 @@ class AdminOrderController {
     private AdminOrderService $service;
 
     public function __construct() {
-        AuthMiddleware::handle();
+        AuthMiddleware::handle('admin');
         $this->service = new AdminOrderService();
     }
 

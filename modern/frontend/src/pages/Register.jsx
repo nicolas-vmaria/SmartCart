@@ -24,6 +24,7 @@ export default function Register() {
         try {
             const { data } = await registerUser(nome, email, senha)
             localStorage.setItem('user_token', data.token)
+            localStorage.setItem('user_nome', data.user.nome)
             navigate("/")
         } catch(err){
             setToast({ message: err.response?.data?.error || "Erro ao conectar no servidor", type: 'error'})

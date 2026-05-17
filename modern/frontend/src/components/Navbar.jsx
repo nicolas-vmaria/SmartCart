@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { useAuth } from '../hooks/useAuth'
 import { Link } from "react-router-dom";
 import logo from '../assets/smartcart-logo-transparente.png'
 import { FaCartShopping } from "react-icons/fa6";
 import { FiChevronDown, FiMenu, FiX } from "react-icons/fi";
-import { LuShoppingCart, LuPackage, LuWrench, LuBuilding2 } from "react-icons/lu";
+import { LuShoppingCart, LuPackage, LuWrench, LuBuilding2, LuCircleUserRound } from "react-icons/lu";
 
 const categorias = [
     { label: 'Carrinhos Inteligentes', descricao: 'Linha completa SmartCart', icon: <LuShoppingCart />, to: '/produtos/categoria/carrinhos-inteligentes' },
@@ -15,6 +16,7 @@ const categorias = [
 export default function Navbar() {
     const [menuAberto, setMenuAberto] = useState(false);
     const [produtosAberto, setProdutosAberto] = useState(false);
+    const { isLogged, nome } = useAuth()
 
     const fecharMenu = () => {
         setMenuAberto(false);
@@ -78,9 +80,23 @@ export default function Navbar() {
 
             {/* Botões desktop */}
             <div className="hidden md:flex items-center gap-5">
-                <Link to="/login" className="btn-border-draw text-verde-claro flex items-center h-10 px-5 rounded-full transition-all duration-300 hover:bg-white/10">Login</Link>
-                <Link to="/register" className="text-verde-claro border-2 border-verde-claro flex items-center h-10 p-5 rounded-full transition-all cursor-pointer hover:bg-verde-claro hover:text-verde-escuro">Cadastrar</Link>
-                <Link to="/carrinho"><FaCartShopping className="w-10 h-auto m-5 text-verde-claro transition-all hover:text-[#F8FFC2]" /></Link>
+            {isLogged ? (
+                <>
+                    <span className="text-verde-claro capitalize">Olá, {nome.split(' ')[0].toLowerCase()}</span>
+                    <Link to="/profile" className="text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200">
+                        <LuCircleUserRound size={38} strokeWidth={1.3} />
+                    </Link>
+                </>
+            ) : (
+                <>
+                    <Link to="/login" className="btn-border-draw text-verde-claro flex items-center h-10 px-5 rounded-full transition-all duration-300 hover:bg-white/10">Login</Link>
+                    <Link to="/register" className="text-verde-claro border-2 border-verde-claro flex items-center h-10 p-5 rounded-full transition-all cursor-pointer hover:bg-verde-claro hover:text-verde-escuro">Cadastrar</Link>
+                </>
+            )}
+                
+                <Link to="/carrinho" className="text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200">
+                    <FaCartShopping size={36} />
+                </Link>
             </div>
 
             {/* Ícones mobile direita */}
@@ -140,12 +156,20 @@ export default function Navbar() {
                     </Link>
 
                     <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-white/10">
-                        <Link onClick={fecharMenu} to="/login" className="text-center text-verde-claro border border-verde-claro py-2 rounded-full hover:bg-white/10 transition-colors">
-                            Login
-                        </Link>
-                        <Link onClick={fecharMenu} to="/register" className="text-center text-verde-escuro bg-verde-claro py-2 rounded-full hover:opacity-90 transition-opacity font-semibold">
-                            Cadastrar
-                        </Link>
+                        {isLogged ? (
+                            <Link onClick={fecharMenu} to="/profile" className="text-center text-verde-claro border border-verde-claro py-2 rounded-full hover:bg-white/10 transition-colors">
+                                Minha conta
+                            </Link>
+                        ) : (
+                            <>
+                                <Link onClick={fecharMenu} to="/login" className="text-center text-verde-claro border border-verde-claro py-2 rounded-full hover:bg-white/10 transition-colors">
+                                    Login
+                                </Link>
+                                <Link onClick={fecharMenu} to="/register" className="text-center text-verde-escuro bg-verde-claro py-2 rounded-full hover:opacity-90 transition-opacity font-semibold">
+                                    Cadastrar
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

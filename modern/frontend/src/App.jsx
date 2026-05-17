@@ -23,7 +23,7 @@ import AdminSettings from "./pages/admin/AdminSettings"
 import AdminProfile from "./pages/admin/AdminProfile"
 import AdminCurriculos from "./pages/admin/AdminCurriculos"
 import AdminLogin from "./pages/admin/AdminLogin"
-import ProtectedRoute from "./components/admin/ProtectedRoute"
+import ProtectedRouteAdmin from "./components/admin/ProtectedRouteAdmin"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 import { useEffect } from "react"
 import Checkout from "./pages/Checkout"
@@ -112,7 +112,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route element={<ProtectedRoute />}>
+          <Route element={<ProtectedRouteAdmin />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminHome />} />
               <Route path="clients" element={<AdminClients />} />

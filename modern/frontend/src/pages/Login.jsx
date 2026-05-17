@@ -20,6 +20,7 @@ export default function Login() {
         try{
             const { data } = await loginUser(email, senha)
             localStorage.setItem('user_token', data.token)
+            localStorage.setItem('user_nome', data.user.nome)
             navigate('/')
 
         } catch (err){

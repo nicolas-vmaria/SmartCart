@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { Camera, Check, Eye, EyeOff, Lock, Mail, Phone, User, MapPin, Package, ChevronRight } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Camera, Check, Eye, EyeOff, Lock, Mail, Phone, User, MapPin, Package, ChevronRight, LogOut } from 'lucide-react'
+import ConfirmDialog from '../components/ConfirmDialog'
 
 const inputCls = "border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-verde-escuro transition-colors w-full"
 const labelCls = "text-sm font-bold text-gray-600 mb-1 block"
@@ -37,6 +38,14 @@ export default function UserProfile() {
     const [showPass, setShowPass] = useState({ current: false, new: false, confirm: false })
     const [passError, setPassError] = useState('')
     const fileRef = useRef(null)
+    const navigate = useNavigate()
+    const [confirmLogout, setConfirmLogout] = useState(false)
+
+    function handleLogout() {
+        localStorage.removeItem('user_token')
+        localStorage.removeItem('user_nome')
+        navigate('/')
+    }
 
     const [info, setInfo] = useState({
         nome: 'Felipe Barbosa',
@@ -294,12 +303,25 @@ export default function UserProfile() {
                                         {label} <ChevronRight size={14} className="text-gray-400" />
                                     </Link>
                                 ))}
+                                <button onClick={() => setConfirmLogout(true)}
+                                    className="flex items-center justify-between px-4 py-3 rounded-xl border border-red-200 hover:border-red-400 hover:bg-red-50 transition-all text-sm font-bold text-red-500">
+                                    Sair da conta <LogOut size={14} />
+                                </button>
                             </div>
                         </Card>
 
                     </div>
                 </div>
             </div>
+            {confirmLogout && (
+                <ConfirmDialog
+                    title="Sair da conta"
+                    message="Tem certeza que deseja sair da sua conta?"
+                    confirmLabel="Sair"
+                    onConfirm={handleLogout}
+                    onCancel={() => setConfirmLogout(false)}
+                />
+            )}
         </main>
     )
 }

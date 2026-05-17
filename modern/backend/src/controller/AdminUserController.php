@@ -7,7 +7,7 @@ class AdminUserController {
     private AdminUserService $service;
 
     public function __construct() {
-        AuthMiddleware::handle();
+        AuthMiddleware::handle('admin');
         $this->service = new AdminUserService();
     }
 
