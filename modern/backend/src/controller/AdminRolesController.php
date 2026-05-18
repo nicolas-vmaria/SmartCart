@@ -25,7 +25,7 @@ class AdminRolesController extends BaseController {
             return;
         }
         $result = $this->service->createRole($body);
-        $this->respond($result, 201);
+        $this->respond($result);
     }
 
     public function update(string $id) {
@@ -35,10 +35,12 @@ class AdminRolesController extends BaseController {
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
-        echo json_encode($this->service->updateRole($id, $body));
+        $result = $this->service->updateRole($id, $body);
+        $this->respond($result);
     }
 
     public function destroy(string $id) {
-        echo json_encode($this->service->deleteRole($id));
+        $result = $this->service->deleteRole($id);
+        $this->respond($result);
     }
 }

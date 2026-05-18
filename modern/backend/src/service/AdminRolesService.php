@@ -64,11 +64,22 @@ class AdminRolesService {
         }
     }
 
-    public function updateRole(string $id, array $body): array {
+    public function updateRole($id, array $body): array {
         try {
             $role = $this->validateRole($body);
-            $this->repository->updateRole((int)$id, $role);
-            return ['message' => "Papel $id atualizado com sucesso"];
+
+            $updated = $this->repository->updateRole($id, $role);
+
+            if (!$updated) {
+                http_response_code(404);
+                return ['error' => "Não foi possível atualizar papel $id, verifique se o id é válido"];
+            }
+
+            http_response_code(200);
+            return [
+                'message' => "Papel '{$role['nome_papel']}' atualizado com sucesso",
+                'role' => $role
+            ];
         } catch (InvalidArgumentException $e) {
             http_response_code(400);
             return ['error' => $e->getMessage()];
@@ -78,7 +89,21 @@ class AdminRolesService {
         }
     }
 
-    public function deleteRole(string $id): array {
-        return ['message' => "Papel $id removido"];
+    public function deleteRole($id): array {
+        try {
+            $deleted = $this->repository->deleteRole((int)$id);
+
+            if (!$deleted) {
+                http_response_code(404);
+                return ['error' => "Não foi possível remover papel $id, verifique se o id é válido"];
+            }
+
+            http_response_code(200);
+            return ['message' => "Papel $id removido"];
+        } catch (RuntimeException $e) {
+            http_response_code(500);
+            return ['error' => 'Erro interno ao remover papel: ' . $e->getMessage()];
+        }
     }
 }
+ 
