@@ -14,6 +14,13 @@ class AdminProductController extends BaseController {
 
     public function index() {
         $result = $this->service->getAllProducts();
+
+        if (isset($result['error'])) {
+            http_response_code(500);
+            echo json_encode(['error' => $result['error']]);
+            return;
+        }
+
         $this->respond($result);
     }
 

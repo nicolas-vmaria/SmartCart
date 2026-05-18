@@ -9,7 +9,7 @@ class AdminRolesRepository {
         $this->db = Connection::get();
     }
 
-    public function findAllRoles() {
+    public function findAllRoles(): array {
         try {
             $stmt = $this->db->query('
                 SELECT id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos
