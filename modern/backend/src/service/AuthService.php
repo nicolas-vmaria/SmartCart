@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../repository/UserRepository.php';
 require_once __DIR__ . '/../repository/forgotPasswordRepository.php';
+require_once __DIR__ . '/../core/Jwt.php';
 
 
 class AuthService {
@@ -162,6 +163,52 @@ class AuthService {
             return ['error' => 'Erro ao enviar'];
         }
         
+    }
+
+    public function googleLogin(array $body): array {
+        try {
+            $email = isset($body['email']) ? trim((string)$body['email']) : '';
+            $nome  = isset($body['name'])  ? trim((string)$body['name'])  : '';
+
+            if ($email === '') {
+                http_response_code(400);
+                return ['error' => 'E-mail é obrigatório'];
+            }
+
+            $user = $this->userRepository->findByEmail($email);
+
+            if (!$user) {
+                $this->userRepository->register([
+                    'nome'  => $nome ?: explode('@', $email)[0],
+                    'email' => $email,
+                    'senha' => password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT),
+                ]);
+                $user = $this->userRepository->findByEmail($email);
+            }
+
+            if ($user['role'] !== 'cliente') {
+                http_response_code(403);
+                return ['error' => 'Acesso negado'];
+            }
+
+            $token = Jwt::generate([
+                'userId' => $user['id'],
+                'email'  => $user['email'],
+                'role'   => $user['role'],
+            ]);
+
+            return [
+                'token' => $token,
+                'user'  => [
+                    'id'    => $user['id'],
+                    'nome'  => $user['nome'],
+                    'email' => $user['email'],
+                ],
+            ];
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            return ['error' => $e->getMessage()];
+        }
     }
 
     public function resetPassword(array $body): array {

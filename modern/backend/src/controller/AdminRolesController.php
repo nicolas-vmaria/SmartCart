@@ -19,26 +19,22 @@ class AdminRolesController extends BaseController {
 
     public function store() {
         $body = $this->getBody();
-
         if (!$body) {
             http_response_code(400);
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
-
         $result = $this->service->createRole($body);
         $this->respond($result);
     }
 
     public function update(string $id) {
         $body = $this->getBody();
-
         if (!$body) {
             http_response_code(400);
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
-
         $result = $this->service->updateRole($id, $body);
         $this->respond($result);
     }

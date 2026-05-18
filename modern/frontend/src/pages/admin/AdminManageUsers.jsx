@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
+import Toast from '../../components/Toast'
 import { Search, Trash2, Pencil, X, UserPlus, SlidersHorizontal, Check, Shield, KeyRound } from 'lucide-react'
+import { createUser } from '../../lib/api/users'
+import { getRoles } from '../../lib/api/roles'
 
 const initialUsers = [
     { id: 1, name: 'Ciclano da Silva', email: 'ciclano@smartcart.com', role: 'Administrador', roleColor: 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300', status: 'Ativo', createdAt: '10/01/2025' },
@@ -10,14 +13,17 @@ const initialUsers = [
     { id: 5, name: 'Marina Costa',    email: 'marina@smartcart.com',  role: 'Gerente',       roleColor: 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300',   status: 'Ativo', createdAt: '01/05/2025' },
 ]
 
-const roles = ['Administrador', 'Gerente', 'Funcionário']
-const roleColors = { 'Administrador': 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300', 'Gerente': 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300', 'Funcionário': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300' }
+
+
+
+
 const statusStyle = { 'Ativo': 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Inativo': 'bg-red-100 text-red-700 dark:bg-red-500/25 dark:text-red-300' }
 
 const emptyForm = { name: '', email: '', role: 'Funcionário', status: 'Ativo' }
 
 export default function AdminManageUsers() {
     const [users, setUsers] = useState(initialUsers)
+    const [roles, setRoles] = useState([])
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState([])
     const [showModal, setShowModal] = useState(false)
@@ -27,6 +33,7 @@ export default function AdminManageUsers() {
     const [filters, setFilters] = useState({ role: 'Todos', status: 'Todos' })
     const [resetTarget, setResetTarget] = useState(null)
     const [resetDone, setResetDone] = useState(false)
+    const [toast, setToast] = useState(null)
     const filterRef = useRef(null)
 
     useEffect(() => {
@@ -35,6 +42,18 @@ export default function AdminManageUsers() {
         }
         document.addEventListener('mousedown', handleClickOutside)
         return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    useEffect(() => {
+        const fetchRoles = async () => {
+            try {
+                const { data } = await getRoles()
+                setRoles(data.roles.filter(r => r.nome_papel.toLowerCase() !== 'cliente'))
+            } catch (err) {
+                setToast({ message: err.response?.data?.error || 'Erro ao carregar papéis', type: 'error' })
+            }
+        }
+        fetchRoles()
     }, [])
 
     const activeFiltersCount = [filters.role !== 'Todos', filters.status !== 'Todos'].filter(Boolean).length
@@ -59,6 +78,7 @@ export default function AdminManageUsers() {
 
     function deleteSelected() {
         setUsers(prev => prev.filter(u => !selected.includes(u.id)))
+        setToast({ message: `${selected.length} usuário(s) removido(s)`, type: 'success' })
         setSelected([])
     }
 
@@ -95,15 +115,27 @@ export default function AdminManageUsers() {
         setForm(emptyForm)
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
         if (!form.name || !form.email) return
         if (editing) {
             setUsers(prev => prev.map(u => u.id === editing ? { ...u, ...form, roleColor: roleColors[form.role] } : u))
+            setToast({ message: 'Usuário atualizado com sucesso', type: 'success' })
         } else {
-            const now = new Date()
-            const date = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`
-            setUsers(prev => [...prev, { ...form, id: Date.now(), roleColor: roleColors[form.role], createdAt: date }])
+            try {
+                const papel = roles.find(r => r.nome_papel === form.role)
+                const { data } = await createUser({
+                    nome:     form.name,
+                    email:    form.email,
+                    senha:    'Smartcart$123',
+                    papel_id: papel?.id,
+                    is_admin: 1,
+                })
+                setToast({ message: 'Usuário criado com sucesso', type: 'success' })
+            } catch (err) {
+                setToast({ message: err.response?.data?.error || 'Erro ao criar usuário', type: 'error' })
+                return
+            }
         }
         closeModal()
     }
@@ -140,7 +172,7 @@ export default function AdminManageUsers() {
                             <div className="absolute top-11 left-0 bg-white dark:bg-(--admin-card) border border-gray-200 dark:border-(--admin-border) rounded-xl shadow-lg dark:shadow-black/40 p-4 z-20 w-48 flex flex-col gap-4">
                                 <div className="flex flex-col gap-1">
                                     <label className="text-xs text-gray-400 dark:text-(--admin-text-muted) font-medium">Papel</label>
-                                    {['Todos', ...roles].map(opt => (
+                                    {['Todos', ...roles.map(r => r.nome_papel)].map(opt => (
                                         <button key={opt} onClick={() => setFilters(prev => ({ ...prev, role: opt }))}
                                             className={`text-left text-sm px-2 py-1 rounded-md transition-all ${filters.role === opt ? 'bg-green-50 text-verde-escuro font-medium' : 'text-gray-600 dark:text-(--admin-text) hover:bg-gray-50 dark:hover:bg-(--admin-hover)'}`}>
                                             {opt}
@@ -306,7 +338,7 @@ export default function AdminManageUsers() {
                                     <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Papel</label>
                                     <select value={form.role} onChange={e => setForm(prev => ({ ...prev, role: e.target.value }))}
                                         className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all">
-                                        {roles.map(r => <option key={r}>{r}</option>)}
+                                        {roles.map(r => <option key={r.id} value={r.nome_papel}>{r.nome_papel}</option>)}
                                     </select>
                                 </div>
                                 <div className="flex flex-col gap-1 flex-1">
@@ -334,6 +366,7 @@ export default function AdminManageUsers() {
                     </div>
                 </div>
             )}
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
         </main>
     )
 }

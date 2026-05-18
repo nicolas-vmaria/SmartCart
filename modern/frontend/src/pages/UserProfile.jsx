@@ -44,6 +44,7 @@ export default function UserProfile() {
     function handleLogout() {
         localStorage.removeItem('user_token')
         localStorage.removeItem('user_nome')
+        window.dispatchEvent(new Event('storage'))
         navigate('/')
     }
 

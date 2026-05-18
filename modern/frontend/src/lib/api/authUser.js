@@ -15,3 +15,7 @@ export function forgotUser(email){
 export function resetPasswordUser(senha, token){
     return api.post('/auth/reset-password', {senha, token})
 }
+
+export function googleLogin(token, userInfo) {
+    return api.post('/auth/google', { token, email: userInfo.email, name: userInfo.name })
+}
