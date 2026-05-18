@@ -2,10 +2,7 @@
 
 require_once __DIR__ . '/../controller/AdminRolesController.php';
 
-$router->get('/admin/user',            [AdminUserController::class, 'index']);
-$router->put('/admin/user/{id}/role',  [AdminUserController::class, 'updateRole']);
-$router->delete('/admin/user/{id}',    [AdminUserController::class, 'destroy']);
-$router->get('/admin/role',            [AdminUserController::class, 'roles']);
-$router->post('/admin/role',           [AdminUserController::class, 'storeRole']);
-$router->put('/admin/role/{id}',       [AdminUserController::class, 'updateRole']);
-$router->delete('/admin/role/{id}',    [AdminUserController::class, 'destroyRole']);
+$router->get('/admin/role',         [AdminRolesController::class, 'index']);
+$router->post('/admin/role',        [AdminRolesController::class, 'store']);
+$router->put('/admin/role/{id}',    [AdminRolesController::class, 'update']);
+$router->delete('/admin/role/{id}', [AdminRolesController::class, 'destroy']);

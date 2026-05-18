@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../repository/AdminRolesRepository.php';
 
-class AdminUserService {
+class AdminRolesService {
     private AdminRolesRepository $repository;
 
     public function __construct() {
@@ -46,22 +46,6 @@ class AdminUserService {
         ];
     }
 
-    public function getAllUsers() {
-        return ['message' => 'Listando todos os usuários (admin)'];
-    }
-
-    public function updateUserRole($id) {
-        return ['message' => "Role do usuário $id atualizada"];
-    }
-
-    public function updateRoles($id) {
-        return ['message' => "Papéis do usuário $id atualizados"];
-    }
-
-    public function deleteUser($id) {
-        return ['message' => "Usuário $id removido"];
-    }
-
     public function getAllRoles() {
         try {
             $roles = $this->repository->findAllRoles();
@@ -98,7 +82,47 @@ class AdminUserService {
         }           
     }
 
+    public function updateRole($id, array $body) {
+        try {
+            $role = $this->validateRole($body);
+
+            $updated = $this->repository->updateRole($id, $role);
+
+            if(!$updated) {
+                http_response_code(404);
+                return ['error' => "Não foi possível atualizar papel $id, verifique se o id é válido"];
+            }
+
+            http_response_code(200);
+
+            return [
+                'message' => "Papel '{$role['nome_papel']}' atualizado com sucesso",
+                'role' => $role
+            ];
+        } catch (InvalidArgumentException $e) {
+            http_response_code(400);
+            return ['error' => $e->getMessage()];
+        } catch (RuntimeException $e) {
+            http_response_code(500);
+            return ['error' => 'Erro interno ao atualizar papel: ' . $e->getMessage()];
+        }           
+    }
+
     public function deleteRole($id) {
-        return ['message' => "Papel $id removido"];
+        try {
+            $deleted = $this->repository->deleteRole((int)$id);
+
+            if(!$deleted) {
+                http_response_code(404);
+                return ['error' => "Não foi possível remover papel $id, verifique se o id é válido"];
+            }
+
+            http_response_code(200);
+            return ['message' => "Papel $id removido"];
+        } catch (RuntimeException $e) {
+            http_response_code(500);
+            return ['error' => 'Erro interno ao remover papel: ' . $e->getMessage()];
+        }
     }
 }
+ 
