@@ -26,7 +26,7 @@ class AdminAuthService {
             return ['error' => 'Credenciais inválidas'];
         }
 
-        if ($user['role'] !== 'admin') {
+        if (strtolower($user['role']) !== 'admin') {
             http_response_code(403);
             return ['error' => 'Acesso negado'];
         }
@@ -34,7 +34,7 @@ class AdminAuthService {
         $token = Jwt::generate([
             'userId' => $user['id'],
             'email'  => $user['email'],
-            'role'   => $user['role'],
+            'role'   => 'admin',
         ]);
 
         return [

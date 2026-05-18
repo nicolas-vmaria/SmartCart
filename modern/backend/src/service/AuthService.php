@@ -30,7 +30,7 @@ class AuthService {
             return ['error' => 'Credenciais inválidas'];
         }
 
-        if($user['role'] !== "cliente") {
+        if(strtolower($user['role']) !== 'cliente') {
             http_response_code(403);
             return ['error' => 'Acesso negado para usuários admin'];
         }
