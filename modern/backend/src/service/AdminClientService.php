@@ -1,19 +1,21 @@
 <?php
 
+require_once __DIR__ . '/../repository/AdminClientRepository.php';
+
 class AdminClientService {
+    private AdminClientRepository $repository;
+
+    public function __construct() {
+        $this->repository = new AdminClientRepository();
+    }
     public function getAllClients() {
-        return ['message' => 'Listando todos os clientes'];
-    }
-
-    public function createClient() {
-        return ['message' => 'Cliente criado com sucesso'];
-    }
-
-    public function updateClient($id) {
-        return ['message' => "Cliente $id atualizado"];
+        return $this->repository->getAllClients();
     }
 
     public function deleteClient($id) {
-        return ['message' => "Cliente $id removido"];
+        $this->repository->deleteClient($id);
+
+        return ['message' => 'Cliente removido com sucesso'];
     }
+
 }
