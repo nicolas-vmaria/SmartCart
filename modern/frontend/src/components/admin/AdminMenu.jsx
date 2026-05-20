@@ -23,6 +23,11 @@ export default function AdminMenu() {
     const navigate = useNavigate()
     const [confirm, setConfirm] = useState(false)
 
+    const adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}')
+    const nome = adminUser.nome || 'Usuário'
+    const papel = adminUser.nome_papel || 'Admin'
+    const initials = nome.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
+
     function closeAdmin() {
         setConfirm(true)
     }
@@ -31,12 +36,12 @@ export default function AdminMenu() {
         <aside className="w-80 h-screen bg-white dark:bg-(--admin-sidebar) fixed flex flex-col justify-between p-5 text-verde-escuro shadow-2xl dark:shadow-black/60 rounded-tr-2xl rounded-br-2xl z-10">
             <div>
                 <Link to="/admin/profile" className="flex items-center gap-2 p-2 rounded-xl transition-all hover:dark:bg-(--admin-border) hover:bg-gray-100">
-                    <div className="flex border border-verde-escuro dark:border-(--admin-border) aspect-square w-12 h-12 rounded-full justify-center items-center">
-                        <p className="dark:text-(--admin-text)">user</p>
+                    <div className="flex border border-verde-escuro dark:border-(--admin-border) aspect-square w-12 h-12 rounded-full justify-center items-center shrink-0">
+                        <span className="text-verde-escuro dark:text-(--admin-accent) font-bold text-sm">{initials}</span>
                     </div>
-                    <div>
-                        <h1 className="font-bold text-xl text-verde-escuro dark:text-(--admin-accent)">Ciclano da Silva</h1>
-                        <p className="text-verde-escuro dark:text-(--admin-text-muted)">Admin</p>
+                    <div className="min-w-0">
+                        <h1 className="font-bold text-base text-verde-escuro dark:text-(--admin-accent) truncate">{nome}</h1>
+                        <p className="text-sm text-verde-escuro dark:text-(--admin-text-muted) truncate">{papel}</p>
                     </div>
                 </Link>
 

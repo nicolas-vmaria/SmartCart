@@ -54,6 +54,7 @@ class AdminEmployeesService {
             'nome'       => $nome,
             'email'      => $email,
             'senha_hash' => password_hash($senha, PASSWORD_BCRYPT),
+            'tel'        => trim($body['tel'] ?? '') ?: null,
             'papel_id'   => $papel_id,
         ]);
 
@@ -105,6 +106,7 @@ class AdminEmployeesService {
     $this->repository->update($userId, [
         'nome'     => $nome,
         'email'    => $email,
+        'tel'      => trim($body['tel'] ?? '') ?: null,
         'papel_id' => $papel_id,
     ]);
 

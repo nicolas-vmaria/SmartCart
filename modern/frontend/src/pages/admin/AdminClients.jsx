@@ -11,6 +11,14 @@ function formatDate(dateStr) {
     return `${d}/${m}/${y}`
 }
 
+function formatPhone(tel) {
+    if (!tel) return '—'
+    const d = tel.replace(/\D/g, '')
+    if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`
+    if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`
+    return tel
+}
+
 export default function AdminClients() {
     const [clients, setClients] = useState([])
     const [loading, setLoading] = useState(true)
@@ -36,7 +44,8 @@ export default function AdminClients() {
     const filtered = clients.filter(c =>
         c.papel_id == 1 &&
         (c.nome.toLowerCase().includes(search.toLowerCase()) ||
-        c.email.toLowerCase().includes(search.toLowerCase()))
+        c.email.toLowerCase().includes(search.toLowerCase()) ||
+        (c.tel || '').includes(search))
     )
 
     const allSelected = filtered.length > 0 && filtered.every(c => selected.includes(c.id))
@@ -111,6 +120,7 @@ export default function AdminClients() {
                                 </th>
                                 <th className="pb-3 font-medium">Nome</th>
                                 <th className="pb-3 font-medium">Email</th>
+                                <th className="pb-3 font-medium">Telefone</th>
                                 <th className="pb-3 font-medium">Cadastro</th>
                                 <th className="pb-3 font-medium">Ações</th>
                             </tr>
@@ -128,6 +138,7 @@ export default function AdminClients() {
                                     </td>
                                     <td className="py-3 font-medium text-verde-escuro dark:text-(--admin-accent)">{client.nome}</td>
                                     <td className="py-3 text-gray-600 dark:text-(--admin-text)">{client.email}</td>
+                                    <td className="py-3 text-gray-600 dark:text-(--admin-text)">{formatPhone(client.tel)}</td>
                                     <td className="py-3 text-gray-600 dark:text-(--admin-text)">{formatDate(client.created_at)}</td>
                                     <td className="py-3">
                                         <button
@@ -145,7 +156,7 @@ export default function AdminClients() {
                             ))}
                             {filtered.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="py-8 text-center text-gray-400 dark:text-(--admin-text-muted)">Nenhum cliente encontrado.</td>
+                                    <td colSpan={6} className="py-8 text-center text-gray-400 dark:text-(--admin-text-muted)">Nenhum cliente encontrado.</td>
                                 </tr>
                             )}
                         </tbody>

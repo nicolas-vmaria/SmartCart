@@ -6,25 +6,28 @@ import ProductsChart from '../../components/admin/ProductsChart'
 import RecentOrders from '../../components/admin/RecentOrders'
 import { useEffect, useState } from "react";
 import { getProduct } from "../../lib/api/products";
+import { getClients } from "../../lib/api/clients";
 
 export default function AdminHome(){
 
     const [products, setProducts] = useState([])
+    const [clientCount, setClientCount] = useState(null)
     const [toast, setToast] = useState()
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        async function fetchProducts() {
+        async function fetchData() {
             try {
-                const { data } = await getProduct()
-                setProducts(data.products ?? data)
+                const [productsRes, clientsRes] = await Promise.all([getProduct(), getClients()])
+                setProducts(productsRes.data.products ?? productsRes.data)
+                setClientCount((clientsRes.data.clients ?? clientsRes.data).length)
             } catch(err) {
                 setToast({ message: "Erro ao puxar dados", type: "error" })
             } finally {
                 setLoading(false)
             }
         }
-        fetchProducts()
+        fetchData()
     }, [])
 
     return(
@@ -33,7 +36,7 @@ export default function AdminHome(){
 
             <section className="my-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 <CardInfo icon={Banknote} title="Faturamento" info="R$153.932,33" />
-                <CardInfo icon={Users} title="Clientes" info="1.265" />
+                <CardInfo icon={Users} title="Clientes" info={loading ? '...' : (clientCount ?? 0)} />
                 <CardInfo icon={ShoppingCart} title="Pedidos Novos" info="16" />
                 <CardInfo icon={Package} title="Produtos" info={loading ? '...' : products.length} />
             </section>

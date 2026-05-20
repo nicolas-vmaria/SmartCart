@@ -16,26 +16,27 @@ class AdminEmployeesRepository {
     }
 
     public function getAll(): array {
-    $stmt = $this->db->query('
-        SELECT u.id, u.nome, u.email, u.is_admin,
-               p.nome_papel, u.created_at
-        FROM Usuario u
-        INNER JOIN Papeis p ON p.id = u.papel_id where is_admin = 1;
-
-    ');
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        $stmt = $this->db->query('
+            SELECT u.id, u.nome, u.email, u.tel, u.is_admin,
+                   p.nome_papel, u.created_at
+            FROM Usuario u
+            INNER JOIN Papeis p ON p.id = u.papel_id
+            WHERE is_admin = 1
+        ');
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     public function create(array $data): int {
         $stmt = $this->db->prepare('
-            INSERT INTO Usuario (nome, email, senha, papel_id, is_admin)
-            VALUES (:nome, :email, :senha, :papel_id, :is_admin)
+            INSERT INTO Usuario (nome, email, senha, tel, papel_id, is_admin)
+            VALUES (:nome, :email, :senha, :tel, :papel_id, :is_admin)
         ');
 
         $stmt->execute([
             ':nome'     => $data['nome'],
             ':email'    => $data['email'],
             ':senha'    => $data['senha_hash'],
+            ':tel'      => $data['tel'] ?? null,
             ':papel_id' => $data['papel_id'],
             ':is_admin' => true,
         ]);
@@ -44,22 +45,24 @@ class AdminEmployeesRepository {
     }
 
     public function update(int $id, array $data): bool {
-    $stmt = $this->db->prepare('
-        UPDATE Usuario
-        SET nome     = :nome,
-            email    = :email,
-            papel_id = :papel_id
-        WHERE id = :id
-    ');
+        $stmt = $this->db->prepare('
+            UPDATE Usuario
+            SET nome     = :nome,
+                email    = :email,
+                tel      = :tel,
+                papel_id = :papel_id
+            WHERE id = :id
+        ');
 
-    $stmt->execute([
-        ':nome'     => $data['nome'],
-        ':email'    => $data['email'],
-        ':papel_id' => $data['papel_id'],
-        ':id'       => $id,
-    ]);
+        $stmt->execute([
+            ':nome'     => $data['nome'],
+            ':email'    => $data['email'],
+            ':tel'      => $data['tel'] ?? null,
+            ':papel_id' => $data['papel_id'],
+            ':id'       => $id,
+        ]);
 
-    return $stmt->rowCount() > 0;
+        return $stmt->rowCount() > 0;
     }
 
     public function delete(int $id): bool {
@@ -90,7 +93,7 @@ class AdminEmployeesRepository {
 
     public function findById(int $id): array|false {
         $stmt = $this->db->prepare('
-            SELECT u.id, u.nome, u.email, u.is_admin,
+            SELECT u.id, u.nome, u.email, u.tel, u.is_admin,
                    p.nome_papel, u.created_at
             FROM Usuario u
             INNER JOIN Papeis p ON p.id = u.papel_id

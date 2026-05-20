@@ -9,3 +9,4 @@ require_once __DIR__ . '/AdminRolesRoutes.php';
 require_once __DIR__ . '/AdminEmployeesRoutes.php';
 require_once __DIR__ . '/AdminCurriculoRoutes.php';
 require_once __DIR__ . '/AdminCouponRoutes.php';
+require_once __DIR__ . '/AdminProfileRoutes.php';

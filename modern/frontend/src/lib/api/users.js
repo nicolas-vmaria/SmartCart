@@ -1,17 +1,21 @@
 import { adminApi } from "../api";
 
 export function getUsers() {
-    return adminApi.get('/admin/user')
+    return adminApi.get('/admin/employee')
 }
 
 export function createUser(data) {
-    return adminApi.post('/admin/user', data)
+    return adminApi.post('/admin/employee', data)
 }
 
-export function updateUserRole(id, roleId) {
-    return adminApi.put(`/admin/user/${id}/role`, { role_id: roleId })
+export function updateUser(id, data) {
+    return adminApi.put(`/admin/employee/${id}`, data)
 }
 
 export function deleteUser(id) {
-    return adminApi.delete(`/admin/user/${id}`)
+    return adminApi.delete(`/admin/employee/${id}`)
+}
+
+export function resetUserPassword(id) {
+    return adminApi.put(`/admin/employee/${id}/reset-password`)
 }

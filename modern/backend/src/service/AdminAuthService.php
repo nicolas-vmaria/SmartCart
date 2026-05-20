@@ -26,7 +26,7 @@ class AdminAuthService {
             return ['error' => 'Credenciais inválidas'];
         }
 
-        if (strtolower($user['role']) !== 'admin') {
+        if (!$user['is_admin']) {
             http_response_code(403);
             return ['error' => 'Acesso negado'];
         }
@@ -40,9 +40,10 @@ class AdminAuthService {
         return [
             'token' => $token,
             'user'  => [
-                'id'    => $user['id'],
-                'nome'  => $user['nome'],
-                'email' => $user['email'],
+                'id'        => $user['id'],
+                'nome'      => $user['nome'],
+                'email'     => $user['email'],
+                'nome_papel' => $user['role'],
             ]
         ];
     }
