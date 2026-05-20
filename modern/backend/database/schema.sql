@@ -75,6 +75,8 @@ CREATE TABLE Cupons (
     desconto DECIMAL(10,2) NOT NULL,
     data_validade DATE NOT NULL,
     ativo BOOLEAN DEFAULT TRUE,
+    quant_usos INT DEFAULT 0,
+    max_usos INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

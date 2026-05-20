@@ -73,8 +73,9 @@ class AdminCouponService {
             http_response_code(400);
             return ['error' => $e->getMessage()];
         } catch (RuntimeException $e) {
-            if ($e->getMessage() === 'CUPOM_JA_EXISTE') {
+            if ($e->getMessage() === 'CUPON_JA_EXISTE') {
                 http_response_code(409);
+                return ['error' => "Já existe um cupom com o código '{$body['codigo']}'"];
             }
 
             http_response_code(500);
@@ -103,8 +104,9 @@ class AdminCouponService {
             http_response_code(400);
             return ['error' => $e->getMessage()];
         } catch (RuntimeException $e) {
-            if ($e->getMessage() === 'CUPOM_JA_EXISTE') {
+            if ($e->getMessage() === 'CUPON_JA_EXISTE') {
                 http_response_code(409);
+                return ['error' => "Já existe um cupom com o código '{$body['codigo']}'"];
             }
 
             http_response_code(500);

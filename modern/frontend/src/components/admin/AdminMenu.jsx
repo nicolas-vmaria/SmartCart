@@ -75,7 +75,7 @@ export default function AdminMenu() {
 
                 </button>
         
-        {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/') }}/>}
+        {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/') }} onCancel={() => {setConfirm(false)}}/>}
         </aside>
     )
 }

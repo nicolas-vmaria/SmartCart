@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git commit -m \"merge: resolve conflicts with backend branch\")",
+      "PowerShell(git push origin roles-temp)",
+      "PowerShell(gh pr view 2 --json mergeable,mergeStateStatus)"
+    ]
+  }
+}

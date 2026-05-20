@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom"
 import { useState } from "react"
-import { ShoppingCart, Trash2 } from "lucide-react"
+import { ShoppingCart, Trash2, Loader2, X, Tag } from "lucide-react"
 import { FaCartShopping } from "react-icons/fa6"
+import { validateCoupon } from "../lib/api/coupons"
 
 const initialItems = [
     { id: 1, titulo: 'SmartCart Pro 100', sku: 'SC-100', preco: 2499.00 },
@@ -79,6 +80,10 @@ function EmptyCart() {
 export default function Cart() {
     const [items, setItems] = useState(initialItems)
     const [qtds, setQtds] = useState(() => Object.fromEntries(initialItems.map(i => [i.id, 1])))
+    const [couponCode, setCouponCode] = useState('')
+    const [appliedCoupon, setAppliedCoupon] = useState(null)
+    const [couponError, setCouponError] = useState('')
+    const [validating, setValidating] = useState(false)
 
     function changeQtd(id, delta) {
         setQtds(prev => ({ ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta) }))
@@ -88,9 +93,37 @@ export default function Cart() {
         setItems(prev => prev.filter(i => i.id !== id))
     }
 
+    async function applyСoupon() {
+        if (!couponCode.trim()) return
+        setValidating(true)
+        setCouponError('')
+        try {
+            const { data } = await validateCoupon(couponCode.trim())
+            setAppliedCoupon(data.coupon)
+        } catch (err) {
+            setCouponError(err.response?.data?.error || 'Cupom inválido')
+            setAppliedCoupon(null)
+        } finally {
+            setValidating(false)
+        }
+    }
+
+    function removeCoupon() {
+        setAppliedCoupon(null)
+        setCouponCode('')
+        setCouponError('')
+    }
+
     const subtotal = items.reduce((acc, i) => acc + i.preco * (qtds[i.id] ?? 1), 0)
     const entrega = items.length > 0 ? 29.90 : 0
-    const total = subtotal + entrega
+
+    const discount = appliedCoupon
+        ? appliedCoupon.tipo_desconto === 'percentual'
+            ? subtotal * (parseFloat(appliedCoupon.desconto) / 100)
+            : Math.min(parseFloat(appliedCoupon.desconto), subtotal)
+        : 0
+
+    const total = subtotal - discount + entrega
 
     return (
         <main className="min-h-screen w-full flex justify-center gap-20 p-10">
@@ -125,13 +158,48 @@ export default function Cart() {
                 <div className="bg-gray-100 shadow-2xl p-5 rounded-2xl w-full">
                     <h1 className="text-2xl font-bold">Resumo do pedido</h1>
 
-                    <input type="text" placeholder="Insira o código do cupom:" className="bg-white border border-gray-200 rounded-xl w-full mt-3 h-10 px-4 text-sm outline-none focus:border-verde-escuro transition-colors" />
+                    {appliedCoupon ? (
+                        <div className="flex items-center justify-between mt-3 px-3 py-2 bg-green-50 border border-green-200 rounded-xl">
+                            <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
+                                <Tag size={14} />
+                                {appliedCoupon.codigo}
+                            </div>
+                            <button onClick={removeCoupon} className="text-green-500 hover:text-red-400 transition-colors">
+                                <X size={15} />
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex gap-2 mt-3">
+                            <input
+                                type="text"
+                                value={couponCode}
+                                onChange={e => { setCouponCode(e.target.value.toUpperCase()); setCouponError('') }}
+                                onKeyDown={e => e.key === 'Enter' && applyСoupon()}
+                                placeholder="Código do cupom"
+                                className="bg-white border border-gray-200 rounded-xl flex-1 h-10 px-3 text-sm outline-none focus:border-verde-escuro transition-colors"
+                            />
+                            <button
+                                onClick={applyСoupon}
+                                disabled={validating || !couponCode.trim()}
+                                className="h-10 px-3 rounded-xl bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50"
+                            >
+                                {validating ? <Loader2 size={15} className="animate-spin" /> : 'Aplicar'}
+                            </button>
+                        </div>
+                    )}
+                    {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
 
                     <div className="flex flex-col gap-1 my-5">
                         <div className="flex justify-between text-sm">
                             <span className="font-bold">Subtotal:</span>
                             <span>{subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                         </div>
+                        {discount > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                                <span className="font-bold">Desconto:</span>
+                                <span>- {discount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between text-sm">
                             <span className="font-bold">Taxa de entrega:</span>
                             <span>{entrega > 0 ? entrega.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}</span>
