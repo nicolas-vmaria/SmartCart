@@ -1,0 +1,1 @@
+ALTER TABLE Usuario ADD tel VARCHAR(20) NOT NULL AFTER email;

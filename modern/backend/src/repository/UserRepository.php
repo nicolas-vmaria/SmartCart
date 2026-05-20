@@ -11,7 +11,7 @@ class UserRepository {
 
     public function findByEmail(string $email): ?array {
         $stmt = $this->db->prepare('
-            SELECT u.id, u.nome, u.email, u.senha, p.nome_papel AS role
+            SELECT u.id, u.nome, u.email, u.tel, u.senha, p.nome_papel AS role
             FROM Usuario u
             JOIN Papeis p ON p.id = u.papel_id
             WHERE u.email = ?
@@ -25,14 +25,15 @@ class UserRepository {
     public function register(array $user): array {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO Usuario (papel_id, is_admin, nome, email, senha)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO Usuario (papel_id, is_admin, nome, email, tel, senha)
+                VALUES (?, ?, ?, ?, ?, ?)
             ');
             $stmt->execute([
                 1,
                 false,
                 $user['nome'],
                 $user['email'],
+                $user['tel'],
                 $user['senha'],
             ]);
 
@@ -42,11 +43,15 @@ class UserRepository {
                 'id' => $id,
                 'nome' => $user['nome'],
                 'email' => $user['email'],
+                'tel' => $user['tel'],
+                'role' => $user['role'],
             ];
         } catch (PDOException $e) {
             if ($e->getCode() === '23000') {
                 throw new RuntimeException('EMAIL_ALREADY_EXISTS', 0, $e);
             }
+
+        
             throw $e;
         }
     }

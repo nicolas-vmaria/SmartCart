@@ -55,6 +55,7 @@ class AuthService {
     public function register(array $body): array {
         $nome = isset($body['nome']) ? trim((string)$body['nome']) : '';
         $email = isset($body['email']) ? trim((string)$body['email']) : '';
+        $tel = isset($body['tel']) ? (string)$body['tel'] : '';
         $senha = isset($body['senha']) ? (string)$body['senha'] : '';
 
         if ($nome === '' || $email === '' || $senha === '') {
@@ -72,6 +73,11 @@ class AuthService {
             return ['error' => 'A senha deve ter pelo menos 8 caracteres'];
         }
 
+        if (!preg_match('/^\d{11}$/', $tel)) {
+            http_response_code(400);
+            return ['error' => 'Telefone inválido'];
+        }
+
         $existing = $this->userRepository->findByEmail($email);
         if ($existing) {
             http_response_code(409);
@@ -82,6 +88,7 @@ class AuthService {
             $user = $this->userRepository->register([
                 'nome'  => $nome,
                 'email' => $email,
+                'tel' => $tel,
                 'senha' => password_hash($senha, PASSWORD_DEFAULT),
             ]);
         } catch (RuntimeException $e) {
@@ -97,6 +104,7 @@ class AuthService {
         $token = Jwt::generate([
             'userId' => $user['id'],
             'email'  => $user['email'],
+            'tel'    => $user['tel'],
             'role'   => $user['role'],
         ]);
 
@@ -105,6 +113,7 @@ class AuthService {
             'user'    => [
                 'id'    => $user['id'],
                 'nome'  => $user['nome'],
+                'tel'   => $user['tel'],
                 'email' => $user['email'],
                 
             ],
