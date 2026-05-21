@@ -11,7 +11,10 @@ class UserRepository {
 
     public function findByEmail(string $email): ?array {
         $stmt = $this->db->prepare('
-            SELECT u.id, u.nome, u.email, u.tel, u.senha, u.is_admin, p.nome_papel AS role
+            SELECT u.id, u.nome, u.email, u.tel, u.senha, u.is_admin,
+                   p.nome_papel AS role,
+                   p.ver_dashboard, p.ver_clientes, p.ver_categorias,
+                   p.ver_produtos, p.ver_pedidos, p.ver_admin, p.ver_curriculos
             FROM Usuario u
             JOIN Papeis p ON p.id = u.papel_id
             WHERE u.email = ?

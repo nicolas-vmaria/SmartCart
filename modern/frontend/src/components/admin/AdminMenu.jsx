@@ -28,6 +28,9 @@ export default function AdminMenu() {
     const papel = adminUser.nome_papel || 'Admin'
     const initials = nome.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
 
+    const perms = adminUser.permissions ?? null
+    const can = (key) => !perms || (perms[key] ?? true)
+
     function closeAdmin() {
         setConfirm(true)
     }
@@ -49,14 +52,14 @@ export default function AdminMenu() {
                     <ul className="flex flex-col gap-2 py-5">
                         <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Geral</h1>
                         <div className="flex flex-col gap-4">
-                            <Link to="/admin" className={linkClass}><LayoutDashboard size={18} />Dashboard</Link>
-                            <Link to="/admin/clients" className={linkClass}><Users size={18} />Clientes</Link>
-                            <Link to="/admin/products" className={linkClass}><Package size={18} />Produtos</Link>
-                            <Link to="/admin/categories" className={linkClass}><Tag size={18} />Categorias</Link>
-                            <Link to="/admin/orders" className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={NOTIF_PEDIDOS} /></Link>
-                            <Link to="/admin/curriculos" className={linkClass}><FileUser size={18} />Currículos<Badge count={NOTIF_CURRICULOS} /></Link>
-                            <Link to="/admin/cupons" className={linkClass}><Ticket size={18} />Cupons</Link>
-                            <Link to="/admin/relatorios" className={linkClass}><BarChart2 size={18} />Relatórios</Link>
+                            {can('dashboard')   && <Link to="/admin" className={linkClass}><LayoutDashboard size={18} />Dashboard</Link>}
+                            {can('clientes')    && <Link to="/admin/clients" className={linkClass}><Users size={18} />Clientes</Link>}
+                            {can('produtos')    && <Link to="/admin/products" className={linkClass}><Package size={18} />Produtos</Link>}
+                            {can('categorias')  && <Link to="/admin/categories" className={linkClass}><Tag size={18} />Categorias</Link>}
+                            {can('pedidos')     && <Link to="/admin/orders" className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={NOTIF_PEDIDOS} /></Link>}
+                            {can('curriculos')  && <Link to="/admin/curriculos" className={linkClass}><FileUser size={18} />Currículos<Badge count={NOTIF_CURRICULOS} /></Link>}
+                            {can('cupons')      && <Link to="/admin/cupons" className={linkClass}><Ticket size={18} />Cupons</Link>}
+                            {can('relatorios')  && <Link to="/admin/relatorios" className={linkClass}><BarChart2 size={18} />Relatórios</Link>}
                         </div>
                     </ul>
 
@@ -64,10 +67,10 @@ export default function AdminMenu() {
 
                     <ul className="py-5 flex flex-col gap-4">
                         <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Admin</h1>
-                        <Link to="/admin/manage-users" className={linkClass}><UserCog size={18} />Gerenciar usuários</Link>
-                        <Link to="/admin/roles" className={linkClass}><ShieldCheck size={18} />Gerenciar Pápeis</Link>
+                        {can('usuarios')      && <Link to="/admin/manage-users" className={linkClass}><UserCog size={18} />Gerenciar usuários</Link>}
+                        {can('papeis')        && <Link to="/admin/roles" className={linkClass}><ShieldCheck size={18} />Gerenciar Pápeis</Link>}
                         <Link to="/admin/help" className={linkClass}><HelpCircle size={18} />Ajuda</Link>
-                        <Link to="/admin/settings" className={linkClass}><Settings size={18} />Configurações</Link>
+                        {can('configuracoes') && <Link to="/admin/settings" className={linkClass}><Settings size={18} />Configurações</Link>}
                     </ul>
                 </div>
             </div>

@@ -40,10 +40,19 @@ class AdminAuthService {
         return [
             'token' => $token,
             'user'  => [
-                'id'        => $user['id'],
-                'nome'      => $user['nome'],
-                'email'     => $user['email'],
-                'nome_papel' => $user['role'],
+                'id'          => $user['id'],
+                'nome'        => $user['nome'],
+                'email'       => $user['email'],
+                'nome_papel'  => $user['role'],
+                'permissions' => [
+                    'dashboard'  => (bool)$user['ver_dashboard'],
+                    'clientes'   => (bool)$user['ver_clientes'],
+                    'produtos'   => (bool)$user['ver_produtos'],
+                    'pedidos'    => (bool)$user['ver_pedidos'],
+                    'categorias' => (bool)$user['ver_categorias'],
+                    'papeis'     => (bool)$user['ver_admin'],
+                    'curriculos' => (bool)$user['ver_curriculos'],
+                ],
             ]
         ];
     }
