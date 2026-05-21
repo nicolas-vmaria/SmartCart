@@ -1,6 +1,14 @@
 <?php
 
+require_once __DIR__ . '/../repository/CartRepository.php';
+
 class CartService {
+    private CartRepository $cartRepository;
+
+    public function __construct() {
+        $this->cartRepository = new CartRepository();
+    }
+
     public function getCart() {
         return ['message' => 'Retornando carrinho do usuário'];
     }
