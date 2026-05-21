@@ -182,3 +182,9 @@ CREATE TABLE Resetar_Senha (
     expire_at DATETIME NOT NULL
 );
 
+INSERT INTO Papeis (id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos)
+VALUES (1, 'cliente', NULL, 'Usuário padrão', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+       (2, 'admin', 'Admin', 'Administrador com acesso total', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
+
+INSERT INTO Usuario (papel_id, is_admin, nome, email, tel, senha)
+VALUES (2, TRUE, 'Admin', 'admin@smartcart.com', '00000000000', '$2y$12$frHJ/ZcElz8Pk2Sz/I7qpOMrqAc8YB9hriQ6RXqGzWFe6RTg37CLS');
