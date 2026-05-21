@@ -181,3 +181,4 @@ CREATE TABLE Resetar_Senha (
     create_at DATETIME NOT NULL,
     expire_at DATETIME NOT NULL
 );
+
