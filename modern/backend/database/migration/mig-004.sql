@@ -1,0 +1,1 @@
+ALTER TABLE Carrinhos MODIFY COLUMN status ENUM('ativo', 'convertido') NOT NULL DEFAULT 'ativo';

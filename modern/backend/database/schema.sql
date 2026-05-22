@@ -1,3 +1,6 @@
+create database smartcart;
+use smartcart;
+
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS Resetar_Senha;
@@ -83,8 +86,8 @@ CREATE TABLE Cupons (
 
 CREATE TABLE Carrinhos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    status ENUM('ativo', 'abandonado', 'convertido') DEFAULT 'ativo',
+    usuario_id INT NOT NULL, 
+    status ENUM('ativo', 'convertido') DEFAULT 'ativo',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id)

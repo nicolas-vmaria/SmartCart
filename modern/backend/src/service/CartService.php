@@ -13,8 +13,25 @@ class CartService {
         return ['message' => 'Retornando carrinho do usuário'];
     }
 
-    public function addItem() {
-        return ['message' => 'Item adicionado ao carrinho'];
+    public function addItem(array $body) {
+        $produto_id = $body['produto_id'];
+        $quantidade = $body['quantidade'];
+        $usuario_id = $body['usuario_id'];
+
+        $produto = $this->cartRepository->findProdutoById($produto_id);
+        if (!$produto) {
+            return ['error' => 'Produto não encontrado'];
+        }
+
+        $ativo = $this->cartRepository->findCarrinhoAtivo($usuario_id);
+        if (!$ativo) {
+            $carrinhoId = $this->cartRepository->createCarrinho($usuario_id);
+        } else {
+            $carrinhoId = $ativo['id'];
+        }
+
+        $this->cartRepository->addItem($carrinhoId, $produto['id'], $quantidade);
+        return ['message' => "Produto {$produto['nome']} adicionado ao carrinho"];
     }
 
     public function updateItem($id) {

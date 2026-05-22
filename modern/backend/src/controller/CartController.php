@@ -1,8 +1,10 @@
 <?php
 
 require_once __DIR__ . '/../service/CartService.php';
+require_once __DIR__ . '/../repository/CartRepository.php';
+require_once __DIR__ . '/BaseController.php';
 
-class CartController {
+class CartController extends BaseController {
     private CartService $service;
 
     public function __construct() {
@@ -14,7 +16,16 @@ class CartController {
     }
 
     public function addItem() {
-        echo json_encode($this->service->addItem());
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $result = $this->service->addItem($body);
+        $this->respond($result);
     }
 
     public function updateItem($id) {
