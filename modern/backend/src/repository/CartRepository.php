@@ -15,6 +15,13 @@ class CartRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function findItemById(int $id): array|false {
+        $stmt = $this->db->prepare('SELECT id, produto_id, quantidade FROM Itens_Carrinho WHERE id = ?');
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
     public function createCarrinho(int $usuario_id): int {
         $stmt = $this->db->prepare('INSERT INTO Carrinhos (usuario_id, status) VALUES (?, "ativo")');
         $stmt->execute([$usuario_id]);
@@ -29,11 +36,35 @@ class CartRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getCart(int $usuario_id): array|false {
+        try {
+        $stmt = $this->db->prepare('
+            SELECT 
+                c.id AS carrinho_id,
+                c.status,
+                p.id AS produto_id,
+                p.nome AS produto_nome,
+                p.preco,
+                p.foto_url,
+                ic.quantidade,
+                (p.preco * ic.quantidade) AS subtotal
+            FROM Carrinhos c
+            JOIN Itens_Carrinho ic ON ic.carrinho_id = c.id
+            JOIN Produtos p ON p.id = ic.produto_id
+            WHERE c.usuario_id = ? AND c.status = "ativo"
+        ');
+        $stmt->execute([$usuario_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw new RuntimeException('ERRO_GET_CARRINHO', 0, $e);
+    }
+    }
+
     public function addItem(int $carrinho_id, int $produto_id, int $quantidade): void {
         try {
             $produto = $this->findProdutoById($produto_id);
         if (!$produto) {
-            throw new InvalidArgumentException("Produto não encontrado");
+            throw new InvalidArgumentException("Produto não encontrado, verifique o ID");
         }
 
         $stmtCheck = $this->db->prepare(
@@ -62,4 +93,42 @@ class CartRepository {
         
         }
   }
+
+    public function updateItem(int $item_id, int $quantidade): bool {
+        try {
+            $stmt = $this->db->prepare(
+                "UPDATE Itens_Carrinho SET quantidade = ? WHERE id = ?"
+            );
+            $stmt->execute([$quantidade, $item_id]);
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            throw new RuntimeException('ERRO_UPDATE_ITEM', 0, $e);
+        }
+    }
+
+    public function removeItem(int $item_id): bool {
+        try {
+            $stmt = $this->db->prepare(
+                "DELETE FROM Itens_Carrinho WHERE id = ?"
+            );
+            $stmt->execute([$item_id]);
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            throw new RuntimeException('ERRO_REMOVE_ITEM', 0, $e);
+        }
+    }
+
+    public function clearCart(int $usuario_id): bool {
+        try {
+            $stmt = $this->db->prepare('
+                DELETE ic FROM Itens_Carrinho ic 
+                JOIN Carrinhos c ON c.id = ic.carrinho_id
+                WHERE c.usuario_id = ? AND c.status = "ativo"
+                ');
+            $stmt->execute([$usuario_id]);
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            throw new RuntimeException('ERRO_CLEAR_CART', 0, $e);
+        }
+    }
 }

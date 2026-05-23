@@ -9,17 +9,33 @@ class CartService {
         $this->cartRepository = new CartRepository();
     }
 
-    public function getCart() {
-        return ['message' => 'Retornando carrinho do usuário'];
+    public function getCart(int $usuario_id) {
+        try {
+            $cart = $this->cartRepository->getCart($usuario_id);
+
+            if(empty($cart)) {
+                return ['message' => 'Carrinho vazio'];
+            }
+
+            return ['carrinho' => $cart];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['error' => 'Erro ao recuperar o carrinho'];
+        }
     }
 
     public function addItem(array $body) {
+        if(!isset($body['produto_id']) || !isset($body['quantidade']) || !isset($body['usuario_id'])) {
+            return ['error' => 'Campos obrigatórios não informados'];
+        }
+
         $produto_id = $body['produto_id'];
         $quantidade = $body['quantidade'];
         $usuario_id = $body['usuario_id'];
 
         $produto = $this->cartRepository->findProdutoById($produto_id);
         if (!$produto) {
+            http_response_code(400);
             return ['error' => 'Produto não encontrado'];
         }
 
@@ -30,19 +46,90 @@ class CartService {
             $carrinhoId = $ativo['id'];
         }
 
-        $this->cartRepository->addItem($carrinhoId, $produto['id'], $quantidade);
-        return ['message' => "Produto {$produto['nome']} adicionado ao carrinho"];
+        if($produto['estoque'] < $quantidade) {
+            http_response_code(400);
+            return ['error' => 'Quantidade insuficiente'];
+        }
+
+        if(!$produto['status']) {
+            http_response_code(400);
+            return ['error' => 'Produto indisponível'];
+        }
+
+        try {
+            $this->cartRepository->addItem($carrinhoId, $produto_id, $quantidade);
+            return ['message' => "Produto {$produto['nome']} adicionado ao carrinho"];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['error' => 'Erro ao adicionar item ao carrinho'];
+        }
+        
     }
 
-    public function updateItem($id) {
-        return ['message' => "Item $id atualizado no carrinho"];
+    public function updateItem(int $item_id, array $body) {
+        $quantidade = $body['quantidade'] ?? null;
+        
+        if(!$quantidade || $quantidade < 1) {
+            http_response_code(400);
+            return ['error' => 'Quantidade inválida'];
+        }
+
+        $item = $this->cartRepository->findItemById($item_id);
+        if (!$item) {
+            http_response_code(400);
+            return ['error' => 'Item não encontrado'];
+        }
+
+        $produto = $this->cartRepository->findProdutoById($item['produto_id']);
+        if (!$produto) {
+            http_response_code(400);
+            return ['error' => 'Produto não encontrado'];
+        }
+
+        if($produto['estoque'] < $quantidade) {
+            http_response_code(400);
+            return ['error' => 'Quantidade insuficiente'];
+        }
+
+        try {
+            $update = $this->cartRepository->updateItem($item_id, $quantidade);
+
+            if(!$update) {
+                http_response_code(400);
+                return ['error' => 'Erro ao atualizar o item'];
+            }
+
+            return ['message' => "Item atualizado com sucesso"];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['error' => 'Erro ao atualizar o item'];
+        }
+        
     }
 
-    public function removeItem($id) {
-        return ['message' => "Item $id removido do carrinho"];
+    public function removeItem(int $item_id) {
+        $item = $this->cartRepository->findItemById($item_id);
+        if (!$item) {
+            http_response_code(404);
+            return ['error' => 'Item não encontrado'];
+        }
+
+        try {
+            $this->cartRepository->removeItem($item_id);
+            return ['message' => "Item removido com sucesso"];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['error' => 'Erro ao remover o item'];
+        }
     }
 
-    public function clearCart() {
-        return ['message' => 'Carrinho limpo'];
+    public function clearCart(int $usuario_id) {
+        try {
+            $this->cartRepository->clearCart($usuario_id);
+            return ['message' => 'Carrinho limpo com sucesso'];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['error' => 'Erro ao limpar o carrinho'];
+        }
     }
 }
