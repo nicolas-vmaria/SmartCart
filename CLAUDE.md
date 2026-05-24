@@ -43,6 +43,7 @@ modern/
 - Loading states em toda chamada ao backend: spinner no botão + `disabled` durante requisição
 - Página admin carregando: spinner centralizado na tabela/grid
 - Hooks em `src/hooks/`, funções de API em `src/lib/api/`
+- Arquivos de API em `src/lib/api/`: prefixar com `admin` quando chamam rotas admin (ex: `adminProducts.js`, `adminCoupons.js`); sem prefixo quando chamam rotas de cliente (ex: `products.js`, `cart.js`) — nunca misturar chamadas admin e cliente no mesmo arquivo
 - Ícones: preferir `lucide-react` (traço fino) ou `react-icons`
 
 ### Backend

@@ -94,7 +94,7 @@ function App() {
             <Route path="/sobre-nos" element={<SobreNos />} />
             <Route path="/contato" element={<Contato />} />
             <Route path="/carrinho" element={<Cart />} />
-            <Route path="/produto/:id" element={<ProductDetail />} />
+            <Route path="/produto/:slug" element={<ProductDetail />} />
             <Route path="/checkout/:id" element={<Checkout />}/>
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/politicas" element={<Politicas />} />

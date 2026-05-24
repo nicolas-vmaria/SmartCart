@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
-import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink } from 'lucide-react'
-import { createProduct, getProduct, deleteProduct as deleteProductApi, editProduct } from '../../lib/api/products'
+import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink, FileText } from 'lucide-react'
+import { createProduct, getProduct, deleteProduct as deleteProductApi, editProduct } from '../../lib/api/adminProducts'
 import { getCategories } from '../../lib/api/category'
 import Toast from '../../components/Toast'
 import { uploadImage } from '../../lib/cloudinary'
+import RichTextEditor from '../../components/admin/RichTextEditor'
 
 
 
@@ -21,6 +22,7 @@ export default function AdminProducts() {
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState([])
     const [showModal, setShowModal] = useState(false)
+    const [showEditor, setShowEditor] = useState(false)
     const [showFilters, setShowFilters] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editing, setEditing] = useState(null)
@@ -297,6 +299,17 @@ export default function AdminProducts() {
                 </table>
             </div>
 
+            {showEditor && (
+                <RichTextEditor
+                    value={form.descricao}
+                    onClose={() => setShowEditor(false)}
+                    onSave={html => {
+                        setForm(prev => ({ ...prev, descricao: html }))
+                        setShowEditor(false)
+                    }}
+                />
+            )}
+
             {showModal && (
                 <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
                     <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-md shadow-xl dark:shadow-black/40">
@@ -370,9 +383,42 @@ export default function AdminProducts() {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Descrição</label>
-                                <textarea value={form.descricao} onChange={e => setForm(prev => ({ ...prev, descricao: e.target.value }))}
-                                    className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all resize-none"
-                                    placeholder="Descrição do produto" rows={3} />
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowEditor(true)}
+                                        className={`flex items-center gap-2 flex-1 rounded-lg px-3 py-2 text-sm text-left cursor-pointer transition-colors border
+                                            ${form.descricao
+                                                ? 'bg-verde-escuro border-verde-escuro text-verde-claro hover:opacity-90'
+                                                : 'border-gray-200 dark:border-(--admin-border) text-gray-400 hover:border-verde-escuro dark:hover:border-(--admin-accent)'
+                                            }`}
+                                    >
+                                        <FileText size={15} className="shrink-0" />
+                                        <span className="truncate">
+                                            {form.descricao ? 'Descrição adicionada' : 'Clique para escrever a descrição...'}
+                                        </span>
+                                    </button>
+                                    {form.descricao && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditor(true)}
+                                                title="Editar descrição"
+                                                className="p-2 rounded-lg border border-gray-200 dark:border-(--admin-border) hover:border-verde-escuro text-gray-500 hover:text-verde-escuro transition-colors cursor-pointer"
+                                            >
+                                                <Pencil size={14} />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setForm(prev => ({ ...prev, descricao: '' }))}
+                                                title="Remover descrição"
+                                                className="p-2 rounded-lg border border-gray-200 dark:border-(--admin-border) hover:border-red-400 text-gray-500 hover:text-red-500 transition-colors cursor-pointer"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Status</label>

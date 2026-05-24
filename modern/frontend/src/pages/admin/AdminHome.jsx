@@ -5,7 +5,7 @@ import Graph from "../../components/admin/Chart";
 import ProductsChart from '../../components/admin/ProductsChart'
 import RecentOrders from '../../components/admin/RecentOrders'
 import { useEffect, useState } from "react";
-import { getProduct } from "../../lib/api/products";
+import { getProduct } from "../../lib/api/adminProducts";
 import { getClients } from "../../lib/api/clients";
 
 export default function AdminHome(){

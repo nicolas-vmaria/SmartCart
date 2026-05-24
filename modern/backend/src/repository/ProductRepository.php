@@ -26,4 +26,13 @@ class ProductRepository {
 
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
+
+    public function getProductBySlug(string $slug): ?array {
+        $stmt = $this->db->prepare('
+            SELECT * FROM Produtos WHERE slug = ?
+        ');
+        $stmt->execute([$slug]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
 }

@@ -190,6 +190,7 @@ class AuthService {
                 $this->userRepository->register([
                     'nome'  => $nome ?: explode('@', $email)[0],
                     'email' => $email,
+                    'tel'   => '',
                     'senha' => password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT),
                 ]);
                 $user = $this->userRepository->findByEmail($email);

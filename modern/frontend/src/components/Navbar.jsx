@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from '../hooks/useAuth'
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from '../assets/smartcart-logo-transparente.png'
 import { FaCartShopping } from "react-icons/fa6";
 import { FiChevronDown, FiMenu, FiX } from "react-icons/fi";
 import { LuShoppingCart, LuPackage, LuWrench, LuBuilding2, LuCircleUserRound } from "react-icons/lu";
+import { getCart } from "../lib/api/cart";
 
 const categorias = [
     { label: 'Carrinhos Inteligentes', descricao: 'Linha completa SmartCart', icon: <LuShoppingCart />, to: '/produtos/categoria/carrinhos-inteligentes' },
@@ -16,7 +17,28 @@ const categorias = [
 export default function Navbar() {
     const [menuAberto, setMenuAberto] = useState(false);
     const [produtosAberto, setProdutosAberto] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
     const { isLogged, nome } = useAuth()
+    const location = useLocation()
+
+    function fetchCartCount() {
+        if (!localStorage.getItem('user_token')) { setCartCount(0); return }
+        getCart()
+            .then(res => {
+                const items = res.data.carrinho ?? []
+                setCartCount(items.reduce((sum, i) => sum + i.quantidade, 0))
+            })
+            .catch(() => setCartCount(0))
+    }
+
+    useEffect(() => {
+        fetchCartCount()
+    }, [isLogged, location.pathname])
+
+    useEffect(() => {
+        window.addEventListener('cart:updated', fetchCartCount)
+        return () => window.removeEventListener('cart:updated', fetchCartCount)
+    }, [])
 
     const fecharMenu = () => {
         setMenuAberto(false);
@@ -94,15 +116,25 @@ export default function Navbar() {
                 </>
             )}
                 
-                <Link to="/carrinho" className="text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200">
+                <Link to="/carrinho" className="relative text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200">
                     <FaCartShopping size={36} />
+                    {cartCount > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center leading-none">
+                            {cartCount > 99 ? '99+' : cartCount}
+                        </span>
+                    )}
                 </Link>
             </div>
 
             {/* Ícones mobile direita */}
             <div className="flex md:hidden items-center gap-3">
-                <Link to="/carrinho" onClick={fecharMenu}>
+                <Link to="/carrinho" onClick={fecharMenu} className="relative">
                     <FaCartShopping className="w-6 h-auto text-verde-claro" />
+                    {cartCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                            {cartCount > 99 ? '99+' : cartCount}
+                        </span>
+                    )}
                 </Link>
                 <button onClick={() => setMenuAberto(v => !v)} className="text-verde-claro p-1">
                     {menuAberto ? <FiX size={26} /> : <FiMenu size={26} />}

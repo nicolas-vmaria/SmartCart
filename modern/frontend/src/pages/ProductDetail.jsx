@@ -6,7 +6,11 @@ import { FaArrowsRotate, FaStar } from "react-icons/fa6";
 import { FaCheckCircle } from "react-icons/fa";
 import { ThumbsUp } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getProductBySlug } from "../lib/api/products";
+import { addToCart } from "../lib/api/cart";
+import Toast from "../components/Toast";
 
 const reviews = [
     { id: 1, nome: 'João Silva',      avatar: 'JS', rating: 5, data: '28/04/2026', util: 14, comentario: 'Produto incrível! A tecnologia de reconhecimento de itens funciona perfeitamente. Transformou a experiência de compras na nossa loja. Recomendo muito.' },
@@ -134,9 +138,24 @@ function ReviewCard({ review }) {
 }
 
 export default function ProductDetail() {
+    const { slug } = useParams()
+    const navigate = useNavigate()
 
+    const [produto, setProduto] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [notFound, setNotFound] = useState(false)
     const [cont, setCont] = useState(1)
     const [listaReviews, setListaReviews] = useState(reviews)
+    const [addingToCart, setAddingToCart] = useState(false)
+    const [toast, setToast] = useState(null)
+
+    useEffect(() => {
+        setLoading(true)
+        getProductBySlug(slug)
+            .then(res => setProduto(res.data.product))
+            .catch(() => setNotFound(true))
+            .finally(() => setLoading(false))
+    }, [slug])
 
     function adicionarReview({ rating, comentario }) {
         setListaReviews(prev => [{
@@ -150,75 +169,90 @@ export default function ProductDetail() {
         }, ...prev])
     }
 
-    const minusCont = () => {
-        if (cont === 1) {
-            setCont(1)
-        } else {
-            setCont(cont - 1)
+    const minusCont = () => setCont(c => Math.max(1, c - 1))
+    const plusCont  = () => setCont(c => Math.min(produto?.estoque ?? 99, c + 1))
+
+    async function handleAddToCart() {
+        if (!localStorage.getItem('user_token')) {
+            navigate('/login')
+            return
         }
 
+        setAddingToCart(true)
+        try {
+            await addToCart(produto.slug, produto.id, cont)
+            window.dispatchEvent(new CustomEvent('cart:updated'))
+            setToast({ message: `${produto.nome} adicionado ao carrinho!`, type: 'success' })
+        } catch (err) {
+            const msg = err.response?.data?.error || 'Erro ao adicionar ao carrinho'
+            setToast({ message: msg, type: 'error' })
+        } finally {
+            setAddingToCart(false)
+        }
     }
 
-    const plusCont = () => {
-        setCont(cont + 1)
-    }
 
-    // Futuramente virá da API junto com os dados do produto
-    const features = [
-        { titulo: 'RFID / NFC', descricao: 'Identifica produtos automaticamente ao colocá-los no carrinho, sem precisar passar no caixa.' },
-        { titulo: 'Computer Vision', descricao: 'Câmera com IA que reconhece itens visualmente, incluindo frutas e produtos sem código de barras.' },
-        { titulo: 'Sensor de Peso', descricao: 'Balança integrada que valida cada item reconhecido, evitando erros e fraudes.' },
-        { titulo: 'Tela Touchscreen', descricao: 'Display 10" que exibe a lista de compras e total em tempo real.' },
-        { titulo: 'Pagamento Integrado', descricao: 'Aceita cartão por aproximação, chip e PIX direto no carrinho.' },
-        { titulo: 'Conectividade IoT', descricao: 'Wi-Fi 5GHz + Bluetooth 5.0 para sincronização em tempo real com o sistema da loja.' },
-    ]
+    if (loading) return (
+        <div className="flex justify-center items-center h-[60vh]">
+            <div className="w-12 h-12 border-4 border-verde-escuro border-t-transparent rounded-full animate-spin" />
+        </div>
+    )
+
+    if (notFound || !produto) return (
+        <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400 gap-3">
+            <FaCheckCircle size={40} className="text-gray-300" />
+            <p className="text-lg">Produto não encontrado.</p>
+        </div>
+    )
+
+    const preco = Number(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
     return (
         <main className="">
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <section className="flex items-center p-10 gap-10">
-                <div className="bg-gray-200 aspect-square h-180">
-                    <img src="" alt="imagem do produto" />
+                <div className="bg-gray-100 aspect-square h-180 rounded-3xl flex items-center justify-center p-10 shrink-0">
+                    {produto.foto_url
+                        ? <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-contain" />
+                        : <span className="text-gray-400">Sem imagem</span>
+                    }
                 </div>
-                <div className="flex flex-col gap-5 py-10">
-                    <h1 className="text-gray-500">SKU: 039232</h1>
-                    <h1 className="text-4xl">Titulo do Produto</h1>
+                <div className="flex flex-col gap-5 py-10 flex-1">
+                    <p className="text-gray-400 text-sm">SKU: {produto.id}</p>
+                    <h1 className="text-4xl font-bold">{produto.nome}</h1>
                     <div className="flex gap-2 items-center">
                         <StarRating rating={4} />
-                        <p>215 Reviews</p>
+                        <p className="text-gray-500 text-sm">{listaReviews.length} avaliações</p>
                     </div>
-                    <div className="flex gap-2 items-end">
-                        <h1 className="text-3xl">R$940,99</h1>
-                        <h1 className="text-gray-500 line-through">R$1032,99</h1>
-                    </div>
-                    <div className="text-gray-500">
-                        <p>O SmartCart Pro é um carrinho de compras inteligente equipado com uma tela touchscreen integrada, projetado para transformar a experiência de compras em supermercados e lojas de varejo. Ele combina tecnologia de ponta com praticidade, oferecendo autonomia total ao consumidor dentro da loja.</p>
-                    </div>
+                    <p className="text-3xl font-bold text-verde-escuro">{preco}</p>
+                    <p className="text-sm text-gray-400">{produto.estoque > 0 ? `${produto.estoque} em estoque` : 'Fora de estoque'}</p>
                     <div className="flex gap-5">
                         <div className="flex text-xl">
-                            <button onClick={minusCont} className="flex justify-center items-center bg-white px-5 border-1 rounded-l-full border-r-0 border-gray-200 cursor-pointer hover:bg-gray-100">-</button>
-                            <div className="flex justify-center items-center bg-white  border-1 border-gray-200 px-5">{cont}</div>
-                            <button onClick={plusCont} className="flex justify-center items-center bg-white  px-5 border-1 rounded-r-full border-l-0 border-gray-200 cursor-pointer hover:bg-gray-100">+</button>
+                            <button onClick={minusCont} className="flex justify-center items-center bg-white px-5 border rounded-l-full border-r-0 border-gray-200 cursor-pointer hover:bg-gray-100">-</button>
+                            <div className="flex justify-center items-center bg-white border border-gray-200 px-5">{cont}</div>
+                            <button onClick={plusCont} className="flex justify-center items-center bg-white px-5 border rounded-r-full border-l-0 border-gray-200 cursor-pointer hover:bg-gray-100">+</button>
                         </div>
-                        <button className="flex items-center justify-center gap-2 cursor-pointer bg-verde-escuro text-verde-claro rounded-full w-full h-12 transition-all hover:bg-verde-claro hover:text-verde-escuro hover:border-verde-claro"><FaBagShopping /> Adicionar ao Carrinho</button>
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={produto.estoque === 0 || addingToCart}
+                            className="flex items-center justify-center gap-2 cursor-pointer bg-verde-escuro text-verde-claro rounded-full flex-1 h-12 transition-all hover:bg-verde-claro hover:text-verde-escuro disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            {addingToCart
+                                ? <div className="w-5 h-5 border-2 border-verde-claro border-t-transparent rounded-full animate-spin" />
+                                : <><FaBagShopping /> Adicionar ao Carrinho</>
+                            }
+                        </button>
                     </div>
                 </div>
             </section>
 
             <section className="px-10 py-16 border-t border-gray-200">
-                <div className="mb-10">
-                    <h2 className="text-4xl font-bold">O que esse <span className="italic font-light">produto</span> oferece?</h2>
-                    <p className="text-gray-500 mt-1">Tecnologia integrada para uma experiência completa</p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-6">
-                    {features.map(({ titulo, descricao }) => (
-                        <div key={titulo} className="border-2 border-gray-200 p-6 rounded-2xl transition-all hover:shadow-2xl hover:scale-105">
-                            <FaCheckCircle className="text-3xl text-verde-escuro mb-4" />
-                            <h3 className="text-xl font-bold mb-2">{titulo}</h3>
-                            <p className="text-gray-500">{descricao}</p>
-                        </div>
-                    ))}
-                </div>
+                {produto.descricao && (
+                    <div
+                        className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600 prose-strong:text-gray-800 prose-img:rounded-2xl"
+                        dangerouslySetInnerHTML={{ __html: produto.descricao }}
+                    />
+                )}
 
                 <div className="flex gap-10 mt-16 border-t border-gray-200 pt-10">
                     <div className="flex items-center gap-4">

@@ -39,13 +39,15 @@ class CartRepository {
     public function getCart(int $usuario_id): array|false {
         try {
         $stmt = $this->db->prepare('
-            SELECT 
+            SELECT
+                ic.id AS item_id,
                 c.id AS carrinho_id,
                 c.status,
                 p.id AS produto_id,
                 p.nome AS produto_nome,
                 p.preco,
                 p.foto_url,
+                p.estoque,
                 ic.quantidade,
                 (p.preco * ic.quantidade) AS subtotal
             FROM Carrinhos c

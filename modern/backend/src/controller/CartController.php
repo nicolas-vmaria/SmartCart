@@ -12,13 +12,22 @@ class CartController extends BaseController {
         $this->service = new CartService();
     }
 
+    private function getUserIdFromToken(): int {
+        $headers = getallheaders();
+        $auth = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+
+        if (!str_starts_with($auth, 'Bearer ')) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Token não fornecido']);
+            exit;
+        }
+
+        $payload = Jwt::verify(substr($auth, 7));
+        return (int) $payload['userId'];
+    }
+
     public function index() {
-        $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-        $token = str_replace('Bearer ', '', $authHeader);
-
-        $payload = Jwt::verify($token);
-        $usuario_id = $payload['userId'];
-
+        $usuario_id = $this->getUserIdFromToken();
         $result = $this->service->getCart($usuario_id);
         $this->respond($result);
     }
@@ -32,12 +41,7 @@ class CartController extends BaseController {
             return;
         }
 
-        $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-        $token = str_replace('Bearer ', '', $authHeader);
-
-        $payload = Jwt::verify($token);
-        $body['usuario_id'] = $payload['userId'];
-
+        $body['usuario_id'] = $this->getUserIdFromToken();
         $result = $this->service->addItem($body);
         $this->respond($result);
     }
@@ -55,18 +59,13 @@ class CartController extends BaseController {
         $this->respond($result);
     }
 
-    public function removeItem($id) {
+    public function removeItem(int $id) {
         $result = $this->service->removeItem($id);
         $this->respond($result);
     }
 
     public function clear() {
-        $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-        $token = str_replace('Bearer ', '', $authHeader);
-
-        $payload = Jwt::verify($token);
-        $usuario_id = $payload['userId'];
-
+        $usuario_id = $this->getUserIdFromToken();
         $result = $this->service->clearCart($usuario_id);
         $this->respond($result);
     }   

@@ -50,11 +50,9 @@ class UserRepository {
                 'role' => $user['role'],
             ];
         } catch (PDOException $e) {
-            if ($e->getCode() === '23000') {
-                throw new RuntimeException('Já existe um usuário com este email!', 0, $e);
+            if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'Duplicate')) {
+                throw new RuntimeException('EMAIL_ALREADY_EXISTS', 0, $e);
             }
-
-        
             throw $e;
         }
     }

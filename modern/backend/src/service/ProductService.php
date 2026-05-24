@@ -28,4 +28,17 @@ class ProductService{
             'product' => $product
          ];
     }
+
+    function getProductBySlug(string $slug): array {
+        $product = $this->productRepository->getProductBySlug($slug);
+
+        if (!$product) {
+            return ['error' => "Produto '$slug' não encontrado"];
+        }
+
+        return [
+            'message' => "Produto encontrado",
+            'product' => $product
+        ];
+    }
 }
