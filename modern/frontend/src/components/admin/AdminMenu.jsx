@@ -29,7 +29,7 @@ export default function AdminMenu() {
     const initials = nome.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
 
     const perms = adminUser.permissions ?? null
-    const can = (key) => !perms || (perms[key] ?? true)
+    const can = (key) => !perms || !!(perms[key])
 
     function closeAdmin() {
         setConfirm(true)

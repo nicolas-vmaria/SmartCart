@@ -68,43 +68,23 @@ class CartService {
 
     public function updateItem(int $item_id, array $body) {
         $quantidade = $body['quantidade'] ?? null;
-        
-        if(!$quantidade || $quantidade < 1) {
+
+        if (!$quantidade || $quantidade < 1) {
             http_response_code(400);
             return ['error' => 'Quantidade inválida'];
         }
 
-        $item = $this->cartRepository->findItemById($item_id);
-        if (!$item) {
-            http_response_code(400);
-            return ['error' => 'Item não encontrado'];
-        }
-
-        $produto = $this->cartRepository->findProdutoById($item['produto_id']);
-        if (!$produto) {
-            http_response_code(400);
-            return ['error' => 'Produto não encontrado'];
-        }
-
-        if($produto['estoque'] < $quantidade) {
-            http_response_code(400);
-            return ['error' => 'Quantidade insuficiente'];
-        }
-
         try {
-            $update = $this->cartRepository->updateItem($item_id, $quantidade);
-
-            if(!$update) {
+            $updated = $this->cartRepository->updateItem($item_id, (int)$quantidade);
+            if (!$updated) {
                 http_response_code(400);
-                return ['error' => 'Erro ao atualizar o item'];
+                return ['error' => 'Quantidade insuficiente ou item não encontrado'];
             }
-
-            return ['message' => "Item atualizado com sucesso"];
+            return ['message' => 'Item atualizado com sucesso'];
         } catch (Exception $e) {
             http_response_code(500);
             return ['error' => 'Erro ao atualizar o item'];
         }
-        
     }
 
     public function removeItem(int $item_id) {

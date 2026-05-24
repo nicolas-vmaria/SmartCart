@@ -12,7 +12,7 @@ class AdminRolesRepository {
     public function findAllRoles(): array {
         try {
             $stmt = $this->db->query('
-                SELECT id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos
+                SELECT id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_usuarios, ver_configuracoes
                 FROM Papeis
             ');
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -25,8 +25,8 @@ class AdminRolesRepository {
     public function createRole(array $role): array {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO Papeis (nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Papeis (nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_usuarios, ver_configuracoes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ');
 
             $stmt->execute([
@@ -41,6 +41,10 @@ class AdminRolesRepository {
                 $role['ver_admin'],
                 $role['ver_curriculos'],
                 $role['ver_trabalhos'],
+                $role['ver_cupons'],
+                $role['ver_relatorios'],
+                $role['ver_usuarios'],
+                $role['ver_configuracoes'],
             ]);
 
             $id = (int)$this->db->lastInsertId();
@@ -56,8 +60,12 @@ class AdminRolesRepository {
                 'ver_produtos'   => $role['ver_produtos'],
                 'ver_pedidos'    => $role['ver_pedidos'],
                 'ver_admin'      => $role['ver_admin'],
-                'ver_curriculos' => $role['ver_curriculos'],
-                'ver_trabalhos'  => $role['ver_trabalhos'],
+                'ver_curriculos'   => $role['ver_curriculos'],
+                'ver_trabalhos'    => $role['ver_trabalhos'],
+                'ver_cupons'       => $role['ver_cupons'],
+                'ver_relatorios'   => $role['ver_relatorios'],
+                'ver_usuarios'     => $role['ver_usuarios'],
+                'ver_configuracoes'=> $role['ver_configuracoes'],
             ];
         } catch (PDOException $e) {
             if ($e->getCode() === '23000' && (str_contains($e->getMessage(), 'Duplicate') || str_contains($e->getMessage(), 'key'))) {
@@ -71,7 +79,7 @@ class AdminRolesRepository {
     public function updateRole($id, array $role): bool {
         try {
             $stmt = $this->db->prepare('
-                UPDATE Papeis SET nome_papel = ?, badge = ?, descricao = ?, ver_dashboard = ?, ver_clientes = ?, ver_categorias = ?, ver_produtos = ?, ver_pedidos = ?, ver_admin = ?, ver_curriculos = ?, ver_trabalhos = ?
+                UPDATE Papeis SET nome_papel = ?, badge = ?, descricao = ?, ver_dashboard = ?, ver_clientes = ?, ver_categorias = ?, ver_produtos = ?, ver_pedidos = ?, ver_admin = ?, ver_curriculos = ?, ver_trabalhos = ?, ver_cupons = ?, ver_relatorios = ?, ver_usuarios = ?, ver_configuracoes = ?
                 WHERE id = ?
             ');
 
@@ -87,6 +95,10 @@ class AdminRolesRepository {
                 $role['ver_admin'],
                 $role['ver_curriculos'],
                 $role['ver_trabalhos'],
+                $role['ver_cupons'],
+                $role['ver_relatorios'],
+                $role['ver_usuarios'],
+                $role['ver_configuracoes'],
                 $id,
             ]);
 

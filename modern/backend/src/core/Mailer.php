@@ -17,8 +17,11 @@ class Mailer {
         $this->mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
     }
 
-    public function send(string $para, string $assunto, string $corpo): void {
+    public function send(string $para, string $assunto, string $corpo, string $replyTo = ''): void {
         $this->mail->addAddress($para);
+        if ($replyTo) {
+            $this->mail->addCustomHeader('Reply-To', $replyTo);
+        }
         $this->mail->CharSet = 'UTF-8';
         $this->mail->Subject = $assunto;
         $this->mail->isHTML(true);

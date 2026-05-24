@@ -8,7 +8,7 @@ class AdminProductController extends BaseController {
     private AdminProductService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        AuthMiddleware::handle('admin', 'ver_produtos');
         $this->service = new AdminProductService();
     }
 

@@ -11,7 +11,7 @@ class AdminRolesService {
 
     public function validateRole(array $body): array {
         $nome_papel = isset($body['nome_papel']) ? ucwords(trim(strtolower((string)$body['nome_papel']))) : '';
-        $badge       = isset($body['badge']) ? ucwords(trim(strtolower((string)$body['badge']))) : '';
+        $badge       = isset($body['badge']) ? trim((string)$body['badge']) : '';
         $descricao   = isset($body['descricao']) ? ucwords(trim(strtolower((string)$body['descricao']))) : '';
         $ver_dashboard = ($body['ver_dashboard'] === 'true' || $body['ver_dashboard'] === '1') ? 1 : 0;
         $ver_clientes  = ($body['ver_clientes']  === 'true' || $body['ver_clientes']  === '1') ? 1 : 0;
@@ -19,32 +19,33 @@ class AdminRolesService {
         $ver_produtos  = ($body['ver_produtos']  === 'true' || $body['ver_produtos']  === '1') ? 1 : 0;
         $ver_pedidos  = ($body['ver_pedidos']  === 'true' || $body['ver_pedidos']  === '1') ? 1 : 0;
         $ver_admin  = ($body['ver_admin']  === 'true' || $body['ver_admin']  === '1') ? 1 : 0;
-        $ver_curriculos  = ($body['ver_curriculos']  === 'true' || $body['ver_curriculos']  === '1') ? 1 : 0;        
-        $ver_trabalhos  = ($body['ver_trabalhos']  === 'true' || $body['ver_trabalhos']  === '1') ? 1 : 0;
+        $ver_curriculos   = ($body['ver_curriculos']   === 'true' || $body['ver_curriculos']   === '1') ? 1 : 0;
+        $ver_trabalhos    = ($body['ver_trabalhos']    === 'true' || $body['ver_trabalhos']    === '1') ? 1 : 0;
+        $ver_cupons       = ($body['ver_cupons']       === 'true' || $body['ver_cupons']       === '1') ? 1 : 0;
+        $ver_relatorios   = ($body['ver_relatorios']   === 'true' || $body['ver_relatorios']   === '1') ? 1 : 0;
+        $ver_usuarios     = ($body['ver_usuarios']     === 'true' || $body['ver_usuarios']     === '1') ? 1 : 0;
+        $ver_configuracoes= ($body['ver_configuracoes']=== 'true' || $body['ver_configuracoes']=== '1') ? 1 : 0;
 
         if (!$nome_papel || !$badge) {
             throw new InvalidArgumentException("Campos obrigatórios ausentes: nome_papel, badge");
         }
 
-        $permissoes = ['ver_dashboard', 'ver_clientes', 'ver_categorias', 'ver_produtos', 'ver_pedidos', 'ver_admin', 'ver_curriculos', 'ver_trabalhos'];
-        foreach ($permissoes as $p) {
-            if (!isset($body[$p])) {
-                throw new InvalidArgumentException("Campo obrigatório ausente: $p");
-            }
-        }
-
         return [
-            'nome_papel' => $nome_papel,
-            'badge' => $badge,
-            'descricao' => $descricao,
-            'ver_dashboard' => $ver_dashboard,
-            'ver_clientes' => $ver_clientes,
-            'ver_categorias' => $ver_categorias,
-            'ver_produtos' => $ver_produtos,
-            'ver_pedidos' => $ver_pedidos,
-            'ver_admin' => $ver_admin,
-            'ver_curriculos' => $ver_curriculos,
-            'ver_trabalhos' => $ver_trabalhos,
+            'nome_papel'       => $nome_papel,
+            'badge'            => $badge,
+            'descricao'        => $descricao,
+            'ver_dashboard'    => $ver_dashboard,
+            'ver_clientes'     => $ver_clientes,
+            'ver_categorias'   => $ver_categorias,
+            'ver_produtos'     => $ver_produtos,
+            'ver_pedidos'      => $ver_pedidos,
+            'ver_admin'        => $ver_admin,
+            'ver_curriculos'   => $ver_curriculos,
+            'ver_trabalhos'    => $ver_trabalhos,
+            'ver_cupons'       => $ver_cupons,
+            'ver_relatorios'   => $ver_relatorios,
+            'ver_usuarios'     => $ver_usuarios,
+            'ver_configuracoes'=> $ver_configuracoes,
         ];
     }
 

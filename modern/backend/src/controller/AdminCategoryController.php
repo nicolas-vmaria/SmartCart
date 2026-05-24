@@ -7,7 +7,7 @@ class AdminCategoryController extends BaseController {
     private AdminCategoryService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        AuthMiddleware::handle('admin', 'ver_categorias');
         $this->service = new AdminCategoryService();
     }
 

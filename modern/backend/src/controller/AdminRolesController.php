@@ -8,7 +8,7 @@ class AdminRolesController extends BaseController {
     private AdminRolesService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        AuthMiddleware::handle('admin', 'ver_admin');
         $this->service = new AdminRolesService();
     }
 

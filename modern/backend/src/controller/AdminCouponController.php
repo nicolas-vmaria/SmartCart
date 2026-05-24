@@ -8,7 +8,7 @@ class AdminCouponController extends BaseController {
     private AdminCouponService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        AuthMiddleware::handle('admin', 'ver_cupons');
         $this->service = new AdminCouponService();
     }
 

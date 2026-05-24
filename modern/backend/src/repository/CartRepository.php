@@ -98,10 +98,13 @@ class CartRepository {
 
     public function updateItem(int $item_id, int $quantidade): bool {
         try {
-            $stmt = $this->db->prepare(
-                "UPDATE Itens_Carrinho SET quantidade = ? WHERE id = ?"
-            );
-            $stmt->execute([$quantidade, $item_id]);
+            $stmt = $this->db->prepare('
+                UPDATE Itens_Carrinho ic
+                JOIN Produtos p ON p.id = ic.produto_id
+                SET ic.quantidade = ?
+                WHERE ic.id = ? AND p.estoque >= ? AND p.status = 1
+            ');
+            $stmt->execute([$quantidade, $item_id, $quantidade]);
             return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
             throw new RuntimeException('ERRO_UPDATE_ITEM', 0, $e);

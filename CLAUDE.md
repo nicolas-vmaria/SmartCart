@@ -41,12 +41,14 @@ modern/
 - Usar `Toast` para feedback de erro e sucesso
 - Usar `ConfirmDialog` antes de ações destrutivas (deletar, sair, etc.)
 - Loading states em toda chamada ao backend: spinner no botão + `disabled` durante requisição
+- Listas e grids de conteúdo carregando: usar **skeleton loading** (`animate-pulse`) no lugar de spinners — criar um componente skeleton que imita a forma do card/item real
 - Página admin carregando: spinner centralizado na tabela/grid
 - Hooks em `src/hooks/`, funções de API em `src/lib/api/`
 - Arquivos de API em `src/lib/api/`: prefixar com `admin` quando chamam rotas admin (ex: `adminProducts.js`, `adminCoupons.js`); sem prefixo quando chamam rotas de cliente (ex: `products.js`, `cart.js`) — nunca misturar chamadas admin e cliente no mesmo arquivo
 - Ícones: preferir `lucide-react` (traço fino) ou `react-icons`
 
 ### Backend
+- Toda alteração no schema do banco (nova coluna, tabela, índice, etc.) deve gerar um arquivo de migration em `modern/backend/database/migration/` seguindo a nomenclatura `mig-NNN.sql` (incrementar o número do último arquivo existente)
 - Toda rota admin usa `AuthMiddleware::handle('admin')` — nunca sem o parâmetro `'admin'`
 - Toda rota de usuário usa `AuthMiddleware::handle()` sem parâmetro
 - Estrutura: Controller → Service → Repository

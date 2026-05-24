@@ -2,18 +2,30 @@ import { useState } from 'react'
 import { FaPhone } from 'react-icons/fa'
 import { FaEnvelope } from 'react-icons/fa'
 import { FaLocationDot } from 'react-icons/fa6'
+import Toast from '../components/Toast'
+import { sendContact } from '../lib/api/contact'
 
 export default function Contato() {
     const [form, setForm] = useState({ nome: '', email: '', mensagem: '' })
     const [enviado, setEnviado] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [toast, setToast] = useState(null)
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
-        setEnviado(true)
+        setLoading(true)
+        try {
+            await sendContact(form.nome, form.email, form.mensagem)
+            setEnviado(true)
+        } catch (err) {
+            setToast({ message: err.response?.data?.error || 'Erro ao enviar mensagem. Tente novamente.', type: 'error' })
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -130,9 +142,11 @@ export default function Contato() {
 
                             <button
                                 type="submit"
-                                className="self-start text-verde-escuro border-2 border-verde-escuro rounded-full px-10 py-3 cursor-pointer transition-colors hover:bg-verde-escuro hover:text-verde-claro text-lg"
+                                disabled={loading}
+                                className="self-start text-verde-escuro border-2 border-verde-escuro rounded-full px-10 py-3 cursor-pointer transition-colors hover:bg-verde-escuro hover:text-verde-claro text-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                             >
-                                Enviar
+                                {loading && <div className="w-4 h-4 border-2 border-verde-escuro border-t-transparent rounded-full animate-spin" />}
+                                {loading ? 'Enviando...' : 'Enviar'}
                             </button>
                         </form>
                     )}
@@ -140,6 +154,7 @@ export default function Contato() {
 
             </section>
 
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
         </main>
     )
 }

@@ -10,12 +10,12 @@ export default function ProdutoCard({ produto }) {
             to={`/produto/${produto.slug}`}
             className="group bg-white rounded-3xl w-75 overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 shrink-0 block"
         >
-            <div className="bg-gray-100 w-full h-80 flex items-center justify-center p-6">
+            <div className="bg-gray-100 w-full h-80 overflow-hidden">
                 {produto.foto_url
                     ? <img
                         src={produto.foto_url}
                         alt={produto.nome}
-                        className="w-full h-full object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     : <span className="text-verde-escuro/50 text-sm">Sem imagem</span>
                 }

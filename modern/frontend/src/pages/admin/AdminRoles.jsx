@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import Toast from '../../components/Toast'
 import { Plus, Pencil, Trash2, X, Check, ShieldCheck, Shield, ChevronDown, ChevronUp, Users } from 'lucide-react'
@@ -51,7 +52,7 @@ function apiRoleToModel(r) {
         id: r.id,
         nome_papel: r.nome_papel ? r.nome_papel.charAt(0).toUpperCase() + r.nome_papel.slice(1) : '',
         descricao: r.descricao || '',
-        color: r.badge || 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200',
+        color: (r.badge && r.badge.startsWith('bg-')) ? r.badge : 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200',
         users: 0,
         permissions: {
             dashboard:     !!r.ver_dashboard,
@@ -61,33 +62,25 @@ function apiRoleToModel(r) {
             categorias:    !!r.ver_categorias,
             papeis:        !!r.ver_admin,
             curriculos:    !!r.ver_curriculos,
-            cupons:        false,
-            relatorios:    false,
-            usuarios:      false,
-            configuracoes: false,
+            cupons:        !!r.ver_cupons,
+            relatorios:    !!r.ver_relatorios,
+            usuarios:      !!r.ver_usuarios,
+            configuracoes: !!r.ver_configuracoes,
         }
     }
 }
 
 export default function AdminRoles() {
-    const [roles, setRoles] = useState([])
+    const { data: roles, setData: setRoles } = useAdminData(
+        'admin_roles',
+        async () => { const { data } = await getRolesApi(); return data.roles.map(apiRoleToModel) }
+    )
     const [showModal, setShowModal] = useState(false)
     const [editing, setEditing] = useState(null)
     const [form, setForm] = useState(buildEmptyForm())
     const [expanded, setExpanded] = useState(null)
     const [toast, setToast] = useState(null)
 
-    useEffect(() => {
-        const fetchRoles = async () => {
-            try {
-                const { data } = await getRolesApi()
-                setRoles(data.roles.map(apiRoleToModel))
-            } catch (err) {
-                setToast({ message: err.response?.data?.error || 'Erro ao carregar papéis', type: 'error' })
-            }
-        }
-        fetchRoles()
-    }, [])
 
     function openCreate() {
         setEditing(null)
@@ -112,17 +105,21 @@ export default function AdminRoles() {
         e.preventDefault()
         if (!form.nome_papel) return
         const payload = {
-            nome_papel: form.nome_papel,
-            badge:      form.color,
-            descricao:  form.descricao,
-            ver_dashboard:  form.permissions.dashboard  ? '1' : '0',
-            ver_clientes:   form.permissions.clientes   ? '1' : '0',
-            ver_categorias: form.permissions.categorias ? '1' : '0',
-            ver_produtos:   form.permissions.produtos   ? '1' : '0',
-            ver_pedidos:    form.permissions.pedidos    ? '1' : '0',
-            ver_admin:      form.permissions.papeis     ? '1' : '0',
-            ver_curriculos: form.permissions.curriculos ? '1' : '0',
-            ver_trabalhos:  '0',
+            nome_papel:       form.nome_papel,
+            badge:            form.color,
+            descricao:        form.descricao,
+            ver_dashboard:    form.permissions.dashboard     ? '1' : '0',
+            ver_clientes:     form.permissions.clientes      ? '1' : '0',
+            ver_categorias:   form.permissions.categorias    ? '1' : '0',
+            ver_produtos:     form.permissions.produtos      ? '1' : '0',
+            ver_pedidos:      form.permissions.pedidos       ? '1' : '0',
+            ver_admin:        form.permissions.papeis        ? '1' : '0',
+            ver_curriculos:   form.permissions.curriculos    ? '1' : '0',
+            ver_trabalhos:    '0',
+            ver_cupons:       form.permissions.cupons        ? '1' : '0',
+            ver_relatorios:   form.permissions.relatorios    ? '1' : '0',
+            ver_usuarios:     form.permissions.usuarios      ? '1' : '0',
+            ver_configuracoes:form.permissions.configuracoes ? '1' : '0',
         }
         if (editing) {
             try {

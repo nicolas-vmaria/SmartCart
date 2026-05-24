@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import Toast from '../../components/Toast'
 import { Plus, Pencil, Trash2, X, Check, Ticket, Loader2 } from 'lucide-react'
@@ -36,8 +37,10 @@ function inputClass() {
 }
 
 export default function AdminCupons() {
-    const [cupons, setCupons] = useState([])
-    const [loading, setLoading] = useState(true)
+    const { data: cupons, loading, setData: setCupons } = useAdminData(
+        'admin_cupons',
+        async () => { const { data } = await getCoupons(); return (data.coupons ?? []).map(mapCoupon) }
+    )
     const [saving, setSaving] = useState(false)
     const [deletingId, setDeletingId] = useState(null)
     const [showModal, setShowModal] = useState(false)
@@ -46,19 +49,6 @@ export default function AdminCupons() {
     const [deleteConfirm, setDeleteConfirm] = useState(null)
     const [toast, setToast] = useState(null)
 
-    useEffect(() => {
-        async function fetchCoupons() {
-            try {
-                const { data } = await getCoupons()
-                setCupons((data.coupons ?? []).map(mapCoupon))
-            } catch (err) {
-                setToast({ message: err.response?.data?.error || 'Erro ao carregar cupons', type: 'error' })
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchCoupons()
-    }, [])
 
     function openCreate() {
         setEditing(null)
@@ -158,13 +148,31 @@ export default function AdminCupons() {
                 </button>
             </div>
 
-            {loading ? (
-                <div className="flex justify-center items-center py-20">
-                    <Loader2 size={28} className="animate-spin text-gray-300 dark:text-(--admin-text-muted)" />
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {cupons.map(cupon => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {loading && Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5 flex flex-col gap-3 animate-pulse">
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-9 h-9 rounded-lg bg-gray-200 dark:bg-(--admin-hover)" />
+                                <div className="flex flex-col gap-1.5">
+                                    <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded w-24" />
+                                    <div className="h-3 bg-gray-200 dark:bg-(--admin-hover) rounded w-12" />
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div className="w-10 h-5 bg-gray-200 dark:bg-(--admin-hover) rounded-full" />
+                                <div className="w-6 h-6 bg-gray-200 dark:bg-(--admin-hover) rounded-md" />
+                                <div className="w-6 h-6 bg-gray-200 dark:bg-(--admin-hover) rounded-md" />
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded-full w-14" />
+                            <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded-full w-28" />
+                        </div>
+                        <div className="h-3 bg-gray-200 dark:bg-(--admin-hover) rounded w-32" />
+                    </div>
+                ))}
+                {!loading && cupons.map(cupon => {
                         const expired = isExpired(cupon.expiry)
                         const exhausted = cupon.maxUses !== null && cupon.uses >= cupon.maxUses
                         return (
@@ -213,13 +221,12 @@ export default function AdminCupons() {
                         )
                     })}
 
-                    {cupons.length === 0 && (
-                        <div className="col-span-3 py-16 text-center text-gray-400 dark:text-(--admin-text-muted)">
-                            Nenhum cupom cadastrado.
-                        </div>
-                    )}
-                </div>
-            )}
+                {!loading && cupons.length === 0 && (
+                    <div className="col-span-3 py-16 text-center text-gray-400 dark:text-(--admin-text-muted)">
+                        Nenhum cupom cadastrado.
+                    </div>
+                )}
+            </div>
 
             {showModal && (
                 <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">

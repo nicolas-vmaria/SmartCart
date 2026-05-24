@@ -35,6 +35,19 @@ class AdminAuthService {
             'userId' => $user['id'],
             'email'  => $user['email'],
             'role'   => 'admin',
+            'perms'  => [
+                'ver_dashboard'    => (bool)$user['ver_dashboard'],
+                'ver_clientes'     => (bool)$user['ver_clientes'],
+                'ver_produtos'     => (bool)$user['ver_produtos'],
+                'ver_pedidos'      => (bool)$user['ver_pedidos'],
+                'ver_categorias'   => (bool)$user['ver_categorias'],
+                'ver_admin'        => (bool)$user['ver_admin'],
+                'ver_curriculos'   => (bool)$user['ver_curriculos'],
+                'ver_cupons'       => (bool)$user['ver_cupons'],
+                'ver_relatorios'   => (bool)$user['ver_relatorios'],
+                'ver_usuarios'     => (bool)$user['ver_usuarios'],
+                'ver_configuracoes'=> (bool)$user['ver_configuracoes'],
+            ],
         ]);
 
         return [
@@ -45,13 +58,17 @@ class AdminAuthService {
                 'email'       => $user['email'],
                 'nome_papel'  => $user['role'],
                 'permissions' => [
-                    'dashboard'  => (bool)$user['ver_dashboard'],
-                    'clientes'   => (bool)$user['ver_clientes'],
-                    'produtos'   => (bool)$user['ver_produtos'],
-                    'pedidos'    => (bool)$user['ver_pedidos'],
-                    'categorias' => (bool)$user['ver_categorias'],
-                    'papeis'     => (bool)$user['ver_admin'],
-                    'curriculos' => (bool)$user['ver_curriculos'],
+                    'dashboard'    => (bool)$user['ver_dashboard'],
+                    'clientes'     => (bool)$user['ver_clientes'],
+                    'produtos'     => (bool)$user['ver_produtos'],
+                    'pedidos'      => (bool)$user['ver_pedidos'],
+                    'categorias'   => (bool)$user['ver_categorias'],
+                    'papeis'       => (bool)$user['ver_admin'],
+                    'curriculos'   => (bool)$user['ver_curriculos'],
+                    'cupons'       => (bool)$user['ver_cupons'],
+                    'relatorios'   => (bool)$user['ver_relatorios'],
+                    'usuarios'     => (bool)$user['ver_usuarios'],
+                    'configuracoes'=> (bool)$user['ver_configuracoes'],
                 ],
             ]
         ];

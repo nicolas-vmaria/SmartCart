@@ -8,7 +8,7 @@ class AdminClientController extends BaseController {
     private AdminClientService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        AuthMiddleware::handle('admin', 'ver_clientes');
         $this->service = new AdminClientService();
     }
 

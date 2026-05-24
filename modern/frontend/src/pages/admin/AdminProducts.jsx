@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink, FileText } from 'lucide-react'
 import { createProduct, getProduct, deleteProduct as deleteProductApi, editProduct } from '../../lib/api/adminProducts'
@@ -17,8 +18,14 @@ const statusStyle = {
 const emptyForm = { name: '', categoria_id: '', descricao: '', price: '', stock: '', status: 'Ativo', image: null }
 
 export default function AdminProducts() {
-    const [products, setProducts] = useState([])
-    const [categories, setCategories] = useState([])
+    const { data: products, loading, setData: setProducts } = useAdminData(
+        'admin_products',
+        async () => { const { data } = await getProduct(); return data.products ?? data }
+    )
+    const { data: categories, setData: setCategories } = useAdminData(
+        'admin_categories',
+        async () => { const { data } = await getCategories(); return data }
+    )
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState([])
     const [showModal, setShowModal] = useState(false)
@@ -29,7 +36,6 @@ export default function AdminProducts() {
     const [filters, setFilters] = useState({ status: 'Todos', categoria: 'Todas', stock: 'Todos' })
     const filterRef = useRef(null)
     const [toast, setToast] = useState(false)
-    const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [uploadingImage, setUploadingImage] = useState(false)
 
@@ -43,20 +49,6 @@ export default function AdminProducts() {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
-    async function getProducts() {
-        try {
-            const { data } = await getProduct()
-            setProducts(data.products ?? data)
-        } catch(err) {
-            setToast({ message: err.response?.data?.error || 'Erro ao conectar com o servidor' })
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        getProducts()
-    }, [])
 
     useEffect(() => {
         getCategories().then(({ data }) => setCategories(data)).catch(() => {})
@@ -245,13 +237,18 @@ export default function AdminProducts() {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading && (
-                            <tr>
-                                <td colSpan={8} className="py-12 text-center">
-                                    <div className="flex justify-center"><div className="w-6 h-6 border-2 border-verde-escuro border-t-transparent rounded-full animate-spin" /></div>
-                                </td>
+                        {loading && Array.from({ length: 8 }).map((_, i) => (
+                            <tr key={i} className="border-b border-gray-50 dark:border-(--admin-border) animate-pulse">
+                                <td className="py-3 pr-3"><div className="w-4 h-4 bg-gray-200 dark:bg-(--admin-hover) rounded" /></td>
+                                <td className="py-3"><div className="w-10 h-10 bg-gray-200 dark:bg-(--admin-hover) rounded-lg" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-36" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-24" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-16" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-10" /></td>
+                                <td className="py-3"><div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded-full w-14" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-16" /></td>
                             </tr>
-                        )}
+                        ))}
                         {!loading && filtered.map(product => (
                             <tr key={product.id} className={`border-b border-gray-50 dark:border-(--admin-border) last:border-0 ${selected.includes(product.id) ? 'bg-gray-50 dark:bg-(--admin-hover)' : ''}`}>
                                 <td className="py-3 pr-3">

@@ -91,8 +91,43 @@ export default function AdminProfile() {
         return (
             <main>
                 <AdminHeader title="Meu Perfil" description="Gerencie suas informações pessoais e de acesso." />
-                <div className="mt-10 flex justify-center">
-                    <Loader2 size={28} className="animate-spin text-gray-400 dark:text-(--admin-text-muted)" />
+                <div className="mt-5 flex flex-col gap-5 animate-pulse">
+                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6">
+                        <div className="flex items-center gap-6">
+                            <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-(--admin-hover) shrink-0" />
+                            <div className="flex flex-col gap-2 flex-1">
+                                <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded w-48" />
+                                <div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-24" />
+                                <div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-36" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6 flex flex-col gap-5">
+                        <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded w-40" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="flex flex-col gap-1.5">
+                                    <div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" />
+                                    <div className="h-10 bg-gray-200 dark:bg-(--admin-hover) rounded-xl" />
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-end">
+                            <div className="h-10 bg-gray-200 dark:bg-(--admin-hover) rounded-xl w-36" />
+                        </div>
+                    </div>
+                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6 flex flex-col gap-5">
+                        <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" />
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="flex flex-col gap-1.5">
+                                <div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" />
+                                <div className="h-10 bg-gray-200 dark:bg-(--admin-hover) rounded-xl" />
+                            </div>
+                        ))}
+                        <div className="flex justify-end">
+                            <div className="h-10 bg-gray-200 dark:bg-(--admin-hover) rounded-xl w-32" />
+                        </div>
+                    </div>
                 </div>
             </main>
         )

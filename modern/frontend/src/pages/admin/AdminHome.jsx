@@ -4,31 +4,24 @@ import { Banknote, Users, ShoppingCart, Package } from 'lucide-react'
 import Graph from "../../components/admin/Chart";
 import ProductsChart from '../../components/admin/ProductsChart'
 import RecentOrders from '../../components/admin/RecentOrders'
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAdminData } from "../../hooks/useAdminData";
 import { getProduct } from "../../lib/api/adminProducts";
 import { getClients } from "../../lib/api/clients";
 
 export default function AdminHome(){
 
-    const [products, setProducts] = useState([])
-    const [clientCount, setClientCount] = useState(null)
+    const { data: products, loading: loadingProducts } = useAdminData(
+        'admin_products',
+        async () => { const { data } = await getProduct(); return data.products ?? data }
+    )
+    const { data: clients, loading: loadingClients } = useAdminData(
+        'admin_clients',
+        async () => { const { data } = await getClients(); return Array.isArray(data) ? data : [] }
+    )
     const [toast, setToast] = useState()
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const [productsRes, clientsRes] = await Promise.all([getProduct(), getClients()])
-                setProducts(productsRes.data.products ?? productsRes.data)
-                setClientCount((clientsRes.data.clients ?? clientsRes.data).length)
-            } catch(err) {
-                setToast({ message: "Erro ao puxar dados", type: "error" })
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchData()
-    }, [])
+    const loading = loadingProducts || loadingClients
+    const clientCount = clients.length
 
     return(
         <div>
@@ -36,7 +29,7 @@ export default function AdminHome(){
 
             <section className="my-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 <CardInfo icon={Banknote} title="Faturamento" info="R$153.932,33" />
-                <CardInfo icon={Users} title="Clientes" info={loading ? '...' : (clientCount ?? 0)} />
+                <CardInfo icon={Users} title="Clientes" info={loading ? '...' : clientCount} />
                 <CardInfo icon={ShoppingCart} title="Pedidos Novos" info="16" />
                 <CardInfo icon={Package} title="Produtos" info={loading ? '...' : products.length} />
             </section>

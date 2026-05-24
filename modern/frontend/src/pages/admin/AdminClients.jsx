@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
+import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import Toast from '../../components/Toast'
 import { Search, Trash2, Loader2 } from 'lucide-react'
@@ -20,26 +21,14 @@ function formatPhone(tel) {
 }
 
 export default function AdminClients() {
-    const [clients, setClients] = useState([])
-    const [loading, setLoading] = useState(true)
+    const { data: clients, loading, setData: setClients } = useAdminData(
+        'admin_clients',
+        async () => { const { data } = await getClients(); return Array.isArray(data) ? data : [] }
+    )
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState([])
     const [deletingIds, setDeletingIds] = useState([])
     const [toast, setToast] = useState(null)
-
-    useEffect(() => {
-        async function fetchClients() {
-            try {
-                const { data } = await getClients()
-                setClients(Array.isArray(data) ? data : [])
-            } catch (err) {
-                setToast({ message: err.response?.data?.error || 'Erro ao carregar clientes', type: 'error' })
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchClients()
-    }, [])
 
     const filtered = clients.filter(c =>
         c.papel_id == 1 &&
@@ -107,26 +96,31 @@ export default function AdminClients() {
                     <span className="text-sm text-gray-400 dark:text-(--admin-text-muted) ml-auto">{filtered.length} cliente(s)</span>
                 </div>
 
-                {loading ? (
-                    <div className="flex justify-center items-center py-16">
-                        <Loader2 size={28} className="animate-spin text-gray-300 dark:text-(--admin-text-muted)" />
-                    </div>
-                ) : (
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="text-left text-gray-400 dark:text-(--admin-text-muted) border-b border-gray-100 dark:border-(--admin-border)">
-                                <th className="pb-3 pr-3">
-                                    <input type="checkbox" checked={allSelected} onChange={toggleAll} className="cursor-pointer" />
-                                </th>
-                                <th className="pb-3 font-medium">Nome</th>
-                                <th className="pb-3 font-medium">Email</th>
-                                <th className="pb-3 font-medium">Telefone</th>
-                                <th className="pb-3 font-medium">Cadastro</th>
-                                <th className="pb-3 font-medium">Ações</th>
+                <table className="w-full text-sm">
+                    <thead>
+                        <tr className="text-left text-gray-400 dark:text-(--admin-text-muted) border-b border-gray-100 dark:border-(--admin-border)">
+                            <th className="pb-3 pr-3">
+                                <input type="checkbox" checked={allSelected} onChange={toggleAll} className="cursor-pointer" disabled={loading} />
+                            </th>
+                            <th className="pb-3 font-medium">Nome</th>
+                            <th className="pb-3 font-medium">Email</th>
+                            <th className="pb-3 font-medium">Telefone</th>
+                            <th className="pb-3 font-medium">Cadastro</th>
+                            <th className="pb-3 font-medium">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading && Array.from({ length: 8 }).map((_, i) => (
+                            <tr key={i} className="border-b border-gray-50 dark:border-(--admin-border) animate-pulse">
+                                <td className="py-3 pr-3"><div className="w-4 h-4 bg-gray-200 dark:bg-(--admin-hover) rounded" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-32" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-40" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-20" /></td>
+                                <td className="py-3"><div className="w-6 h-6 bg-gray-200 dark:bg-(--admin-hover) rounded-md" /></td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {filtered.map(client => (
+                        ))}
+                        {!loading && filtered.map(client => (
                                 <tr key={client.id} className={`border-b border-gray-50 dark:border-(--admin-border) last:border-0 ${selected.includes(client.id) ? 'bg-gray-50 dark:bg-(--admin-hover)' : ''}`}>
                                     <td className="py-3 pr-3">
                                         <input
@@ -154,14 +148,13 @@ export default function AdminClients() {
                                     </td>
                                 </tr>
                             ))}
-                            {filtered.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} className="py-8 text-center text-gray-400 dark:text-(--admin-text-muted)">Nenhum cliente encontrado.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                )}
+                        {!loading && filtered.length === 0 && (
+                            <tr>
+                                <td colSpan={6} className="py-8 text-center text-gray-400 dark:text-(--admin-text-muted)">Nenhum cliente encontrado.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
 
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}

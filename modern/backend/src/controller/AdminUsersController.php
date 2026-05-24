@@ -8,7 +8,7 @@ class AdminUsersController extends BaseController {
     private AdminUsersService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        AuthMiddleware::handle('admin', 'ver_usuarios');
         $this->service = new AdminUsersService();
     }
 

@@ -18,7 +18,7 @@ export default function ProtectedRouteAdmin() {
 
     const payload = decodeToken(token)
 
-    if (!payload || payload.role !== 'admin') {
+    if (!payload || payload.role !== 'admin' || payload.exp * 1000 < Date.now()) {
         localStorage.removeItem('admin_token')
         return <Navigate to="/admin/login" replace />
     }

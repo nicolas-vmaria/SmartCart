@@ -32,6 +32,10 @@ CREATE TABLE Papeis (
     ver_admin BOOLEAN DEFAULT FALSE,
     ver_curriculos BOOLEAN DEFAULT FALSE,
     ver_trabalhos BOOLEAN DEFAULT FALSE,
+    ver_cupons BOOLEAN DEFAULT FALSE,
+    ver_relatorios BOOLEAN DEFAULT FALSE,
+    ver_usuarios BOOLEAN DEFAULT FALSE,
+    ver_configuracoes BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -185,9 +189,9 @@ CREATE TABLE Resetar_Senha (
     expire_at DATETIME NOT NULL
 );
 
-INSERT INTO Papeis (id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos)
-VALUES (1, 'cliente', NULL, 'Usuário padrão', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-       (2, 'admin', 'Admin', 'Administrador com acesso total', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
+INSERT INTO Papeis (id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_usuarios, ver_configuracoes)
+VALUES (1, 'cliente', NULL, 'Usuário padrão', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+       (2, 'admin', 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Administrador com acesso total', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
 
 INSERT INTO Usuario (papel_id, is_admin, nome, email, tel, senha)
 VALUES (2, TRUE, 'Admin', 'admin@smartcart.com', '00000000000', '$2y$12$frHJ/ZcElz8Pk2Sz/I7qpOMrqAc8YB9hriQ6RXqGzWFe6RTg37CLS');

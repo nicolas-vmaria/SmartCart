@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Plus, Pencil, Trash2, X, Check, Tag } from 'lucide-react'
 import { createCategory, getCategories, deleteCategory as deleteCategoryApi, editCategory as editCategoryApi } from '../../lib/api/category'
@@ -10,13 +11,15 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 const emptyForm = { nome: '', descricao: '' }
 
 export default function AdminCategories() {
-    const [categories, setCategories] = useState([])
+    const { data: categories, loading, setData: setCategories } = useAdminData(
+        'admin_categories',
+        async () => { const { data } = await getCategories(); return data }
+    )
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editing, setEditing] = useState(null)
     const [toast, setToast] = useState('')
     const [confirmId, setConfirmId] = useState(null)
-    const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
 
     function openCreate() {
@@ -31,20 +34,6 @@ export default function AdminCategories() {
         setShowModal(true)
     }
 
-    async function fetchCategories() {
-        try {
-            const { data } = await getCategories()
-            setCategories(data)
-        } catch(err) {
-            setToast({ message: 'Erro ao carregar categorias', type: 'error' })
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchCategories()
-    }, [])
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -106,11 +95,19 @@ export default function AdminCategories() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {loading && (
-                    <div className="col-span-3 py-16 flex justify-center">
-                        <div className="w-6 h-6 border-2 border-verde-escuro border-t-transparent rounded-full animate-spin" />
+                {loading && Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5 flex flex-col gap-3 animate-pulse">
+                        <div className="flex items-center gap-2">
+                            <div className="w-9 h-9 rounded-lg bg-gray-200 dark:bg-(--admin-hover)" />
+                            <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="h-3 bg-gray-200 dark:bg-(--admin-hover) rounded w-full" />
+                            <div className="h-3 bg-gray-200 dark:bg-(--admin-hover) rounded w-3/4" />
+                        </div>
+                        <div className="h-3 bg-gray-200 dark:bg-(--admin-hover) rounded w-20" />
                     </div>
-                )}
+                ))}
                 {!loading && categories.map(category => (
                     <div key={category.id} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5 flex flex-col gap-3">
                         <div className="flex items-start justify-between">

@@ -1,11 +1,15 @@
 import { Link } from "react-router-dom"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, memo } from "react"
 import { ShoppingCart, Trash2, Loader2, X, Tag } from "lucide-react"
 import { validateCoupon } from "../lib/api/coupons"
 import { getCart, updateCartItem, removeCartItem } from "../lib/api/cart"
 import Toast from "../components/Toast"
 
-function CartItem({ item, onMinus, onPlus, onRemove, updating }) {
+const CART_CACHE_KEY = 'cart_cache'
+
+const CartItem = memo(function CartItem({ item, onChangeQtd, onRemove, updating }) {
+    const onMinus = useCallback(() => onChangeQtd(item, -1), [item, onChangeQtd])
+    const onPlus  = useCallback(() => onChangeQtd(item, +1), [item, onChangeQtd])
     const preco = Number(item.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
     const subtotal = (Number(item.preco) * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -49,7 +53,7 @@ function CartItem({ item, onMinus, onPlus, onRemove, updating }) {
             </div>
         </div>
     )
-}
+})
 
 function EmptyCart() {
     return (
@@ -73,8 +77,10 @@ function EmptyCart() {
 }
 
 export default function Cart() {
-    const [items, setItems] = useState([])
-    const [loading, setLoading] = useState(true)
+    const [items, setItems] = useState(() => {
+        try { const c = localStorage.getItem(CART_CACHE_KEY); return c ? JSON.parse(c) : [] } catch { return [] }
+    })
+    const [loading, setLoading] = useState(() => !localStorage.getItem(CART_CACHE_KEY))
     const [updating, setUpdating] = useState(null)
     const [couponCode, setCouponCode] = useState('')
     const [appliedCoupon, setAppliedCoupon] = useState(null)
@@ -84,38 +90,50 @@ export default function Cart() {
 
     useEffect(() => {
         getCart()
-            .then(res => setItems(res.data.carrinho ?? []))
+            .then(res => {
+                const carrinho = res.data.carrinho ?? []
+                setItems(carrinho)
+                localStorage.setItem(CART_CACHE_KEY, JSON.stringify(carrinho))
+            })
             .catch(() => setItems([]))
             .finally(() => setLoading(false))
     }, [])
 
-    async function changeQtd(item, delta) {
+    const changeQtd = useCallback(async (item, delta) => {
         const novaQtd = item.quantidade + delta
         if (novaQtd < 1) return
         setUpdating(item.item_id)
         try {
             await updateCartItem(item.item_id, novaQtd)
-            setItems(prev => prev.map(i => i.item_id === item.item_id ? { ...i, quantidade: novaQtd } : i))
+            setItems(prev => {
+                const next = prev.map(i => i.item_id === item.item_id ? { ...i, quantidade: novaQtd } : i)
+                localStorage.setItem(CART_CACHE_KEY, JSON.stringify(next))
+                return next
+            })
             window.dispatchEvent(new CustomEvent('cart:updated'))
         } catch (err) {
             setToast({ message: err.response?.data?.error || 'Erro ao atualizar quantidade', type: 'error' })
         } finally {
             setUpdating(null)
         }
-    }
+    }, [])
 
-    async function handleRemove(item_id) {
+    const handleRemove = useCallback(async (item_id) => {
         setUpdating(item_id)
         try {
             await removeCartItem(item_id)
-            setItems(prev => prev.filter(i => i.item_id !== item_id))
+            setItems(prev => {
+                const next = prev.filter(i => i.item_id !== item_id)
+                localStorage.setItem(CART_CACHE_KEY, JSON.stringify(next))
+                return next
+            })
             window.dispatchEvent(new CustomEvent('cart:updated'))
         } catch {
             setToast({ message: 'Erro ao remover item', type: 'error' })
         } finally {
             setUpdating(null)
         }
-    }
+    }, [])
 
     async function applyCoupon() {
         if (!couponCode.trim()) return
@@ -160,8 +178,26 @@ export default function Cart() {
                 </h1>
 
                 {loading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="w-10 h-10 border-4 border-verde-escuro border-t-transparent rounded-full animate-spin" />
+                    <div className="flex flex-col gap-4">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="flex bg-gray-100 p-8 rounded-2xl gap-6 items-center animate-pulse">
+                                <div className="w-36 h-36 rounded-2xl bg-gray-200 shrink-0" />
+                                <div className="flex w-full items-center justify-between gap-4">
+                                    <div className="flex flex-col gap-2 flex-1">
+                                        <div className="h-5 bg-gray-200 rounded w-48" />
+                                        <div className="h-3 bg-gray-200 rounded w-24" />
+                                        <div className="h-3 bg-gray-200 rounded w-20" />
+                                    </div>
+                                    <div className="h-6 bg-gray-200 rounded w-28 shrink-0" />
+                                    <div className="flex shrink-0">
+                                        <div className="w-9 h-9 bg-gray-200 rounded-l-xl" />
+                                        <div className="w-9 h-9 bg-gray-200 border-x border-gray-300" />
+                                        <div className="w-9 h-9 bg-gray-200 rounded-r-xl" />
+                                    </div>
+                                    <div className="w-6 h-6 bg-gray-200 rounded shrink-0" />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : items.length === 0 ? (
                     <EmptyCart />
@@ -172,8 +208,7 @@ export default function Cart() {
                                 key={item.item_id}
                                 item={item}
                                 updating={updating === item.item_id}
-                                onMinus={() => changeQtd(item, -1)}
-                                onPlus={() => changeQtd(item, +1)}
+                                onChangeQtd={changeQtd}
                                 onRemove={() => handleRemove(item.item_id)}
                             />
                         ))}

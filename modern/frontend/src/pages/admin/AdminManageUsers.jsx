@@ -1,17 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
+import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import Toast from '../../components/Toast'
 import { Loader2, Search, Trash2, Pencil, X, UserPlus, SlidersHorizontal, Check, Shield, KeyRound, AlertTriangle } from 'lucide-react'
 import { getUsers, createUser, updateUser, deleteUser, resetUserPassword } from '../../lib/api/users'
 import { getRoles } from '../../lib/api/roles'
 
-const ROLE_COLORS = [
-    'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300',
-    'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300',
-    'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300',
-    'bg-pink-100 text-pink-700 dark:bg-pink-500/25 dark:text-pink-300',
-    'bg-orange-100 text-orange-700 dark:bg-orange-500/25 dark:text-orange-300',
-]
+const DEFAULT_BADGE = 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200'
 
 const emptyForm = { name: '', email: '', tel: '', papel_id: '' }
 
@@ -34,9 +29,14 @@ function mapUser(u) {
 }
 
 export default function AdminManageUsers() {
-    const [users, setUsers] = useState([])
-    const [roles, setRoles] = useState([])
-    const [loading, setLoading] = useState(true)
+    const { data: users, loading, setData: setUsers } = useAdminData(
+        'admin_users',
+        async () => { const { data } = await getUsers(); return (data.usuarios || []).map(mapUser) }
+    )
+    const { data: roles, setData: setRoles } = useAdminData(
+        'admin_roles_list',
+        async () => { const { data } = await getRoles(); return data.roles.filter(r => r.nome_papel.toLowerCase() !== 'cliente') }
+    )
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState([])
     const [showModal, setShowModal] = useState(false)
@@ -62,22 +62,8 @@ export default function AdminManageUsers() {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
-    useEffect(() => {
-        async function load() {
-            try {
-                const [usersRes, rolesRes] = await Promise.all([getUsers(), getRoles()])
-                setUsers((usersRes.data.usuarios || []).map(mapUser))
-                setRoles(rolesRes.data.roles.filter(r => r.nome_papel.toLowerCase() !== 'cliente'))
-            } catch (err) {
-                setToast({ message: 'Erro ao carregar dados', type: 'error' })
-            } finally {
-                setLoading(false)
-            }
-        }
-        load()
-    }, [])
 
-    const roleColorMap = Object.fromEntries(roles.map((r, i) => [r.nome_papel, ROLE_COLORS[i % ROLE_COLORS.length]]))
+    const roleColorMap = Object.fromEntries(roles.map(r => [r.nome_papel, (r.badge && r.badge.startsWith('bg-')) ? r.badge : DEFAULT_BADGE]))
 
     const activeFiltersCount = [filters.role !== 'Todos'].filter(Boolean).length
 
@@ -295,13 +281,22 @@ export default function AdminManageUsers() {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan={7} className="py-12 text-center">
-                                    <Loader2 size={24} className="animate-spin mx-auto text-gray-400 dark:text-(--admin-text-muted)" />
+                        {loading && Array.from({ length: 8 }).map((_, i) => (
+                            <tr key={i} className="border-b border-gray-50 dark:border-(--admin-border) animate-pulse">
+                                <td className="py-3 pr-3"><div className="w-4 h-4 bg-gray-200 dark:bg-(--admin-hover) rounded" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-32" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-40" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" /></td>
+                                <td className="py-3"><div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded-full w-20" /></td>
+                                <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-20" /></td>
+                                <td className="py-3 flex gap-1">
+                                    <div className="w-6 h-6 bg-gray-200 dark:bg-(--admin-hover) rounded-md" />
+                                    <div className="w-6 h-6 bg-gray-200 dark:bg-(--admin-hover) rounded-md" />
+                                    <div className="w-6 h-6 bg-gray-200 dark:bg-(--admin-hover) rounded-md" />
                                 </td>
                             </tr>
-                        ) : filtered.length === 0 ? (
+                        ))}
+                        {!loading && filtered.length === 0 ? (
                             <tr>
                                 <td colSpan={7} className="py-8 text-center text-gray-400 dark:text-(--admin-text-muted)">Nenhum usuário encontrado.</td>
                             </tr>

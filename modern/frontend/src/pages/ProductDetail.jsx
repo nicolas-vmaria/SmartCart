@@ -193,9 +193,22 @@ export default function ProductDetail() {
 
 
     if (loading) return (
-        <div className="flex justify-center items-center h-[60vh]">
-            <div className="w-12 h-12 border-4 border-verde-escuro border-t-transparent rounded-full animate-spin" />
-        </div>
+        <main className="animate-pulse">
+            <section className="flex items-center p-10 gap-10">
+                <div className="bg-gray-200 aspect-square h-180 rounded-3xl shrink-0" />
+                <div className="flex flex-col gap-5 py-10 flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-20" />
+                    <div className="h-10 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-40" />
+                    <div className="h-9 bg-gray-200 rounded w-36" />
+                    <div className="h-4 bg-gray-200 rounded w-28" />
+                    <div className="flex gap-5">
+                        <div className="h-12 bg-gray-200 rounded-full w-36" />
+                        <div className="h-12 bg-gray-200 rounded-full flex-1" />
+                    </div>
+                </div>
+            </section>
+        </main>
     )
 
     if (notFound || !produto) return (
@@ -211,10 +224,10 @@ export default function ProductDetail() {
         <main className="">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <section className="flex items-center p-10 gap-10">
-                <div className="bg-gray-100 aspect-square h-180 rounded-3xl flex items-center justify-center p-10 shrink-0">
+                <div className="bg-gray-100 aspect-square h-180 rounded-3xl overflow-hidden shrink-0">
                     {produto.foto_url
-                        ? <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-contain" />
-                        : <span className="text-gray-400">Sem imagem</span>
+                        ? <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" />
+                        : <div className="w-full h-full flex items-center justify-center"><span className="text-gray-400">Sem imagem</span></div>
                     }
                 </div>
                 <div className="flex flex-col gap-5 py-10 flex-1">

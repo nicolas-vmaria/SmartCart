@@ -7,7 +7,7 @@ class AdminCurriculoController {
     private AdminCurriculoService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        AuthMiddleware::handle('admin', 'ver_curriculos');
         $this->service = new AdminCurriculoService();
     }
 

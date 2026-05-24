@@ -14,7 +14,8 @@ class UserRepository {
             SELECT u.id, u.nome, u.email, u.tel, u.senha, u.is_admin,
                    p.nome_papel AS role,
                    p.ver_dashboard, p.ver_clientes, p.ver_categorias,
-                   p.ver_produtos, p.ver_pedidos, p.ver_admin, p.ver_curriculos
+                   p.ver_produtos, p.ver_pedidos, p.ver_admin, p.ver_curriculos,
+                   p.ver_cupons, p.ver_relatorios, p.ver_usuarios, p.ver_configuracoes
             FROM Usuario u
             JOIN Papeis p ON p.id = u.papel_id
             WHERE u.email = ?
@@ -33,7 +34,7 @@ class UserRepository {
             ');
             $stmt->execute([
                 1,
-                false,
+                0,
                 $user['nome'],
                 $user['email'],
                 $user['tel'],
