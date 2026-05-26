@@ -2,8 +2,9 @@
 
 require_once __DIR__ . '/../service/AdminOrderService.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/BaseController.php';
 
-class AdminOrderController {
+class AdminOrderController extends BaseController {
     private AdminOrderService $service;
 
     public function __construct() {
@@ -12,15 +13,26 @@ class AdminOrderController {
     }
 
     public function index() {
-        echo json_encode($this->service->getAllOrders());
+        $result = $this->service->getAllOrders();
+        $this->respond($result);
+    }
+
+    public function getOrderById(string $id) {
+        $result = $this->service->getOrderById($id);
+        $this->respond($result);
     }
 
     public function updateStatus(string $id) {
-        echo json_encode($this->service->updateStatus($id));
-    }
+        $body = $this->getBody();
 
-    public function destroy(string $id) {
-        echo json_encode($this->service->deleteOrder($id));
+        if (!$body) {
+            $this->respond(['error' => 'JSON inválido ou corpo vazio'], 400);
+            return;
+        }
+
+        $result = $this->service->updateStatus($id, $body);
+        $this->respond($result);
+        
     }
 
     public function analytics() {

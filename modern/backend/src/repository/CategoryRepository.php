@@ -20,7 +20,7 @@ class CategoryRepository {
             FROM Produtos p
             INNER JOIN Categorias c ON p.categoria_id = c.id
             WHERE c.slug = :slug
-              AND p.status = TRUE
+            AND p.status = TRUE
             ORDER BY p.nome
         ');
         $stmt->execute([':slug' => $slug]);
