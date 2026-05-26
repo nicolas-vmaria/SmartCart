@@ -16,17 +16,17 @@ const CartItem = memo(function CartItem({ item, onChangeQtd, onRemove, updating 
     const subtotal = (Number(item.preco) * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
     return (
-        <div className="flex bg-gray-100 p-8 rounded-2xl gap-6 items-center">
-            <div className="w-36 h-36 rounded-2xl border-2 border-gray-200 bg-white flex justify-center items-center shrink-0 overflow-hidden">
+        <div className="flex flex-col sm:flex-row bg-gray-100 p-5 sm:p-8 rounded-2xl gap-4 sm:gap-6 items-start sm:items-center">
+            <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-2xl border-2 border-gray-200 bg-white flex justify-center items-center shrink-0 overflow-hidden">
                 {item.foto_url
                     ? <img src={item.foto_url} alt={item.produto_nome} className="w-full h-full object-contain p-2" />
                     : <ShoppingCart className="text-gray-300 text-4xl" size={40} />
                 }
             </div>
 
-            <div className="flex w-full items-center justify-between gap-4">
-                <div className="flex flex-col gap-1 min-w-0">
-                    <h1 className="text-xl font-bold truncate">{item.produto_nome}</h1>
+            <div className="flex w-full flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-col gap-1 min-w-0 flex-1">
+                    <h1 className="text-lg sm:text-xl font-bold truncate">{item.produto_nome}</h1>
                     <p className="text-gray-500 text-sm">SKU: {item.produto_id}</p>
                     <p className="text-verde-escuro font-semibold text-sm">{preco} un.</p>
                     {item.quantidade > item.estoque && (
@@ -36,7 +36,7 @@ const CartItem = memo(function CartItem({ item, onChangeQtd, onRemove, updating 
                     )}
                 </div>
 
-                <p className="font-bold text-xl w-36 text-right shrink-0">{subtotal}</p>
+                <p className="font-bold text-xl text-right shrink-0">{subtotal}</p>
 
                 <div className="flex text-lg shrink-0">
                     <button
@@ -210,7 +210,7 @@ export default function Cart() {
     const total = subtotalComDesconto + (frete ?? 0)
 
     return (
-        <main className="min-h-screen w-full flex justify-center gap-20 p-10">
+        <main className="min-h-screen w-full flex flex-col lg:flex-row justify-center gap-6 lg:gap-10 p-5 md:p-10 items-start">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             {confirmClear && (
                 <ConfirmDialog
@@ -222,7 +222,7 @@ export default function Cart() {
                 />
             )}
 
-            <section className="flex flex-col w-[70%]">
+            <section className="flex flex-col w-full lg:flex-1">
                 <div className="flex items-center justify-between py-5">
                     <h1 className="text-4xl font-bold">
                         Carrinho
@@ -277,7 +277,7 @@ export default function Cart() {
                 )}
             </section>
 
-            <section className="flex items-start mt-20 w-[20%]">
+            <section className="flex items-start w-full lg:w-80 lg:mt-20 shrink-0">
                 <div className="bg-gray-100 shadow-2xl p-5 rounded-2xl w-full">
                     <h1 className="text-2xl font-bold">Resumo do pedido</h1>
 

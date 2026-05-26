@@ -194,8 +194,8 @@ export default function ProductDetail() {
 
     if (loading) return (
         <main className="animate-pulse">
-            <section className="flex items-center p-10 gap-10">
-                <div className="bg-gray-200 aspect-square h-180 rounded-3xl shrink-0" />
+            <section className="flex flex-col md:flex-row items-center p-5 md:p-10 gap-6 md:gap-10">
+                <div className="bg-gray-200 aspect-square w-full max-w-sm md:max-w-none md:h-120 rounded-3xl shrink-0" />
                 <div className="flex flex-col gap-5 py-10 flex-1">
                     <div className="h-4 bg-gray-200 rounded w-20" />
                     <div className="h-10 bg-gray-200 rounded w-3/4" />
@@ -223,8 +223,8 @@ export default function ProductDetail() {
     return (
         <main className="">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-            <section className="flex items-center p-10 gap-10">
-                <div className="bg-gray-100 aspect-square h-180 rounded-3xl overflow-hidden shrink-0">
+            <section className="flex flex-col md:flex-row items-center p-5 md:p-10 gap-6 md:gap-10">
+                <div className="bg-gray-100 aspect-square w-full max-w-sm mx-auto md:max-w-none md:h-120 rounded-3xl overflow-hidden shrink-0">
                     {produto.foto_url
                         ? <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center"><span className="text-gray-400">Sem imagem</span></div>
@@ -259,7 +259,7 @@ export default function ProductDetail() {
                 </div>
             </section>
 
-            <section className="px-10 py-16 border-t border-gray-200">
+            <section className="px-5 md:px-10 py-10 md:py-16 border-t border-gray-200">
                 {produto.descricao && (
                     <div
                         className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600 prose-strong:text-gray-800 prose-img:rounded-2xl"
@@ -267,7 +267,7 @@ export default function ProductDetail() {
                     />
                 )}
 
-                <div className="flex gap-10 mt-16 border-t border-gray-200 pt-10">
+                <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 mt-10 md:mt-16 border-t border-gray-200 pt-10">
                     <div className="flex items-center gap-4">
                         <FiClock className="text-4xl text-verde-escuro shrink-0" />
                         <div>
@@ -286,15 +286,15 @@ export default function ProductDetail() {
             </section>
 
             {/* Reviews */}
-            <section className="px-10 py-16 border-t border-gray-200">
+            <section className="px-5 md:px-10 py-10 md:py-16 border-t border-gray-200">
                 <div className="mb-10">
                     <h2 className="text-4xl font-bold">Avaliações dos <span className="italic font-light">clientes</span></h2>
                     <p className="text-gray-500 mt-1">{reviews.length} avaliações verificadas</p>
                 </div>
 
-                <div className="flex gap-12">
+                <div className="flex flex-col md:flex-row gap-8 md:gap-12">
                     {/* Resumo */}
-                    <div className="flex flex-col items-center gap-4 shrink-0 w-48">
+                    <div className="flex flex-col items-center gap-4 md:shrink-0 w-full md:w-48">
                         <p className="text-7xl font-bold text-gray-800">{ratingGeral}</p>
                         <StarRating rating={Math.round(ratingGeral)} />
                         <p className="text-sm text-gray-400">de 5 estrelas</p>

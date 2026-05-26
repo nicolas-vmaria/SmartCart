@@ -83,7 +83,7 @@ function DeliveryStep({ data, onChange }) {
                 <p className="text-gray-400 text-sm mt-1">Preencha os dados para envio do seu pedido.</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="CEP">
                     <div className="relative">
                         <input className={inputCls + ' w-full'} placeholder="00000-000" maxLength={9} value={data.cep}
@@ -205,7 +205,7 @@ function PaymentStep({ method, setMethod, cardData, onCardChange, cardErrors, co
             )}
 
             {method === 'cartao_credito' && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="col-span-2">
                         <Field label="Número do cartão">
                             <div className="relative">
@@ -563,7 +563,7 @@ export default function Checkout() {
 
     return (
         <main className="min-h-screen bg-gray-50 py-10 px-6">
-            <div className="max-w-5xl mx-auto flex gap-10 items-start">
+            <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
 
                 <section className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
                     <StepIndicator step={step} />
@@ -597,7 +597,7 @@ export default function Checkout() {
                     </div>
                 </section>
 
-                <aside className="w-80 shrink-0">
+                <aside className="w-full lg:w-80 shrink-0">
                     <OrderSummary itens={itens} loading={loadingCart} estado={delivery.estado} coupon={appliedCoupon} />
                 </aside>
 

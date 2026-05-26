@@ -90,7 +90,7 @@ export default function OrderConfirmation() {
                 )}
 
                 {/* Entrega e pagamento */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col gap-3 shadow-sm">
                         <h3 className="font-bold text-gray-800 flex items-center gap-2 text-sm">
                             <MapPin size={15} className="text-verde-escuro" /> Endereço de entrega

@@ -57,10 +57,10 @@ export default function Login() {
     }
 
     return (
-        <main className="flex justify-center items-center h-screen bg-gray-50  ">
+        <main className="flex justify-center items-center min-h-screen bg-gray-50 px-4">
 
             <Link to={"/"}><img src={logo} alt="Peccato Logo" className='w-40 h-auto absolute left-10 top-0' /></Link>
-            <div className="flex flex-col  items-center justify-center bg-white w-150 rounded-3xl p-15 shadow-xl">
+            <div className="flex flex-col items-center justify-center bg-white w-full max-w-md rounded-3xl p-8 sm:p-12 shadow-xl">
                 <div className='flex flex-col items-center p-10'>
                     <h1 className='text-3xl'>Bem-vindo de volta!</h1>
                     <p className='text-gray-500'>Faça login na sua Conta</p>

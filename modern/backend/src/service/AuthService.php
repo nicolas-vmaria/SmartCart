@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../repository/UserRepository.php';
 require_once __DIR__ . '/../repository/forgotPasswordRepository.php';
 require_once __DIR__ . '/../core/Jwt.php';
+require_once __DIR__ . '/../core/Mailer.php';
 
 
 class AuthService {
@@ -108,6 +109,17 @@ class AuthService {
             'role'   => $user['role'],
         ]);
 
+        try {
+            $mailer = new Mailer();
+            $mailer->send(
+                $user['email'],
+                'Bem-vindo à SmartCart! 🎉',
+                $this->buildWelcomeEmail($user['nome'])
+            );
+        } catch (Exception $e) {
+            // Falha no email não impede o cadastro
+        }
+
         return [
             'token' => $token,
             'user'    => [
@@ -115,9 +127,45 @@ class AuthService {
                 'nome'  => $user['nome'],
                 'tel'   => $user['tel'],
                 'email' => $user['email'],
-                
+
             ],
         ];
+    }
+
+    private function buildWelcomeEmail(string $nome): string {
+        $nome = htmlspecialchars($nome);
+        return "
+<div style='font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff;'>
+    <div style='text-align: center; margin-bottom: 28px;'>
+        <h1 style='color: #16a34a; font-size: 28px; margin: 0;'>SmartCart</h1>
+        <p style='color: #9ca3af; font-size: 13px; margin: 4px 0 0;'>Loja Inteligente</p>
+    </div>
+
+    <h2 style='color: #111827; font-size: 20px; margin: 0 0 8px;'>Olá, {$nome}! Seja bem-vindo(a)! 👋</h2>
+    <p style='color: #374151; font-size: 15px; line-height: 1.6; margin: 0 0 24px;'>
+        Estamos muito felizes em ter você na SmartCart. Sua conta foi criada com sucesso e você já pode aproveitar todos os nossos produtos.
+    </p>
+
+    <div style='background: #f0fdf4; border: 2px dashed #16a34a; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 24px;'>
+        <p style='color: #15803d; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;'>Presente de boas-vindas</p>
+        <p style='color: #111827; font-size: 32px; font-weight: bold; letter-spacing: 4px; margin: 0 0 8px; font-family: monospace;'>BEMVINDO10</p>
+        <p style='color: #6b7280; font-size: 13px; margin: 0;'>10% de desconto na sua primeira compra</p>
+    </div>
+
+    <p style='color: #374151; font-size: 14px; line-height: 1.6; margin: 0 0 24px;'>
+        Use o cupom acima no checkout e ganhe <strong>10% de desconto</strong> em qualquer pedido. Sem valor mínimo e sem data de expiração!
+    </p>
+
+    <div style='text-align: center; margin-bottom: 28px;'>
+        <a href='http://localhost:5173/produtos'
+           style='display: inline-block; padding: 14px 32px; background-color: #16a34a; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>
+            Explorar produtos
+        </a>
+    </div>
+
+    <hr style='border: none; border-top: 1px solid #e5e7eb; margin: 0 0 16px;'>
+    <p style='color: #9ca3af; font-size: 12px; text-align: center; margin: 0;'>SmartCart &copy; " . date('Y') . " — Loja Inteligente</p>
+</div>";
     }
 
     public function forgotPassword(array $body): array {

@@ -17,10 +17,13 @@ class Mailer {
         $this->mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
     }
 
-    public function send(string $para, string $assunto, string $corpo, string $replyTo = ''): void {
+    public function send(string $para, string $assunto, string $corpo, string $replyTo = '', ?string $anexoConteudo = null, string $anexoNome = 'anexo.pdf'): void {
         $this->mail->addAddress($para);
         if ($replyTo) {
             $this->mail->addCustomHeader('Reply-To', $replyTo);
+        }
+        if ($anexoConteudo !== null) {
+            $this->mail->addStringAttachment($anexoConteudo, $anexoNome, 'base64', 'application/pdf');
         }
         $this->mail->CharSet = 'UTF-8';
         $this->mail->Subject = $assunto;

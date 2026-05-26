@@ -124,7 +124,7 @@ export default function Candidatura() {
                 {vaga.requisitos.length > 0 && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col gap-4">
                     <h3 className="font-bold text-gray-800">O que buscamos</h3>
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Requisitos</p>
                             <ul className="flex flex-col gap-1.5">
@@ -160,7 +160,7 @@ export default function Candidatura() {
                                 <p className="text-xs text-gray-400">Preencha com atenção — usaremos para entrar em contato.</p>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Field label="Nome completo" icon={User}>
                                     <input required className={inputCls} placeholder="Seu nome"
                                         value={form.nome} onChange={e => set('nome', e.target.value)} />

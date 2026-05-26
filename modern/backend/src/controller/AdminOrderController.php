@@ -18,7 +18,7 @@ class AdminOrderController extends BaseController {
     }
 
     public function getOrderById(string $id) {
-        $result = $this->service->getOrderById($id);
+        $result = $this->service->getOrderById((int) $id);
         $this->respond($result);
     }
 
@@ -36,6 +36,7 @@ class AdminOrderController extends BaseController {
     }
 
     public function analytics() {
-        echo json_encode($this->service->getMonthlyAnalytics());
+        $result = $this->service->getMonthlyAnalytics();
+        $this->respond($result);
     }
 }

@@ -142,7 +142,7 @@ export default function UserProfile() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                     {(() => {
                         const ativos = pedidos.filter(p => p.status !== 'cancelado')
                         const total = ativos.reduce((acc, p) => acc + Number(p.total), 0)
@@ -160,16 +160,16 @@ export default function UserProfile() {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     {/* Coluna principal */}
-                    <div className="col-span-2 flex flex-col gap-6">
+                    <div className="lg:col-span-2 flex flex-col gap-6">
 
                         {/* Dados pessoais */}
                         <Card>
                             <SectionTitle>Dados pessoais</SectionTitle>
                             <form onSubmit={handleSave} className="flex flex-col gap-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className={labelCls}>
                                             <span className="flex items-center gap-1.5"><User size={13} /> Nome completo</span>
@@ -206,7 +206,7 @@ export default function UserProfile() {
                         {/* Endereço */}
                         <Card>
                             <SectionTitle><span className="flex items-center gap-2"><MapPin size={15} /> Endereço de entrega</span></SectionTitle>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className={labelCls}>CEP</label>
                                     <input className={inputCls} value={endereco.cep} onChange={e => setEndereco(p => ({ ...p, cep: e.target.value }))} />
