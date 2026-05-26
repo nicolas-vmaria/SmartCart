@@ -72,7 +72,7 @@ class CartRepository {
         $stmtCheck = $this->db->prepare(
             "SELECT id, quantidade FROM Itens_Carrinho WHERE carrinho_id = ? AND produto_id = ?"
         );
-        $stmtCheck->execute([$carrinho_id, $produto['id']]);
+        $stmtCheck->execute([$carrinho_id, $produto_id]);
         $itemExistente = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
         if ($itemExistente) {

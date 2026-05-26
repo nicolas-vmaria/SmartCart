@@ -1,8 +1,10 @@
 <?php
 
 require_once __DIR__ . '/../service/ReviewService.php';
+require_once __DIR__ . '/BaseController.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
-class ReviewController {
+class ReviewController extends BaseController {
     private ReviewService $service;
 
     public function __construct() {
@@ -10,14 +12,27 @@ class ReviewController {
     }
 
     public function index($productId) {
-        echo json_encode($this->service->getProductReviews($productId));
+        $result = $this->service->getProductReviews($productId);
+        $this->respond($result);
     }
 
     public function store($productId) {
-        echo json_encode($this->service->createReview($productId));
+        $payload = AuthMiddleware::handle();
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $body['user_id'] = (int) $payload['userId'];
+        $body['produto_id'] = $productId;
+        $result = $this->service->createReview($body);
+        $this->respond($result);
     }
 
-    public function helpful($id) {
+    public function markHelpful($id) {
         echo json_encode($this->service->markHelpful($id));
     }
 }

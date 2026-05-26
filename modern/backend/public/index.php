@@ -25,7 +25,7 @@ require_once __DIR__ . '/../src/Core/Router.php';
 // Routes
 require_once __DIR__ . '/../src/routes/HealthRoutes.php';
 require_once __DIR__ . '/../src/routes/AuthRoutes.php';
-require_once __DIR__ . '/../src/routes/UserRoutes.php';
+require_once __DIR__ . '/../src/routes/ProfileRoutes.php';
 require_once __DIR__ . '/../src/routes/ProductRoutes.php';
 require_once __DIR__ . '/../src/routes/CategoryRoutes.php';
 require_once __DIR__ . '/../src/routes/OrderRoutes.php';
