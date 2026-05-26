@@ -22,6 +22,10 @@ class AdminCouponService {
             throw new InvalidArgumentException("Campos obrigatórios ausentes: codigo, tipo_desconto, desconto, data_validade, ativo, quant_usos, max_usos");
         }
 
+        if($data_validade < date('Y-m-d')) {
+            throw new InvalidArgumentException("Cupom expirado ou data de validade inválida.");
+        }
+
         if(!isset($body[ 'ativo'])) {
             throw new InvalidArgumentException("Campo obrigatório ausente: ativo");
         }
