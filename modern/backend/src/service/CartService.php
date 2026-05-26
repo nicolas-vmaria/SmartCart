@@ -25,46 +25,48 @@ class CartService {
     }
 
     public function addItem(array $body) {
-        if(!isset($body['produto_id']) || !isset($body['quantidade']) || !isset($body['usuario_id'])) {
-            return ['error' => 'Campos obrigatórios não informados'];
-        }
-
-        $produto_id = $body['produto_id'];
-        $quantidade = $body['quantidade'];
-        $usuario_id = $body['usuario_id'];
-
-        $produto = $this->cartRepository->findProdutoById($produto_id);
-        if (!$produto) {
-            http_response_code(400);
-            return ['error' => 'Produto não encontrado'];
-        }
-
-        $ativo = $this->cartRepository->findCarrinhoAtivo($usuario_id);
-        if (!$ativo) {
-            $carrinhoId = $this->cartRepository->createCarrinho($usuario_id);
-        } else {
-            $carrinhoId = $ativo['id'];
-        }
-
-        if($produto['estoque'] < $quantidade) {
-            http_response_code(400);
-            return ['error' => 'Quantidade insuficiente'];
-        }
-
-        if(!$produto['status']) {
-            http_response_code(400);
-            return ['error' => 'Produto indisponível'];
-        }
-
-        try {
-            $this->cartRepository->addItem($carrinhoId, $produto_id, $quantidade);
-            return ['message' => "Produto {$produto['nome']} adicionado ao carrinho"];
-        } catch (Exception $e) {
-            http_response_code(500);
-            return ['error' => 'Erro ao adicionar item ao carrinho'];
-        }
-        
+    if(!isset($body['produto_id']) || !isset($body['quantidade']) || !isset($body['usuario_id'])) {
+        http_response_code(400);
+        return ['error' => 'Campos obrigatórios não informados'];
     }
+
+    $produto_id = (int)$body['produto_id'];
+    $quantidade = (int)$body['quantidade'];
+    $usuario_id = (int)$body['usuario_id'];
+
+    // 1. valida produto primeiro
+    $produto = $this->cartRepository->findProdutoById($produto_id);
+    if (!$produto) {
+        http_response_code(404);
+        return ['error' => 'Produto não encontrado'];
+    }
+
+    if (!$produto['status']) {
+        http_response_code(400);
+        return ['error' => 'Produto indisponível'];
+    }
+
+    if ($produto['estoque'] < $quantidade) {
+        http_response_code(400);
+        return ['error' => 'Quantidade insuficiente'];
+    }
+
+    // 2. só depois busca ou cria carrinho
+    $ativo = $this->cartRepository->findCarrinhoAtivo($usuario_id);
+    if (!$ativo) {
+        $carrinhoId = $this->cartRepository->createCarrinho($usuario_id);
+    } else {
+        $carrinhoId = $ativo['id'];
+    }
+
+    try {
+        $this->cartRepository->addItem($carrinhoId, $produto_id, $quantidade);
+        return ['message' => "Produto {$produto['nome']} adicionado ao carrinho"];
+    } catch (Exception $e) {
+        http_response_code(500);
+        return ['error' => 'Erro ao adicionar item ao carrinho'];
+    }
+}
 
     public function updateItem(int $item_id, array $body) {
         $quantidade = $body['quantidade'] ?? null;

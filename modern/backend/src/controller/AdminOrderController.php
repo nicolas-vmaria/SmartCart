@@ -8,7 +8,7 @@ class AdminOrderController extends BaseController {
     private AdminOrderService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_pedidos');
+        AuthMiddleware::handle('admin');
         $this->service = new AdminOrderService();
     }
 

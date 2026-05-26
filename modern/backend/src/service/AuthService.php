@@ -1,17 +1,17 @@
 <?php
 
-require_once __DIR__ . '/../repository/UserRepository.php';
+require_once __DIR__ . '/../repository/AuthRepository.php';
 require_once __DIR__ . '/../repository/forgotPasswordRepository.php';
 require_once __DIR__ . '/../core/Jwt.php';
 require_once __DIR__ . '/../core/Mailer.php';
 
 
 class AuthService {
-    private UserRepository $userRepository;
+    private AuthRepository $authRepository;
     private forgotPasswordRepository $forgotPasswordRepository;
 
     public function __construct() {
-        $this->userRepository = new UserRepository();
+        $this->authRepository = new AuthRepository();
         $this->forgotPasswordRepository = new forgotPasswordRepository();
     }
 
@@ -24,7 +24,7 @@ class AuthService {
             return ['error' => 'email e senha são obrigatórios'];
         }
 
-        $user = $this->userRepository->findByEmail($email);
+        $user = $this->authRepository->findByEmail($email);
 
         if(!$user || !password_verify($senha, $user['senha'])) {
             http_response_code(401);
@@ -79,14 +79,14 @@ class AuthService {
             return ['error' => 'Telefone inválido'];
         }
 
-        $existing = $this->userRepository->findByEmail($email);
+        $existing = $this->authRepository->findByEmail($email);
         if ($existing) {
             http_response_code(409);
             return ['error' => 'Já existe um usuário com esse e-mail'];
         }
 
         try {
-            $user = $this->userRepository->register([
+            $user = $this->authRepository->register([
                 'nome'  => $nome,
                 'email' => $email,
                 'tel' => $tel,
@@ -100,7 +100,7 @@ class AuthService {
             throw $e;
         }
 
-        $user = $this->userRepository->findByEmail($email);
+        $user = $this->authRepository->findByEmail($email);
 
         $token = Jwt::generate([
             'userId' => $user['id'],
@@ -171,7 +171,7 @@ class AuthService {
     public function forgotPassword(array $body): array {
         $email = isset($body['email']) ? trim((string)$body['email']) : '';
 
-        $usuario = $this->userRepository->findByEmail($email);
+        $usuario = $this->authRepository->findByEmail($email);
         if (!$usuario) {
             http_response_code(404);
             return ['error' => 'E-mail não encontrado'];
@@ -232,16 +232,16 @@ class AuthService {
                 return ['error' => 'E-mail é obrigatório'];
             }
 
-            $user = $this->userRepository->findByEmail($email);
+            $user = $this->authRepository->findByEmail($email);
 
             if (!$user) {
-                $this->userRepository->register([
+                $this->authRepository->register([
                     'nome'  => $nome ?: explode('@', $email)[0],
                     'email' => $email,
                     'tel'   => '',
                     'senha' => password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT),
                 ]);
-                $user = $this->userRepository->findByEmail($email);
+                $user = $this->authRepository->findByEmail($email);
             }
 
             if ($user['role'] !== 'cliente') {
@@ -291,7 +291,7 @@ class AuthService {
         }
 
         try{
-            $this->userRepository->updatePassword($registro['email'], password_hash($senha, PASSWORD_DEFAULT));
+            $this->authRepository->updatePassword($registro['email'], password_hash($senha, PASSWORD_DEFAULT));
         } catch (Exception $e){
             return ['Error' => 'Error ao atualizar a senha'];
         }

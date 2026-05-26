@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../core/connection.php';
 
-class UserRepository {
+class AuthRepository {
     private PDO $db;
 
     public function __construct() {
