@@ -36,6 +36,7 @@ export default function AdminMenu({ isOpen, onClose }) {
     }
 
     return (
+        <>
         <aside className={`w-72 md:w-80 h-screen bg-white dark:bg-(--admin-sidebar) fixed flex flex-col justify-between p-5 text-verde-escuro shadow-2xl dark:shadow-black/60 rounded-tr-2xl rounded-br-2xl z-20 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
             <div>
                 <Link to="/admin/profile" onClick={onClose} className="flex items-center gap-2 p-2 rounded-xl transition-all hover:dark:bg-(--admin-border) hover:bg-gray-100">
@@ -80,7 +81,8 @@ export default function AdminMenu({ isOpen, onClose }) {
                 <p>Sair</p>
             </button>
 
-        {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/') }} onCancel={() => {setConfirm(false)}}/>}
         </aside>
+        {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/') }} onCancel={() => {setConfirm(false)}}/>}
+        </>
     )
 }
