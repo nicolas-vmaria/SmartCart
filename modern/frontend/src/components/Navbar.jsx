@@ -175,8 +175,15 @@ export default function Navbar() {
                             <FiChevronDown className={`transition-transform duration-300 ${produtosAberto ? 'rotate-180' : ''}`} />
                         </button>
 
-                        <div className={`overflow-hidden transition-all duration-300 ${produtosAberto ? 'max-h-96' : 'max-h-0'}`}>
+                        <div className={`overflow-hidden transition-all duration-300 ${produtosAberto ? 'max-h-screen' : 'max-h-0'}`}>
                             <div className="mt-1 ml-4 flex flex-col gap-1">
+                                <Link
+                                    to="/produtos"
+                                    onClick={fecharMenu}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-800 transition-colors text-sm font-bold text-verde-claro"
+                                >
+                                    Ver todos os produtos
+                                </Link>
                                 {loadingCategorias ? (
                                     Array.from({ length: 4 }).map((_, i) => (
                                         <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl animate-pulse">

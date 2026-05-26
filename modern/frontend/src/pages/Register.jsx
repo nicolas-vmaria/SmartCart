@@ -70,11 +70,11 @@ export default function Register() {
     }
 
     return (
-        <main className="flex h-screen bg-gray-100">
+        <main className="flex min-h-screen bg-gray-100">
 
             <Link to={"/"}><img src={logo} alt="SmartCart Logo" className='w-40 h-auto absolute right-10 top-0' /></Link>
 
-            <section className="flex flex-col justify-center w-[800px] h-screen overflow-y-auto bg-white px-16 py-8">
+            <section className="flex flex-col justify-center w-full md:w-200 min-h-screen overflow-y-auto bg-white px-8 md:px-16 py-8">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     <h1 className="text-3xl text-red mb-4">Crie sua conta hoje mesmo!</h1>
 

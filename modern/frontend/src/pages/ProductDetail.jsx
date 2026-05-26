@@ -206,26 +206,26 @@ export default function ProductDetail() {
     const [notFound, setNotFound] = useState(false)
     const [cont, setCont] = useState(1)
     const [reviews, setReviews] = useState([])
-    const [reviewsLoading, setReviewsLoading] = useState(false)
     const [addingToCart, setAddingToCart] = useState(false)
     const [toast, setToast] = useState(null)
 
     useEffect(() => {
         setLoading(true)
+        setReviews([])
         getProductBySlug(slug)
-            .then(res => setProduto(res.data.product))
+            .then(async res => {
+                const product = res.data.product
+                setProduto(product)
+                try {
+                    const r = await getReviews(product.id)
+                    setReviews(r.data.reviews ?? [])
+                } catch {
+                    setReviews([])
+                }
+            })
             .catch(() => setNotFound(true))
             .finally(() => setLoading(false))
     }, [slug])
-
-    useEffect(() => {
-        if (!produto?.id) return
-        setReviewsLoading(true)
-        getReviews(produto.id)
-            .then(res => setReviews(res.data.reviews ?? []))
-            .catch(() => setReviews([]))
-            .finally(() => setReviewsLoading(false))
-    }, [produto?.id])
 
     function handleReviewCreated(newReview) {
         const nome = localStorage.getItem('user_nome') || 'Você'
@@ -395,11 +395,9 @@ export default function ProductDetail() {
                     <div className="flex flex-col gap-4 flex-1">
                         <FormReview productId={produto.id} onCreated={handleReviewCreated} />
 
-                        {reviewsLoading
-                            ? Array.from({ length: 3 }).map((_, i) => <ReviewSkeleton key={i} />)
-                            : reviews.length === 0
-                                ? <p className="text-gray-400 text-sm py-4">Nenhuma avaliação ainda. Seja o primeiro!</p>
-                                : reviews.map(r => <ReviewCard key={r.id} review={r} />)
+                        {reviews.length === 0
+                            ? <p className="text-gray-400 text-sm py-4">Nenhuma avaliação ainda. Seja o primeiro!</p>
+                            : reviews.map(r => <ReviewCard key={r.id} review={r} />)
                         }
                     </div>
                 </div>

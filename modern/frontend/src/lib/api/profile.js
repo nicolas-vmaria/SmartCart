@@ -1,13 +1,7 @@
-import { adminApi } from "../api";
+import api from '../api'
 
-export function getProfile() {
-    return adminApi.get('/admin/profile')
-}
-
-export function updateProfile(data) {
-    return adminApi.put('/admin/profile', data)
-}
-
-export function changePassword(data) {
-    return adminApi.put('/admin/profile/password', data)
-}
+export const getProfile     = ()     => api.get('/profile')
+export const updateProfile  = (body) => api.put('/profile', body)
+export const updateAddress  = (body) => api.put('/profile/address', body)
+export const updatePassword = (body) => api.put('/profile/password', body)
+export const updateAvatar   = (body) => api.post('/profile/avatar', body)

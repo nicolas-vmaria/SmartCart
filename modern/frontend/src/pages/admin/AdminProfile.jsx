@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
 import Toast from '../../components/Toast'
 import { Loader2, Check, Eye, EyeOff, Lock, Mail, Phone, User, Briefcase } from 'lucide-react'
-import { getProfile, updateProfile, changePassword } from '../../lib/api/profile'
+import { getProfile, updateProfile, changePassword } from '../../lib/api/adminProfile'
 
 function maskPhone(val) {
     const d = (val || '').replace(/\D/g, '').slice(0, 11)
