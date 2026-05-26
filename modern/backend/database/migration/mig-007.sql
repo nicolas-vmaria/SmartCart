@@ -1,0 +1,7 @@
+ALTER TABLE Usuario ADD foto_url VARCHAR(500) NULL AFTER is_admin;
+ALTER TABLE Usuario ADD cep CHAR(8) NULL AFTER foto_url;
+ALTER TABLE Usuario ADD rua VARCHAR(255) NULL AFTER cep;
+ALTER TABLE Usuario ADD numero VARCHAR(20) NULL AFTER rua;
+ALTER TABLE Usuario ADD complemento VARCHAR(255) NULL AFTER numero;
+ALTER TABLE Usuario ADD cidade VARCHAR(100) NULL AFTER complemento;
+ALTER TABLE Usuario ADD estado CHAR(2) NULL AFTER cidade;

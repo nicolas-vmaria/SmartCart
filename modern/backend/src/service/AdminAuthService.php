@@ -1,20 +1,20 @@
 <?php
 
 require_once __DIR__ . '/../core/Jwt.php';
-require_once __DIR__ . '/../repository/UserRepository.php';
+require_once __DIR__ . '/../repository/AuthRepository.php';
 
 class AdminAuthService {
-    private UserRepository $userRepository;
+    private AuthRepository $AuthRepository;
 
     public function __construct() {
-        $this->userRepository = new UserRepository();
+        $this->AuthRepository = new AuthRepository();
     }
 
     public function login(array $body): array {
         $email = $body['email'] ?? '';
         $senha = $body['senha'] ?? '';
 
-        $user = $this->userRepository->findByEmail($email);
+        $user = $this->AuthRepository->findByEmail($email);
 
         if (!$user) {
             http_response_code(401);
