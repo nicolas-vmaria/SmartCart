@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Plus, Pencil, Trash2, X, Check, Tag } from 'lucide-react'
-import { createCategory, getCategories, deleteCategory as deleteCategoryApi, editCategory as editCategoryApi } from '../../lib/api/category'
+import { createCategory, getAdminCategories, deleteCategory as deleteCategoryApi, editCategory as editCategoryApi } from '../../lib/api/adminCategories'
 import Toast from '../../components/Toast'
 import ConfirmDialog from '../../components/ConfirmDialog'
 
@@ -11,9 +11,9 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 const emptyForm = { nome: '', descricao: '' }
 
 export default function AdminCategories() {
-    const { data: categories, loading, setData: setCategories } = useAdminData(
+    const { data: categories, loading, setData: setCategories, refetch: fetchCategories, setLoading } = useAdminData(
         'admin_categories',
-        async () => { const { data } = await getCategories(); return data }
+        async () => { const { data } = await getAdminCategories(); return data }
     )
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
@@ -42,42 +42,32 @@ export default function AdminCategories() {
         setSubmitting(true)
         try {
             if (editing) {
-                await editCategory(form)
+                await editCategoryApi(editing, form)
+                setToast({message: 'Categoria editada', type: 'success'})
             } else {
                 const { data } = await createCategory(form.nome, form.descricao)
                 setToast({message: data.message, type: 'success'})
-                await fetchCategories()
             }
+            setForm(emptyForm)
+            setShowModal(false)
+            setEditing(null)
+            fetchCategories()
         } catch(err){
             setToast({message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
         } finally {
             setSubmitting(false)
         }
-
-        setForm(emptyForm)
-        setShowModal(false)
-        setEditing(null)
     }
 
     async function deleteCategory(id) {
-        
+        setLoading(true)
         try{
             await deleteCategoryApi(id)
             setToast({message: "Categoria removida com sucesso.", type: "success"})
-            await fetchCategories()
+            fetchCategories()
         } catch(err){
+            setLoading(false)
             setToast({message: err.response?.data?.error || "Erro ao conectar ao servidor", type: "error"})
-        }
-    }
-
-    async function editCategory(form) {
-        try{
-            await editCategoryApi(editing, form)
-            setToast({message: "Categoria editada", type: "success"})
-            await fetchCategories()
-        }catch(err){
-            setToast({message: err.response?.data?.error, type: "error"})
-            throw err
         }
     }
 

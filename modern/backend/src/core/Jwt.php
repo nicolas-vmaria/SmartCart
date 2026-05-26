@@ -19,7 +19,9 @@ class Jwt{
 
 
         $payload['iat'] = time();
-        $payload['exp'] = time() + (8 * 3600);
+        if (($payload['role'] ?? '') === 'admin') {
+            $payload['exp'] = time() + (8 * 3600);
+        }
 
         $body = self::base64url(json_encode(($payload)));
 
@@ -49,7 +51,7 @@ class Jwt{
 
         $payload  = json_decode(base64_decode(strtr($body, '-_', '+/')), true);
 
-        if ($payload['exp'] < time()) {
+        if (isset($payload['exp']) && $payload['exp'] < time()) {
             throw new Exception('Token expirado', 401);
         }
 

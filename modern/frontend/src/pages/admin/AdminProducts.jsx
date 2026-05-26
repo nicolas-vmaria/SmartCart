@@ -3,8 +3,9 @@ import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink, FileText } from 'lucide-react'
 import { createProduct, getProduct, deleteProduct as deleteProductApi, editProduct } from '../../lib/api/adminProducts'
-import { getCategories } from '../../lib/api/category'
+import { getAdminCategories } from '../../lib/api/adminCategories'
 import Toast from '../../components/Toast'
+import ConfirmDialog from '../../components/ConfirmDialog'
 import { uploadImage } from '../../lib/cloudinary'
 import RichTextEditor from '../../components/admin/RichTextEditor'
 
@@ -18,13 +19,13 @@ const statusStyle = {
 const emptyForm = { name: '', categoria_id: '', descricao: '', price: '', stock: '', status: 'Ativo', image: null }
 
 export default function AdminProducts() {
-    const { data: products, loading, setData: setProducts } = useAdminData(
+    const { data: products, loading, setData: setProducts, refetch: getProducts, setLoading } = useAdminData(
         'admin_products',
         async () => { const { data } = await getProduct(); return data.products ?? data }
     )
     const { data: categories, setData: setCategories } = useAdminData(
         'admin_categories',
-        async () => { const { data } = await getCategories(); return data }
+        async () => { const { data } = await getAdminCategories(); return data }
     )
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState([])
@@ -38,6 +39,8 @@ export default function AdminProducts() {
     const [toast, setToast] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [uploadingImage, setUploadingImage] = useState(false)
+    const [confirmId, setConfirmId] = useState(null)
+    const [confirmBulk, setConfirmBulk] = useState(false)
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -51,7 +54,7 @@ export default function AdminProducts() {
 
 
     useEffect(() => {
-        getCategories().then(({ data }) => setCategories(data)).catch(() => {})
+        getAdminCategories().then(({ data }) => setCategories(data)).catch(() => {})
     }, [])
 
     const activeFiltersCount = [
@@ -87,9 +90,11 @@ export default function AdminProducts() {
     }
 
     async function deleteSelected() {
+        setConfirmBulk(false)
+        setLoading(true)
         await Promise.all(selected.map(id => deleteProductApi(id)))
         setSelected([])
-        await getProducts()
+        getProducts()
     }
 
     function openEdit(product) {
@@ -114,15 +119,14 @@ export default function AdminProducts() {
             if (editing) {
                 const {data} = await editProduct(editing, form)
                 setToast({message: data.message, type: "success"})
-                await getProducts()
             } else {
                 const {data} = await createProduct(form)
                 setToast({message: data.message, type: 'success'})
-                await getProducts()
             }
             closeModal()
+            getProducts()
         } catch(err) {
-            setToast({message: err.response?.data?.error, type: 'error'})
+            setToast({message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
         } finally {
             setSubmitting(false)
         }
@@ -133,8 +137,10 @@ export default function AdminProducts() {
     }
 
     async function deleteProduct(id){
+        setConfirmId(null)
+        setLoading(true)
         await deleteProductApi(id)
-        await getProducts()
+        getProducts()
     }
 
     return (
@@ -205,7 +211,7 @@ export default function AdminProducts() {
                     </div>
 
                     {selected.length > 0 && (
-                        <button onClick={deleteSelected}
+                        <button onClick={() => setConfirmBulk(true)}
                             className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-all">
                             <Trash2 size={15} />
                             Excluir {selected.length} selecionado(s)
@@ -277,7 +283,7 @@ export default function AdminProducts() {
                                     <button onClick={() => openEdit(product)} title="Editar produto" className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                         <Pencil size={15} />
                                     </button>
-                                    <button onClick={() => deleteProduct(product.id)} title="Excluir produto" className="p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20 cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-red-500">
+                                    <button onClick={() => setConfirmId(product.id)} title="Excluir produto" className="p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20 cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-red-500">
                                         <Trash2 size={15} />
                                     </button>
                                     <a href={`/produto/${product.slug}`} target="_blank" rel="noreferrer" title="Ver no site"
@@ -440,6 +446,26 @@ export default function AdminProducts() {
                         </form>
                     </div>
                 </div>
+            )}
+
+            {confirmId && (
+                <ConfirmDialog
+                    title="Excluir produto"
+                    message="Esta ação não pode ser desfeita. Deseja continuar?"
+                    confirmLabel="Excluir"
+                    onConfirm={() => deleteProduct(confirmId)}
+                    onCancel={() => setConfirmId(null)}
+                />
+            )}
+
+            {confirmBulk && (
+                <ConfirmDialog
+                    title={`Excluir ${selected.length} produto(s)`}
+                    message="Todos os produtos selecionados serão removidos permanentemente. Deseja continuar?"
+                    confirmLabel="Excluir todos"
+                    onConfirm={deleteSelected}
+                    onCancel={() => setConfirmBulk(false)}
+                />
             )}
 
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(false)}/>}

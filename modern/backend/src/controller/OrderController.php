@@ -37,20 +37,6 @@ class OrderController extends BaseController {
         $this->respond($result, 201);
     }
 
-    public function updateStatus($id) {
-        AuthMiddleware::handle('admin');
-        $body = $this->getBody();
-
-        if (!$body) {
-            http_response_code(400);
-            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
-            return;
-        }
-
-        $result = $this->service->updateStatus((int) $id, $body);
-        $this->respond($result);
-    }
-
     public function destroy($id) {
         $payload = AuthMiddleware::handle();
         $result = $this->service->cancelOrder((int) $id, (int) $payload['userId']);

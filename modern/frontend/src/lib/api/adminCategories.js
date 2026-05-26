@@ -4,7 +4,7 @@ export function createCategory(nome, descricao){
     return adminApi.post('/admin/category', {nome, descricao})
 }
 
-export function getCategories(){
+export function getAdminCategories(){
     return adminApi.get('/admin/category')
 }
 

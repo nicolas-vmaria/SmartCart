@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import Toast from '../../components/Toast'
+import ConfirmDialog from '../../components/ConfirmDialog'
 import { Search, Trash2, Loader2 } from 'lucide-react'
 import { getClients, deleteClient } from '../../lib/api/clients'
 
@@ -29,6 +30,7 @@ export default function AdminClients() {
     const [selected, setSelected] = useState([])
     const [deletingIds, setDeletingIds] = useState([])
     const [toast, setToast] = useState(null)
+    const [confirmIds, setConfirmIds] = useState(null)
 
     const filtered = clients.filter(c =>
         c.papel_id == 1 &&
@@ -84,11 +86,10 @@ export default function AdminClients() {
 
                     {selected.length > 0 && (
                         <button
-                            onClick={() => handleDelete(selected)}
-                            disabled={deletingIds.length > 0}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-950/40 text-red-400 text-sm font-medium hover:bg-red-900/50 transition-all disabled:opacity-50"
+                            onClick={() => setConfirmIds(selected)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-950/40 text-red-400 text-sm font-medium hover:bg-red-900/50 transition-all"
                         >
-                            {deletingIds.length > 0 ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                            <Trash2 size={15} />
                             Excluir {selected.length} selecionado(s)
                         </button>
                     )}
@@ -136,14 +137,10 @@ export default function AdminClients() {
                                     <td className="py-3 text-gray-600 dark:text-(--admin-text)">{formatDate(client.created_at)}</td>
                                     <td className="py-3">
                                         <button
-                                            onClick={() => handleDelete([client.id])}
-                                            disabled={deletingIds.includes(client.id)}
-                                            className="p-1.5 rounded-md hover:bg-red-950/40 transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-red-500 disabled:opacity-50"
+                                            onClick={() => setConfirmIds([client.id])}
+                                            className="p-1.5 rounded-md hover:bg-red-950/40 transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-red-500"
                                         >
-                                            {deletingIds.includes(client.id)
-                                                ? <Loader2 size={15} className="animate-spin" />
-                                                : <Trash2 size={15} />
-                                            }
+                                            <Trash2 size={15} />
                                         </button>
                                     </td>
                                 </tr>
@@ -156,6 +153,16 @@ export default function AdminClients() {
                     </tbody>
                 </table>
             </div>
+
+            {confirmIds && (
+                <ConfirmDialog
+                    title={confirmIds.length > 1 ? `Excluir ${confirmIds.length} clientes` : 'Excluir cliente'}
+                    message="Esta ação não pode ser desfeita. Deseja continuar?"
+                    confirmLabel="Excluir"
+                    onConfirm={() => { handleDelete(confirmIds); setConfirmIds(null) }}
+                    onCancel={() => setConfirmIds(null)}
+                />
+            )}
 
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
         </main>

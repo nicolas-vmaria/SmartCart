@@ -1,22 +1,26 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Camera, Check, Eye, EyeOff, Lock, Mail, Phone, User, MapPin, Package, ChevronRight, LogOut } from 'lucide-react'
 import ConfirmDialog from '../components/ConfirmDialog'
+import { getUserOrders } from '../lib/api/orders'
 
 const inputCls = "border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-verde-escuro transition-colors w-full"
 const labelCls = "text-sm font-bold text-gray-600 mb-1 block"
 
-const pedidos = [
-    { id: '#SC-00042', produto: 'SmartCart Pro',  data: '28/04/2026', status: 'Entregue',   valor: 'R$ 920,99' },
-    { id: '#SC-00031', produto: 'SmartCart Lite', data: '10/03/2026', status: 'Em trânsito', valor: 'R$ 540,00' },
-    { id: '#SC-00018', produto: 'Kit Acessórios',  data: '02/01/2026', status: 'Entregue',   valor: 'R$ 189,90' },
-]
-
 const statusColor = {
-    'Entregue':    'bg-green-100 text-green-700',
-    'Em trânsito': 'bg-blue-100 text-blue-700',
-    'Pendente':    'bg-yellow-100 text-yellow-700',
-    'Cancelado':   'bg-red-100 text-red-700',
+    aguardando: 'bg-yellow-100 text-yellow-700',
+    pago:       'bg-blue-100 text-blue-700',
+    enviado:    'bg-indigo-100 text-indigo-700',
+    entregue:   'bg-green-100 text-green-700',
+    cancelado:  'bg-red-100 text-red-700',
+}
+
+const statusLabel = {
+    aguardando: 'Aguardando',
+    pago:       'Pago',
+    enviado:    'Enviado',
+    entregue:   'Entregue',
+    cancelado:  'Cancelado',
 }
 
 function Card({ children, className = '' }) {
@@ -40,6 +44,15 @@ export default function UserProfile() {
     const fileRef = useRef(null)
     const navigate = useNavigate()
     const [confirmLogout, setConfirmLogout] = useState(false)
+    const [pedidos, setPedidos] = useState([])
+    const [loadingPedidos, setLoadingPedidos] = useState(true)
+
+    useEffect(() => {
+        getUserOrders()
+            .then(res => setPedidos(res.data.pedidos ?? []))
+            .catch(() => {})
+            .finally(() => setLoadingPedidos(false))
+    }, [])
 
     function handleLogout() {
         localStorage.removeItem('user_token')
@@ -130,11 +143,16 @@ export default function UserProfile() {
 
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                    {[
-                        { label: 'Pedidos realizados', value: '3' },
-                        { label: 'Total gasto',        value: 'R$ 1.650,89' },
-                        { label: 'Membro desde',       value: 'Jan 2026' },
-                    ].map(({ label, value }) => (
+                    {(() => {
+                        const ativos = pedidos.filter(p => p.status !== 'cancelado')
+                        const total = ativos.reduce((acc, p) => acc + Number(p.total), 0)
+                        const fmt = v => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                        return [
+                            { label: 'Pedidos realizados', value: loadingPedidos ? '—' : String(ativos.length) },
+                            { label: 'Total gasto',        value: loadingPedidos ? '—' : fmt(total) },
+                            { label: 'Membro desde',       value: 'Jan 2026' },
+                        ]
+                    })().map(({ label, value }) => (
                         <Card key={label} className="text-center">
                             <p className="text-2xl font-bold text-verde-escuro">{value}</p>
                             <p className="text-sm text-gray-500 mt-1">{label}</p>
@@ -271,21 +289,40 @@ export default function UserProfile() {
                         <Card>
                             <SectionTitle><span className="flex items-center gap-2"><Package size={15} /> Pedidos recentes</span></SectionTitle>
                             <div className="flex flex-col gap-3">
-                                {pedidos.map(({ id, produto, data, status, valor }) => (
-                                    <div key={id} className="flex flex-col gap-1 p-3 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs font-bold text-gray-400">{id}</span>
-                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${statusColor[status]}`}>{status}</span>
+                                {loadingPedidos ? (
+                                    Array.from({ length: 3 }).map((_, i) => (
+                                        <div key={i} className="animate-pulse flex flex-col gap-1.5 p-3 rounded-xl border border-gray-100">
+                                            <div className="flex justify-between">
+                                                <div className="h-3 bg-gray-200 rounded w-16" />
+                                                <div className="h-4 bg-gray-200 rounded w-14" />
+                                            </div>
+                                            <div className="h-3 bg-gray-100 rounded w-24" />
                                         </div>
-                                        <p className="text-sm font-bold text-gray-800">{produto}</p>
-                                        <div className="flex justify-between text-xs text-gray-400">
-                                            <span>{data}</span>
-                                            <span className="font-bold text-gray-600">{valor}</span>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))
+                                ) : pedidos.length === 0 ? (
+                                    <p className="text-xs text-gray-400 text-center py-2">Nenhum pedido ainda.</p>
+                                ) : (
+                                    pedidos.slice(0, 3).map(p => {
+                                        const fmt = v => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                                        return (
+                                            <div key={p.id} className="flex flex-col gap-1 p-3 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs font-bold text-gray-400">#{String(p.id).padStart(5, '0')}</span>
+                                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${statusColor[p.status]}`}>
+                                                        {statusLabel[p.status]}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-gray-500">{p.qtd_itens} {Number(p.qtd_itens) === 1 ? 'item' : 'itens'}</p>
+                                                <div className="flex justify-between text-xs text-gray-400">
+                                                    <span>{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
+                                                    <span className="font-bold text-gray-600">{fmt(p.total)}</span>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                )}
                             </div>
-                            <Link to="/produtos" className="flex items-center justify-center gap-1 mt-4 text-sm text-verde-escuro font-bold hover:underline">
+                            <Link to="/meus-pedidos" className="flex items-center justify-center gap-1 mt-4 text-sm text-verde-escuro font-bold hover:underline">
                                 Ver todos os pedidos <ChevronRight size={14} />
                             </Link>
                         </Card>

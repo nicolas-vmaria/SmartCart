@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import Toast from '../../components/Toast'
+import ConfirmDialog from '../../components/ConfirmDialog'
 import { Plus, Pencil, Trash2, X, Check, ShieldCheck, Shield, ChevronDown, ChevronUp, Users } from 'lucide-react'
 import { createRole, getRoles as getRolesApi, updateRole } from '../../lib/api/roles'
 
@@ -80,6 +81,7 @@ export default function AdminRoles() {
     const [form, setForm] = useState(buildEmptyForm())
     const [expanded, setExpanded] = useState(null)
     const [toast, setToast] = useState(null)
+    const [confirmRoleId, setConfirmRoleId] = useState(null)
 
 
     function openCreate() {
@@ -212,7 +214,7 @@ export default function AdminRoles() {
                                     className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                     <Pencil size={15} />
                                 </button>
-                                <button onClick={() => deleteRole(role.id)}
+                                <button onClick={() => setConfirmRoleId(role.id)}
                                     className="p-1.5 rounded-md hover:bg-red-950/40 transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-red-500">
                                     <Trash2 size={15} />
                                 </button>
@@ -345,6 +347,16 @@ export default function AdminRoles() {
                         </form>
                     </div>
                 </div>
+            )}
+
+            {confirmRoleId && (
+                <ConfirmDialog
+                    title="Excluir papel"
+                    message="Este papel será removido permanentemente. Deseja continuar?"
+                    confirmLabel="Excluir"
+                    onConfirm={() => { deleteRole(confirmRoleId); setConfirmRoleId(null) }}
+                    onCancel={() => setConfirmRoleId(null)}
+                />
             )}
 
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}

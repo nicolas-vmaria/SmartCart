@@ -4,29 +4,33 @@ import { Link, useLocation } from "react-router-dom";
 import logo from '../assets/smartcart-logo-transparente.png'
 import { FaCartShopping } from "react-icons/fa6";
 import { FiChevronDown, FiMenu, FiX } from "react-icons/fi";
-import { LuShoppingCart, LuPackage, LuWrench, LuBuilding2, LuCircleUserRound } from "react-icons/lu";
+import { LuTag, LuCircleUserRound } from "react-icons/lu";
 import { getCart } from "../lib/api/cart";
-
-const categorias = [
-    { label: 'Carrinhos Inteligentes', descricao: 'Linha completa SmartCart', icon: <LuShoppingCart />, to: '/produtos/categoria/carrinhos-inteligentes' },
-    { label: 'Acessórios',            descricao: 'Complementos e periféricos', icon: <LuPackage />,      to: '/produtos/categoria/acessorios' },
-    { label: 'Peças de Reposição',    descricao: 'Manutenção e suporte',       icon: <LuWrench />,       to: '/produtos/categoria/pecas-de-reposicao' },
-    { label: 'Soluções Empresariais', descricao: 'Para redes e atacadistas',   icon: <LuBuilding2 />,    to: '/produtos/categoria/solucoes-empresariais' },
-]
+import { getCategories } from "../lib/api/categories";
+import { slugIconMap } from "../lib/categoryIcons";
 
 export default function Navbar() {
     const [menuAberto, setMenuAberto] = useState(false);
     const [produtosAberto, setProdutosAberto] = useState(false);
     const [cartCount, setCartCount] = useState(0);
+    const [categorias, setCategorias] = useState([]);
+    const [loadingCategorias, setLoadingCategorias] = useState(true);
     const { isLogged, nome } = useAuth()
     const location = useLocation()
+
+    useEffect(() => {
+        getCategories()
+            .then(({ data }) => setCategorias(data.data ?? []))
+            .catch(() => {})
+            .finally(() => setLoadingCategorias(false))
+    }, [])
 
     function fetchCartCount() {
         if (!localStorage.getItem('user_token')) { setCartCount(0); return }
         getCart()
             .then(res => {
                 const items = res.data.carrinho ?? []
-                setCartCount(items.reduce((sum, i) => sum + i.quantidade, 0))
+                setCartCount(items.length)
             })
             .catch(() => setCartCount(0))
     }
@@ -69,21 +73,34 @@ export default function Navbar() {
 
                     <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
                         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 w-72">
-                            {categorias.map(({ label, descricao, icon, to }) => (
-                                <Link
-                                    key={label}
-                                    to={to}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group/item"
-                                >
-                                    <div className="w-9 h-9 rounded-lg bg-verde-escuro/10 text-verde-escuro flex items-center justify-center text-lg shrink-0 group-hover/item:bg-verde-escuro group-hover/item:text-verde-claro transition-colors">
-                                        {icon}
+                            {loadingCategorias ? (
+                                Array.from({ length: 4 }).map((_, i) => (
+                                    <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl animate-pulse">
+                                        <div className="w-9 h-9 rounded-lg bg-gray-200 shrink-0" />
+                                        <div className="flex-1 space-y-1.5">
+                                            <div className="h-3 bg-gray-200 rounded w-3/4" />
+                                            <div className="h-2.5 bg-gray-100 rounded w-1/2" />
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-gray-800">{label}</p>
-                                        <p className="text-xs text-gray-400">{descricao}</p>
-                                    </div>
-                                </Link>
-                            ))}
+                                ))
+                            ) : categorias.map(({ nome, slug, descricao }) => {
+                                const Icon = slugIconMap[slug] ?? LuTag
+                                return (
+                                    <Link
+                                        key={slug}
+                                        to={`/produtos/categoria/${slug}`}
+                                        className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group/item"
+                                    >
+                                        <div className="w-9 h-9 rounded-lg bg-verde-escuro/10 text-verde-escuro flex items-center justify-center text-lg shrink-0 group-hover/item:bg-verde-escuro group-hover/item:text-verde-claro transition-colors">
+                                            <Icon />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-sm text-gray-800">{nome}</p>
+                                            <p className="text-xs text-gray-400">{descricao}</p>
+                                        </div>
+                                    </Link>
+                                )
+                            })}
                         </div>
                     </div>
                 </li>
@@ -160,22 +177,35 @@ export default function Navbar() {
 
                         <div className={`overflow-hidden transition-all duration-300 ${produtosAberto ? 'max-h-96' : 'max-h-0'}`}>
                             <div className="mt-1 ml-4 flex flex-col gap-1">
-                                {categorias.map(({ label, descricao, icon, to }) => (
-                                    <Link
-                                        key={label}
-                                        to={to}
-                                        onClick={fecharMenu}
-                                        className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-800 transition-colors"
-                                    >
-                                        <div className="w-8 h-8 rounded-lg bg-white/10 text-verde-claro flex items-center justify-center text-base shrink-0">
-                                            {icon}
+                                {loadingCategorias ? (
+                                    Array.from({ length: 4 }).map((_, i) => (
+                                        <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl animate-pulse">
+                                            <div className="w-8 h-8 rounded-lg bg-white/10 shrink-0" />
+                                            <div className="flex-1 space-y-1.5">
+                                                <div className="h-3 bg-white/10 rounded w-3/4" />
+                                                <div className="h-2.5 bg-white/5 rounded w-1/2" />
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="font-semibold text-sm text-verde-claro">{label}</p>
-                                            <p className="text-xs text-verde-claro/60">{descricao}</p>
-                                        </div>
-                                    </Link>
-                                ))}
+                                    ))
+                                ) : categorias.map(({ nome, slug, descricao }) => {
+                                    const Icon = slugIconMap[slug] ?? LuTag
+                                    return (
+                                        <Link
+                                            key={slug}
+                                            to={`/produtos/categoria/${slug}`}
+                                            onClick={fecharMenu}
+                                            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-800 transition-colors"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-white/10 text-verde-claro flex items-center justify-center text-base shrink-0">
+                                                <Icon />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-sm text-verde-claro">{nome}</p>
+                                                <p className="text-xs text-verde-claro/60">{descricao}</p>
+                                            </div>
+                                        </Link>
+                                    )
+                                })}
                             </div>
                         </div>
                     </div>

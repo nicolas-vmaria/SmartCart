@@ -10,7 +10,8 @@ export function useAdminData(cacheKey, fetchFn) {
     const [loading, setLoading] = useState(() => !localStorage.getItem(cacheKey))
 
     const refetch = useCallback(() => {
-        fetchFn()
+        setLoading(true)
+        return fetchFn()
             .then(fresh => {
                 setData(fresh)
                 localStorage.setItem(cacheKey, JSON.stringify(fresh))
@@ -29,5 +30,5 @@ export function useAdminData(cacheKey, fetchFn) {
         })
     }
 
-    return { data: data ?? [], loading, setData: updateCache, refetch }
+    return { data: data ?? [], loading, setData: updateCache, refetch, setLoading }
 }
