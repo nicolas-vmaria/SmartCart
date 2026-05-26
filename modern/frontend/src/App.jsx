@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar"
 import { Route, Routes, BrowserRouter, Outlet } from "react-router-dom"
+import { Menu } from "lucide-react"
 import Home from "./pages/Home"
 import Produtos from "./pages/Produtos"
 import SobreNos from "./pages/SobreNos"
@@ -25,7 +26,7 @@ import AdminCurriculos from "./pages/admin/AdminCurriculos"
 import AdminLogin from "./pages/admin/AdminLogin"
 import ProtectedRouteAdmin from "./components/admin/ProtectedRouteAdmin"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Checkout from "./pages/Checkout"
 import UserProfile from "./pages/UserProfile"
 import Politicas from "./pages/Politicas"
@@ -57,6 +58,7 @@ function Layout() {
 
 function AdminLayout() {
   const { dark } = useTheme()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (dark) {
@@ -74,8 +76,23 @@ function AdminLayout() {
 
   return (
     <main className={`flex${dark ? ' dark' : ''}`}>
-      <AdminMenu />
-      <section className="p-10 box-border w-full bg-gray-50 dark:bg-(--admin-bg) ml-80 min-h-screen">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-10 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <AdminMenu isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <section className="p-5 md:p-10 box-border w-full bg-gray-50 dark:bg-(--admin-bg) md:ml-80 min-h-screen">
+        <div className="flex items-center gap-3 mb-5 md:hidden">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 rounded-lg border border-gray-200 dark:border-(--admin-border) hover:bg-white dark:hover:bg-(--admin-card) text-verde-escuro dark:text-(--admin-accent) transition-all"
+          >
+            <Menu size={20} />
+          </button>
+          <span className="font-bold text-verde-escuro dark:text-(--admin-accent) text-lg">SmartCart Admin</span>
+        </div>
         <Outlet />
       </section>
     </main>

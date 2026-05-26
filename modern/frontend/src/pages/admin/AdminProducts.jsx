@@ -148,7 +148,7 @@ export default function AdminProducts() {
             <AdminHeader title="Produtos" description="Gerencie o catálogo de produtos da loja." />
 
             <div className="mt-5 bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5">
-                <div className="flex items-center gap-3 mb-5">
+                <div className="flex flex-wrap items-center gap-3 mb-5">
                     <div className="flex items-center gap-2 border border-gray-200 dark:border-(--admin-border) rounded-lg px-3 py-2 w-full max-w-sm">
                         <Search size={16} className="text-gray-400 dark:text-(--admin-text-muted)" />
                         <input
@@ -227,7 +227,8 @@ export default function AdminProducts() {
                     <span className="text-sm text-gray-400 dark:text-(--admin-text-muted)">{filtered.length} produto(s)</span>
                 </div>
 
-                <table className="w-full text-sm">
+                <div className="overflow-x-auto -mx-5 px-5">
+                <table className="w-full min-w-160 text-sm">
                     <thead>
                         <tr className="text-left text-gray-400 dark:text-(--admin-text-muted) border-b border-gray-100 dark:border-(--admin-border)">
                             <th className="pb-3 pr-3">
@@ -300,6 +301,7 @@ export default function AdminProducts() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {showEditor && (
@@ -314,8 +316,8 @@ export default function AdminProducts() {
             )}
 
             {showModal && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-md shadow-xl dark:shadow-black/40">
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-md shadow-xl dark:shadow-black/40 max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-verde-escuro dark:text-(--admin-accent) font-bold text-xl">{editing ? 'Editar produto' : 'Novo produto'}</h2>
                             <button onClick={closeModal} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-400 dark:text-(--admin-text-muted)">

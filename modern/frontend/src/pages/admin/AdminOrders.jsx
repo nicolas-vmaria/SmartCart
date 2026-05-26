@@ -258,7 +258,7 @@ export default function AdminOrders() {
         <main>
             <AdminHeader title="Pedidos" description="Acompanhe e gerencie todos os pedidos da loja." />
 
-            <div className="grid grid-cols-4 gap-4 mt-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5">
                 {[
                     { label: 'Total',      valor: stats.total,     cor: 'text-gray-800 dark:text-(--admin-text)' },
                     { label: 'Em trânsito', valor: stats.novos,    cor: 'text-blue-600'                          },
@@ -273,7 +273,7 @@ export default function AdminOrders() {
             </div>
 
             <div className="mt-5 bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5">
-                <div className="flex items-center gap-3 mb-5">
+                <div className="flex flex-wrap items-center gap-3 mb-5">
                     <div className="flex items-center gap-2 border border-gray-200 dark:border-(--admin-border) rounded-lg px-3 py-2 w-full max-w-sm">
                         <Search size={16} className="text-gray-400 dark:text-(--admin-text-muted)" />
                         <input
@@ -368,7 +368,8 @@ export default function AdminOrders() {
                     <span className="text-sm text-gray-400 dark:text-(--admin-text-muted) ml-auto">{filtered.length} pedido(s)</span>
                 </div>
 
-                <table className="w-full text-sm">
+                <div className="overflow-x-auto -mx-5 px-5">
+                <table className="w-full min-w-200 text-sm">
                     <thead>
                         <tr className="text-left text-gray-400 dark:text-(--admin-text-muted) border-b border-gray-100 dark:border-(--admin-border)">
                             <th className="pb-3 pr-3">
@@ -422,6 +423,7 @@ export default function AdminOrders() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             <div className="mt-5 bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5">

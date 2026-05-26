@@ -19,7 +19,7 @@ function Badge({ count }) {
     )
 }
 
-export default function AdminMenu() {
+export default function AdminMenu({ isOpen, onClose }) {
     const navigate = useNavigate()
     const [confirm, setConfirm] = useState(false)
 
@@ -36,9 +36,9 @@ export default function AdminMenu() {
     }
 
     return (
-        <aside className="w-80 h-screen bg-white dark:bg-(--admin-sidebar) fixed flex flex-col justify-between p-5 text-verde-escuro shadow-2xl dark:shadow-black/60 rounded-tr-2xl rounded-br-2xl z-10">
+        <aside className={`w-72 md:w-80 h-screen bg-white dark:bg-(--admin-sidebar) fixed flex flex-col justify-between p-5 text-verde-escuro shadow-2xl dark:shadow-black/60 rounded-tr-2xl rounded-br-2xl z-20 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
             <div>
-                <Link to="/admin/profile" className="flex items-center gap-2 p-2 rounded-xl transition-all hover:dark:bg-(--admin-border) hover:bg-gray-100">
+                <Link to="/admin/profile" onClick={onClose} className="flex items-center gap-2 p-2 rounded-xl transition-all hover:dark:bg-(--admin-border) hover:bg-gray-100">
                     <div className="flex border border-verde-escuro dark:border-(--admin-border) aspect-square w-12 h-12 rounded-full justify-center items-center shrink-0">
                         <span className="text-verde-escuro dark:text-(--admin-accent) font-bold text-sm">{initials}</span>
                     </div>
@@ -52,14 +52,14 @@ export default function AdminMenu() {
                     <ul className="flex flex-col gap-2 py-5">
                         <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Geral</h1>
                         <div className="flex flex-col gap-4">
-                            {can('dashboard')   && <Link to="/admin" className={linkClass}><LayoutDashboard size={18} />Dashboard</Link>}
-                            {can('clientes')    && <Link to="/admin/clients" className={linkClass}><Users size={18} />Clientes</Link>}
-                            {can('produtos')    && <Link to="/admin/products" className={linkClass}><Package size={18} />Produtos</Link>}
-                            {can('categorias')  && <Link to="/admin/categories" className={linkClass}><Tag size={18} />Categorias</Link>}
-                            {can('pedidos')     && <Link to="/admin/orders" className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={NOTIF_PEDIDOS} /></Link>}
-                            {can('curriculos')  && <Link to="/admin/curriculos" className={linkClass}><FileUser size={18} />Currículos<Badge count={NOTIF_CURRICULOS} /></Link>}
-                            {can('cupons')      && <Link to="/admin/cupons" className={linkClass}><Ticket size={18} />Cupons</Link>}
-                            {can('relatorios')  && <Link to="/admin/relatorios" className={linkClass}><BarChart2 size={18} />Relatórios</Link>}
+                            {can('dashboard')   && <Link to="/admin" onClick={onClose} className={linkClass}><LayoutDashboard size={18} />Dashboard</Link>}
+                            {can('clientes')    && <Link to="/admin/clients" onClick={onClose} className={linkClass}><Users size={18} />Clientes</Link>}
+                            {can('produtos')    && <Link to="/admin/products" onClick={onClose} className={linkClass}><Package size={18} />Produtos</Link>}
+                            {can('categorias')  && <Link to="/admin/categories" onClick={onClose} className={linkClass}><Tag size={18} />Categorias</Link>}
+                            {can('pedidos')     && <Link to="/admin/orders" onClick={onClose} className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={NOTIF_PEDIDOS} /></Link>}
+                            {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos<Badge count={NOTIF_CURRICULOS} /></Link>}
+                            {can('cupons')      && <Link to="/admin/cupons" onClick={onClose} className={linkClass}><Ticket size={18} />Cupons</Link>}
+                            {can('relatorios')  && <Link to="/admin/relatorios" onClick={onClose} className={linkClass}><BarChart2 size={18} />Relatórios</Link>}
                         </div>
                     </ul>
 
@@ -67,22 +67,19 @@ export default function AdminMenu() {
 
                     <ul className="py-5 flex flex-col gap-4">
                         <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Admin</h1>
-                        {can('usuarios')      && <Link to="/admin/manage-users" className={linkClass}><UserCog size={18} />Gerenciar usuários</Link>}
-                        {can('papeis')        && <Link to="/admin/roles" className={linkClass}><ShieldCheck size={18} />Gerenciar Pápeis</Link>}
-                        <Link to="/admin/help" className={linkClass}><HelpCircle size={18} />Ajuda</Link>
-                        {can('configuracoes') && <Link to="/admin/settings" className={linkClass}><Settings size={18} />Configurações</Link>}
+                        {can('usuarios')      && <Link to="/admin/manage-users" onClick={onClose} className={linkClass}><UserCog size={18} />Gerenciar usuários</Link>}
+                        {can('papeis')        && <Link to="/admin/roles" onClick={onClose} className={linkClass}><ShieldCheck size={18} />Gerenciar Pápeis</Link>}
+                        <Link to="/admin/help" onClick={onClose} className={linkClass}><HelpCircle size={18} />Ajuda</Link>
+                        {can('configuracoes') && <Link to="/admin/settings" onClick={onClose} className={linkClass}><Settings size={18} />Configurações</Link>}
                     </ul>
                 </div>
             </div>
 
-            
-                <button onClick={closeAdmin} className={linkClass}>
+            <button onClick={closeAdmin} className={linkClass}>
+                <LogOut size={18} />
+                <p>Sair</p>
+            </button>
 
-                    <LogOut size={18} />
-                    <p>Sair</p>
-
-                </button>
-        
         {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/') }} onCancel={() => {setConfirm(false)}}/>}
         </aside>
     )

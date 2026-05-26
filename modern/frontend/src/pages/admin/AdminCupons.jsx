@@ -229,8 +229,8 @@ export default function AdminCupons() {
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-md shadow-xl dark:shadow-black/40">
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-md shadow-xl dark:shadow-black/40 max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-verde-escuro dark:text-(--admin-accent) font-bold text-xl">
                                 {editing ? 'Editar cupom' : 'Novo cupom'}
@@ -330,7 +330,7 @@ export default function AdminCupons() {
             )}
 
             {deleteConfirm && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
                     <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-sm shadow-xl dark:shadow-black/40 flex flex-col gap-4">
                         <h2 className="text-verde-escuro dark:text-(--admin-accent) font-bold text-xl">Excluir cupom</h2>
                         <p className="text-sm text-gray-500 dark:text-(--admin-text-muted)">

@@ -200,7 +200,8 @@ export default function AdminRelatorios() {
             {/* Top produtos */}
             <div className="mt-5 bg-white dark:bg-(--admin-card) rounded-2xl p-5 border border-gray-200 dark:border-(--admin-border)">
                 <h2 className="text-verde-escuro dark:text-(--admin-accent) font-bold text-lg mb-4">Top produtos</h2>
-                <table className="w-full text-sm">
+                <div className="overflow-x-auto -mx-5 px-5">
+                <table className="w-full min-w-120 text-sm">
                     <thead>
                         <tr className="text-left text-gray-400 dark:text-(--admin-text-muted) border-b border-gray-100 dark:border-(--admin-border)">
                             <th className="pb-3 font-medium">#</th>
@@ -232,6 +233,7 @@ export default function AdminRelatorios() {
                         })}
                     </tbody>
                 </table>
+                </div>
             </div>
         </main>
     )
