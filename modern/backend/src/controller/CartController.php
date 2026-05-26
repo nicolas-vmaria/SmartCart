@@ -1,9 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../service/CartService.php';
-require_once __DIR__ . '/../repository/CartRepository.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/BaseController.php';
-require_once __DIR__ . '/../core/Jwt.php';
 
 class CartController extends BaseController {
     private CartService $service;
@@ -12,27 +11,14 @@ class CartController extends BaseController {
         $this->service = new CartService();
     }
 
-    private function getUserIdFromToken(): int {
-        $headers = getallheaders();
-        $auth = $headers['Authorization'] ?? $headers['authorization'] ?? '';
-
-        if (!str_starts_with($auth, 'Bearer ')) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Token não fornecido']);
-            exit;
-        }
-
-        $payload = Jwt::verify(substr($auth, 7));
-        return (int) $payload['userId'];
-    }
-
     public function index() {
-        $usuario_id = $this->getUserIdFromToken();
-        $result = $this->service->getCart($usuario_id);
+        $payload = AuthMiddleware::handle();
+        $result = $this->service->getCart((int) $payload['userId']);
         $this->respond($result);
     }
 
     public function addItem() {
+        $payload = AuthMiddleware::handle();
         $body = $this->getBody();
 
         if (!$body) {
@@ -41,12 +27,13 @@ class CartController extends BaseController {
             return;
         }
 
-        $body['usuario_id'] = $this->getUserIdFromToken();
+        $body['usuario_id'] = (int) $payload['userId'];
         $result = $this->service->addItem($body);
         $this->respond($result);
     }
 
     public function updateItem(int $item_id) {
+        AuthMiddleware::handle();
         $body = $this->getBody();
 
         if (!$body) {
@@ -60,13 +47,14 @@ class CartController extends BaseController {
     }
 
     public function removeItem(int $id) {
+        AuthMiddleware::handle();
         $result = $this->service->removeItem($id);
         $this->respond($result);
     }
 
     public function clear() {
-        $usuario_id = $this->getUserIdFromToken();
-        $result = $this->service->clearCart($usuario_id);
+        $payload = AuthMiddleware::handle();
+        $result = $this->service->clearCart((int) $payload['userId']);
         $this->respond($result);
-    }   
+    }
 }

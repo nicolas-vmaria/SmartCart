@@ -1,8 +1,10 @@
 <?php
 
 require_once __DIR__ . '/../service/OrderService.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/BaseController.php';
 
-class OrderController {
+class OrderController extends BaseController {
     private OrderService $service;
 
     public function __construct() {
@@ -10,26 +12,54 @@ class OrderController {
     }
 
     public function index() {
-        echo json_encode($this->service->getUserOrders());
+        $payload = AuthMiddleware::handle();
+        $result = $this->service->getUserOrders((int) $payload['userId']);
+        $this->respond($result);
     }
 
     public function show($id) {
-        echo json_encode($this->service->getOrderById($id));
+        $payload = AuthMiddleware::handle();
+        $result = $this->service->getOrderById((int) $id, (int) $payload['userId']);
+        $this->respond($result);
     }
 
     public function store() {
-        echo json_encode($this->service->createOrder());
+        $payload = AuthMiddleware::handle();
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $result = $this->service->createOrder((int) $payload['userId'], $body);
+        $this->respond($result, 201);
     }
 
     public function updateStatus($id) {
-        echo json_encode($this->service->updateStatus($id));
+        AuthMiddleware::handle('admin');
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $result = $this->service->updateStatus((int) $id, $body);
+        $this->respond($result);
     }
 
     public function destroy($id) {
-        echo json_encode($this->service->cancelOrder($id));
+        $payload = AuthMiddleware::handle();
+        $result = $this->service->cancelOrder((int) $id, (int) $payload['userId']);
+        $this->respond($result);
     }
 
     public function tracking($id) {
-        echo json_encode($this->service->getTracking($id));
+        $payload = AuthMiddleware::handle();
+        $result = $this->service->getTracking((int) $id, (int) $payload['userId']);
+        $this->respond($result);
     }
 }
