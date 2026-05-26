@@ -6,7 +6,21 @@ class OrderService {
     private OrderRepository $repo;
 
     private const FRETE_GRATIS_MINIMO = 500.00;
-    private const FRETE_VALOR         = 29.90;
+
+    private const FRETE_POR_UF = [
+        'SP' => 15.90, 'RJ' => 15.90, 'MG' => 15.90, 'ES' => 15.90,
+        'PR' => 19.90, 'SC' => 19.90, 'RS' => 19.90,
+        'GO' => 24.90, 'MT' => 24.90, 'MS' => 24.90, 'DF' => 24.90,
+        'BA' => 34.90, 'SE' => 34.90, 'AL' => 34.90, 'PE' => 34.90, 'PB' => 34.90,
+        'RN' => 34.90, 'CE' => 34.90, 'PI' => 34.90, 'MA' => 34.90,
+        'PA' => 44.90, 'AM' => 44.90, 'RO' => 44.90, 'RR' => 44.90,
+        'AP' => 44.90, 'AC' => 44.90, 'TO' => 44.90,
+    ];
+
+    private function calcularFrete(string $uf, float $subtotalComDesconto): float {
+        if ($subtotalComDesconto >= self::FRETE_GRATIS_MINIMO) return 0.0;
+        return self::FRETE_POR_UF[$uf] ?? 29.90;
+    }
 
     public function __construct() {
         $this->repo = new OrderRepository();
@@ -124,7 +138,7 @@ class OrderService {
         }
 
         $subtotalComDesconto = $subtotal - $desconto;
-        $frete  = $subtotalComDesconto >= self::FRETE_GRATIS_MINIMO ? 0.0 : self::FRETE_VALOR;
+        $frete  = $this->calcularFrete($body['estado'], $subtotalComDesconto);
         $total  = $subtotalComDesconto + $frete;
 
         // Simula pagamento — sempre aprovado

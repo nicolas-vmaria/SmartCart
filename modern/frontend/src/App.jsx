@@ -35,6 +35,7 @@ import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
 import CategoriaGrid from "./pages/CategoriaGrid"
 import OrderConfirmation from "./pages/OrderConfirmation"
+import MeusPedidos from "./pages/MeusPedidos"
 import AiChat from "./components/AiChat"
 import AdminCupons from "./pages/admin/AdminCupons"
 import AdminRelatorios from "./pages/admin/AdminRelatorios"
@@ -104,6 +105,7 @@ function App() {
             <Route path="/candidatura/:slug" element={<Candidatura />} />
             <Route path="/produtos/categoria/:slug" element={<CategoriaGrid />} />
             <Route path="/pedido/confirmado" element={<OrderConfirmation />} />
+            <Route path="/meus-pedidos" element={<MeusPedidos />} />
           </Route>
 
           {/* Rotas sem Navbar */}
