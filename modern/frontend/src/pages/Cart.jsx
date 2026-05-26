@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom"
 import { useState, useEffect, useCallback, memo } from "react"
-import { ShoppingCart, Trash2, Loader2, X, Tag, Truck, AlertTriangle } from "lucide-react"
+import { ShoppingCart, Trash2, Loader2, X, Tag } from "lucide-react"
 import { validateCoupon } from "../lib/api/coupons"
-import { getCart, updateCartItem, removeCartItem, clearCart } from "../lib/api/cart"
-import ConfirmDialog from "../components/ConfirmDialog"
-import { calcularFrete, FRETE_GRATIS_MINIMO } from "../lib/frete"
+import { getCart, updateCartItem, removeCartItem } from "../lib/api/cart"
 import Toast from "../components/Toast"
 
 const CART_CACHE_KEY = 'cart_cache'
@@ -16,27 +14,22 @@ const CartItem = memo(function CartItem({ item, onChangeQtd, onRemove, updating 
     const subtotal = (Number(item.preco) * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
     return (
-        <div className="flex flex-col sm:flex-row bg-gray-100 p-5 sm:p-8 rounded-2xl gap-4 sm:gap-6 items-start sm:items-center">
-            <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-2xl border-2 border-gray-200 bg-white flex justify-center items-center shrink-0 overflow-hidden">
+        <div className="flex bg-gray-100 p-8 rounded-2xl gap-6 items-center">
+            <div className="w-36 h-36 rounded-2xl border-2 border-gray-200 bg-white flex justify-center items-center shrink-0 overflow-hidden">
                 {item.foto_url
                     ? <img src={item.foto_url} alt={item.produto_nome} className="w-full h-full object-contain p-2" />
                     : <ShoppingCart className="text-gray-300 text-4xl" size={40} />
                 }
             </div>
 
-            <div className="flex w-full flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-col gap-1 min-w-0 flex-1">
-                    <h1 className="text-lg sm:text-xl font-bold truncate">{item.produto_nome}</h1>
+            <div className="flex w-full items-center justify-between gap-4">
+                <div className="flex flex-col gap-1 min-w-0">
+                    <h1 className="text-xl font-bold truncate">{item.produto_nome}</h1>
                     <p className="text-gray-500 text-sm">SKU: {item.produto_id}</p>
                     <p className="text-verde-escuro font-semibold text-sm">{preco} un.</p>
-                    {item.quantidade > item.estoque && (
-                        <p className="flex items-center gap-1 text-xs text-red-500 font-medium">
-                            <AlertTriangle size={12} /> Apenas {item.estoque} em estoque
-                        </p>
-                    )}
                 </div>
 
-                <p className="font-bold text-xl text-right shrink-0">{subtotal}</p>
+                <p className="font-bold text-xl w-36 text-right shrink-0">{subtotal}</p>
 
                 <div className="flex text-lg shrink-0">
                     <button
@@ -87,18 +80,13 @@ export default function Cart() {
     const [items, setItems] = useState(() => {
         try { const c = localStorage.getItem(CART_CACHE_KEY); return c ? JSON.parse(c) : [] } catch { return [] }
     })
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(() => !localStorage.getItem(CART_CACHE_KEY))
     const [updating, setUpdating] = useState(null)
     const [couponCode, setCouponCode] = useState('')
     const [appliedCoupon, setAppliedCoupon] = useState(null)
     const [couponError, setCouponError] = useState('')
     const [validating, setValidating] = useState(false)
     const [toast, setToast] = useState(null)
-    const [confirmClear, setConfirmClear] = useState(false)
-    const [cepCalc, setCepCalc] = useState('')
-    const [cepResult, setCepResult] = useState(null)
-    const [loadingCep, setLoadingCep] = useState(false)
-    const [cepError, setCepError] = useState('')
 
     useEffect(() => {
         getCart()
@@ -168,94 +156,45 @@ export default function Cart() {
         setCouponError('')
     }
 
-    async function handleClearCart() {
-        try {
-            await clearCart()
-            setItems([])
-            localStorage.removeItem(CART_CACHE_KEY)
-            window.dispatchEvent(new CustomEvent('cart:updated'))
-        } catch {
-            setToast({ message: 'Erro ao limpar carrinho', type: 'error' })
-        }
-    }
-
-    async function buscarFrete() {
-        const digits = cepCalc.replace(/\D/g, '')
-        if (digits.length !== 8) { setCepError('CEP inválido'); return }
-        setLoadingCep(true)
-        setCepError('')
-        try {
-            const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`)
-            const json = await res.json()
-            if (json.erro) { setCepError('CEP não encontrado'); return }
-            setCepResult({ cidade: json.localidade, uf: json.uf })
-        } catch {
-            setCepError('Erro ao consultar CEP')
-        } finally {
-            setLoadingCep(false)
-        }
-    }
-
-    const hasStockIssue = items.some(i => i.quantidade > i.estoque)
     const subtotal = items.reduce((acc, i) => acc + Number(i.preco) * i.quantidade, 0)
+    const entrega = items.length > 0 ? 29.90 : 0
     const discount = appliedCoupon
         ? appliedCoupon.tipo_desconto === 'percentual'
             ? subtotal * (parseFloat(appliedCoupon.desconto) / 100)
             : Math.min(parseFloat(appliedCoupon.desconto), subtotal)
         : 0
-    const subtotalComDesconto = subtotal - discount
-    const frete = items.length === 0 ? 0
-        : cepResult ? calcularFrete(cepResult.uf, subtotalComDesconto)
-        : null
-    const total = subtotalComDesconto + (frete ?? 0)
+    const total = subtotal - discount + entrega
 
     return (
-        <main className="min-h-screen w-full flex flex-col lg:flex-row justify-center gap-6 lg:gap-10 p-5 md:p-10 items-start">
+        <main className="min-h-screen w-full flex justify-center gap-20 p-10">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-            {confirmClear && (
-                <ConfirmDialog
-                    title="Limpar carrinho"
-                    message="Tem certeza que deseja remover todos os itens do carrinho?"
-                    confirmLabel="Limpar"
-                    onConfirm={() => { setConfirmClear(false); handleClearCart() }}
-                    onCancel={() => setConfirmClear(false)}
-                />
-            )}
 
-            <section className="flex flex-col w-full lg:flex-1">
-                <div className="flex items-center justify-between py-5">
-                    <h1 className="text-4xl font-bold">
-                        Carrinho
-                        {items.length > 0 && (
-                            <span className="ml-3 text-xl font-normal text-gray-400">({items.length} {items.length === 1 ? 'item' : 'itens'})</span>
-                        )}
-                    </h1>
-                    {items.length > 0 && !loading && (
-                        <button onClick={() => setConfirmClear(true)}
-                            className="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-600 font-medium transition-colors">
-                            <Trash2 size={14} /> Limpar carrinho
-                        </button>
+            <section className="flex flex-col w-[70%]">
+                <h1 className="text-4xl py-5 self-start font-bold">
+                    Carrinho
+                    {items.length > 0 && (
+                        <span className="ml-3 text-xl font-normal text-gray-400">({items.length} {items.length === 1 ? 'item' : 'itens'})</span>
                     )}
-                </div>
+                </h1>
 
                 {loading ? (
                     <div className="flex flex-col gap-4">
                         {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} className="flex bg-gray-100 p-8 rounded-2xl gap-6 items-center">
-                                <div className="w-36 h-36 rounded-2xl bg-gray-300 animate-pulse shrink-0" />
+                            <div key={i} className="flex bg-gray-100 p-8 rounded-2xl gap-6 items-center animate-pulse">
+                                <div className="w-36 h-36 rounded-2xl bg-gray-200 shrink-0" />
                                 <div className="flex w-full items-center justify-between gap-4">
                                     <div className="flex flex-col gap-2 flex-1">
-                                        <div className="h-5 bg-gray-300 animate-pulse rounded w-48" />
-                                        <div className="h-3 bg-gray-200 animate-pulse rounded w-24" />
-                                        <div className="h-3 bg-gray-200 animate-pulse rounded w-20" />
+                                        <div className="h-5 bg-gray-200 rounded w-48" />
+                                        <div className="h-3 bg-gray-200 rounded w-24" />
+                                        <div className="h-3 bg-gray-200 rounded w-20" />
                                     </div>
-                                    <div className="h-6 bg-gray-300 animate-pulse rounded w-28 shrink-0" />
+                                    <div className="h-6 bg-gray-200 rounded w-28 shrink-0" />
                                     <div className="flex shrink-0">
-                                        <div className="w-9 h-9 bg-gray-300 animate-pulse rounded-l-xl" />
-                                        <div className="w-9 h-9 bg-gray-300 animate-pulse" />
-                                        <div className="w-9 h-9 bg-gray-300 animate-pulse rounded-r-xl" />
+                                        <div className="w-9 h-9 bg-gray-200 rounded-l-xl" />
+                                        <div className="w-9 h-9 bg-gray-200 border-x border-gray-300" />
+                                        <div className="w-9 h-9 bg-gray-200 rounded-r-xl" />
                                     </div>
-                                    <div className="w-6 h-6 bg-gray-300 animate-pulse rounded shrink-0" />
+                                    <div className="w-6 h-6 bg-gray-200 rounded shrink-0" />
                                 </div>
                             </div>
                         ))}
@@ -277,7 +216,7 @@ export default function Cart() {
                 )}
             </section>
 
-            <section className="flex items-start w-full lg:w-80 lg:mt-20 shrink-0">
+            <section className="flex items-start mt-20 w-[20%]">
                 <div className="bg-gray-100 shadow-2xl p-5 rounded-2xl w-full">
                     <h1 className="text-2xl font-bold">Resumo do pedido</h1>
 
@@ -324,58 +263,9 @@ export default function Cart() {
                             </div>
                         )}
                         <div className="flex justify-between text-sm">
-                            <span className="font-bold">Frete:</span>
-                            <span className={frete === 0 && items.length > 0 ? 'text-green-600 font-bold' : 'text-gray-500 italic'}>
-                                {items.length === 0 ? '—'
-                                    : frete === null ? 'A calcular'
-                                    : frete === 0 ? 'Grátis'
-                                    : frete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                            </span>
+                            <span className="font-bold">Taxa de entrega:</span>
+                            <span>{entrega > 0 ? entrega.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}</span>
                         </div>
-                    </div>
-
-                    {/* Calculador de frete */}
-                    <div className="border-t border-gray-200 pt-4 pb-2 flex flex-col gap-2">
-                        <p className="text-sm font-bold flex items-center gap-1.5">
-                            <Truck size={14} /> Calcular frete
-                        </p>
-                        {cepResult ? (
-                            <div className="flex items-center justify-between bg-white rounded-xl px-3 py-2 border border-gray-200">
-                                <div>
-                                    <p className="text-xs text-gray-400">{cepResult.cidade} — {cepResult.uf}</p>
-                                    <p className={`text-sm font-bold ${frete === 0 ? 'text-green-600' : 'text-gray-700'}`}>
-                                        {frete === 0 ? 'Frete grátis' : frete?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                                    </p>
-                                </div>
-                                <button onClick={() => { setCepResult(null); setCepCalc('') }} className="text-gray-300 hover:text-gray-500 transition-colors">
-                                    <X size={14} />
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="flex gap-2">
-                                    <input
-                                        value={cepCalc}
-                                        onChange={e => { setCepCalc(e.target.value); setCepError('') }}
-                                                        onKeyDown={e => e.key === 'Enter' && buscarFrete()}
-                                        placeholder="00000-000"
-                                        maxLength={9}
-                                        className="bg-white border border-gray-200 rounded-xl flex-1 h-10 px-3 text-sm outline-none focus:border-verde-escuro transition-colors"
-                                    />
-                                    <button
-                                        onClick={buscarFrete}
-                                        disabled={loadingCep || cepCalc.replace(/\D/g, '').length < 8}
-                                        className="h-10 px-3 rounded-xl bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
-                                    >
-                                        {loadingCep ? <Loader2 size={15} className="animate-spin" /> : 'OK'}
-                                    </button>
-                                </div>
-                                {cepError
-                                    ? <p className="text-red-500 text-xs">{cepError}</p>
-                                    : <p className="text-xs text-gray-400">Frete grátis acima de R$ 500,00</p>
-                                }
-                            </>
-                        )}
                     </div>
 
                     <hr />
@@ -385,19 +275,10 @@ export default function Cart() {
                         <span>{total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                     </div>
 
-                    {hasStockIssue && (
-                        <p className="flex items-center gap-1.5 text-xs text-red-500 font-medium text-center justify-center">
-                            <AlertTriangle size={13} /> Ajuste as quantidades antes de continuar
-                        </p>
-                    )}
                     <Link
                         to="/checkout/1"
-                        state={{
-                            ...(cepResult ? { cep: cepCalc } : {}),
-                            ...(appliedCoupon ? { coupon: appliedCoupon } : {}),
-                        }}
                         className={`flex items-center justify-center bg-verde-escuro text-white h-12 w-full rounded-xl transition-all hover:-translate-y-1 hover:shadow-xl active:translate-y-0 font-bold
-                            ${(items.length === 0 || hasStockIssue) ? 'opacity-40 pointer-events-none' : ''}`}
+                            ${items.length === 0 ? 'opacity-40 pointer-events-none' : ''}`}
                     >
                         Finalizar compra
                     </Link>

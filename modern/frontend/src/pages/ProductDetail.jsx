@@ -10,36 +10,62 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProductBySlug } from "../lib/api/products";
 import { addToCart } from "../lib/api/cart";
+import { getReviews, createReview, markHelpful } from "../lib/api/reviews";
 import Toast from "../components/Toast";
 
-const reviews = [
-    { id: 1, nome: 'João Silva',      avatar: 'JS', rating: 5, data: '28/04/2026', util: 14, comentario: 'Produto incrível! A tecnologia de reconhecimento de itens funciona perfeitamente. Transformou a experiência de compras na nossa loja. Recomendo muito.' },
-    { id: 2, nome: 'Maria Santos',    avatar: 'MS', rating: 4, data: '21/04/2026', util: 8,  comentario: 'Muito bom! A tela touchscreen é super responsiva e intuitiva. Tirei uma estrela porque a bateria poderia durar um pouco mais, mas no geral superou as expectativas.' },
-    { id: 3, nome: 'Pedro Oliveira',  avatar: 'PO', rating: 5, data: '15/04/2026', util: 21, comentario: 'Excelente custo-benefício para o nosso supermercado. A integração com o sistema de gestão foi tranquila e o suporte técnico é excelente.' },
-    { id: 4, nome: 'Ana Costa',       avatar: 'AC', rating: 3, data: '10/04/2026', util: 3,  comentario: 'Produto bom, mas tivemos alguns problemas na calibração inicial do sensor de peso. Após o suporte técnico ajustar, ficou ótimo.' },
-    { id: 5, nome: 'Lucas Ferreira',  avatar: 'LF', rating: 5, data: '02/04/2026', util: 17, comentario: 'Comprei para a minha rede de farmácias e foi a melhor decisão. Os clientes adoraram a praticidade do pagamento integrado.' },
-]
+function getInitials(nome) {
+    if (!nome) return '?'
+    const parts = nome.trim().split(' ')
+    return parts.length >= 2
+        ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+        : nome.slice(0, 2).toUpperCase()
+}
 
-const ratingGeral = (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+function formatDate(dateStr) {
+    if (!dateStr) return ''
+    return new Date(dateStr).toLocaleDateString('pt-BR')
+}
 
-const distribuicao = [5, 4, 3, 2, 1].map(estrela => ({
-    estrela,
-    count: reviews.filter(r => r.rating === estrela).length,
-    pct: Math.round((reviews.filter(r => r.rating === estrela).length / reviews.length) * 100),
-}))
+function ReviewSkeleton() {
+    return (
+        <div className="border border-gray-200 rounded-2xl p-6 flex flex-col gap-3 animate-pulse">
+            <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-200 shrink-0" />
+                <div className="flex flex-col gap-1.5 flex-1">
+                    <div className="h-3.5 bg-gray-200 rounded w-32" />
+                    <div className="h-3 bg-gray-200 rounded w-20" />
+                </div>
+                <div className="h-4 bg-gray-200 rounded w-24" />
+            </div>
+            <div className="h-3 bg-gray-200 rounded w-full" />
+            <div className="h-3 bg-gray-200 rounded w-3/4" />
+            <div className="h-3 bg-gray-200 rounded w-16 mt-1" />
+        </div>
+    )
+}
 
-function FormReview({ onSubmit }) {
+function FormReview({ productId, onCreated }) {
     const [rating, setRating] = useState(0)
     const [hover, setHover] = useState(0)
     const [comentario, setComentario] = useState('')
+    const [loading, setLoading] = useState(false)
     const [enviado, setEnviado] = useState(false)
+    const [erro, setErro] = useState(null)
 
-    function handleSubmit(e) {
-        e.preventDefault()
-        if (!rating) return
-        onSubmit({ rating, comentario })
-        setEnviado(true)
-    }
+    const navigate = useNavigate()
+    const logado = !!localStorage.getItem('user_token')
+
+    if (!logado) return (
+        <div className="border border-gray-200 rounded-2xl p-6 flex items-center justify-between gap-4">
+            <p className="text-sm text-gray-500">Faça login para deixar sua avaliação</p>
+            <button
+                onClick={() => navigate('/login')}
+                className="shrink-0 bg-verde-escuro text-verde-claro px-5 py-2 rounded-full text-sm font-bold hover:opacity-90 transition-all cursor-pointer"
+            >
+                Entrar
+            </button>
+        </div>
+    )
 
     if (enviado) return (
         <div className="border border-verde-escuro/30 bg-verde-escuro/5 rounded-2xl p-6 flex items-center gap-4">
@@ -50,6 +76,22 @@ function FormReview({ onSubmit }) {
             </div>
         </div>
     )
+
+    async function handleSubmit(e) {
+        e.preventDefault()
+        if (!rating) return
+        setErro(null)
+        setLoading(true)
+        try {
+            const res = await createReview(productId, { nota: rating, descricao: comentario })
+            onCreated(res.data.review)
+            setEnviado(true)
+        } catch (err) {
+            setErro(err.response?.data?.error || 'Erro ao enviar avaliação')
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <form onSubmit={handleSubmit} className="border border-gray-200 rounded-2xl p-6 flex flex-col gap-4">
@@ -87,11 +129,14 @@ function FormReview({ onSubmit }) {
                 className="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-verde-escuro transition-colors resize-none"
             />
 
+            {erro && <p className="text-sm text-red-500">{erro}</p>}
+
             <button
                 type="submit"
-                disabled={!rating}
-                className="self-end bg-verde-escuro text-verde-claro px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                disabled={!rating || loading}
+                className="self-end flex items-center gap-2 bg-verde-escuro text-verde-claro px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
+                {loading && <span className="w-4 h-4 border-2 border-verde-claro border-t-transparent rounded-full animate-spin" />}
                 Enviar avaliação
             </button>
         </form>
@@ -99,39 +144,54 @@ function FormReview({ onSubmit }) {
 }
 
 function ReviewCard({ review }) {
-    const [util, setUtil] = useState(review.util)
+    const [likes, setLikes] = useState(Number(review.qtd_likes))
     const [votou, setVotou] = useState(false)
+    const [votando, setVotando] = useState(false)
 
-    function votar() {
-        if (votou) return
-        setUtil(u => u + 1)
-        setVotou(true)
+    async function votar() {
+        if (votou || votando) return
+        setVotando(true)
+        try {
+            await markHelpful(review.id)
+            setLikes(l => l + 1)
+            setVotou(true)
+        } catch {
+            // silently ignore
+        } finally {
+            setVotando(false)
+        }
     }
+
+    const initials = getInitials(review.user_nome)
 
     return (
         <div className="border border-gray-200 rounded-2xl p-6 flex flex-col gap-3">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-verde-escuro text-verde-claro flex items-center justify-center text-sm font-bold shrink-0">
-                        {review.avatar}
+                        {initials}
                     </div>
                     <div>
-                        <p className="font-bold text-gray-800 text-sm">{review.nome}</p>
-                        <p className="text-xs text-gray-400">{review.data}</p>
+                        <p className="font-bold text-gray-800 text-sm">{review.user_nome}</p>
+                        <p className="text-xs text-gray-400">{formatDate(review.created_at)}</p>
                     </div>
                 </div>
-                <StarRating rating={review.rating} />
+                <StarRating rating={Number(review.nota)} />
             </div>
 
-            <p className="text-gray-600 text-sm leading-relaxed">{review.comentario}</p>
+            <p className="text-gray-600 text-sm leading-relaxed">{review.descricao}</p>
 
             <button
                 onClick={votar}
-                className={`flex items-center gap-1.5 text-xs mt-1 w-fit transition-colors cursor-pointer
+                disabled={votou || votando}
+                className={`flex items-center gap-1.5 text-xs mt-1 w-fit transition-colors cursor-pointer disabled:cursor-default
                     ${votou ? 'text-verde-escuro font-bold' : 'text-gray-400 hover:text-gray-600'}`}
             >
-                <ThumbsUp size={13} />
-                Útil ({util})
+                {votando
+                    ? <span className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin" />
+                    : <ThumbsUp size={13} />
+                }
+                Útil ({likes})
             </button>
         </div>
     )
@@ -145,7 +205,8 @@ export default function ProductDetail() {
     const [loading, setLoading] = useState(true)
     const [notFound, setNotFound] = useState(false)
     const [cont, setCont] = useState(1)
-    const [listaReviews, setListaReviews] = useState(reviews)
+    const [reviews, setReviews] = useState([])
+    const [reviewsLoading, setReviewsLoading] = useState(false)
     const [addingToCart, setAddingToCart] = useState(false)
     const [toast, setToast] = useState(null)
 
@@ -157,17 +218,35 @@ export default function ProductDetail() {
             .finally(() => setLoading(false))
     }, [slug])
 
-    function adicionarReview({ rating, comentario }) {
-        setListaReviews(prev => [{
-            id: Date.now(),
-            nome: 'Você',
-            avatar: 'VC',
-            rating,
-            data: new Date().toLocaleDateString('pt-BR'),
-            util: 0,
-            comentario,
+    useEffect(() => {
+        if (!produto?.id) return
+        setReviewsLoading(true)
+        getReviews(produto.id)
+            .then(res => setReviews(res.data.reviews ?? []))
+            .catch(() => setReviews([]))
+            .finally(() => setReviewsLoading(false))
+    }, [produto?.id])
+
+    function handleReviewCreated(newReview) {
+        const nome = localStorage.getItem('user_nome') || 'Você'
+        setReviews(prev => [{
+            ...newReview,
+            user_nome: nome,
+            created_at: new Date().toISOString(),
         }, ...prev])
     }
+
+    const ratingGeral = reviews.length
+        ? (reviews.reduce((acc, r) => acc + Number(r.nota), 0) / reviews.length).toFixed(1)
+        : '0.0'
+
+    const distribuicao = [5, 4, 3, 2, 1].map(estrela => ({
+        estrela,
+        count: reviews.filter(r => Number(r.nota) === estrela).length,
+        pct: reviews.length
+            ? Math.round((reviews.filter(r => Number(r.nota) === estrela).length / reviews.length) * 100)
+            : 0,
+    }))
 
     const minusCont = () => setCont(c => Math.max(1, c - 1))
     const plusCont  = () => setCont(c => Math.min(produto?.estoque ?? 99, c + 1))
@@ -191,11 +270,10 @@ export default function ProductDetail() {
         }
     }
 
-
     if (loading) return (
         <main className="animate-pulse">
             <section className="flex flex-col md:flex-row items-center p-5 md:p-10 gap-6 md:gap-10">
-                <div className="bg-gray-200 aspect-square w-full max-w-sm md:max-w-none md:h-120 rounded-3xl shrink-0" />
+                <div className="bg-gray-200 aspect-square h-180 rounded-3xl shrink-0" />
                 <div className="flex flex-col gap-5 py-10 flex-1">
                     <div className="h-4 bg-gray-200 rounded w-20" />
                     <div className="h-10 bg-gray-200 rounded w-3/4" />
@@ -224,7 +302,7 @@ export default function ProductDetail() {
         <main className="">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <section className="flex flex-col md:flex-row items-center p-5 md:p-10 gap-6 md:gap-10">
-                <div className="bg-gray-100 aspect-square w-full max-w-sm mx-auto md:max-w-none md:h-120 rounded-3xl overflow-hidden shrink-0">
+                <div className="bg-gray-100 aspect-square h-180 rounded-3xl overflow-hidden shrink-0">
                     {produto.foto_url
                         ? <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center"><span className="text-gray-400">Sem imagem</span></div>
@@ -234,8 +312,8 @@ export default function ProductDetail() {
                     <p className="text-gray-400 text-sm">SKU: {produto.id}</p>
                     <h1 className="text-4xl font-bold">{produto.nome}</h1>
                     <div className="flex gap-2 items-center">
-                        <StarRating rating={4} />
-                        <p className="text-gray-500 text-sm">{listaReviews.length} avaliações</p>
+                        <StarRating rating={Math.round(ratingGeral)} />
+                        <p className="text-gray-500 text-sm">{reviews.length} avaliações</p>
                     </div>
                     <p className="text-3xl font-bold text-verde-escuro">{preco}</p>
                     <p className="text-sm text-gray-400">{produto.estoque > 0 ? `${produto.estoque} em estoque` : 'Fora de estoque'}</p>
@@ -315,8 +393,14 @@ export default function ProductDetail() {
 
                     {/* Lista */}
                     <div className="flex flex-col gap-4 flex-1">
-                        <FormReview onSubmit={adicionarReview} />
-                        {listaReviews.map(r => <ReviewCard key={r.id} review={r} />)}
+                        <FormReview productId={produto.id} onCreated={handleReviewCreated} />
+
+                        {reviewsLoading
+                            ? Array.from({ length: 3 }).map((_, i) => <ReviewSkeleton key={i} />)
+                            : reviews.length === 0
+                                ? <p className="text-gray-400 text-sm py-4">Nenhuma avaliação ainda. Seja o primeiro!</p>
+                                : reviews.map(r => <ReviewCard key={r.id} review={r} />)
+                        }
                     </div>
                 </div>
             </section>

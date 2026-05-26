@@ -32,8 +32,8 @@ export default function Contato() {
         <main>
 
             {/* Hero */}
-            <section className="flex min-h-64 items-center justify-center bg-linear-65 from-verde-escuro to-green-700 px-6 sm:px-12 lg:px-32 text-center flex-col gap-5 py-16">
-                <h1 className="text-4xl sm:text-6xl text-verde-claro font-bold">
+            <section className="flex h-80 items-center justify-center bg-linear-65 from-verde-escuro to-green-700 px-50 text-center flex-col gap-5">
+                <h1 className="text-6xl text-verde-claro font-bold">
                     Fale com a <span className="italic font-light">gente.</span>
                 </h1>
                 <p className="text-verde-claro text-xl max-w-2xl">
@@ -42,7 +42,7 @@ export default function Contato() {
             </section>
 
             {/* Conteúdo */}
-            <section className="flex flex-col md:flex-row items-start justify-between px-6 sm:px-12 lg:px-32 py-12 md:py-24 gap-10 md:gap-20">
+            <section className="flex items-start justify-between px-50 py-24 gap-20">
 
                 {/* Informações */}
                 <div className="flex flex-col gap-10 max-w-sm w-full">
