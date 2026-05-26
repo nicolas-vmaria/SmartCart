@@ -1,6 +1,6 @@
-const PIX_CHAVE = '+5511955238901'
-const PIX_NOME  = 'SmartCart'
-const PIX_CIDADE = 'SAO PAULO'
+const PIX_CHAVE = '11955238901'
+const PIX_NOME  = 'Smartcart'
+const PIX_CIDADE = 'Joinville'
 
 function crc16(str) {
     let crc = 0xFFFF
