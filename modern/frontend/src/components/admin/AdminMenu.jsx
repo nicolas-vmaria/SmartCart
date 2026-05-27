@@ -1,14 +1,10 @@
-import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2 } from 'lucide-react'
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, ImageIcon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import ConfirmDialog from '../../components/ConfirmDialog'
-
+import { getAdminOrders } from '../../lib/api/adminOrders'
 
 const linkClass = "cursor-pointer flex gap-2 items-center h-10 px-2 rounded-md transition-all hover:bg-gray-100 dark:text-(--admin-text) dark:hover:bg-(--admin-hover) outline-none"
-
-// Mock notification counts — replace with real data when backend is ready
-const NOTIF_PEDIDOS = 5
-const NOTIF_CURRICULOS = 3
 
 function Badge({ count }) {
     if (!count) return null
@@ -21,7 +17,18 @@ function Badge({ count }) {
 
 export default function AdminMenu({ isOpen, onClose }) {
     const navigate = useNavigate()
+    const location = useLocation()
     const [confirm, setConfirm] = useState(false)
+    const [notifPedidos, setNotifPedidos] = useState(0)
+
+    useEffect(() => {
+        getAdminOrders()
+            .then(({ data }) => {
+                const count = (data.orders ?? []).filter(o => o.status === 'aguardando').length
+                setNotifPedidos(count)
+            })
+            .catch(() => {})
+    }, [location.pathname])
 
     const adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}')
     const nome = adminUser.nome || 'Usuário'
@@ -38,7 +45,7 @@ export default function AdminMenu({ isOpen, onClose }) {
     return (
         <>
         <aside className={`w-72 md:w-80 h-screen bg-white dark:bg-(--admin-sidebar) fixed flex flex-col justify-between p-5 text-verde-escuro shadow-2xl dark:shadow-black/60 rounded-tr-2xl rounded-br-2xl z-20 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
-            <div>
+            <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
                 <Link to="/admin/profile" onClick={onClose} className="flex items-center gap-2 p-2 rounded-xl transition-all hover:dark:bg-(--admin-border) hover:bg-gray-100">
                     <div className="flex border border-verde-escuro dark:border-(--admin-border) aspect-square w-12 h-12 rounded-full justify-center items-center shrink-0">
                         <span className="text-verde-escuro dark:text-(--admin-accent) font-bold text-sm">{initials}</span>
@@ -57,9 +64,11 @@ export default function AdminMenu({ isOpen, onClose }) {
                             {can('clientes')    && <Link to="/admin/clients" onClick={onClose} className={linkClass}><Users size={18} />Clientes</Link>}
                             {can('produtos')    && <Link to="/admin/products" onClick={onClose} className={linkClass}><Package size={18} />Produtos</Link>}
                             {can('categorias')  && <Link to="/admin/categories" onClick={onClose} className={linkClass}><Tag size={18} />Categorias</Link>}
-                            {can('pedidos')     && <Link to="/admin/orders" onClick={onClose} className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={NOTIF_PEDIDOS} /></Link>}
-                            {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos<Badge count={NOTIF_CURRICULOS} /></Link>}
+                            {can('pedidos')     && <Link to="/admin/orders" onClick={onClose} className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={notifPedidos} /></Link>}
+                            {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos</Link>}
+                            {can('trabalhos')   && <Link to="/admin/vagas" onClick={onClose} className={linkClass}><Briefcase size={18} />Vagas</Link>}
                             {can('cupons')      && <Link to="/admin/cupons" onClick={onClose} className={linkClass}><Ticket size={18} />Cupons</Link>}
+                            {can('banners')     && <Link to="/admin/banners" onClick={onClose} className={linkClass}><ImageIcon size={18} />Carrossel</Link>}
                             {can('relatorios')  && <Link to="/admin/relatorios" onClick={onClose} className={linkClass}><BarChart2 size={18} />Relatórios</Link>}
                         </div>
                     </ul>

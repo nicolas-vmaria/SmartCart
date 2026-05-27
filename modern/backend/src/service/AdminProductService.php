@@ -18,6 +18,7 @@ class AdminProductService {
         $foto_url     = trim((string)($body['foto_url'] ?? ''));
         $statusRaw    = $body['status'] ?? null;
         $status       = ($statusRaw === true || $statusRaw === 'true' || $statusRaw === 1 || $statusRaw === '1') ? 1 : 0;
+        $desconto     = max(0, min(100, (int)($body['desconto_percentual'] ?? 0)));
 
         if (!$nome || !$categoria_id || !$preco || $estoque === null || $estoque === '' || $statusRaw === null) {
             throw new InvalidArgumentException("Campos obrigatórios ausentes: nome, categoria_id, preco, estoque, status");
@@ -42,14 +43,15 @@ class AdminProductService {
         $slug = trim(preg_replace('/[^a-z0-9]+/', '-', $slugBase), '-');
         
         return [
-            'categoria_id' => $categoria_id,
-            'nome'    => $nome,
-            'slug'    => $slug, 
-            'preco'   => $preco,
-            'estoque'   => $estoque,
-            'descricao' => $descricao,
-            'foto_url'  => $foto_url,
-            'status'    => $status,
+            'categoria_id'        => $categoria_id,
+            'nome'                => $nome,
+            'slug'                => $slug,
+            'preco'               => $preco,
+            'estoque'             => $estoque,
+            'descricao'           => $descricao,
+            'foto_url'            => $foto_url,
+            'status'              => $status,
+            'desconto_percentual' => $desconto,
         ];
     }
 

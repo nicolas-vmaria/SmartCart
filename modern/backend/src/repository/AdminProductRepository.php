@@ -27,8 +27,8 @@ class AdminProductRepository {
             $status = (int)$product['status'];
 
             $stmt = $this->db->prepare('
-                INSERT INTO Produtos (categoria_id, nome, slug, preco, estoque, descricao, foto_url, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Produtos (categoria_id, nome, slug, preco, estoque, descricao, foto_url, status, desconto_percentual)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ');
 
             $stmt->execute([
@@ -40,6 +40,7 @@ class AdminProductRepository {
                 $product['descricao'],
                 $product['foto_url'],
                 $status,
+                $product['desconto_percentual'],
             ]);
 
             $id = (int)$this->db->lastInsertId();
@@ -72,7 +73,7 @@ class AdminProductRepository {
     public function updateProduct(int $id, array $product): bool {
         try {
             $stmt = $this->db->prepare('
-            UPDATE Produtos SET categoria_id = ?, nome = ?, slug = ?, preco = ?, estoque = ?, descricao = ?, foto_url = ?, status = ?
+            UPDATE Produtos SET categoria_id = ?, nome = ?, slug = ?, preco = ?, estoque = ?, descricao = ?, foto_url = ?, status = ?, desconto_percentual = ?
             WHERE id = ?
             ');
 
@@ -85,6 +86,7 @@ class AdminProductRepository {
                 $product['descricao'],
                 $product['foto_url'],
                 $product['status'],
+                $product['desconto_percentual'],
                 $id,
             ]);
 

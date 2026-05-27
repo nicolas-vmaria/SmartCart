@@ -14,8 +14,10 @@ const SECTIONS = [
     { key: 'categorias',    label: 'Categorias' },
     { key: 'papeis',        label: 'Papéis' },
     { key: 'curriculos',    label: 'Currículos'},
+    { key: 'trabalhos',    label: 'Vagas' },
     { key: 'cupons',        label: 'Cupons' },
     { key: 'relatorios',    label: 'Relatórios' },
+    { key: 'banners',       label: 'Carrossel' },
     { key: 'usuarios',      label: 'Usuários' },
     { key: 'configuracoes', label: 'Configurações' },
 ]
@@ -63,8 +65,10 @@ function apiRoleToModel(r) {
             categorias:    !!r.ver_categorias,
             papeis:        !!r.ver_admin,
             curriculos:    !!r.ver_curriculos,
+            trabalhos:     !!r.ver_trabalhos,
             cupons:        !!r.ver_cupons,
             relatorios:    !!r.ver_relatorios,
+            banners:       !!r.ver_banners,
             usuarios:      !!r.ver_usuarios,
             configuracoes: !!r.ver_configuracoes,
         }
@@ -72,7 +76,7 @@ function apiRoleToModel(r) {
 }
 
 export default function AdminRoles() {
-    const { data: roles, setData: setRoles } = useAdminData(
+    const { data: roles, setData: setRoles, loading } = useAdminData(
         'admin_roles',
         async () => { const { data } = await getRolesApi(); return data.roles.map(apiRoleToModel) }
     )
@@ -117,9 +121,10 @@ export default function AdminRoles() {
             ver_pedidos:      form.permissions.pedidos       ? '1' : '0',
             ver_admin:        form.permissions.papeis        ? '1' : '0',
             ver_curriculos:   form.permissions.curriculos    ? '1' : '0',
-            ver_trabalhos:    '0',
+            ver_trabalhos:    form.permissions.trabalhos     ? '1' : '0',
             ver_cupons:       form.permissions.cupons        ? '1' : '0',
             ver_relatorios:   form.permissions.relatorios    ? '1' : '0',
+            ver_banners:      form.permissions.banners       ? '1' : '0',
             ver_usuarios:     form.permissions.usuarios      ? '1' : '0',
             ver_configuracoes:form.permissions.configuracoes ? '1' : '0',
         }
@@ -179,6 +184,29 @@ export default function AdminRoles() {
             </div>
 
             <div className="flex flex-col gap-4">
+                {loading && roles.length === 0 && Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5 animate-pulse">
+                        <div className="flex items-start gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-(--admin-hover) shrink-0" />
+                            <div className="flex-1 flex flex-col gap-2">
+                                <div className="flex items-center gap-2">
+                                    <div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" />
+                                    <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded-full w-16" />
+                                </div>
+                                <div className="h-3 bg-gray-100 dark:bg-(--admin-border) rounded w-3/4" />
+                                <div className="flex gap-4 mt-1">
+                                    <div className="h-3 bg-gray-100 dark:bg-(--admin-border) rounded w-20" />
+                                    <div className="h-3 bg-gray-100 dark:bg-(--admin-border) rounded w-24" />
+                                </div>
+                            </div>
+                            <div className="flex gap-1 shrink-0">
+                                {Array.from({ length: 3 }).map((_, j) => (
+                                    <div key={j} className="w-7 h-7 rounded-md bg-gray-100 dark:bg-(--admin-hover)" />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ))}
                 {roles.filter(r => r.nome_papel.toLowerCase() !== 'cliente').map(role => (
                     <div key={role.id} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) overflow-hidden">
                         <div className="p-5 flex items-start gap-4">

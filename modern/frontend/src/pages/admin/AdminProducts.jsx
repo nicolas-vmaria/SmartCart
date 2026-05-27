@@ -16,7 +16,7 @@ const statusStyle = {
     'Inativo': 'bg-red-100 text-red-700 dark:bg-red-500/25 dark:text-red-300',
 }
 
-const emptyForm = { name: '', categoria_id: '', descricao: '', price: '', stock: '', status: 'Ativo', image: null }
+const emptyForm = { name: '', categoria_id: '', descricao: '', price: '', stock: '', discount: 0, status: 'Ativo', image: null }
 
 export default function AdminProducts() {
     const { data: products, loading, setData: setProducts, refetch: getProducts, setLoading } = useAdminData(
@@ -99,7 +99,7 @@ export default function AdminProducts() {
 
     function openEdit(product) {
         setEditing(product.id)
-        setForm({ name: product.nome, categoria_id: product.categoria_id, descricao: product.descricao || '', price: product.preco, stock: product.estoque, status: product.status == 1 ? 'Ativo' : 'Inativo', image: product.foto_url || null })
+        setForm({ name: product.nome, categoria_id: product.categoria_id, descricao: product.descricao || '', price: product.preco, stock: product.estoque, discount: product.desconto_percentual || 0, status: product.status == 1 ? 'Ativo' : 'Inativo', image: product.foto_url || null })
         
         setShowModal(true)
     }
@@ -269,7 +269,16 @@ export default function AdminProducts() {
                                 </td>
                                 <td className="py-3 font-medium text-verde-escuro dark:text-(--admin-accent)">{product.nome}</td>
                                 <td className="py-3 text-gray-600 dark:text-(--admin-text)">{product.categoria}</td>
-                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">R${parseFloat(product.preco).toFixed(2).replace('.', ',')}</td>
+                                <td className="py-3 text-gray-600 dark:text-(--admin-text)">
+                                    <div className="flex items-center gap-1.5">
+                                        R${parseFloat(product.preco).toFixed(2).replace('.', ',')}
+                                        {product.desconto_percentual > 0 && (
+                                            <span className="bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400 text-xs font-medium px-1.5 py-0.5 rounded-full">
+                                                -{product.desconto_percentual}%
+                                            </span>
+                                        )}
+                                    </div>
+                                </td>
                                 <td className="py-3">
                                     <span className={`font-medium ${product.estoque === 0 ? 'text-red-500' : product.estoque <= 10 ? 'text-yellow-500' : 'text-gray-600 dark:text-(--admin-text)'}`}>
                                         {product.estoque}
@@ -384,6 +393,15 @@ export default function AdminProducts() {
                                     <input type="number" min="0" value={form.stock} onChange={e => setForm(prev => ({ ...prev, stock: e.target.value }))}
                                         className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all"
                                         placeholder="0" />
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Desconto (%)</label>
+                                <div className="relative">
+                                    <input type="number" min="0" max="100" value={form.discount} onChange={e => setForm(prev => ({ ...prev, discount: Math.min(100, Math.max(0, Number(e.target.value))) }))}
+                                        className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 pr-8 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all w-full"
+                                        placeholder="0" />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-(--admin-text-muted)">%</span>
                                 </div>
                             </div>
                             <div className="flex flex-col gap-1">

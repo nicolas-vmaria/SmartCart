@@ -159,7 +159,7 @@ export default function Navbar() {
             </div>
 
             {/* Menu mobile */}
-            <div className={`md:hidden absolute top-20 left-0 w-full bg-verde-escuro border-t border-white/10 overflow-hidden transition-all duration-300 ${menuAberto ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className={`md:hidden absolute top-20 left-0 w-full bg-verde-escuro border-t border-white/10 transition-all duration-300 ${menuAberto ? 'max-h-[calc(100vh-5rem)] overflow-y-auto opacity-100' : 'max-h-0 overflow-hidden opacity-0'}`}>
                 <div className="flex flex-col px-6 py-4 gap-1">
                     <Link onClick={fecharMenu} to="/" className="text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors">
                         Home

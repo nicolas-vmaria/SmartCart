@@ -296,17 +296,25 @@ export default function ProductDetail() {
         </div>
     )
 
-    const preco = Number(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    const desconto = Number(produto.desconto_percentual) || 0
+    const precoOriginal = Number(produto.preco)
+    const precoFinal = desconto > 0 ? precoOriginal * (1 - desconto / 100) : precoOriginal
+    const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
     return (
         <main className="">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <section className="flex flex-col md:flex-row items-center p-5 md:p-10 gap-6 md:gap-10">
-                <div className="bg-gray-100 aspect-square h-180 rounded-3xl overflow-hidden shrink-0">
+                <div className="relative bg-gray-100 aspect-square h-180 rounded-3xl overflow-hidden shrink-0">
                     {produto.foto_url
                         ? <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center"><span className="text-gray-400">Sem imagem</span></div>
                     }
+                    {desconto > 0 && (
+                        <span className="absolute top-4 left-4 bg-orange-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
+                            -{desconto}%
+                        </span>
+                    )}
                 </div>
                 <div className="flex flex-col gap-5 py-10 flex-1">
                     <p className="text-gray-400 text-sm">SKU: {produto.id}</p>
@@ -315,7 +323,13 @@ export default function ProductDetail() {
                         <StarRating rating={Math.round(ratingGeral)} />
                         <p className="text-gray-500 text-sm">{reviews.length} avaliações</p>
                     </div>
-                    <p className="text-3xl font-bold text-verde-escuro">{preco}</p>
+                    {desconto > 0
+                        ? <div className="flex items-baseline gap-3">
+                            <p className="text-3xl font-bold text-verde-escuro">{fmt(precoFinal)}</p>
+                            <p className="text-xl text-gray-400 line-through">{fmt(precoOriginal)}</p>
+                          </div>
+                        : <p className="text-3xl font-bold text-verde-escuro">{fmt(precoOriginal)}</p>
+                    }
                     <p className="text-sm text-gray-400">{produto.estoque > 0 ? `${produto.estoque} em estoque` : 'Fora de estoque'}</p>
                     <div className="flex gap-5">
                         <div className="flex text-xl">

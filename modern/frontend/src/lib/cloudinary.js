@@ -11,8 +11,12 @@ export async function uploadImage(file) {
         body: formData,
     })
 
-    if (!res.ok) throw new Error('Falha ao fazer upload da imagem')
-
     const data = await res.json()
+
+    if (!res.ok || !data.secure_url) {
+        console.error('[Cloudinary] Upload falhou:', data)
+        throw new Error(data.error?.message || 'Falha ao fazer upload da imagem')
+    }
+
     return data.secure_url
 }

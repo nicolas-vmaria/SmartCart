@@ -15,7 +15,7 @@ class AuthRepository {
                    p.nome_papel AS role,
                    p.ver_dashboard, p.ver_clientes, p.ver_categorias,
                    p.ver_produtos, p.ver_pedidos, p.ver_admin, p.ver_curriculos,
-                   p.ver_cupons, p.ver_relatorios, p.ver_usuarios, p.ver_configuracoes
+                   p.ver_trabalhos, p.ver_cupons, p.ver_relatorios, p.ver_usuarios, p.ver_configuracoes
             FROM Usuario u
             JOIN Papeis p ON p.id = u.papel_id
             WHERE u.email = ?

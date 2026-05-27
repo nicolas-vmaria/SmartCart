@@ -23,6 +23,7 @@ class AdminRolesService {
         $ver_trabalhos    = ($body['ver_trabalhos']    === 'true' || $body['ver_trabalhos']    === '1') ? 1 : 0;
         $ver_cupons       = ($body['ver_cupons']       === 'true' || $body['ver_cupons']       === '1') ? 1 : 0;
         $ver_relatorios   = ($body['ver_relatorios']   === 'true' || $body['ver_relatorios']   === '1') ? 1 : 0;
+        $ver_banners      = ($body['ver_banners']      === 'true' || $body['ver_banners']      === '1') ? 1 : 0;
         $ver_usuarios     = ($body['ver_usuarios']     === 'true' || $body['ver_usuarios']     === '1') ? 1 : 0;
         $ver_configuracoes= ($body['ver_configuracoes']=== 'true' || $body['ver_configuracoes']=== '1') ? 1 : 0;
 
@@ -44,6 +45,7 @@ class AdminRolesService {
             'ver_trabalhos'    => $ver_trabalhos,
             'ver_cupons'       => $ver_cupons,
             'ver_relatorios'   => $ver_relatorios,
+            'ver_banners'      => $ver_banners,
             'ver_usuarios'     => $ver_usuarios,
             'ver_configuracoes'=> $ver_configuracoes,
         ];

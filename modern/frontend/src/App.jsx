@@ -38,6 +38,8 @@ import CategoriaGrid from "./pages/CategoriaGrid"
 import OrderConfirmation from "./pages/OrderConfirmation"
 import MeusPedidos from "./pages/MeusPedidos"
 import AiChat from "./components/AiChat"
+import AdminVagas from "./pages/admin/AdminVagas"
+import AdminBanners from "./pages/admin/AdminBanners"
 import AdminCupons from "./pages/admin/AdminCupons"
 import AdminRelatorios from "./pages/admin/AdminRelatorios"
 import AdminHelp from "./pages/admin/AdminHelp"
@@ -143,9 +145,11 @@ function App() {
               <Route path="settings" element={<AdminSettings />} />
               <Route path="profile" element={<AdminProfile />} />
               <Route path="curriculos" element={<AdminCurriculos />} />
+              <Route path="vagas" element={<AdminVagas />} />
               <Route path="cupons" element={<AdminCupons />} />
               <Route path="relatorios" element={<AdminRelatorios />} />
               <Route path="help" element={<AdminHelp />} />
+              <Route path="banners" element={<AdminBanners />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
