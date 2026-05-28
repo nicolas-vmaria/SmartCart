@@ -187,6 +187,7 @@ CREATE TABLE Aplicacao (
     portfolio_url VARCHAR(500),
     curriculo_url VARCHAR(500),
     carta_apresent TEXT,
+    status ENUM('novo', 'em_analise', 'aprovado', 'reprovado') NOT NULL DEFAULT 'novo',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (trabalho_id) REFERENCES Trabalho(id)
 );

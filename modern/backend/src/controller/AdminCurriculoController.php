@@ -2,8 +2,9 @@
 
 require_once __DIR__ . '/../service/AdminCurriculoService.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/BaseController.php';
 
-class AdminCurriculoController {
+class AdminCurriculoController extends BaseController {
     private AdminCurriculoService $service;
 
     public function __construct() {
@@ -12,14 +13,43 @@ class AdminCurriculoController {
     }
 
     public function index() {
-        echo json_encode($this->service->getAllCurriculos());
+        $search = $_GET['search'] ?? null;
+        $status = $_GET['status'] ?? null;
+
+        $result = $this->service->getAllCurriculos(
+            $search ?: null,
+            $status ?: null
+        );
+
+        if (isset($result['error'])) {
+            http_response_code(500);
+            echo json_encode(['error' => $result['error']]);
+            return;
+        }
+
+        $this->respond($result);
+    }
+
+    public function show(string $id) {
+        $result = $this->service->getCurriculo($id);
+        $this->respond($result);
     }
 
     public function updateStatus(string $id) {
-        echo json_encode($this->service->updateStatus($id));
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $result = $this->service->updateStatus($id, $body);
+        $this->respond($result);
     }
 
     public function destroy(string $id) {
-        echo json_encode($this->service->deleteCurriculo($id));
+        $result = $this->service->deleteCurriculo($id);
+        $this->respond($result);
     }
 }
