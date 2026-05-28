@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, ImageIcon } from 'lucide-react'
+import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -68,7 +68,8 @@ export default function AdminMenu({ isOpen, onClose }) {
                             {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos</Link>}
                             {can('trabalhos')   && <Link to="/admin/vagas" onClick={onClose} className={linkClass}><Briefcase size={18} />Vagas</Link>}
                             {can('cupons')      && <Link to="/admin/cupons" onClick={onClose} className={linkClass}><Ticket size={18} />Cupons</Link>}
-                            {can('banners')     && <Link to="/admin/banners" onClick={onClose} className={linkClass}><ImageIcon size={18} />Carrossel</Link>}
+                            {can('customizacao') && <Link to="/admin/customizacao" onClick={onClose} className={linkClass}><Paintbrush size={18} />Customização</Link>}
+                            {can('marketing')    && <Link to="/admin/marketing"    onClick={onClose} className={linkClass}><TrendingUp size={18} />Marketing</Link>}
                             {can('relatorios')  && <Link to="/admin/relatorios" onClick={onClose} className={linkClass}><BarChart2 size={18} />Relatórios</Link>}
                         </div>
                     </ul>

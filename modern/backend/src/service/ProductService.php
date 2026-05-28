@@ -20,6 +20,20 @@ class ProductService{
     ];
 }
 
+    public function getDestaques(): array {
+        $products = $this->productRepository->getDestaques();
+        return ['message' => 'Destaques retornados', 'products' => $products];
+    }
+
+    public function toggleDestaque(int $id): array {
+        $result = $this->productRepository->toggleDestaque($id);
+        if (!$result) {
+            http_response_code(404);
+            return ['error' => "Produto $id não encontrado"];
+        }
+        return ['message' => 'Destaque atualizado', 'destaque' => (bool)$result['destaque']];
+    }
+
     function getAllProducts(){
         $products = $this->productRepository->getAllProducts();
 

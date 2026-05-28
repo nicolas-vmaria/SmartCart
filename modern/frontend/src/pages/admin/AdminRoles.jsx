@@ -17,7 +17,8 @@ const SECTIONS = [
     { key: 'trabalhos',    label: 'Vagas' },
     { key: 'cupons',        label: 'Cupons' },
     { key: 'relatorios',    label: 'Relatórios' },
-    { key: 'banners',       label: 'Carrossel' },
+    { key: 'customizacao',  label: 'Customização' },
+    { key: 'marketing',     label: 'Marketing' },
     { key: 'usuarios',      label: 'Usuários' },
     { key: 'configuracoes', label: 'Configurações' },
 ]
@@ -68,7 +69,8 @@ function apiRoleToModel(r) {
             trabalhos:     !!r.ver_trabalhos,
             cupons:        !!r.ver_cupons,
             relatorios:    !!r.ver_relatorios,
-            banners:       !!r.ver_banners,
+            customizacao:  !!r.ver_customizacao,
+            marketing:     !!r.ver_marketing,
             usuarios:      !!r.ver_usuarios,
             configuracoes: !!r.ver_configuracoes,
         }
@@ -124,7 +126,8 @@ export default function AdminRoles() {
             ver_trabalhos:    form.permissions.trabalhos     ? '1' : '0',
             ver_cupons:       form.permissions.cupons        ? '1' : '0',
             ver_relatorios:   form.permissions.relatorios    ? '1' : '0',
-            ver_banners:      form.permissions.banners       ? '1' : '0',
+            ver_customizacao: form.permissions.customizacao  ? '1' : '0',
+            ver_marketing:    form.permissions.marketing     ? '1' : '0',
             ver_usuarios:     form.permissions.usuarios      ? '1' : '0',
             ver_configuracoes:form.permissions.configuracoes ? '1' : '0',
         }
