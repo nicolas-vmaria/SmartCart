@@ -46,11 +46,12 @@ class AdminVacanciesRepository {
     public function create(array $data): array {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO Trabalho (nome, cargo, area, tipo_contrato, formato_trabalho, local, requisitos, ativa)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Trabalho (nome, slug, cargo, area, tipo_contrato, formato_trabalho, local, requisitos, ativa)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ');
             $stmt->execute([
                 $data['nome'],
+                $data['slug'],
                 $data['cargo'],
                 $data['area'],
                 $data['tipo_contrato'],
@@ -71,11 +72,12 @@ class AdminVacanciesRepository {
         try {
             $stmt = $this->db->prepare('
                 UPDATE Trabalho
-                SET nome = ?, cargo = ?, area = ?, tipo_contrato = ?, formato_trabalho = ?, local = ?, requisitos = ?, ativa = ?
+                SET nome = ?, slug = ?, cargo = ?, area = ?, tipo_contrato = ?, formato_trabalho = ?, local = ?, requisitos = ?, ativa = ?
                 WHERE id = ?
             ');
             $stmt->execute([
                 $data['nome'],
+                $data['slug'],
                 $data['cargo'],
                 $data['area'],
                 $data['tipo_contrato'],

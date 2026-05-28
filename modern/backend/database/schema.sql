@@ -165,6 +165,7 @@ CREATE TABLE Review (
 CREATE TABLE Trabalho (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
     cargo VARCHAR(100),
     area VARCHAR(100),
     tipo_contrato VARCHAR(50),
@@ -172,16 +173,18 @@ CREATE TABLE Trabalho (
     local VARCHAR(100),
     requisitos TEXT,
     ativa BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Aplicacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    trabalho_id INT NOT NULL,
+    trabalho_id INT NULL;
+    area_interesse VARCHAR(100);
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     tel VARCHAR(20),
-    portifolio_url VARCHAR(500),
+    portfolio_url VARCHAR(500);
     curriculo_url VARCHAR(500),
     carta_apresent TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
