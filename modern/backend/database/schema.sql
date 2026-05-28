@@ -179,12 +179,12 @@ CREATE TABLE Trabalho (
 
 CREATE TABLE Aplicacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    trabalho_id INT NULL;
-    area_interesse VARCHAR(100);
+    trabalho_id INT NULL,
+    area_interesse VARCHAR(100),
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     tel VARCHAR(20),
-    portfolio_url VARCHAR(500);
+    portfolio_url VARCHAR(500),
     curriculo_url VARCHAR(500),
     carta_apresent TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -10,6 +10,16 @@ class ProductService{
         $this->productRepository = new ProductRepository();
     }
 
+    public function getHighlights(): array {
+    $data = $this->productRepository->getHighlights();
+
+    return [
+        'message'      => 'Destaques retornados',
+        'best_sellers' => $data['best_sellers'],
+        'new_arrivals' => $data['new_arrivals'],
+    ];
+}
+
     function getAllProducts(){
         $products = $this->productRepository->getAllProducts();
 
