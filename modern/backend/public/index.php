@@ -34,6 +34,7 @@ require_once __DIR__ . '/../src/routes/CartRoutes.php';
 require_once __DIR__ . '/../src/routes/CouponRoutes.php';
 require_once __DIR__ . '/../src/routes/ContactRoutes.php';
 require_once __DIR__ . '/../src/routes/BannerRoutes.php';
+require_once __DIR__ . '/../src/routes/VagasRoutes.php';
 require_once __DIR__ . '/../src/routes/CandidacyRoutes.php';
 require_once __DIR__ . '/../src/routes/AdminRoutes.php';
 

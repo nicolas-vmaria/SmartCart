@@ -5,7 +5,7 @@ require_once __DIR__ . '/../repository/AdminVacanciesRepository.php';
 class AdminVacanciesService {
     private AdminVacanciesRepository $repository;
 
-    private const TIPOS_CONTRATO   = ['CLT', 'PJ', 'Estágio', 'Freelancer', 'Temporário'];
+    private const TIPOS_CONTRATO   = ['CLT', 'PJ', 'Estágio', 'Freelance', 'CLT + Bônus'];
     private const FORMATOS         = ['Presencial', 'Remoto', 'Híbrido'];
 
     public function __construct() {
@@ -25,7 +25,7 @@ class AdminVacanciesService {
 
     public function getAllVacancies(): array {
         try {
-            return ['vacancies' => $this->repository->getAll()];
+            return ['vagas' => $this->repository->getAll()];
         } catch (RuntimeException $e) {
             http_response_code(500);
             return ['error' => 'Erro interno ao buscar vagas: ' . $e->getMessage()];
@@ -153,19 +153,6 @@ class AdminVacanciesService {
                 return ['error' => "Já existe outra vaga com o nome '{$data['nome']}'"];
             }
 
-            $fields = ['nome', 'cargo', 'area', 'tipo_contrato', 'formato_trabalho', 'local', 'requisitos'];
-            $changed = false;
-            foreach ($fields as $field) {
-                if ((string)($existing[$field] ?? '') !== (string)$data[$field]) {
-                    $changed = true;
-                    break;
-                }
-            }
-            if (!$changed && (int)$existing['ativa'] === $data['ativa']) {
-                http_response_code(400);
-                return ['error' => 'Nenhuma alteração detectada'];
-            }
-
             $this->repository->update($idInt, $data);
             return [
                 'message' => "Vaga $idInt atualizada com sucesso",
@@ -174,6 +161,25 @@ class AdminVacanciesService {
         } catch (RuntimeException $e) {
             http_response_code(500);
             return ['error' => 'Erro interno ao atualizar vaga: ' . $e->getMessage()];
+        }
+    }
+
+    public function toggleVacancy(string $id): array {
+        $idInt = (int)$id;
+        if ($idInt <= 0) {
+            http_response_code(400);
+            return ['error' => 'ID inválido'];
+        }
+        try {
+            $vaga = $this->repository->toggleAtiva($idInt);
+            if (!$vaga) {
+                http_response_code(404);
+                return ['error' => 'Vaga não encontrada'];
+            }
+            return ['message' => 'Status atualizado', 'vaga' => $vaga];
+        } catch (RuntimeException $e) {
+            http_response_code(500);
+            return ['error' => 'Erro interno ao atualizar status: ' . $e->getMessage()];
         }
     }
 

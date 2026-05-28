@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import AdminHeader from '../../components/admin/AdminHeader'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Briefcase, MapPin, Clock, Wifi } from 'lucide-react'
+import { Plus, Pencil, Trash2, Briefcase, MapPin, Clock, Wifi } from 'lucide-react'
 import { getVagas, createVaga, updateVaga, toggleVaga, deleteVaga } from '../../lib/api/adminVagas'
 import Toast from '../../components/Toast'
 import { areaCor } from '../../data/vagas'
@@ -272,12 +272,14 @@ export default function AdminVagas() {
                                                 <button
                                                     onClick={() => handleToggle(v.id)}
                                                     disabled={toggling === v.id}
-                                                    className="flex items-center gap-1.5 text-xs font-medium transition-all disabled:opacity-50"
+                                                    className="flex items-center gap-2 disabled:opacity-50"
                                                 >
-                                                    {ativa
-                                                        ? <><ToggleRight size={20} className="text-green-500" /><span className="text-green-600 dark:text-green-400">Ativa</span></>
-                                                        : <><ToggleLeft size={20} className="text-gray-300 dark:text-gray-600" /><span className="text-gray-400 dark:text-(--admin-text-muted)">Inativa</span></>
-                                                    }
+                                                    <span className={`relative w-9 h-5 rounded-full transition-colors duration-300 shrink-0 ${ativa ? 'bg-verde-escuro dark:bg-(--admin-accent)' : 'bg-gray-300 dark:bg-(--admin-border)'}`}>
+                                                        <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ${ativa ? 'translate-x-4' : 'translate-x-0'}`} />
+                                                    </span>
+                                                    <span className={`text-xs font-medium ${ativa ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-(--admin-text-muted)'}`}>
+                                                        {ativa ? 'Ativa' : 'Inativa'}
+                                                    </span>
                                                 </button>
                                             </td>
                                             <td className="py-3">
