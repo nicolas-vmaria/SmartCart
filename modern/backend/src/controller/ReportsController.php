@@ -1,6 +1,6 @@
 <?php 
 
-require_once __DIR__ . '/../services/ReportsService.php';
+require_once __DIR__ . '/../service/ReportsService.php';
 require_once __DIR__ . '/BaseController.php';
 
 class ReportsController extends BaseController {
@@ -11,17 +11,17 @@ class ReportsController extends BaseController {
     }
 
     public function showInfo($period) {
-        $reportInfo = $this->reportsService->getReportInfo($period);
-        echo json_encode($reportInfo);
+        $result = $this->reportsService->getReportInfo($period);
+        $this->respond($result, 200);
     }
 
     public function showGraphic($period) {
         $reportGraphic = $this->reportsService->getReportGraphic($period);
-        echo json_encode($reportGraphic);
+        $this->respond($reportGraphic, 200);
     }
 
     public function showProducts($period) {
         $reportProducts = $this->reportsService->getReportProducts($period);
-        echo json_encode($reportProducts);
+        $this->respond($reportProducts, 200);
     }
 }

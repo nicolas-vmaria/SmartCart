@@ -36,6 +36,7 @@ require_once __DIR__ . '/../src/routes/ContactRoutes.php';
 require_once __DIR__ . '/../src/routes/BannerRoutes.php';
 require_once __DIR__ . '/../src/routes/CandidacyRoutes.php';
 require_once __DIR__ . '/../src/routes/AdminRoutes.php';
+require_once __DIR__ . '/../src/routes/ReportsRoutes.php';
 
 
 // Dispara o roteador
