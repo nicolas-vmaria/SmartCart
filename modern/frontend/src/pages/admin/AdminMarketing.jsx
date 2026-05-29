@@ -34,6 +34,27 @@ const POPUP_KEYS   = ['popup_ativo','popup_titulo','popup_texto','popup_imagem',
 const DESCONTO_KEYS= ['desconto_ativo','desconto_faixa_1_minimo','desconto_faixa_1_pct','desconto_faixa_2_minimo','desconto_faixa_2_pct','desconto_faixa_3_minimo','desconto_faixa_3_pct']
 const FRETE_KEYS   = ['frete_gratis_minimo']
 
+function SkeletonForm({ rows = 4 }) {
+    return (
+        <div className="flex flex-col gap-5 animate-pulse">
+            <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1.5">
+                    <div className="h-4 w-32 bg-gray-200 dark:bg-(--admin-hover) rounded" />
+                    <div className="h-3 w-48 bg-gray-100 dark:bg-(--admin-border) rounded" />
+                </div>
+                <div className="w-12 h-6 bg-gray-200 dark:bg-(--admin-hover) rounded-full" />
+            </div>
+            {Array.from({ length: rows }).map((_, i) => (
+                <div key={i} className="flex flex-col gap-1.5">
+                    <div className="h-3 w-20 bg-gray-100 dark:bg-(--admin-border) rounded" />
+                    <div className="h-10 bg-gray-200 dark:bg-(--admin-hover) rounded-xl" />
+                </div>
+            ))}
+            <div className="h-10 bg-gray-200 dark:bg-(--admin-hover) rounded-xl" />
+        </div>
+    )
+}
+
 function Toggle({ value, onChange }) {
     return (
         <button type="button" onClick={onChange}
@@ -191,6 +212,7 @@ export default function AdminMarketing() {
                 {activeTab === 'flash' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6 flex flex-col gap-5">
+                        {loadingConfigs ? <SkeletonForm rows={3} /> : <>
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-sm dark:text-(--admin-text)">Flash Sale ativa</p>
@@ -227,6 +249,7 @@ export default function AdminMarketing() {
                             </div>
 
                             <SaveBtn keys={FLASH_KEYS} />
+                        </>}
                         </div>
 
                         {/* Preview flash */}
@@ -254,6 +277,7 @@ export default function AdminMarketing() {
                 {activeTab === 'popup' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6 flex flex-col gap-5">
+                        {loadingConfigs ? <SkeletonForm rows={4} /> : <>
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-sm dark:text-(--admin-text)">Popup ativo</p>
@@ -301,6 +325,7 @@ export default function AdminMarketing() {
                                     placeholder="/produtos ou https://..." className={inputClass} />
                             </div>
                             <SaveBtn keys={POPUP_KEYS} />
+                        </>}
                         </div>
                         <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6">
                             <p className="text-xs text-gray-400 dark:text-(--admin-text-muted) uppercase tracking-wide font-medium mb-4">Preview</p>
@@ -326,6 +351,7 @@ export default function AdminMarketing() {
                 {activeTab === 'desconto' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6 flex flex-col gap-5">
+                        {loadingConfigs ? <SkeletonForm rows={3} /> : <>
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-sm dark:text-(--admin-text)">Desconto progressivo ativo</p>
@@ -351,6 +377,7 @@ export default function AdminMarketing() {
 
                             <p className="text-xs text-gray-400 dark:text-(--admin-text-muted)">O desconto é exibido como informação no carrinho. Para aplicá-lo, use junto de um cupom.</p>
                             <SaveBtn keys={DESCONTO_KEYS} />
+                        </>}
                         </div>
 
                         {/* Preview desconto */}
@@ -380,6 +407,7 @@ export default function AdminMarketing() {
                 {activeTab === 'frete' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6 flex flex-col gap-5">
+                        {loadingConfigs ? <SkeletonForm rows={1} /> : <>
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Valor mínimo para frete grátis</label>
                                 <div className="flex items-center border border-gray-200 dark:border-(--admin-border) rounded-xl overflow-hidden">
@@ -394,6 +422,7 @@ export default function AdminMarketing() {
                                 </p>
                             </div>
                             <SaveBtn keys={FRETE_KEYS} />
+                        </>}
                         </div>
                         <div className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-6">
                             <p className="text-xs text-gray-400 dark:text-(--admin-text-muted) uppercase tracking-wide font-medium mb-4">Preview no carrinho</p>

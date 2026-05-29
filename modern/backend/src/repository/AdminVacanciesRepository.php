@@ -56,7 +56,7 @@ class AdminVacanciesRepository {
                 $data['area'],
                 $data['tipo_contrato'],
                 $data['formato_trabalho'],
-                $data['`local`'],
+                $data['local'],
                 $data['requisitos'],
                 (int)$data['ativa'],
             ]);
@@ -82,7 +82,7 @@ class AdminVacanciesRepository {
                 $data['area'],
                 $data['tipo_contrato'],
                 $data['formato_trabalho'],
-                $data['`local`'],
+                $data['local'],
                 $data['requisitos'],
                 (int)$data['ativa'],
                 $id,

@@ -11,3 +11,7 @@ export function getProductBySlug(slug) {
 export function getProdutosDestaque() {
     return api.get('/product/destaques')
 }
+
+export function getHighlights() {
+    return api.get('/product/highlights')
+}

@@ -2,6 +2,11 @@ import { Link } from 'react-router-dom'
 import { useConfiguracoes } from '../hooks/useConfiguracoes'
 import { FaInstagram, FaFacebook, FaWhatsapp, FaYoutube } from 'react-icons/fa'
 
+function extUrl(url) {
+    if (!url) return ''
+    return /^https?:\/\//i.test(url) ? url : `https://${url}`
+}
+
 const sobreLinks = [
     { label: 'Quem Somos',          slug: 'quem-somos'           },
     { label: 'Perguntas Frequentes',slug: 'perguntas-frequentes' },
@@ -96,25 +101,25 @@ export default function Footer() {
 
             <div className="flex gap-3 mb-4">
               {config.redes_instagram && (
-                <a href={config.redes_instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                <a href={extUrl(config.redes_instagram)} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
                   className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200 text-xl">
                   <FaInstagram />
                 </a>
               )}
               {config.redes_facebook && (
-                <a href={config.redes_facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                <a href={extUrl(config.redes_facebook)} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
                   className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200 text-xl">
                   <FaFacebook />
                 </a>
               )}
               {config.redes_whatsapp && (
-                <a href={config.redes_whatsapp} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
+                <a href={extUrl(config.redes_whatsapp)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
                   className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200 text-xl">
                   <FaWhatsapp />
                 </a>
               )}
               {config.redes_youtube && (
-                <a href={config.redes_youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube"
+                <a href={extUrl(config.redes_youtube)} target="_blank" rel="noopener noreferrer" aria-label="YouTube"
                   className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200 text-xl">
                   <FaYoutube />
                 </a>

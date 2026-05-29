@@ -104,6 +104,13 @@ class AdminProductRepository {
             }
         }
 
+        public function getFotoUrl(int $id): ?string {
+            $stmt = $this->db->prepare('SELECT foto_url FROM Produtos WHERE id = ?');
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ? $row['foto_url'] : null;
+        }
+
         public function deleteProduct(int $id): bool {
             try {
                 $this->db->beginTransaction();

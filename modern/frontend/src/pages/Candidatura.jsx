@@ -105,6 +105,13 @@ export default function Candidatura() {
 
     if (notFound) return <Navigate to="/sobre/trabalhe-conosco" replace />
 
+    function maskPhone(value) {
+        const digits = value.replace(/\D/g, '').slice(0, 11)
+        if (digits.length <= 10)
+            return digits.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3').replace(/-$/, '')
+        return digits.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3').replace(/-$/, '')
+    }
+
     function handleArquivo(e) {
         const file = e.target.files[0]
         if (file && file.size > 5 * 1024 * 1024) {
@@ -217,7 +224,7 @@ export default function Candidatura() {
                                     </Field>
                                     <Field label="Telefone" icon={Phone}>
                                         <input required className={inputCls} placeholder="(11) 99999-9999"
-                                            value={form.telefone} onChange={e => set('telefone', e.target.value)} />
+                                            value={form.telefone} onChange={e => set('telefone', maskPhone(e.target.value))} />
                                     </Field>
                                     <Field label="LinkedIn ou portfólio" icon={Link2}>
                                         <input className={inputCls} placeholder="linkedin.com/in/seu-perfil"

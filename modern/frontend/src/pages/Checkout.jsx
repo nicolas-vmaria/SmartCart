@@ -60,18 +60,31 @@ const inputCls = "border border-gray-200 rounded-xl p-3 focus:outline-none focus
 
 function DeliveryStep({ data, onChange }) {
     const [loadingCep, setLoadingCep] = useState(false)
+    const [cepErro, setCepErro]       = useState(false)
+
+    function clearAddress() {
+        onChange('endereco', '')
+        onChange('bairro',   '')
+        onChange('cidade',   '')
+        onChange('estado',   '')
+    }
 
     const findCep = async (cep) => {
         setLoadingCep(true)
+        setCepErro(false)
         try {
-            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            const res  = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
             const json = await res.json()
             if (!json.erro) {
                 onChange('endereco', json.logradouro)
-                onChange('bairro', json.bairro)
-                onChange('cidade', json.localidade)
-                onChange('estado', json.uf)
+                onChange('bairro',   json.bairro)
+                onChange('cidade',   json.localidade)
+                onChange('estado',   json.uf)
+            } else {
+                setCepErro(true)
             }
+        } catch {
+            setCepErro(true)
         } finally {
             setLoadingCep(false)
         }
@@ -87,13 +100,22 @@ function DeliveryStep({ data, onChange }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="CEP">
                     <div className="relative">
-                        <input className={inputCls + ' w-full'} placeholder="00000-000" maxLength={9} value={data.cep}
+                        <input
+                            className={`${inputCls} w-full ${cepErro ? 'border-red-400 focus:border-red-400' : ''}`}
+                            placeholder="00000-000"
+                            maxLength={9}
+                            value={data.cep}
                             onChange={e => {
-                                onChange('cep', e.target.value)
-                                if (e.target.value.replace(/\D/g, '').length === 8) findCep(e.target.value)
-                            }} />
+                                const val = e.target.value
+                                onChange('cep', val)
+                                setCepErro(false)
+                                clearAddress()
+                                if (val.replace(/\D/g, '').length === 8) findCep(val)
+                            }}
+                        />
                         {loadingCep && <div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-verde-escuro border-t-transparent rounded-full animate-spin" />}
                     </div>
+                    {cepErro && <p className="text-red-500 text-xs mt-1">CEP não encontrado. Verifique e tente novamente.</p>}
                 </Field>
                 <Field label="Endereço (rua)">
                     <input className={inputCls} placeholder="Rua, Avenida..." value={data.endereco} onChange={e => onChange('endereco', e.target.value)} />

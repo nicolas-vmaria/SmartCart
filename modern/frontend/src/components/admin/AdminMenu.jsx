@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import { getAdminOrders } from '../../lib/api/adminOrders'
+import { getCurriculos } from '../../lib/api/adminCurriculos'
 
 const linkClass = "cursor-pointer flex gap-2 items-center h-10 px-2 rounded-md transition-all hover:bg-gray-100 dark:text-(--admin-text) dark:hover:bg-(--admin-hover) outline-none"
 
@@ -19,7 +20,8 @@ export default function AdminMenu({ isOpen, onClose }) {
     const navigate = useNavigate()
     const location = useLocation()
     const [confirm, setConfirm] = useState(false)
-    const [notifPedidos, setNotifPedidos] = useState(0)
+    const [notifPedidos, setNotifPedidos]       = useState(0)
+    const [notifCurriculos, setNotifCurriculos] = useState(0)
 
     useEffect(() => {
         getAdminOrders()
@@ -27,6 +29,10 @@ export default function AdminMenu({ isOpen, onClose }) {
                 const count = (data.orders ?? []).filter(o => o.status === 'aguardando').length
                 setNotifPedidos(count)
             })
+            .catch(() => {})
+
+        getCurriculos()
+            .then(({ data }) => setNotifCurriculos(data.stats?.novos ?? 0))
             .catch(() => {})
     }, [location.pathname])
 
@@ -65,7 +71,7 @@ export default function AdminMenu({ isOpen, onClose }) {
                             {can('produtos')    && <Link to="/admin/products" onClick={onClose} className={linkClass}><Package size={18} />Produtos</Link>}
                             {can('categorias')  && <Link to="/admin/categories" onClick={onClose} className={linkClass}><Tag size={18} />Categorias</Link>}
                             {can('pedidos')     && <Link to="/admin/orders" onClick={onClose} className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={notifPedidos} /></Link>}
-                            {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos</Link>}
+                            {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos<Badge count={notifCurriculos} /></Link>}
                             {can('trabalhos')   && <Link to="/admin/vagas" onClick={onClose} className={linkClass}><Briefcase size={18} />Vagas</Link>}
                             {can('cupons')      && <Link to="/admin/cupons" onClick={onClose} className={linkClass}><Ticket size={18} />Cupons</Link>}
                             {can('customizacao') && <Link to="/admin/customizacao" onClick={onClose} className={linkClass}><Paintbrush size={18} />Customização</Link>}

@@ -27,6 +27,13 @@ class AdminBannerRepository {
         return ['id' => $id, 'foto_url' => $foto_url, 'ordem' => $maxOrdem, 'ativo' => true];
     }
 
+    public function getFotoUrl(int $id): ?string {
+        $stmt = $this->db->prepare('SELECT foto_url FROM Banners WHERE id = ?');
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $row['foto_url'] : null;
+    }
+
     public function delete(int $id): bool {
         $stmt = $this->db->prepare('DELETE FROM Banners WHERE id = ?');
         $stmt->execute([$id]);

@@ -40,6 +40,7 @@ require_once __DIR__ . '/../src/routes/CompraJuntoRoutes.php';
 require_once __DIR__ . '/../src/routes/VagasRoutes.php';
 require_once __DIR__ . '/../src/routes/CandidacyRoutes.php';
 require_once __DIR__ . '/../src/routes/AdminRoutes.php';
+require_once __DIR__ . '/../src/routes/AdminDashboardRoutes.php';
 
 
 // Dispara o roteador

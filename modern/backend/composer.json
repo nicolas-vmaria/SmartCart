@@ -3,6 +3,7 @@
         "vlucas/phpdotenv": "^5.6",
         "firebase/php-jwt": "^7.0",
         "phpmailer/phpmailer": "^7.0",
-        "dompdf/dompdf": "^3.1"
+        "dompdf/dompdf": "^3.1",
+        "cloudinary/cloudinary_php": "^3.1"
     }
 }
