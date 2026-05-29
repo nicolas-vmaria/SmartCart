@@ -8,7 +8,7 @@ class AdminBannerController extends BaseController {
     private AdminBannerService $service;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_banners');
+        AuthMiddleware::handle('admin', 'ver_customizacao');
         $this->service = new AdminBannerService();
     }
 

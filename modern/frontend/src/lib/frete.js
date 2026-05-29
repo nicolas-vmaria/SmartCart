@@ -9,7 +9,7 @@ const TABELA = {
     PA: 44.90, AM: 44.90, RO: 44.90, RR: 44.90, AP: 44.90, AC: 44.90, TO: 44.90,
 }
 
-export function calcularFrete(uf, subtotalComDesconto) {
-    if (subtotalComDesconto >= FRETE_GRATIS_MINIMO) return 0
+export function calcularFrete(uf, subtotalComDesconto, minimoGratis = FRETE_GRATIS_MINIMO) {
+    if (minimoGratis === 0 || subtotalComDesconto >= minimoGratis) return 0
     return TABELA[uf] ?? 29.90
 }

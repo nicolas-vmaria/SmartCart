@@ -50,7 +50,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="flex items-center justify-between h-20 px-6 md:px-10 fixed w-full bg-verde-escuro z-50">
+        <nav className="flex items-center justify-between h-20 px-6 md:px-10 w-full bg-verde-escuro">
 
             <Link to="/" onClick={fecharMenu}><img className="w-36 md:w-40" src={logo} alt="" /></Link>
 

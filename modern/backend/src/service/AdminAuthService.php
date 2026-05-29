@@ -46,8 +46,10 @@ class AdminAuthService {
                 'ver_trabalhos'    => (bool)$user['ver_trabalhos'],
                 'ver_cupons'       => (bool)$user['ver_cupons'],
                 'ver_relatorios'   => (bool)$user['ver_relatorios'],
-                'ver_usuarios'     => (bool)$user['ver_usuarios'],
-                'ver_configuracoes'=> (bool)$user['ver_configuracoes'],
+                'ver_usuarios'      => (bool)$user['ver_usuarios'],
+                'ver_configuracoes' => (bool)$user['ver_configuracoes'],
+                'ver_customizacao'  => (bool)$user['ver_customizacao'],
+                'ver_marketing'     => (bool)$user['ver_marketing'],
             ],
         ]);
 
@@ -68,9 +70,11 @@ class AdminAuthService {
                     'curriculos'   => (bool)$user['ver_curriculos'],
                     'trabalhos'    => (bool)$user['ver_trabalhos'],
                     'cupons'       => (bool)$user['ver_cupons'],
-                    'relatorios'   => (bool)$user['ver_relatorios'],
-                    'usuarios'     => (bool)$user['ver_usuarios'],
-                    'configuracoes'=> (bool)$user['ver_configuracoes'],
+                    'relatorios'    => (bool)$user['ver_relatorios'],
+                    'usuarios'      => (bool)$user['ver_usuarios'],
+                    'configuracoes' => (bool)$user['ver_configuracoes'],
+                    'customizacao'  => (bool)$user['ver_customizacao'],
+                    'marketing'     => (bool)$user['ver_marketing'],
                 ],
             ]
         ];

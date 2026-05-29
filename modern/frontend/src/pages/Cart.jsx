@@ -4,8 +4,9 @@ import { ShoppingCart, Trash2, Loader2, X, Tag, Truck, AlertTriangle } from "luc
 import { validateCoupon } from "../lib/api/coupons"
 import { getCart, updateCartItem, removeCartItem, clearCart } from "../lib/api/cart"
 import ConfirmDialog from "../components/ConfirmDialog"
-import { calcularFrete, FRETE_GRATIS_MINIMO } from "../lib/frete"
+import { calcularFrete } from "../lib/frete"
 import Toast from "../components/Toast"
+import { useConfiguracoes } from "../hooks/useConfiguracoes"
 
 const CART_CACHE_KEY = 'cart_cache'
 
@@ -84,6 +85,12 @@ function EmptyCart() {
 }
 
 export default function Cart() {
+    const { config } = useConfiguracoes()
+    const freteGratisMinimo = (() => {
+        const raw = Number(config.frete_gratis_minimo)
+        return isNaN(raw) ? 500 : raw
+    })()
+
     const [items, setItems] = useState(() => {
         try { const c = localStorage.getItem(CART_CACHE_KEY); return c ? JSON.parse(c) : [] } catch { return [] }
     })
@@ -198,14 +205,24 @@ export default function Cart() {
 
     const hasStockIssue = items.some(i => i.quantidade > i.estoque)
     const subtotal = items.reduce((acc, i) => acc + Number(i.preco) * i.quantidade, 0)
+
+    const faixas = config.desconto_ativo === '1'
+        ? [1, 2, 3]
+            .map(n => ({ minimo: Number(config[`desconto_faixa_${n}_minimo`]), pct: Number(config[`desconto_faixa_${n}_pct`]) }))
+            .filter(f => f.minimo > 0 && f.pct > 0)
+            .sort((a, b) => b.minimo - a.minimo)
+        : []
+    const faixaAtiva        = faixas.find(f => subtotal >= f.minimo) ?? null
+    const descontoProgressivo = faixaAtiva ? subtotal * (faixaAtiva.pct / 100) : 0
+
     const discount = appliedCoupon
         ? appliedCoupon.tipo_desconto === 'percentual'
             ? subtotal * (parseFloat(appliedCoupon.desconto) / 100)
             : Math.min(parseFloat(appliedCoupon.desconto), subtotal)
         : 0
-    const subtotalComDesconto = subtotal - discount
+    const subtotalComDesconto = subtotal - discount - descontoProgressivo
     const frete = items.length === 0 ? 0
-        : cepResult ? calcularFrete(cepResult.uf, subtotalComDesconto)
+        : cepResult ? calcularFrete(cepResult.uf, subtotalComDesconto, freteGratisMinimo)
         : null
     const total = subtotalComDesconto + (frete ?? 0)
 
@@ -281,6 +298,49 @@ export default function Cart() {
                 <div className="bg-gray-100 shadow-2xl p-5 rounded-2xl w-full">
                     <h1 className="text-2xl font-bold">Resumo do pedido</h1>
 
+                    {items.length > 0 && !loading && faixas.length > 0 && (() => {
+                        const faixasAsc = [...faixas].sort((a, b) => a.minimo - b.minimo)
+                        const proxima   = faixasAsc.find(f => subtotal < f.minimo)
+                        return (
+                            <div className="border border-gray-200 rounded-xl p-3 mt-3 flex flex-col gap-1">
+                                {faixasAsc.map(f => {
+                                    const isAtiva = faixaAtiva?.minimo === f.minimo
+                                    return (
+                                        <div key={f.minimo} className={`flex items-center gap-2 text-xs py-1 border-b border-gray-100 last:border-0 ${isAtiva ? 'text-verde-escuro font-semibold' : 'text-gray-400'}`}>
+                                            <span className={`w-2 h-2 rounded-full shrink-0 ${isAtiva ? 'bg-verde-escuro' : 'bg-gray-200'}`} />
+                                            <span className="flex-1">Acima de {f.minimo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                            <span>{f.pct}% off</span>
+                                        </div>
+                                    )
+                                })}
+                                {proxima && (
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Adicione mais <strong>{(proxima.minimo - subtotal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong> para {proxima.pct}% off
+                                    </p>
+                                )}
+                            </div>
+                        )
+                    })()}
+
+                    {items.length > 0 && !loading && freteGratisMinimo === 0 && (
+                        <div className="flex items-center gap-1.5 text-green-600 text-xs font-medium mt-2">
+                            <Truck size={13} /> Frete grátis em todas as compras!
+                        </div>
+                    )}
+                    {items.length > 0 && !loading && freteGratisMinimo > 0 && subtotalComDesconto < freteGratisMinimo && (
+                        <div className="bg-green-50 border border-green-200 rounded-xl p-3 mt-3">
+                            <p className="text-xs text-green-700 mb-1.5">
+                                Faltam <strong>{(freteGratisMinimo - subtotalComDesconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong> para frete grátis!
+                            </p>
+                            <div className="h-1.5 bg-green-200 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-green-500 rounded-full transition-all"
+                                    style={{ width: `${Math.min(subtotalComDesconto / freteGratisMinimo * 100, 100)}%` }}
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {appliedCoupon ? (
                         <div className="flex items-center justify-between mt-3 px-3 py-2 bg-green-50 border border-green-200 rounded-xl">
                             <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
@@ -317,9 +377,15 @@ export default function Cart() {
                             <span className="font-bold">Subtotal:</span>
                             <span>{subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                         </div>
+                        {descontoProgressivo > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                                <span className="font-bold">Desconto {faixaAtiva.pct}%:</span>
+                                <span>- {descontoProgressivo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                            </div>
+                        )}
                         {discount > 0 && (
                             <div className="flex justify-between text-sm text-green-600">
-                                <span className="font-bold">Desconto:</span>
+                                <span className="font-bold">Cupom:</span>
                                 <span>- {discount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                             </div>
                         )}
@@ -372,7 +438,7 @@ export default function Cart() {
                                 </div>
                                 {cepError
                                     ? <p className="text-red-500 text-xs">{cepError}</p>
-                                    : <p className="text-xs text-gray-400">Frete grátis acima de R$ 500,00</p>
+                                    : <p className="text-xs text-gray-400">{freteGratisMinimo === 0 ? 'Frete grátis em todas as compras' : `Frete grátis acima de ${freteGratisMinimo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`}</p>
                                 }
                             </>
                         )}
