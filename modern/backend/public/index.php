@@ -1,7 +1,7 @@
 <?php
 
-ini_set('display_errors', 0);
-error_reporting(0);
+ini_set('display_errors', 1);
+error_reporting(1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -40,7 +40,7 @@ require_once __DIR__ . '/../src/routes/CompraJuntoRoutes.php';
 require_once __DIR__ . '/../src/routes/VagasRoutes.php';
 require_once __DIR__ . '/../src/routes/CandidacyRoutes.php';
 require_once __DIR__ . '/../src/routes/AdminRoutes.php';
-require_once __DIR__ . '/../src/routes/AdminDashboardRoutes.php';
+require_once __DIR__ . '/../src/routes/ReportsRoutes.php';
 
 
 // Dispara o roteador
