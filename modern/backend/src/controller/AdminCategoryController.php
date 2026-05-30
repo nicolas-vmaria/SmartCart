@@ -1,29 +1,49 @@
 <?php
-
+require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../service/AdminCategoryService.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
-class AdminCategoryController {
+class AdminCategoryController extends BaseController {
     private AdminCategoryService $service;
 
     public function __construct() {
-        AuthMiddleware::handle();
+        AuthMiddleware::handle('admin', 'ver_categorias');
         $this->service = new AdminCategoryService();
     }
 
     public function index() {
-        echo json_encode($this->service->getAllCategories());
+        $result = $this->service->getAllCategories();
+        $this->respond($result);
     }
 
     public function store() {
-        echo json_encode($this->service->createCategory());
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $result = $this->service->createCategory($body);
+        $this->respond($result, 201);
     }
 
     public function update(string $id) {
-        echo json_encode($this->service->updateCategory($id));
-    }
+        $body = $this->getBody();
+
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+
+        $result = $this->service->updateCategory($id, $body);
+        $this->respond($result);
+}
 
     public function destroy(string $id) {
-        echo json_encode($this->service->deleteCategory($id));
+        $result = $this->service->deleteCategory($id);
+        $this->respond($result);    
     }
 }

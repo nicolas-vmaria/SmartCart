@@ -1,20 +1,26 @@
 import { useState } from 'react'
+import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Plus, Pencil, Trash2, X, Check, Tag } from 'lucide-react'
+import { createCategory, getAdminCategories, deleteCategory as deleteCategoryApi, editCategory as editCategoryApi } from '../../lib/api/adminCategories'
+import Toast from '../../components/Toast'
+import ConfirmDialog from '../../components/ConfirmDialog'
 
-const initialCategories = [
-    { id: 1, name: 'Carrinho', description: 'Carrinhos inteligentes para supermercado', products: 2 },
-    { id: 2, name: 'Cesta', description: 'Cestas inteligentes para compras rápidas', products: 1 },
-    { id: 3, name: 'Acessório', description: 'Acessórios e peças para os produtos', products: 2 },
-]
 
-const emptyForm = { name: '', description: '' }
+
+const emptyForm = { nome: '', descricao: '' }
 
 export default function AdminCategories() {
-    const [categories, setCategories] = useState(initialCategories)
+    const { data: categories, loading, setData: setCategories, refetch: fetchCategories, setLoading } = useAdminData(
+        'admin_categories',
+        async () => { const { data } = await getAdminCategories(); return data }
+    )
     const [showModal, setShowModal] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [editing, setEditing] = useState(null)
+    const [toast, setToast] = useState('')
+    const [confirmId, setConfirmId] = useState(null)
+    const [submitting, setSubmitting] = useState(false)
 
     function openCreate() {
         setEditing(null)
@@ -24,27 +30,45 @@ export default function AdminCategories() {
 
     function openEdit(category) {
         setEditing(category.id)
-        setForm({ name: category.name, description: category.description })
+        setForm({ nome: category.nome, descricao: category.descricao })
         setShowModal(true)
     }
 
-    function handleSubmit(e) {
+
+    async function handleSubmit(e) {
         e.preventDefault()
-        if (!form.name) return
+        if (!form.nome) return
 
-        if (editing) {
-            setCategories(prev => prev.map(c => c.id === editing ? { ...c, ...form } : c))
-        } else {
-            setCategories(prev => [...prev, { ...form, id: Date.now(), products: 0 }])
+        setSubmitting(true)
+        try {
+            if (editing) {
+                await editCategoryApi(editing, form)
+                setToast({message: 'Categoria editada', type: 'success'})
+            } else {
+                const { data } = await createCategory(form.nome, form.descricao)
+                setToast({message: data.message, type: 'success'})
+            }
+            setForm(emptyForm)
+            setShowModal(false)
+            setEditing(null)
+            fetchCategories()
+        } catch(err){
+            setToast({message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
+        } finally {
+            setSubmitting(false)
         }
-
-        setForm(emptyForm)
-        setShowModal(false)
-        setEditing(null)
     }
 
-    function deleteCategory(id) {
-        setCategories(prev => prev.filter(c => c.id !== id))
+    async function deleteCategory(id) {
+        setLoading(true)
+        try{
+            await deleteCategoryApi(id)
+            setToast({message: "Categoria removida com sucesso.", type: "success"})
+            fetchCategories()
+        } catch(err){
+            setLoading(false)
+            setToast({message: err.response?.data?.error || "Erro ao conectar ao servidor", type: "error"})
+        }
     }
 
     return (
@@ -61,34 +85,47 @@ export default function AdminCategories() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {categories.map(category => (
+                {loading && Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5 flex flex-col gap-3 animate-pulse">
+                        <div className="flex items-center gap-2">
+                            <div className="w-9 h-9 rounded-lg bg-gray-200 dark:bg-(--admin-hover)" />
+                            <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="h-3 bg-gray-200 dark:bg-(--admin-hover) rounded w-full" />
+                            <div className="h-3 bg-gray-200 dark:bg-(--admin-hover) rounded w-3/4" />
+                        </div>
+                        <div className="h-3 bg-gray-200 dark:bg-(--admin-hover) rounded w-20" />
+                    </div>
+                ))}
+                {!loading && categories.map(category => (
                     <div key={category.id} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5 flex flex-col gap-3">
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-2">
                                 <div className="w-9 h-9 rounded-lg bg-green-50 dark:bg-(--admin-hover) flex items-center justify-center text-verde-escuro dark:text-(--admin-accent)">
                                     <Tag size={16} />
                                 </div>
-                                <h3 className="font-bold text-verde-escuro dark:text-(--admin-accent) text-lg">{category.name}</h3>
+                                <h3 className="font-bold text-verde-escuro dark:text-(--admin-accent) text-lg">{category.nome}</h3>
                             </div>
                             <div className="flex gap-1">
                                 <button onClick={() => openEdit(category)}
                                     className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                     <Pencil size={15} />
                                 </button>
-                                <button onClick={() => deleteCategory(category.id)}
+                                <button onClick={() => setConfirmId(category.id)}
                                     className="p-1.5 rounded-md hover:bg-red-950/40 transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-red-500">
                                     <Trash2 size={15} />
                                 </button>
                             </div>
                         </div>
 
-                        <p className="text-sm text-gray-500 dark:text-(--admin-text-muted) leading-relaxed">{category.description || 'Sem descrição.'}</p>
+                        <p className="text-sm text-gray-500 dark:text-(--admin-text-muted) leading-relaxed">{category.descricao || 'Sem descrição.'}</p>
 
-                        <span className="text-xs text-gray-400 dark:text-(--admin-text-muted)">{category.products} produto(s)</span>
+                        <span className="text-xs text-gray-400 dark:text-(--admin-text-muted)">{category.total_produtos ?? 0} produto(s)</span>
                     </div>
                 ))}
 
-                {categories.length === 0 && (
+                {!loading && categories.length === 0 && (
                     <div className="col-span-3 py-16 text-center text-gray-400 dark:text-(--admin-text-muted)">
                         Nenhuma categoria cadastrada.
                     </div>
@@ -96,8 +133,8 @@ export default function AdminCategories() {
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-md shadow-xl dark:shadow-black/40">
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl p-6 w-full max-w-md shadow-xl dark:shadow-black/40 max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-verde-escuro dark:text-(--admin-accent) font-bold text-xl">
                                 {editing ? 'Editar categoria' : 'Nova categoria'}
@@ -112,8 +149,8 @@ export default function AdminCategories() {
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Nome *</label>
                                 <input
                                     type="text"
-                                    value={form.name}
-                                    onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
+                                    value={form.nome}
+                                    onChange={e => setForm(prev => ({ ...prev, nome: e.target.value }))}
                                     className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all"
                                     placeholder="Nome da categoria"
                                 />
@@ -121,8 +158,8 @@ export default function AdminCategories() {
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Descrição</label>
                                 <textarea
-                                    value={form.description}
-                                    onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))}
+                                    value={form.descricao}
+                                    onChange={e => setForm(prev => ({ ...prev, descricao: e.target.value }))}
                                     className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all resize-none"
                                     placeholder="Descrição da categoria"
                                     rows={3}
@@ -134,16 +171,31 @@ export default function AdminCategories() {
                                     className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-(--admin-border) text-sm text-gray-500 dark:text-(--admin-text-muted) hover:bg-gray-50 dark:hover:bg-(--admin-hover) transition-all">
                                     Cancelar
                                 </button>
-                                <button type="submit"
-                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all">
-                                    <Check size={15} />
-                                    {editing ? 'Salvar' : 'Criar'}
+                                <button type="submit" disabled={submitting}
+                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                                    {submitting
+                                        ? <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        : <Check size={15} />
+                                    }
+                                    {submitting ? 'Salvando...' : editing ? 'Salvar' : 'Criar'}
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
+
+            {confirmId && (
+                <ConfirmDialog
+                    title="Excluir categoria"
+                    message="Todos os produtos desta categoria também serão removidos. Deseja continuar?"
+                    confirmLabel="Excluir"
+                    onConfirm={() => { deleteCategory(confirmId); setConfirmId(null) }}
+                    onCancel={() => setConfirmId(null)}
+                />
+            )}
+
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(false)}/>}
         </main>
     )
 }

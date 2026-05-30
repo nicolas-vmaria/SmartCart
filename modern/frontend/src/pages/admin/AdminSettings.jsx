@@ -14,7 +14,7 @@ function Section({ title, children }) {
 
 function Row({ icon: Icon, label, description, children }) {
     return (
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-(--admin-hover) flex items-center justify-center text-gray-400 dark:text-(--admin-text-muted) shrink-0">
                     <Icon size={16} />
@@ -24,7 +24,7 @@ function Row({ icon: Icon, label, description, children }) {
                     {description && <p className="text-xs text-gray-400 dark:text-(--admin-text-muted)">{description}</p>}
                 </div>
             </div>
-            <div className="shrink-0">{children}</div>
+            <div className="sm:shrink-0">{children}</div>
         </div>
     )
 }
@@ -47,7 +47,7 @@ const themeOptions = [
     { value: 'system', label: 'Sistema', icon: Monitor },
 ]
 
-const inputClass = "border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-1.5 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all w-52"
+const inputClass = "border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-1.5 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all w-full sm:w-52"
 
 export default function AdminSettings() {
     const { dark, setDark } = useTheme()

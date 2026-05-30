@@ -1,6 +1,10 @@
 import { useState } from 'react'
+import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
+import Toast from '../../components/Toast'
+import ConfirmDialog from '../../components/ConfirmDialog'
 import { Plus, Pencil, Trash2, X, Check, ShieldCheck, Shield, ChevronDown, ChevronUp, Users } from 'lucide-react'
+import { createRole, getRoles as getRolesApi, updateRole } from '../../lib/api/roles'
 
 const SECTIONS = [
     { key: 'dashboard',     label: 'Dashboard' },
@@ -10,64 +14,27 @@ const SECTIONS = [
     { key: 'categorias',    label: 'Categorias' },
     { key: 'papeis',        label: 'Papéis' },
     { key: 'curriculos',    label: 'Currículos'},
+    { key: 'trabalhos',    label: 'Vagas' },
     { key: 'cupons',        label: 'Cupons' },
     { key: 'relatorios',    label: 'Relatórios' },
+    { key: 'customizacao',  label: 'Customização' },
+    { key: 'marketing',     label: 'Marketing' },
     { key: 'usuarios',      label: 'Usuários' },
     { key: 'configuracoes', label: 'Configurações' },
 ]
 
-const ACTIONS = [
-    { key: 'ver',     label: 'Ver' },
-    { key: 'criar',   label: 'Criar' },
-    { key: 'editar',  label: 'Editar' },
-    { key: 'excluir', label: 'Excluir' },
-]
-
 function emptyPerms() {
-    return Object.fromEntries(SECTIONS.map(s => [s.key, { ver: false, criar: false, editar: false, excluir: false }]))
+    return Object.fromEntries(SECTIONS.map(s => [s.key, false]))
 }
 
 function fullPerms() {
-    return Object.fromEntries(SECTIONS.map(s => [s.key, { ver: true, criar: true, editar: true, excluir: true }]))
+    return Object.fromEntries(SECTIONS.map(s => [s.key, true]))
 }
 
-const initialRoles = [
-    {
-        id: 1,
-        name: 'Administrador',
-        description: 'Acesso total ao sistema. Pode gerenciar todos os recursos e configurações.',
-        color: 'bg-purple-100 text-purple-700 dark:bg-purple-500/25 dark:text-purple-300',
-        users: 2,
-        permissions: fullPerms(),
-    },
-    {
-        id: 2,
-        name: 'Gerente',
-        description: 'Gerencia produtos, pedidos e clientes. Não acessa papéis nem configurações.',
-        color: 'bg-blue-100 text-blue-700 dark:bg-blue-500/25 dark:text-blue-300',
-        users: 4,
-        permissions: Object.fromEntries(SECTIONS.map(s => [
-            s.key,
-            s.key === 'papeis' || s.key === 'configuracoes' || s.key === 'usuarios'
-                ? { ver: false, criar: false, editar: false, excluir: false }
-                : { ver: true, criar: true, editar: true, excluir: s.key !== 'dashboard' }
-        ])),
-    },
-    {
-        id: 3,
-        name: 'Funcionário',
-        description: 'Visualiza e atualiza pedidos e produtos. Sem permissão para criar ou excluir.',
-        color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/25 dark:text-yellow-300',
-        users: 8,
-        permissions: Object.fromEntries(SECTIONS.map(s => [
-            s.key,
-            { ver: ['dashboard', 'pedidos', 'produtos'].includes(s.key), criar: false, editar: s.key === 'pedidos', excluir: false }
-        ])),
-    },
-]
+
 
 function buildEmptyForm() {
-    return { name: '', description: '', color: 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200', permissions: emptyPerms() }
+    return { nome_papel: '', descricao: '', color: 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200', permissions: emptyPerms() }
 }
 
 const colorOptions = [
@@ -80,15 +47,48 @@ const colorOptions = [
 ]
 
 function permCount(permissions) {
-    return Object.values(permissions).reduce((acc, section) => acc + Object.values(section).filter(Boolean).length, 0)
+    if (!permissions) return 0
+    return Object.values(permissions).filter(Boolean).length
+}
+
+function apiRoleToModel(r) {
+    return {
+        id: r.id,
+        nome_papel: r.nome_papel ? r.nome_papel.charAt(0).toUpperCase() + r.nome_papel.slice(1) : '',
+        descricao: r.descricao || '',
+        color: (r.badge && r.badge.startsWith('bg-')) ? r.badge : 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200',
+        users: 0,
+        permissions: {
+            dashboard:     !!r.ver_dashboard,
+            clientes:      !!r.ver_clientes,
+            produtos:      !!r.ver_produtos,
+            pedidos:       !!r.ver_pedidos,
+            categorias:    !!r.ver_categorias,
+            papeis:        !!r.ver_admin,
+            curriculos:    !!r.ver_curriculos,
+            trabalhos:     !!r.ver_trabalhos,
+            cupons:        !!r.ver_cupons,
+            relatorios:    !!r.ver_relatorios,
+            customizacao:  !!r.ver_customizacao,
+            marketing:     !!r.ver_marketing,
+            usuarios:      !!r.ver_usuarios,
+            configuracoes: !!r.ver_configuracoes,
+        }
+    }
 }
 
 export default function AdminRoles() {
-    const [roles, setRoles] = useState(initialRoles)
+    const { data: roles, setData: setRoles, loading } = useAdminData(
+        'admin_roles',
+        async () => { const { data } = await getRolesApi(); return data.roles.map(apiRoleToModel) }
+    )
     const [showModal, setShowModal] = useState(false)
     const [editing, setEditing] = useState(null)
     const [form, setForm] = useState(buildEmptyForm())
     const [expanded, setExpanded] = useState(null)
+    const [toast, setToast] = useState(null)
+    const [confirmRoleId, setConfirmRoleId] = useState(null)
+
 
     function openCreate() {
         setEditing(null)
@@ -98,11 +98,8 @@ export default function AdminRoles() {
 
     function openEdit(role) {
         setEditing(role.id)
-        const base = emptyPerms()
-        const merged = Object.fromEntries(
-            SECTIONS.map(s => [s.key, role.permissions[s.key] ?? base[s.key]])
-        )
-        setForm({ name: role.name, description: role.description, color: role.color, permissions: merged })
+        const perms = Object.fromEntries(SECTIONS.map(s => [s.key, role.permissions[s.key] ?? false]))
+        setForm({ nome_papel: role.nome_papel, descricao: role.descricao, color: role.color, permissions: perms })
         setShowModal(true)
     }
 
@@ -112,46 +109,68 @@ export default function AdminRoles() {
         setForm(buildEmptyForm())
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
-        if (!form.name) return
+        if (!form.nome_papel) return
+        const payload = {
+            nome_papel:       form.nome_papel,
+            badge:            form.color,
+            descricao:        form.descricao,
+            ver_dashboard:    form.permissions.dashboard     ? '1' : '0',
+            ver_clientes:     form.permissions.clientes      ? '1' : '0',
+            ver_categorias:   form.permissions.categorias    ? '1' : '0',
+            ver_produtos:     form.permissions.produtos      ? '1' : '0',
+            ver_pedidos:      form.permissions.pedidos       ? '1' : '0',
+            ver_admin:        form.permissions.papeis        ? '1' : '0',
+            ver_curriculos:   form.permissions.curriculos    ? '1' : '0',
+            ver_trabalhos:    form.permissions.trabalhos     ? '1' : '0',
+            ver_cupons:       form.permissions.cupons        ? '1' : '0',
+            ver_relatorios:   form.permissions.relatorios    ? '1' : '0',
+            ver_customizacao: form.permissions.customizacao  ? '1' : '0',
+            ver_marketing:    form.permissions.marketing     ? '1' : '0',
+            ver_usuarios:     form.permissions.usuarios      ? '1' : '0',
+            ver_configuracoes:form.permissions.configuracoes ? '1' : '0',
+        }
         if (editing) {
-            setRoles(prev => prev.map(r => r.id === editing ? { ...r, ...form } : r))
+            try {
+                await updateRole(editing, payload)
+                setRoles(prev => prev.map(r => r.id === editing
+                    ? { ...r, nome_papel: form.nome_papel, descricao: form.descricao, color: form.color, permissions: { ...form.permissions } }
+                    : r
+                ))
+                setToast({ message: 'Papel editado com sucesso', type: 'success' })
+            } catch (err) {
+                setToast({ message: err.response?.data?.error || 'Erro ao editar papel', type: 'error' })
+                return
+            }
+            
         } else {
-            setRoles(prev => [...prev, { ...form, id: Date.now(), users: 0 }])
+            try {
+                const { data } = await createRole(payload)
+                setRoles(prev => [...prev, apiRoleToModel({ ...data.role })])
+                setToast({ message: 'Papel criado com sucesso', type: 'success' })
+            } catch (err) {
+                setToast({ message: err.response?.data?.error || 'Erro ao criar papel', type: 'error' })
+                return
+            }
         }
         closeModal()
     }
 
     function deleteRole(id) {
         setRoles(prev => prev.filter(r => r.id !== id))
+        setToast({ message: 'Papel removido', type: 'success' })
     }
 
-    function togglePerm(section, action) {
+    function togglePerm(section) {
         setForm(prev => ({
             ...prev,
-            permissions: {
-                ...prev.permissions,
-                [section]: { ...prev.permissions[section], [action]: !prev.permissions[section][action] }
-            }
-        }))
-    }
-
-    function toggleAllSection(section) {
-        const allOn = ACTIONS.every(a => form.permissions[section][a.key])
-        setForm(prev => ({
-            ...prev,
-            permissions: {
-                ...prev.permissions,
-                [section]: Object.fromEntries(ACTIONS.map(a => [a.key, !allOn]))
-            }
+            permissions: { ...prev.permissions, [section]: !prev.permissions[section] }
         }))
     }
 
     function toggleAllPerms() {
-        const total = permCount(form.permissions)
-        const max = SECTIONS.length * ACTIONS.length
-        setForm(prev => ({ ...prev, permissions: total === max ? emptyPerms() : fullPerms() }))
+        setForm(prev => ({ ...prev, permissions: permCount(prev.permissions) === SECTIONS.length ? emptyPerms() : fullPerms() }))
     }
 
     return (
@@ -159,7 +178,7 @@ export default function AdminRoles() {
             <AdminHeader title="Papéis e Permissões" description="Defina os papéis do sistema e controle o que cada um pode acessar." />
 
             <div className="mt-5 flex items-center justify-between mb-4">
-                <span className="text-sm text-gray-400 dark:text-(--admin-text-muted)">{roles.length} papel(is) cadastrado(s)</span>
+                <span className="text-sm text-gray-400 dark:text-(--admin-text-muted)">{roles.filter(r => r.nome_papel.toLowerCase() !== 'cliente').length} papel(is) cadastrado(s)</span>
                 <button onClick={openCreate}
                     className="flex items-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all">
                     <Plus size={15} />
@@ -168,7 +187,30 @@ export default function AdminRoles() {
             </div>
 
             <div className="flex flex-col gap-4">
-                {roles.map(role => (
+                {loading && roles.length === 0 && Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) p-5 animate-pulse">
+                        <div className="flex items-start gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-(--admin-hover) shrink-0" />
+                            <div className="flex-1 flex flex-col gap-2">
+                                <div className="flex items-center gap-2">
+                                    <div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-28" />
+                                    <div className="h-5 bg-gray-200 dark:bg-(--admin-hover) rounded-full w-16" />
+                                </div>
+                                <div className="h-3 bg-gray-100 dark:bg-(--admin-border) rounded w-3/4" />
+                                <div className="flex gap-4 mt-1">
+                                    <div className="h-3 bg-gray-100 dark:bg-(--admin-border) rounded w-20" />
+                                    <div className="h-3 bg-gray-100 dark:bg-(--admin-border) rounded w-24" />
+                                </div>
+                            </div>
+                            <div className="flex gap-1 shrink-0">
+                                {Array.from({ length: 3 }).map((_, j) => (
+                                    <div key={j} className="w-7 h-7 rounded-md bg-gray-100 dark:bg-(--admin-hover)" />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+                {roles.filter(r => r.nome_papel.toLowerCase() !== 'cliente').map(role => (
                     <div key={role.id} className="bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border) overflow-hidden">
                         <div className="p-5 flex items-start gap-4">
                             <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-(--admin-hover) flex items-center justify-center text-gray-400 dark:text-(--admin-text-muted) shrink-0">
@@ -177,10 +219,10 @@ export default function AdminRoles() {
 
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <h3 className="font-bold text-verde-escuro dark:text-(--admin-accent) text-base">{role.name}</h3>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${role.color}`}>{role.name}</span>
+                                    <h3 className="font-bold text-verde-escuro dark:text-(--admin-accent) text-base">{role.nome_papel}</h3>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${role.color}`}>{role.nome_papel}</span>
                                 </div>
-                                <p className="text-sm text-gray-500 dark:text-(--admin-text-muted) leading-relaxed">{role.description || 'Sem descrição.'}</p>
+                                <p className="text-sm text-gray-500 dark:text-(--admin-text-muted) leading-relaxed">{role.descricao || 'Sem descrição.'}</p>
                                 <div className="flex items-center gap-4 mt-2">
                                     <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-(--admin-text-muted)">
                                         <Users size={13} />
@@ -203,7 +245,7 @@ export default function AdminRoles() {
                                     className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                     <Pencil size={15} />
                                 </button>
-                                <button onClick={() => deleteRole(role.id)}
+                                <button onClick={() => setConfirmRoleId(role.id)}
                                     className="p-1.5 rounded-md hover:bg-red-950/40 transition-all text-gray-400 dark:text-(--admin-text-muted) hover:text-red-500">
                                     <Trash2 size={15} />
                                 </button>
@@ -212,33 +254,21 @@ export default function AdminRoles() {
 
                         {expanded === role.id && (
                             <div className="border-t border-gray-100 dark:border-(--admin-border) px-5 pb-5 pt-4">
-                                <p className="text-xs text-gray-400 dark:text-(--admin-text-muted) font-medium mb-3 uppercase tracking-wide">Permissões detalhadas</p>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-sm">
-                                        <thead>
-                                            <tr>
-                                                <th className="pb-2 text-left text-xs font-medium text-gray-400 dark:text-(--admin-text-muted) w-40">Seção</th>
-                                                {ACTIONS.map(a => (
-                                                    <th key={a.key} className="pb-2 text-center text-xs font-medium text-gray-400 dark:text-(--admin-text-muted) w-20">{a.label}</th>
-                                                ))}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {SECTIONS.map(s => (
-                                                <tr key={s.key} className="border-t border-gray-50 dark:border-(--admin-border)">
-                                                    <td className="py-2 text-xs font-medium text-gray-600 dark:text-(--admin-text)">{s.label}</td>
-                                                    {ACTIONS.map(a => (
-                                                        <td key={a.key} className="py-2 text-center">
-                                                            {role.permissions[s.key]?.[a.key]
-                                                                ? <Check size={14} className="mx-auto text-verde-escuro dark:text-(--admin-accent)" />
-                                                                : <X size={14} className="mx-auto text-gray-200 dark:text-(--admin-border)" />
-                                                            }
-                                                        </td>
-                                                    ))}
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                <p className="text-xs text-gray-400 dark:text-(--admin-text-muted) font-medium mb-3 uppercase tracking-wide">Permissões</p>
+                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                    {SECTIONS.map(s => (
+                                        <div key={s.key} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium
+                                            ${role.permissions[s.key]
+                                                ? 'bg-green-50 dark:bg-green-900/20 text-verde-escuro dark:text-(--admin-accent)'
+                                                : 'bg-gray-50 dark:bg-(--admin-hover) text-gray-400 dark:text-(--admin-text-muted)'
+                                            }`}>
+                                            {role.permissions[s.key]
+                                                ? <Check size={12} />
+                                                : <X size={12} />
+                                            }
+                                            {s.label}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
@@ -270,8 +300,8 @@ export default function AdminRoles() {
                                     <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Nome *</label>
                                     <input
                                         type="text"
-                                        value={form.name}
-                                        onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
+                                        value={form.nome_papel}
+                                        onChange={e => { const v = e.target.value; setForm(prev => ({ ...prev, nome_papel: v.charAt(0).toUpperCase() + v.slice(1) })) }}
                                         className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all"
                                         placeholder="Ex: Gerente, Funcionário..."
                                     />
@@ -287,22 +317,18 @@ export default function AdminRoles() {
                                         ))}
                                     </div>
                                 </div>
+                                {form.nome_papel && (
+                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${form.color}`}>
+                                        {form.nome_papel}
+                                    </span>
+                                )}
                             </div>
-
-                            {form.name && (
-                                <div>
-                                    <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Pré-visualização</label>
-                                    <div className="mt-1">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${form.color}`}>{form.name}</span>
-                                    </div>
-                                </div>
-                            )}
 
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Descrição</label>
                                 <textarea
-                                    value={form.description}
-                                    onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))}
+                                    value={form.descricao}
+                                    onChange={e => setForm(prev => ({ ...prev, descricao: e.target.value }))}
                                     className="border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-2 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all resize-none"
                                     placeholder="Descreva o que este papel pode fazer..."
                                     rows={2}
@@ -314,48 +340,27 @@ export default function AdminRoles() {
                                     <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Permissões</label>
                                     <button type="button" onClick={toggleAllPerms}
                                         className="text-xs text-verde-escuro dark:text-(--admin-accent) hover:underline transition-all">
-                                        {permCount(form.permissions) === SECTIONS.length * ACTIONS.length ? 'Remover todas' : 'Selecionar todas'}
+                                        {permCount(form.permissions) === SECTIONS.length ? 'Remover todas' : 'Selecionar todas'}
                                     </button>
                                 </div>
 
-                                <div className="border border-gray-200 dark:border-(--admin-border) rounded-xl overflow-hidden">
-                                    <table className="w-full text-sm">
-                                        <thead className="bg-gray-50 dark:bg-(--admin-hover)">
-                                            <tr>
-                                                <th className="py-2 px-4 text-left text-xs font-medium text-gray-400 dark:text-(--admin-text-muted)">Seção</th>
-                                                {ACTIONS.map(a => (
-                                                    <th key={a.key} className="py-2 text-center text-xs font-medium text-gray-400 dark:text-(--admin-text-muted) w-20">{a.label}</th>
-                                                ))}
-                                                <th className="py-2 text-center text-xs font-medium text-gray-400 dark:text-(--admin-text-muted) w-16">Todos</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {SECTIONS.map((s, i) => {
-                                                const allOn = ACTIONS.every(a => form.permissions[s.key][a.key])
-                                                return (
-                                                    <tr key={s.key} className={i % 2 !== 0 ? 'bg-gray-50/50 dark:bg-(--admin-hover)/30' : ''}>
-                                                        <td className="py-2.5 px-4 text-xs font-medium text-gray-600 dark:text-(--admin-text)">{s.label}</td>
-                                                        {ACTIONS.map(a => (
-                                                            <td key={a.key} className="py-2.5 text-center">
-                                                                <input type="checkbox"
-                                                                    checked={form.permissions[s.key][a.key]}
-                                                                    onChange={() => togglePerm(s.key, a.key)}
-                                                                    className="cursor-pointer accent-green-700 w-4 h-4"
-                                                                />
-                                                            </td>
-                                                        ))}
-                                                        <td className="py-2.5 text-center">
-                                                            <input type="checkbox"
-                                                                checked={allOn}
-                                                                onChange={() => toggleAllSection(s.key)}
-                                                                className="cursor-pointer accent-green-700 w-4 h-4"
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })}
-                                        </tbody>
-                                    </table>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {SECTIONS.map(s => {
+                                        const on = form.permissions[s.key]
+                                        return (
+                                            <button key={s.key} type="button" onClick={() => togglePerm(s.key)}
+                                                className={`flex items-center justify-between px-3 py-2.5 rounded-xl border text-xs font-medium transition-all
+                                                    ${on
+                                                        ? 'border-verde-escuro/30 bg-green-50 dark:bg-green-900/20 dark:border-green-700/40 text-verde-escuro dark:text-(--admin-accent)'
+                                                        : 'border-gray-200 dark:border-(--admin-border) text-gray-500 dark:text-(--admin-text-muted) hover:bg-gray-50 dark:hover:bg-(--admin-hover)'
+                                                    }`}>
+                                                {s.label}
+                                                <div className={`relative w-9 h-5 rounded-full transition-all shrink-0 ${on ? 'bg-verde-escuro' : 'bg-gray-200 dark:bg-(--admin-border)'}`}>
+                                                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all ${on ? 'left-4.5' : 'left-0.5'}`} />
+                                                </div>
+                                            </button>
+                                        )
+                                    })}
                                 </div>
                             </div>
 
@@ -374,6 +379,18 @@ export default function AdminRoles() {
                     </div>
                 </div>
             )}
+
+            {confirmRoleId && (
+                <ConfirmDialog
+                    title="Excluir papel"
+                    message="Este papel será removido permanentemente. Deseja continuar?"
+                    confirmLabel="Excluir"
+                    onConfirm={() => { deleteRole(confirmRoleId); setConfirmRoleId(null) }}
+                    onCancel={() => setConfirmRoleId(null)}
+                />
+            )}
+
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
         </main>
     )
 }

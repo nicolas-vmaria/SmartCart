@@ -1,8 +1,9 @@
 <?php
 
+require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../service/AdminAuthService.php';
 
-class AdminAuthController {
+class AdminAuthController extends BaseController {
     private AdminAuthService $service;
 
     public function __construct() {
@@ -10,7 +11,13 @@ class AdminAuthController {
     }
 
     public function login() {
-        $body = json_decode(file_get_contents('php://input'), true);
-        echo json_encode($this->service->login($body));
+        $body = $this->getBody();
+        if (!$body) {
+            http_response_code(400);
+            echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
+            return;
+        }
+        $result = $this->service->login($body);
+        $this->respond($result);
     }
 }

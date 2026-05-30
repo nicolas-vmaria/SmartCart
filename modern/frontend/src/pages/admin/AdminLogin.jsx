@@ -5,7 +5,7 @@ import Toast from '../../components/Toast'
 import logoPadrao from '../../assets/smartcart-logo-transparente.png'
 import logoPreto from '../../assets/smartcart-logo-transparente-preto.png'
 import { useTheme } from '../../context/ThemeContext'
-import { loginAdmin } from '../../api/api'
+import { loginAdmin } from '../../lib'
 
 export default function AdminLogin() {
     const [email, setEmail] = useState('')

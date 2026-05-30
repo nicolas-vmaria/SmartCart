@@ -1,19 +1,138 @@
 <?php
 
-class AdminCouponService {
+require_once __DIR__ . '/../repository/AdminCouponRepository.php';
+
+class AdminCouponService {  
+    private AdminCouponRepository $repository;
+
+    public function __construct() {
+        $this->repository = new AdminCouponRepository();
+    }
+
+    public function validateCoupon(array $body): array {
+        $codigo = isset($body['codigo']) ? strtoupper(trim((string)$body['codigo'])) : '';
+        $tipo_desconto = isset($body['tipo_desconto']) ? strtolower(trim((string)$body['tipo_desconto'])) : '';
+        $desconto = isset($body['desconto']) ? (float)$body['desconto'] : null;
+        $data_validade = isset($body['data_validade']) ? ucwords(trim(strtolower((string)$body['data_validade']))) : '';
+        $ativo = $body['ativo'] === 'true' || $body['ativo'] === '1' ? 1 : 0;
+        $quant_usos = isset($body['quant_usos']) ? (int)$body['quant_usos'] : null;
+        $max_usos = isset($body['max_usos']) ? (int)$body['max_usos'] : null;
+
+        if (!$codigo || !$tipo_desconto || !$desconto || !$data_validade || $quant_usos === null || $max_usos === null) {
+            throw new InvalidArgumentException("Campos obrigatórios ausentes: codigo, tipo_desconto, desconto, data_validade, ativo, quant_usos, max_usos");
+        }
+
+        if($data_validade < date('Y-m-d')) {
+            throw new InvalidArgumentException("Cupom expirado ou data de validade inválida.");
+        }
+
+        if(!isset($body[ 'ativo'])) {
+            throw new InvalidArgumentException("Campo obrigatório ausente: ativo");
+        }
+
+        if (!in_array($tipo_desconto, ['percentual', 'fixo'])) {
+            throw new InvalidArgumentException("Tipo de desconto inválido, deve ser 'percentual' ou 'fixo'");
+        }
+
+        return [
+            'codigo' => $codigo,
+            'tipo_desconto' => $tipo_desconto,
+            'desconto' => $desconto,
+            'data_validade' => $data_validade,
+            'ativo' => $ativo,
+            'quant_usos' => $quant_usos,
+            'max_usos' => $max_usos,
+        ];
+    }
+
     public function getAllCoupons() {
-        return ['message' => 'Listando todos os cupons'];
+        try {
+            $coupons = $this->repository->findAll();
+
+            if (!$coupons) {
+                http_response_code(200);
+                return ['message' => 'Nenhum cupom encontrado'];
+            }
+
+            return ['coupons' => $coupons];
+        } catch (RuntimeException $e) {
+            http_response_code(500);
+            return ['error' => 'Erro interno ao buscar cupons: ' . $e->getMessage()];
+        }
     }
 
-    public function createCoupon() {
-        return ['message' => 'Cupom criado com sucesso'];
+    public function createCoupon(array $body): array {
+        try {
+            $coupon = $this->validateCoupon($body);
+
+            $created = $this->repository->create($coupon);        
+
+            http_response_code(201);
+
+            return [
+                'message' => "Cupom '{$coupon['codigo']}' criado com sucesso",
+                'coupon' => $created
+            ];
+        } catch (InvalidArgumentException $e) {
+            http_response_code(400);
+            return ['error' => $e->getMessage()];
+        } catch (RuntimeException $e) {
+            if ($e->getMessage() === 'CUPON_JA_EXISTE') {
+                http_response_code(409);
+                return ['error' => "Já existe um cupom com o código '{$body['codigo']}'"];
+            }
+
+            http_response_code(500);
+            return ['error' => 'Erro interno ao criar cupom: ' . $e->getMessage()];
+        }
     }
 
-    public function updateCoupon($id) {
-        return ['message' => "Cupom $id atualizado"];
+    public function updateCoupon(int $id, array $body): array {
+        try {
+            $coupon = $this->validateCoupon($body);
+
+            $updated = $this->repository->update($id, $coupon);
+
+            if (!$updated) {
+                http_response_code(404);
+                return ['error' => 'Cupom não encontrado'];
+            }
+
+            http_response_code(200);
+
+            return [
+                'message' => "Cupom com id $id atualizado com sucesso",
+                'coupon' => $coupon
+            ];
+        } catch (InvalidArgumentException $e) {
+            http_response_code(400);
+            return ['error' => $e->getMessage()];
+        } catch (RuntimeException $e) {
+            if ($e->getMessage() === 'CUPON_JA_EXISTE') {
+                http_response_code(409);
+                return ['error' => "Já existe um cupom com o código '{$body['codigo']}'"];
+            }
+
+            http_response_code(500);
+            return ['error' => 'Erro interno ao atualizar cupom: ' . $e->getMessage()];
+        }
     }
 
     public function deleteCoupon($id) {
-        return ['message' => "Cupom $id removido"];
+        try {
+            $deleted = $this->repository->delete($id);
+
+            if (!$deleted) {
+                http_response_code(404);
+                return ['error' => 'Cupom não encontrado'];
+            }
+
+            http_response_code(200);
+
+            return ['message' => "Cupom $id removido"];
+        } catch (RuntimeException $e) {
+            http_response_code(500);
+            return ['error' => 'Erro interno ao remover cupom: ' . $e->getMessage()];
+        }
     }
 }

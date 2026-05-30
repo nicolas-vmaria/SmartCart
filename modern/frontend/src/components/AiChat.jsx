@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { IoChatbubblesOutline } from "react-icons/io5"
-import { createChat, sendMessage } from "../api/IaAssistant"
+import { createChat, sendMessage } from "../lib/IaAssistant"
 
 const chat = createChat()
 

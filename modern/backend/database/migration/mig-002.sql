@@ -1,0 +1,2 @@
+ALTER TABLE Cupons ADD quant_usos INT DEFAULT 0;
+ALTER TABLE Cupons ADD max_usos INT DEFAULT NULL;

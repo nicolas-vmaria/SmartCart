@@ -1,10 +1,29 @@
-CREATE DATABASE IF NOT EXISTS smartcart CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE smartcart;
+create database smartcart;
+use smartcart;
+
+SET FOREIGN_KEY_CHECKS=0;
+
+DROP TABLE IF EXISTS Resetar_Senha;
+DROP TABLE IF EXISTS Aplicacao;
+DROP TABLE IF EXISTS Trabalho;
+DROP TABLE IF EXISTS Review;
+DROP TABLE IF EXISTS Itens_Pedido;
+DROP TABLE IF EXISTS Pedidos;
+DROP TABLE IF EXISTS Itens_Carrinho;
+DROP TABLE IF EXISTS Carrinhos;
+DROP TABLE IF EXISTS Cupons;
+DROP TABLE IF EXISTS Produtos;
+DROP TABLE IF EXISTS Categorias;
+DROP TABLE IF EXISTS Usuario;
+DROP TABLE IF EXISTS Papeis;
+
+SET FOREIGN_KEY_CHECKS=1;
 
 CREATE TABLE Papeis (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_papel VARCHAR(50) NOT NULL,
-    badge VARCHAR(100),
+    badge VARCHAR(255),
+    descricao TEXT,
     ver_dashboard BOOLEAN DEFAULT FALSE,
     ver_clientes BOOLEAN DEFAULT FALSE,
     ver_categorias BOOLEAN DEFAULT FALSE,
@@ -13,16 +32,28 @@ CREATE TABLE Papeis (
     ver_admin BOOLEAN DEFAULT FALSE,
     ver_curriculos BOOLEAN DEFAULT FALSE,
     ver_trabalhos BOOLEAN DEFAULT FALSE,
+    ver_cupons BOOLEAN DEFAULT FALSE,
+    ver_relatorios BOOLEAN DEFAULT FALSE,
+    ver_usuarios BOOLEAN DEFAULT FALSE,
+    ver_configuracoes BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    papel_id INT NOT NULL,
-    is_admin boolean,
+    papel_id INT NOT NULL DEFAULT 1,
+    is_admin BOOLEAN DEFAULT FALSE,
+    foto_url VARCHAR(500) NULL,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
+    tel VARCHAR(20) NOT NULL,
     senha VARCHAR(255) NOT NULL,
+    cep CHAR(8),
+    rua VARCHAR(255),
+    numero VARCHAR(20),
+    complemento VARCHAR(255),
+    cidade VARCHAR(100),
+    estado CHAR(2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (papel_id) REFERENCES Papeis(id)
@@ -31,7 +62,7 @@ CREATE TABLE Usuario (
 CREATE TABLE Categorias (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pai_id INT NULL,
-    nome VARCHAR(100) NOT NULL,
+    nome VARCHAR(100) UNIQUE NOT NULL,
     slug VARCHAR(100) UNIQUE NOT NULL,
     descricao TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -42,6 +73,7 @@ CREATE TABLE Produtos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     categoria_id INT NOT NULL,
     nome VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
     preco DECIMAL(10,2) NOT NULL,
     estoque INT DEFAULT 0,
     descricao TEXT,
@@ -58,13 +90,15 @@ CREATE TABLE Cupons (
     desconto DECIMAL(10,2) NOT NULL,
     data_validade DATE NOT NULL,
     ativo BOOLEAN DEFAULT TRUE,
+    quant_usos INT DEFAULT 0,
+    max_usos INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Carrinhos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    status ENUM('ativo', 'abandonado', 'convertido') DEFAULT 'ativo',
+    usuario_id INT NOT NULL, 
+    status ENUM('ativo', 'convertido') DEFAULT 'ativo',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
@@ -131,6 +165,7 @@ CREATE TABLE Review (
 CREATE TABLE Trabalho (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
     cargo VARCHAR(100),
     area VARCHAR(100),
     tipo_contrato VARCHAR(50),
@@ -138,23 +173,36 @@ CREATE TABLE Trabalho (
     local VARCHAR(100),
     requisitos TEXT,
     ativa BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Aplicacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    trabalho_id INT NOT NULL,
+    trabalho_id INT NULL,
+    area_interesse VARCHAR(100),
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     tel VARCHAR(20),
-    portifolio_url VARCHAR(500),
+    portfolio_url VARCHAR(500),
     curriculo_url VARCHAR(500),
     carta_apresent TEXT,
+    status ENUM('novo', 'em_analise', 'aprovado', 'reprovado') NOT NULL DEFAULT 'novo',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (trabalho_id) REFERENCES Trabalho(id)
 );
 
-INSERT INTO Papeis (nome_papel) VALUES ('cliente'), ('admin');
+CREATE TABLE Resetar_Senha (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    create_at DATETIME NOT NULL,
+    expire_at DATETIME NOT NULL
+);
 
-INSERT INTO Usuario (nome, email, senha, papel_id) VALUES
-    ('Administrador', 'admin@smartcart.com', '$2y$12$WvfF5Xlh0Z3lx5H59oLFQucIp3kbiVKO8410b.xXjigcxp3XJMJOK', 2);
+INSERT INTO Papeis (id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_usuarios, ver_configuracoes)
+VALUES (1, 'cliente', NULL, 'Usuário padrão', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+       (2, 'admin', 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Administrador com acesso total', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
+
+INSERT INTO Usuario (papel_id, is_admin, nome, email, tel, senha)
+VALUES (2, TRUE, 'Admin', 'admin@smartcart.com', '00000000000', '$2y$12$frHJ/ZcElz8Pk2Sz/I7qpOMrqAc8YB9hriQ6RXqGzWFe6RTg37CLS');
