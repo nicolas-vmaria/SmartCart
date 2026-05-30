@@ -12,8 +12,20 @@ import { MdOutlinePayments } from "react-icons/md";
 import { FaWifi } from "react-icons/fa";
 
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { getProdutosDestaque } from '../lib/api/products'
 
 export default function Home() {
+    const [destaques, setDestaques] = useState([])
+    const [loadingDestaques, setLoadingDestaques] = useState(true)
+
+    useEffect(() => {
+        getProdutosDestaque()
+            .then(({ data }) => setDestaques(data.products ?? []))
+            .catch(() => {})
+            .finally(() => setLoadingDestaques(false))
+    }, [])
+
     return (
         <main className="">
             <section className="flex flex-col md:flex-row min-h-screen items-center justify-between bg-linear-65 from-verde-escuro to-green-700 px-6 sm:px-12 lg:px-32 xl:px-50 py-20 md:py-0 gap-10">
@@ -63,9 +75,49 @@ export default function Home() {
                 </div>
             </section>
 
+            {(loadingDestaques || destaques.length > 0) && (
+                <section className='py-10 px-6 sm:px-12 lg:px-32 xl:px-50'>
+                    <div className='mb-8'>
+                        <h1 className='text-3xl sm:text-4xl'>Produtos em <span className='font-bold italic'>Destaque</span></h1>
+                        <p className='text-gray-600'>Selecionados especialmente para você</p>
+                    </div>
+                    {loadingDestaques ? (
+                        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'>
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className='animate-pulse'>
+                                    <div className='bg-gray-200 rounded-2xl h-44 mb-3' />
+                                    <div className='h-4 bg-gray-200 rounded w-3/4 mb-2' />
+                                    <div className='h-3 bg-gray-100 rounded w-1/2' />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'>
+                            {destaques.map(p => (
+                                <Link key={p.id} to={`/produto/${p.slug}`}
+                                    className='group border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1'>
+                                    <div className='h-44 bg-gray-50 flex items-center justify-center overflow-hidden'>
+                                        {p.foto_url
+                                            ? <img src={p.foto_url} alt={p.nome} className='w-full h-full object-contain p-4 group-hover:scale-105 transition-transform' />
+                                            : <div className='w-16 h-16 bg-gray-200 rounded-xl' />
+                                        }
+                                    </div>
+                                    <div className='p-4'>
+                                        <h3 className='font-semibold text-sm text-gray-800 line-clamp-2'>{p.nome}</h3>
+                                        <p className='text-verde-escuro font-bold text-sm mt-1'>
+                                            {Number(p.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            )}
+
             <section className='py-10 px-6 sm:px-10'>
                 <div className='my-10'>
-                    <h1 className='text-3xl sm:text-4xl'>O que nosso  <span className='font-bold italic'>produto</span> oferece?</h1>
+                    <h1 className='text-3xl sm:text-4xl'>O que o  <span className='font-bold italic'>Smartcart</span> oferece?</h1>
                     <p className='text-gray-600'>Descubra a tecnologia por trás de um produto SmartCart</p>
                 </div>
 

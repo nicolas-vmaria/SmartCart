@@ -46,7 +46,7 @@ class AdminVacanciesRepository {
     public function create(array $data): array {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO Trabalho (nome, slug, cargo, area, tipo_contrato, formato_trabalho, local, requisitos, ativa)
+                INSERT INTO Trabalho (nome, slug, cargo, area, tipo_contrato, formato_trabalho, `local`, requisitos, ativa)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ');
             $stmt->execute([
@@ -72,7 +72,7 @@ class AdminVacanciesRepository {
         try {
             $stmt = $this->db->prepare('
                 UPDATE Trabalho
-                SET nome = ?, slug = ?, cargo = ?, area = ?, tipo_contrato = ?, formato_trabalho = ?, local = ?, requisitos = ?, ativa = ?
+                SET nome = ?, slug = ?, cargo = ?, area = ?, tipo_contrato = ?, formato_trabalho = ?, `local` = ?, requisitos = ?, ativa = ?
                 WHERE id = ?
             ');
             $stmt->execute([
@@ -89,6 +89,22 @@ class AdminVacanciesRepository {
             ]);
         } catch (PDOException $e) {
             throw new RuntimeException('ERRO_UPDATE_VAGA: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    public function toggleAtiva(int $id): ?array {
+        $stmt = $this->db->prepare('UPDATE Trabalho SET ativa = NOT ativa WHERE id = ?');
+        $stmt->execute([$id]);
+        if ($stmt->rowCount() === 0) return null;
+        return $this->findById($id);
+    }
+
+    public function findAllActive(): array {
+        try {
+            $stmt = $this->db->query('SELECT id, nome, cargo, area, tipo_contrato, formato_trabalho, `local` FROM Trabalho WHERE ativa = TRUE ORDER BY id DESC');
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new RuntimeException('ERRO_BUSCAR_VAGAS: ' . $e->getMessage(), 0, $e);
         }
     }
 

@@ -1,4 +1,11 @@
 import { Link } from 'react-router-dom'
+import { useConfiguracoes } from '../hooks/useConfiguracoes'
+import { FaInstagram, FaFacebook, FaWhatsapp, FaYoutube } from 'react-icons/fa'
+
+function extUrl(url) {
+    if (!url) return ''
+    return /^https?:\/\//i.test(url) ? url : `https://${url}`
+}
 
 const sobreLinks = [
     { label: 'Quem Somos',          slug: 'quem-somos'           },
@@ -17,6 +24,13 @@ const politicasLinks = [
 ]
 
 export default function Footer() {
+  const { config } = useConfiguracoes()
+
+  const tel1      = config.loja_telefone1 || '45 99999-9999'
+  const tel2      = config.loja_telefone2 || '47 99999-9999'
+  const email     = config.loja_email     || 'sac@loja.com.br'
+  const cnpj      = config.loja_cnpj      || '26.636.428/0001-19'
+
   return (
     <footer className="bg-verde-escuro text-verde-claro/80">
 
@@ -54,9 +68,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="" className="text-sm hover:text-verde-claro transition-colors duration-200">
+                <Link to="/meus-pedidos" className="text-sm hover:text-verde-claro transition-colors duration-200">
                   Meus Pedidos
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -86,28 +100,36 @@ export default function Footer() {
             <hr className="border-white/20 mb-4" />
 
             <div className="flex gap-3 mb-4">
-              <a href="" aria-label="Instagram"
-                className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200">
-                
-              </a>
-              <a href="" aria-label="Facebook"
-                className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200">
-                
-              </a>
-              <a href="" aria-label="WhatsApp"
-                className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200">
-                
-              </a>
-              <a href="" aria-label="YouTube"
-                className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200">
-                
-              </a>
+              {config.redes_instagram && (
+                <a href={extUrl(config.redes_instagram)} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                  className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200 text-xl">
+                  <FaInstagram />
+                </a>
+              )}
+              {config.redes_facebook && (
+                <a href={extUrl(config.redes_facebook)} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                  className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200 text-xl">
+                  <FaFacebook />
+                </a>
+              )}
+              {config.redes_whatsapp && (
+                <a href={extUrl(config.redes_whatsapp)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
+                  className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200 text-xl">
+                  <FaWhatsapp />
+                </a>
+              )}
+              {config.redes_youtube && (
+                <a href={extUrl(config.redes_youtube)} target="_blank" rel="noopener noreferrer" aria-label="YouTube"
+                  className="text-verde-claro/60 hover:text-verde-claro transition-colors duration-200 text-xl">
+                  <FaYoutube />
+                </a>
+              )}
             </div>
 
             <ul className="space-y-1">
-              <li className="text-sm">45 99999-9999</li>
-              <li className="text-sm">47 99999-9999</li>
-              <li className="text-sm">sac@loja.com.br</li>
+              <li className="text-sm">{tel1}</li>
+              <li className="text-sm">{tel2}</li>
+              <li className="text-sm">{email}</li>
             </ul>
           </div>
 
@@ -143,10 +165,10 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-verde-claro/50">
           <p>© 2025 SmartCart. Todos os direitos reservados.</p>
           <p>De segunda à quinta-feira, das 8h às 18h.</p>
-          <p>CNPJ: 26.636.428/0001-19</p>
+          <p>CNPJ: {cnpj}</p>
         </div>
       </div>
 
     </footer>
-  );
+  )
 }

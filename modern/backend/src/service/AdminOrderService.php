@@ -95,9 +95,9 @@ class AdminOrderService {
         return ['message' => 'Status atualizado com sucesso'];
     }
 
-    public function getMonthlyAnalytics(): array {
+    public function getMonthlyAnalytics(int $mes, int $ano): array {
         try {
-            return ['analytics' => $this->repository->getMonthlyAnalytics()];
+            return ['analytics' => $this->repository->getMonthlyAnalytics($mes, $ano)];
         } catch (Exception $e) {
             http_response_code(500);
             return ['error' => 'Erro ao buscar analytics'];

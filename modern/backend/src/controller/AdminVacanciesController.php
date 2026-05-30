@@ -46,6 +46,10 @@ class AdminVacanciesController extends BaseController {
         $this->respond($result);
     }
 
+    public function toggle(string $id) {
+        $this->respond($this->service->toggleVacancy($id));
+    }
+
     public function destroy(string $id) {
         $this->respond($this->service->deleteVacancy($id));
     }

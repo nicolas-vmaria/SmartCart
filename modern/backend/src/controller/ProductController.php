@@ -11,6 +11,10 @@ class ProductController extends BaseController {
         $this->service = new ProductService();
     }
 
+    public function destaques(): void {
+        $this->respond($this->service->getDestaques());
+    }
+
     public function highlights(): void {
     $respond = $this->service->getHighlights();
     $this->respond($respond);

@@ -7,11 +7,13 @@ import { FaCheckCircle } from "react-icons/fa";
 import { ThumbsUp } from "lucide-react";
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { getProductBySlug } from "../lib/api/products";
 import { addToCart } from "../lib/api/cart";
 import { getReviews, createReview, markHelpful } from "../lib/api/reviews";
+import { getCompraJunto } from "../lib/api/compraJunto";
 import Toast from "../components/Toast";
+import { Plus } from "lucide-react";
 
 function getInitials(nome) {
     if (!nome) return '?'
@@ -208,20 +210,23 @@ export default function ProductDetail() {
     const [reviews, setReviews] = useState([])
     const [addingToCart, setAddingToCart] = useState(false)
     const [toast, setToast] = useState(null)
+    const [compraJunto, setCompraJunto] = useState(null)
+    const [addingBoth, setAddingBoth] = useState(false)
 
     useEffect(() => {
         setLoading(true)
         setReviews([])
+        setCompraJunto(null)
         getProductBySlug(slug)
             .then(async res => {
                 const product = res.data.product
                 setProduto(product)
-                try {
-                    const r = await getReviews(product.id)
-                    setReviews(r.data.reviews ?? [])
-                } catch {
-                    setReviews([])
-                }
+                const [reviews, cj] = await Promise.allSettled([
+                    getReviews(product.id),
+                    getCompraJunto(product.id),
+                ])
+                setReviews(reviews.status === 'fulfilled' ? (reviews.value.data.reviews ?? []) : [])
+                setCompraJunto(cj.status === 'fulfilled' ? (cj.value.data.produto ?? null) : null)
             })
             .catch(() => setNotFound(true))
             .finally(() => setLoading(false))
@@ -250,6 +255,21 @@ export default function ProductDetail() {
 
     const minusCont = () => setCont(c => Math.max(1, c - 1))
     const plusCont  = () => setCont(c => Math.min(produto?.estoque ?? 99, c + 1))
+
+    async function handleAddBoth() {
+        if (!localStorage.getItem('user_token')) { navigate('/login'); return }
+        setAddingBoth(true)
+        try {
+            await addToCart(produto.slug, produto.id, 1)
+            await addToCart(compraJunto.slug, compraJunto.id, 1)
+            window.dispatchEvent(new CustomEvent('cart:updated'))
+            setToast({ message: 'Ambos os produtos adicionados!', type: 'success' })
+        } catch (err) {
+            setToast({ message: err.response?.data?.error || 'Erro ao adicionar', type: 'error' })
+        } finally {
+            setAddingBoth(false)
+        }
+    }
 
     async function handleAddToCart() {
         if (!localStorage.getItem('user_token')) {
@@ -376,6 +396,47 @@ export default function ProductDetail() {
                     </div>
                 </div>
             </section>
+
+            {/* Compre Junto */}
+            {compraJunto && (
+                <section className="px-5 md:px-10 py-10 border-t border-gray-200">
+                    <h2 className="text-2xl font-bold mb-6">Compre <span className="italic font-light">Junto</span></h2>
+                    <div className="flex flex-col sm:flex-row items-center gap-3 max-w-lg">
+                        <div className="border border-gray-200 rounded-2xl p-4 flex items-center gap-3 flex-1 w-full">
+                            {produto.foto_url
+                                ? <img src={produto.foto_url} className="w-14 h-14 object-contain shrink-0" alt={produto.nome} />
+                                : <div className="w-14 h-14 bg-gray-100 rounded-xl shrink-0" />
+                            }
+                            <div className="min-w-0">
+                                <p className="text-sm font-medium line-clamp-2">{produto.nome}</p>
+                                <p className="text-verde-escuro font-bold text-sm mt-0.5">{fmt(precoFinal)}</p>
+                            </div>
+                        </div>
+                        <Plus size={20} className="text-gray-400 shrink-0" />
+                        <Link to={`/produto/${compraJunto.slug}`}
+                            className="border border-gray-200 hover:border-verde-escuro rounded-2xl p-4 flex items-center gap-3 flex-1 w-full transition-colors">
+                            {compraJunto.foto_url
+                                ? <img src={compraJunto.foto_url} className="w-14 h-14 object-contain shrink-0" alt={compraJunto.nome} />
+                                : <div className="w-14 h-14 bg-gray-100 rounded-xl shrink-0" />
+                            }
+                            <div className="min-w-0">
+                                <p className="text-sm font-medium line-clamp-2">{compraJunto.nome}</p>
+                                <p className="text-verde-escuro font-bold text-sm mt-0.5">{fmt(Number(compraJunto.preco))}</p>
+                            </div>
+                        </Link>
+                    </div>
+                    <div className="flex items-center gap-4 mt-4">
+                        <p className="text-sm text-gray-500">
+                            Total: <span className="font-bold text-gray-800">{fmt(precoFinal + Number(compraJunto.preco))}</span>
+                        </p>
+                        <button onClick={handleAddBoth} disabled={addingBoth || produto.estoque === 0}
+                            className="flex items-center gap-2 bg-verde-escuro text-white px-5 py-2.5 rounded-full text-sm font-bold hover:opacity-90 transition-all disabled:opacity-40 cursor-pointer">
+                            {addingBoth && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                            {addingBoth ? 'Adicionando...' : 'Adicionar ambos'}
+                        </button>
+                    </div>
+                </section>
+            )}
 
             {/* Reviews */}
             <section className="px-5 md:px-10 py-10 md:py-16 border-t border-gray-200">

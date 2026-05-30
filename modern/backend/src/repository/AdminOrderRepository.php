@@ -116,7 +116,7 @@ class AdminOrderRepository {
         }
     }
 
-    public function getMonthlyAnalytics(): array {
+    public function getMonthlyAnalytics(int $mes, int $ano): array {
         try {
             $stmt = $this->db->prepare("
                 SELECT
@@ -124,12 +124,12 @@ class AdminOrderRepository {
                     COUNT(*)         AS pedidos,
                     SUM(total)       AS valor
                 FROM Pedidos
-                WHERE YEAR(created_at) = YEAR(NOW())
-                  AND MONTH(created_at) = MONTH(NOW())
+                WHERE YEAR(created_at)  = :ano
+                  AND MONTH(created_at) = :mes
                 GROUP BY DAY(created_at)
                 ORDER BY dia
             ");
-            $stmt->execute();
+            $stmt->execute([':ano' => $ano, ':mes' => $mes]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             throw new RuntimeException('ERRO_GET_MONTHLY_ANALYTICS', 0, $e);

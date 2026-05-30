@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminBannerRepository.php';
+require_once __DIR__ . '/../core/Cloudinary.php';
 
 class AdminBannerService {
     private AdminBannerRepository $repository;
@@ -45,10 +46,15 @@ class AdminBannerService {
 
     public function delete(int $id): array {
         try {
+            $fotoUrl = $this->repository->getFotoUrl($id);
+
             if (!$this->repository->delete($id)) {
                 http_response_code(404);
                 return ['error' => 'Banner não encontrado'];
             }
+
+            if ($fotoUrl) Cloudinary::deleteImage($fotoUrl);
+
             return ['message' => 'Banner removido'];
         } catch (Exception $e) {
             http_response_code(500);

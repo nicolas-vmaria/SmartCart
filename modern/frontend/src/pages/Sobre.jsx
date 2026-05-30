@@ -1,9 +1,10 @@
 import { Link, useParams, Navigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Users, HelpCircle, Store, Briefcase, Handshake, ChevronRight, ChevronDown, MapPin, Phone, Clock, CheckCircle } from 'lucide-react'
 import { FaLightbulb, FaHandshake, FaLeaf, FaRocket, FaUsers, FaStore } from 'react-icons/fa'
 import { FaRocket as FaRocket6 } from 'react-icons/fa6'
-import { vagas, areaCor } from '../data/vagas'
+import { areaCor } from '../data/vagas'
+import { getVagasPublicas } from '../lib/api/vagas'
 
 // ─── Quem Somos ───────────────────────────────────────────────────────────────
 function QuemSomos() {
@@ -214,7 +215,32 @@ function NossasLojas() {
 
 // ─── Trabalhe Conosco ─────────────────────────────────────────────────────────
 
+function SkeletonVaga() {
+    return (
+        <div className="border border-gray-200 rounded-xl p-4 flex items-center justify-between animate-pulse">
+            <div className="flex flex-col gap-2">
+                <div className="h-4 w-40 bg-gray-200 rounded" />
+                <div className="flex gap-2">
+                    <div className="h-4 w-16 bg-gray-200 rounded-full" />
+                    <div className="h-4 w-28 bg-gray-200 rounded" />
+                </div>
+            </div>
+            <div className="h-7 w-20 bg-gray-200 rounded-full" />
+        </div>
+    )
+}
+
 function TrabalheConosco() {
+    const [vagas, setVagas]   = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        getVagasPublicas()
+            .then(({ data }) => setVagas(data.vagas ?? []))
+            .catch(() => {})
+            .finally(() => setLoading(false))
+    }, [])
+
     return (
         <div className="flex flex-col gap-8">
             <div>
@@ -239,22 +265,34 @@ function TrabalheConosco() {
             </div>
 
             <div>
-                <h3 className="font-bold text-gray-800 mb-3">Vagas abertas</h3>
+                <h3 className="font-bold text-gray-800 mb-3">
+                    Vagas abertas{!loading && vagas.length > 0 && <span className="ml-2 text-xs font-normal text-gray-400">({vagas.length})</span>}
+                </h3>
                 <div className="flex flex-col gap-2">
-                    {vagas.map(({ slug, cargo, area, tipo, local }) => (
-                        <div key={slug} className="border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:border-verde-escuro/30 hover:bg-verde-escuro/5 transition-all">
-                            <div>
-                                <p className="font-bold text-gray-800 text-sm">{cargo}</p>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${areaCor[area]}`}>{area}</span>
-                                    <span className="text-xs text-gray-400">{tipo} · {local}</span>
+                    {loading
+                        ? Array.from({ length: 3 }).map((_, i) => <SkeletonVaga key={i} />)
+                        : vagas.length === 0
+                            ? (
+                                <div className="border border-gray-200 rounded-xl p-8 text-center">
+                                    <Briefcase size={28} className="mx-auto text-gray-200 mb-2" />
+                                    <p className="text-gray-400 text-sm">Nenhuma vaga aberta no momento.</p>
                                 </div>
-                            </div>
-                            <Link to={`/candidatura/${slug}`} className="text-xs font-bold text-verde-escuro border border-verde-escuro px-3 py-1.5 rounded-full hover:bg-verde-escuro hover:text-white transition-all shrink-0">
-                                Candidatar
-                            </Link>
-                        </div>
-                    ))}
+                            )
+                            : vagas.map(v => (
+                                <div key={v.id} className="border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:border-verde-escuro/30 hover:bg-verde-escuro/5 transition-all">
+                                    <div>
+                                        <p className="font-bold text-gray-800 text-sm">{v.cargo}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${areaCor[v.area] ?? 'bg-gray-100 text-gray-600'}`}>{v.area}</span>
+                                            <span className="text-xs text-gray-400">{v.tipo_contrato} · {v.local}</span>
+                                        </div>
+                                    </div>
+                                    <Link to={`/candidatura/${v.id}`} className="text-xs font-bold text-verde-escuro border border-verde-escuro px-3 py-1.5 rounded-full hover:bg-verde-escuro hover:text-white transition-all shrink-0">
+                                        Candidatar
+                                    </Link>
+                                </div>
+                            ))
+                    }
                 </div>
             </div>
 

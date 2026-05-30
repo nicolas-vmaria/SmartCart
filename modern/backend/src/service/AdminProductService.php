@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminProductRepository.php';
+require_once __DIR__ . '/../core/Cloudinary.php';
 
 class AdminProductService {
     private AdminProductRepository $repository;
@@ -134,6 +135,7 @@ class AdminProductService {
         $id = (int)$id;
 
         try {
+            $fotoUrl = $this->repository->getFotoUrl($id);
 
             $deleted = $this->repository->deleteProduct($id);
 
@@ -141,6 +143,8 @@ class AdminProductService {
                 http_response_code(404);
                 return ['error' => 'Produto não encontrado'];
             }
+
+            if ($fotoUrl) Cloudinary::deleteImage($fotoUrl);
 
             http_response_code(200);
 

@@ -20,7 +20,9 @@ class CandidacyService {
 
     public function getTrabalhoBySlug(string $slug): array {
         try {
-            $trabalho = $this->repository->findBySlug($slug);
+            $trabalho = is_numeric($slug)
+                ? $this->repository->findById((int)$slug)
+                : $this->repository->findBySlug($slug);
 
             if (!$trabalho) {
                 http_response_code(404);

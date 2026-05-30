@@ -37,6 +37,23 @@ class ProductRepository {
     ];
 }
 
+    public function getDestaques(): array {
+        $stmt = $this->db->prepare('
+            SELECT * FROM Produtos WHERE destaque = 1 AND status = 1 LIMIT 12
+        ');
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function toggleDestaque(int $id): ?array {
+        $stmt = $this->db->prepare('UPDATE Produtos SET destaque = !destaque WHERE id = ?');
+        $stmt->execute([$id]);
+        if ($stmt->rowCount() === 0) return null;
+        $row = $this->db->prepare('SELECT destaque FROM Produtos WHERE id = ?');
+        $row->execute([$id]);
+        return $row->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
     public function getAllProducts(): array {
         $stmt = $this->db->prepare('
             SELECT * FROM Produtos WHERE status = 1

@@ -20,8 +20,6 @@ class CandidacyController extends BaseController {
     }
 
     public function candidatar(string $id) {
-        AuthMiddleware::handle();
-
         $body = $this->getBody();
 
         if (!$body) {
@@ -34,8 +32,6 @@ class CandidacyController extends BaseController {
     }
 
     public function espontanea() {
-        AuthMiddleware::handle();
- 
         $body = $this->getBody();
  
         if (!$body) {
