@@ -24,7 +24,8 @@ class AdminReviewController extends BaseController {
 
     public function bulkDestroy() {
         $body = $this->getBody();
-        $ids  = array_map('intval', $body['ids'] ?? []);
+        $raw  = $body['ids'] ?? [];
+        $ids  = is_array($raw) ? array_map('intval', $raw) : [];
         $this->respond($this->service->bulkDelete($ids));
     }
 

@@ -34,7 +34,7 @@ class AdminReviewRepository {
                 $where[]          = '(u.nome LIKE :search OR p.nome LIKE :search)';
                 $params[':search'] = '%' . $search . '%';
             }
-            if ($nota) {
+            if ($nota !== null) {
                 $where[]        = 'r.nota = :nota';
                 $params[':nota'] = $nota;
             }
