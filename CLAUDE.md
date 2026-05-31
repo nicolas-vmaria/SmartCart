@@ -36,6 +36,7 @@ modern/
 - Não criar arquivos desnecessários
 - Não adicionar comentários óbvios no código
 - Não adicionar features além do que foi pedido
+- **Nunca fazer commit ou push sem o usuário pedir explicitamente** — sempre deixar o usuário verificar as mudanças antes
 
 ### Frontend
 - Usar `Toast` para feedback de erro e sucesso
@@ -49,6 +50,13 @@ modern/
 
 ### Backend
 - Toda alteração no schema do banco (nova coluna, tabela, índice, etc.) deve gerar um arquivo de migration em `modern/backend/database/migration/` seguindo a nomenclatura `mig-NNN.sql` (incrementar o número do último arquivo existente)
+- Toda nova seção do painel admin deve ter uma coluna `ver_*` correspondente na tabela `Papeis` (ex: nova página "Reviews" → `ver_reviews BOOLEAN DEFAULT FALSE`), com migration própria, e deve ser atualizada em **todos** os seguintes lugares:
+  - `AdminRolesRepository.php` — SELECT, INSERT e UPDATE
+  - `AdminRolesService.php` — `validateRole()`
+  - `AdminRoles.jsx` — array `SECTIONS`, `apiRoleToModel` e payload do `handleSubmit`
+  - `AdminMenu.jsx` — usar `can('nova_secao')` (não reaproveitar permissão de outra seção)
+  - `AuthRepository.php` — SELECT do `findByEmail` (para buscar a coluna do banco)
+  - `AdminAuthService.php` — array `perms` (JWT) e array `permissions` (objeto salvo no localStorage)
 - Toda rota admin usa `AuthMiddleware::handle('admin')` — nunca sem o parâmetro `'admin'`
 - Toda rota de usuário usa `AuthMiddleware::handle()` sem parâmetro
 - Estrutura: Controller → Service → Repository

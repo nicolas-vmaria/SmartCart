@@ -75,6 +75,15 @@ class ReviewRepository {
         }
     }
 
+    public function getPalavrasProibidas(): array {
+        try {
+            $stmt = $this->db->query('SELECT palavra FROM Palavras_Proibidas');
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
     public function markHelpful(int $id): bool {
     try {
         $stmt = $this->db->prepare('

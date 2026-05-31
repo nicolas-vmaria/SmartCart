@@ -38,6 +38,7 @@ import CategoriaGrid from "./pages/CategoriaGrid"
 import OrderConfirmation from "./pages/OrderConfirmation"
 import MeusPedidos from "./pages/MeusPedidos"
 import ReviewPedido from "./pages/ReviewPedido"
+import AdminReviews from "./pages/admin/AdminReviews"
 import AiChat from "./components/AiChat"
 import AdminVagas from "./pages/admin/AdminVagas"
 import AdminCupons from "./pages/admin/AdminCupons"
@@ -301,6 +302,7 @@ function App() {
               <Route path="help" element={<AdminHelp />} />
               <Route path="customizacao" element={<AdminCustomizacao />} />
               <Route path="marketing" element={<AdminMarketing />} />
+              <Route path="reviews" element={<AdminReviews />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

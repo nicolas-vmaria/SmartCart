@@ -21,6 +21,7 @@ const SECTIONS = [
     { key: 'marketing',     label: 'Marketing' },
     { key: 'usuarios',      label: 'Usuários' },
     { key: 'configuracoes', label: 'Configurações' },
+    { key: 'reviews',       label: 'Reviews' },
 ]
 
 function emptyPerms() {
@@ -73,6 +74,7 @@ function apiRoleToModel(r) {
             marketing:     !!r.ver_marketing,
             usuarios:      !!r.ver_usuarios,
             configuracoes: !!r.ver_configuracoes,
+            reviews:       !!r.ver_reviews,
         }
     }
 }
@@ -130,6 +132,7 @@ export default function AdminRoles() {
             ver_marketing:    form.permissions.marketing     ? '1' : '0',
             ver_usuarios:     form.permissions.usuarios      ? '1' : '0',
             ver_configuracoes:form.permissions.configuracoes ? '1' : '0',
+            ver_reviews:      form.permissions.reviews       ? '1' : '0',
         }
         if (editing) {
             try {

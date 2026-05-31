@@ -49,6 +49,14 @@ class ReviewService {
             return ['error' => 'Nota inválida'];
         }
 
+        $palavras = $this->repository->getPalavrasProibidas();
+        foreach ($palavras as $palavra) {
+            if (stripos($descricao, $palavra) !== false) {
+                http_response_code(400);
+                return ['error' => 'Seu comentário contém conteúdo inadequado.'];
+            }
+        }
+
         try {
             $review = $this->repository->createReview([
                 'user_id'     => $body['user_id'],
