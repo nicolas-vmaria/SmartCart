@@ -318,7 +318,10 @@ export default function AdminOrders() {
                 ].map(({ label, valor, cor }) => (
                     <div key={label} className="bg-white dark:bg-(--admin-card) border border-gray-200 dark:border-(--admin-border) rounded-2xl p-5">
                         <p className="text-sm text-gray-400 dark:text-(--admin-text-muted)">{label}</p>
-                        <p className={`text-3xl font-bold mt-1 ${cor}`}>{valor}</p>
+                        {loading
+                            ? <div className="h-9 bg-gray-200 dark:bg-(--admin-hover) rounded-lg mt-1 animate-pulse w-16" />
+                            : <p className={`text-3xl font-bold mt-1 ${cor}`}>{valor}</p>
+                        }
                     </div>
                 ))}
             </div>

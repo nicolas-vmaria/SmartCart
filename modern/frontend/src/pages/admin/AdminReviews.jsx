@@ -71,10 +71,14 @@ export default function AdminReviews() {
     const [addingPalavra, setAddingPalavra] = useState(false)
     const [deletingPalavra, setDeletingPalavra] = useState(null)
     const [revealedPalavras, setRevealedPalavras] = useState(false)
+    const [loadingPalavras, setLoadingPalavras]   = useState(true)
 
     useEffect(() => {
         fetchReviews()
-        getPalavras().then(({ data }) => setPalavras(data.palavras ?? [])).catch(() => {})
+        getPalavras()
+            .then(({ data }) => setPalavras(data.palavras ?? []))
+            .catch(() => {})
+            .finally(() => setLoadingPalavras(false))
     }, [])
 
     function fetchReviews(s = search, n = filterNota) {
@@ -317,7 +321,13 @@ export default function AdminReviews() {
                     </button>
                 </form>
 
-                {palavras.length === 0 ? (
+                {loadingPalavras ? (
+                    <div className="flex flex-wrap gap-2">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <div key={i} className="h-7 rounded-full bg-gray-100 dark:bg-(--admin-hover) animate-pulse" style={{ width: `${60 + i * 15}px` }} />
+                        ))}
+                    </div>
+                ) : palavras.length === 0 ? (
                     <p className="text-sm text-gray-400 dark:text-(--admin-text-muted)">Nenhuma palavra cadastrada.</p>
                 ) : (
                     <div className={`flex flex-wrap gap-2 transition-all duration-200 ${revealedPalavras ? '' : 'blur-sm select-none pointer-events-none'}`}>
