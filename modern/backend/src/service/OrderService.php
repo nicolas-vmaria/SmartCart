@@ -223,6 +223,31 @@ class OrderService {
         }
     }
 
+    public function getOrderReviewItems(int $orderId, int $userId): array {
+        try {
+            $order = $this->repo->getOrderById($orderId);
+
+            if (!$order) {
+                http_response_code(404);
+                return ['error' => 'Pedido não encontrado'];
+            }
+            if ((int) $order['usuario_id'] !== $userId) {
+                http_response_code(403);
+                return ['error' => 'Acesso negado'];
+            }
+            if ($order['status'] !== 'entregue') {
+                http_response_code(400);
+                return ['error' => 'Pedido ainda não foi entregue'];
+            }
+
+            $items = $this->repo->getOrderReviewItems($orderId, $userId);
+            return ['items' => $items];
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['error' => 'Erro ao buscar itens para avaliação'];
+        }
+    }
+
     public function getTracking(int $id, int $usuario_id): array {
         try {
             $order = $this->repo->getOrderById($id);

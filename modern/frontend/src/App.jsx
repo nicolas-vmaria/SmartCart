@@ -37,6 +37,7 @@ import ResetPassword from "./pages/ResetPassword"
 import CategoriaGrid from "./pages/CategoriaGrid"
 import OrderConfirmation from "./pages/OrderConfirmation"
 import MeusPedidos from "./pages/MeusPedidos"
+import ReviewPedido from "./pages/ReviewPedido"
 import AiChat from "./components/AiChat"
 import AdminVagas from "./pages/admin/AdminVagas"
 import AdminCupons from "./pages/admin/AdminCupons"
@@ -273,6 +274,7 @@ function App() {
             <Route path="/produtos/categoria/:slug" element={<CategoriaGrid />} />
             <Route path="/pedido/confirmado" element={<OrderConfirmation />} />
             <Route path="/meus-pedidos" element={<MeusPedidos />} />
+            <Route path="/review-pedido/:pedidoId" element={<ReviewPedido />} />
           </Route>
 
           {/* Rotas sem Navbar */}
