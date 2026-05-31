@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../core/Connection.php';
+require_once __DIR__ . '/../core/connection.php';
 
 class AdminClientRepository {
     private PDO $db;

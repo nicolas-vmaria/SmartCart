@@ -23,4 +23,18 @@ class CouponRepository {
             throw new RuntimeException('ERRO_BUSCAR_CUPOM: ' . $e->getMessage(), 0, $e);
         }
     }
+
+    public function hasUserUsed(int $cupom_id, int $usuario_id): bool {
+        try {
+            $stmt = $this->db->prepare('
+                SELECT 1 FROM CuponsUsoUsuarios
+                WHERE cupom_id = ? AND usuario_id = ?
+                LIMIT 1
+            ');
+            $stmt->execute([$cupom_id, $usuario_id]);
+            return $stmt->fetchColumn() !== false;
+        } catch (PDOException $e) {
+            throw new RuntimeException('ERRO_VERIFICAR_USO_CUPOM: ' . $e->getMessage(), 0, $e);
+        }
+    }
 }

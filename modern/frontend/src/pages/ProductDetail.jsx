@@ -293,7 +293,7 @@ export default function ProductDetail() {
     if (loading) return (
         <main className="animate-pulse">
             <section className="flex flex-col md:flex-row items-center p-5 md:p-10 gap-6 md:gap-10">
-                <div className="bg-gray-200 aspect-square h-180 rounded-3xl shrink-0" />
+                <div className="bg-gray-200 aspect-square w-full md:w-auto md:h-180 rounded-3xl md:shrink-0" />
                 <div className="flex flex-col gap-5 py-10 flex-1">
                     <div className="h-4 bg-gray-200 rounded w-20" />
                     <div className="h-10 bg-gray-200 rounded w-3/4" />
@@ -325,7 +325,7 @@ export default function ProductDetail() {
         <main className="">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <section className="flex flex-col md:flex-row items-center p-5 md:p-10 gap-6 md:gap-10">
-                <div className="relative bg-gray-100 aspect-square h-180 rounded-3xl overflow-hidden shrink-0">
+                <div className="relative bg-gray-100 aspect-square w-full md:w-auto md:h-180 rounded-3xl overflow-hidden md:shrink-0">
                     {produto.foto_url
                         ? <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center"><span className="text-gray-400">Sem imagem</span></div>
@@ -336,26 +336,26 @@ export default function ProductDetail() {
                         </span>
                     )}
                 </div>
-                <div className="flex flex-col gap-5 py-10 flex-1">
+                <div className="flex flex-col gap-5 py-4 md:py-10 flex-1">
                     <p className="text-gray-400 text-sm">SKU: {produto.id}</p>
-                    <h1 className="text-4xl font-bold">{produto.nome}</h1>
+                    <h1 className="text-2xl md:text-4xl font-bold">{produto.nome}</h1>
                     <div className="flex gap-2 items-center">
                         <StarRating rating={Math.round(ratingGeral)} />
                         <p className="text-gray-500 text-sm">{reviews.length} avaliações</p>
                     </div>
                     {desconto > 0
                         ? <div className="flex items-baseline gap-3">
-                            <p className="text-3xl font-bold text-verde-escuro">{fmt(precoFinal)}</p>
-                            <p className="text-xl text-gray-400 line-through">{fmt(precoOriginal)}</p>
+                            <p className="text-2xl md:text-3xl font-bold text-verde-escuro">{fmt(precoFinal)}</p>
+                            <p className="text-lg md:text-xl text-gray-400 line-through">{fmt(precoOriginal)}</p>
                           </div>
-                        : <p className="text-3xl font-bold text-verde-escuro">{fmt(precoOriginal)}</p>
+                        : <p className="text-2xl md:text-3xl font-bold text-verde-escuro">{fmt(precoOriginal)}</p>
                     }
                     <p className="text-sm text-gray-400">{produto.estoque > 0 ? `${produto.estoque} em estoque` : 'Fora de estoque'}</p>
-                    <div className="flex gap-5">
-                        <div className="flex text-xl">
-                            <button onClick={minusCont} className="flex justify-center items-center bg-white px-5 border rounded-l-full border-r-0 border-gray-200 cursor-pointer hover:bg-gray-100">-</button>
-                            <div className="flex justify-center items-center bg-white border border-gray-200 px-5">{cont}</div>
-                            <button onClick={plusCont} className="flex justify-center items-center bg-white px-5 border rounded-r-full border-l-0 border-gray-200 cursor-pointer hover:bg-gray-100">+</button>
+                    <div className="flex gap-3 md:gap-5">
+                        <div className="flex text-base md:text-xl">
+                            <button onClick={minusCont} className="flex justify-center items-center bg-white px-4 md:px-5 border rounded-l-full border-r-0 border-gray-200 cursor-pointer hover:bg-gray-100">-</button>
+                            <div className="flex justify-center items-center bg-white border border-gray-200 px-4 md:px-5">{cont}</div>
+                            <button onClick={plusCont} className="flex justify-center items-center bg-white px-4 md:px-5 border rounded-r-full border-l-0 border-gray-200 cursor-pointer hover:bg-gray-100">+</button>
                         </div>
                         <button
                             onClick={handleAddToCart}
@@ -441,14 +441,14 @@ export default function ProductDetail() {
             {/* Reviews */}
             <section className="px-5 md:px-10 py-10 md:py-16 border-t border-gray-200">
                 <div className="mb-10">
-                    <h2 className="text-4xl font-bold">Avaliações dos <span className="italic font-light">clientes</span></h2>
+                    <h2 className="text-2xl md:text-4xl font-bold">Avaliações dos <span className="italic font-light">clientes</span></h2>
                     <p className="text-gray-500 mt-1">{reviews.length} avaliações verificadas</p>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-8 md:gap-12">
                     {/* Resumo */}
                     <div className="flex flex-col items-center gap-4 md:shrink-0 w-full md:w-48">
-                        <p className="text-7xl font-bold text-gray-800">{ratingGeral}</p>
+                        <p className="text-5xl md:text-7xl font-bold text-gray-800">{ratingGeral}</p>
                         <StarRating rating={Math.round(ratingGeral)} />
                         <p className="text-sm text-gray-400">de 5 estrelas</p>
 

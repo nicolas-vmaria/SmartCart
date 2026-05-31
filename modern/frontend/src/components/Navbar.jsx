@@ -62,47 +62,41 @@ export default function Navbar() {
                     </Link>
                 </li>
 
-                <li className="relative group">
+                <li className={`relative${!loadingCategorias && categorias.length > 0 ? ' group' : ''}`}>
                     <Link
                         to="/produtos"
                         className="text-verde-claro transition-all hover:bg-green-800 hover:text-gray-100 rounded-full px-5 py-1 flex items-center gap-1"
                     >
                         Produtos
-                        <FiChevronDown className="transition-transform duration-300 group-hover:rotate-180" />
+                        {!loadingCategorias && categorias.length > 0 && (
+                            <FiChevronDown className="transition-transform duration-300 group-hover:rotate-180" />
+                        )}
                     </Link>
 
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
-                        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 w-72">
-                            {loadingCategorias ? (
-                                Array.from({ length: 4 }).map((_, i) => (
-                                    <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl animate-pulse">
-                                        <div className="w-9 h-9 rounded-lg bg-gray-200 shrink-0" />
-                                        <div className="flex-1 space-y-1.5">
-                                            <div className="h-3 bg-gray-200 rounded w-3/4" />
-                                            <div className="h-2.5 bg-gray-100 rounded w-1/2" />
-                                        </div>
-                                    </div>
-                                ))
-                            ) : categorias.map(({ nome, slug, descricao }) => {
-                                const Icon = slugIconMap[slug] ?? LuTag
-                                return (
-                                    <Link
-                                        key={slug}
-                                        to={`/produtos/categoria/${slug}`}
-                                        className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group/item"
-                                    >
-                                        <div className="w-9 h-9 rounded-lg bg-verde-escuro/10 text-verde-escuro flex items-center justify-center text-lg shrink-0 group-hover/item:bg-verde-escuro group-hover/item:text-verde-claro transition-colors">
-                                            <Icon />
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-sm text-gray-800">{nome}</p>
-                                            <p className="text-xs text-gray-400">{descricao}</p>
-                                        </div>
-                                    </Link>
-                                )
-                            })}
+                    {!loadingCategorias && categorias.length > 0 && (
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
+                            <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 w-72">
+                                {categorias.map(({ nome, slug, descricao }) => {
+                                    const Icon = slugIconMap[slug] ?? LuTag
+                                    return (
+                                        <Link
+                                            key={slug}
+                                            to={`/produtos/categoria/${slug}`}
+                                            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group/item"
+                                        >
+                                            <div className="w-9 h-9 rounded-lg bg-verde-escuro/10 text-verde-escuro flex items-center justify-center text-lg shrink-0 group-hover/item:bg-verde-escuro group-hover/item:text-verde-claro transition-colors">
+                                                <Icon />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-sm text-gray-800">{nome}</p>
+                                                <p className="text-xs text-gray-400">{descricao}</p>
+                                            </div>
+                                        </Link>
+                                    )
+                                })}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </li>
 
                 <li>
@@ -167,54 +161,52 @@ export default function Navbar() {
 
                     {/* Produtos com submenu */}
                     <div>
-                        <button
-                            onClick={() => setProdutosAberto(v => !v)}
-                            className="w-full text-left text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors flex items-center justify-between"
-                        >
-                            Produtos
-                            <FiChevronDown className={`transition-transform duration-300 ${produtosAberto ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        <div className={`overflow-hidden transition-all duration-300 ${produtosAberto ? 'max-h-screen' : 'max-h-0'}`}>
-                            <div className="mt-1 ml-4 flex flex-col gap-1">
-                                <Link
-                                    to="/produtos"
-                                    onClick={fecharMenu}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-800 transition-colors text-sm font-bold text-verde-claro"
+                        {!loadingCategorias && categorias.length > 0 ? (
+                            <>
+                                <button
+                                    onClick={() => setProdutosAberto(v => !v)}
+                                    className="w-full text-left text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors flex items-center justify-between"
                                 >
-                                    Ver todos os produtos
-                                </Link>
-                                {loadingCategorias ? (
-                                    Array.from({ length: 4 }).map((_, i) => (
-                                        <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl animate-pulse">
-                                            <div className="w-8 h-8 rounded-lg bg-white/10 shrink-0" />
-                                            <div className="flex-1 space-y-1.5">
-                                                <div className="h-3 bg-white/10 rounded w-3/4" />
-                                                <div className="h-2.5 bg-white/5 rounded w-1/2" />
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : categorias.map(({ nome, slug, descricao }) => {
-                                    const Icon = slugIconMap[slug] ?? LuTag
-                                    return (
+                                    Produtos
+                                    <FiChevronDown className={`transition-transform duration-300 ${produtosAberto ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                <div className={`overflow-hidden transition-all duration-300 ${produtosAberto ? 'max-h-screen' : 'max-h-0'}`}>
+                                    <div className="mt-1 ml-4 flex flex-col gap-1">
                                         <Link
-                                            key={slug}
-                                            to={`/produtos/categoria/${slug}`}
+                                            to="/produtos"
                                             onClick={fecharMenu}
-                                            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-800 transition-colors"
+                                            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-800 transition-colors text-sm font-bold text-verde-claro"
                                         >
-                                            <div className="w-8 h-8 rounded-lg bg-white/10 text-verde-claro flex items-center justify-center text-base shrink-0">
-                                                <Icon />
-                                            </div>
-                                            <div>
-                                                <p className="font-semibold text-sm text-verde-claro">{nome}</p>
-                                                <p className="text-xs text-verde-claro/60">{descricao}</p>
-                                            </div>
+                                            Ver todos os produtos
                                         </Link>
-                                    )
-                                })}
-                            </div>
-                        </div>
+                                        {categorias.map(({ nome, slug, descricao }) => {
+                                            const Icon = slugIconMap[slug] ?? LuTag
+                                            return (
+                                                <Link
+                                                    key={slug}
+                                                    to={`/produtos/categoria/${slug}`}
+                                                    onClick={fecharMenu}
+                                                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-800 transition-colors"
+                                                >
+                                                    <div className="w-8 h-8 rounded-lg bg-white/10 text-verde-claro flex items-center justify-center text-base shrink-0">
+                                                        <Icon />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-sm text-verde-claro">{nome}</p>
+                                                        <p className="text-xs text-verde-claro/60">{descricao}</p>
+                                                    </div>
+                                                </Link>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <Link onClick={fecharMenu} to="/produtos" className="text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors flex items-center">
+                                Produtos
+                            </Link>
+                        )}
                     </div>
 
                     <Link onClick={fecharMenu} to="/sobre-nos" className="text-verde-claro py-3 px-4 rounded-xl hover:bg-green-800 transition-colors">

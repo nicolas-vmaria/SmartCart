@@ -21,28 +21,66 @@ Carrinho de supermercado inteligente que identifica produtos automaticamente, ca
 ## Pré-requisitos
 
 - Node.js v18+
-- PHP 8.2+ e Composer
+- PHP 8.2+ e Composer (ou Docker Desktop)
 - MySQL
-
 
 ---
 
 ## Instalação
 
-### 1. Clone o repositório
+### Opção A — com Docker (recomendado)
+
+Não precisa instalar PHP nem Composer. Apenas o [Docker Desktop](https://www.docker.com/products/docker-desktop/) com WSL 2 habilitado.
+
+#### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/nicolas-vmaria/SmartCart.git
 cd SmartCart
 ```
 
-### 2. Banco de dados
+#### 2. Configure o backend
+
+```bash
+Copy-Item modern/backend/.env.example modern/backend/.env
+# Preencha as variáveis no modern/backend/.env
+```
+
+#### 3. Suba o backend
+
+```bash
+docker compose up --build
+```
+
+Na primeira execução o Composer instala as dependências automaticamente.
+
+#### 4. Frontend
+
+```bash
+cd modern/frontend
+Copy-Item .env.example .env   # defina VITE_API_URL=http://localhost:3001
+npm install
+npm run dev
+```
+
+---
+
+### Opção B — instalação manual
+
+#### 1. Clone o repositório
+
+```bash
+git clone https://github.com/nicolas-vmaria/SmartCart.git
+cd SmartCart
+```
+
+#### 2. Banco de dados
 
 ```bash
 mysql -u root -p < modern/backend/database/schema.sql
 ```
 
-### 3. Backend
+#### 3. Backend
 
 ```bash
 cd modern/backend
@@ -52,8 +90,7 @@ cd public
 php -S localhost:3001 index.php
 ```
 
-
-### 4. Frontend
+#### 4. Frontend
 
 ```bash
 cd modern/frontend

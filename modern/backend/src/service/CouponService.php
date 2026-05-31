@@ -10,7 +10,8 @@ class CouponService {
     }
 
     public function validateCoupon(array $body): array {
-        $codigo = isset($body['codigo']) ? strtoupper(trim((string)$body['codigo'])) : '';
+        $codigo     = isset($body['codigo']) ? strtoupper(trim((string)$body['codigo'])) : '';
+        $usuario_id = isset($body['usuario_id']) ? (int) $body['usuario_id'] : null;
 
         if (!$codigo) {
             http_response_code(400);
@@ -38,6 +39,11 @@ class CouponService {
             if ($coupon['max_usos'] !== null && $coupon['quant_usos'] >= $coupon['max_usos']) {
                 http_response_code(422);
                 return ['error' => 'Cupom atingiu o limite de usos'];
+            }
+
+            if ($usuario_id && $this->repository->hasUserUsed($coupon['id'], $usuario_id)) {
+                http_response_code(422);
+                return ['error' => 'Você já utilizou este cupom'];
             }
 
             http_response_code(200);

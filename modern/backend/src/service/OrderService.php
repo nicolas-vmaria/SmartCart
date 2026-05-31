@@ -129,6 +129,11 @@ class OrderService {
                 return ['error' => 'Cupom esgotado'];
             }
 
+            if ($this->repo->hasUserUsed($cupom['id'], $usuario_id)) {
+                http_response_code(400);
+                return ['error' => 'Você já utilizou este cupom'];
+            }
+
             $cupom_id = $cupom['id'];
             $desconto = $cupom['tipo_desconto'] === 'percentual'
                 ? round($subtotal * ($cupom['desconto'] / 100), 2)

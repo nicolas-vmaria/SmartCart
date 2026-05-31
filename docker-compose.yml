@@ -1,0 +1,32 @@
+services:
+  frontend:
+    build: ./modern/frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./modern/frontend:/app
+      - frontend_node_modules:/app/node_modules
+    env_file:
+      - ./modern/frontend/.env
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./modern/backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./modern/backend:/var/www/html
+    env_file:
+      - ./modern/backend/.env
+    command: bash -c "[ -d vendor ] || composer install --no-interaction; php -d display_errors=On -d error_reporting=E_ALL -d log_errors=On -d error_log=/dev/stderr -S 0.0.0.0:3001 -t public public/index.php"
+
+volumes:
+  frontend_node_modules:
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1400"

@@ -49,7 +49,8 @@ modern/
 - Ícones: preferir `lucide-react` (traço fino) ou `react-icons`
 
 ### Backend
-- Toda alteração no schema do banco (nova coluna, tabela, índice, etc.) deve gerar um arquivo de migration em `modern/backend/database/migration/` seguindo a nomenclatura `mig-NNN.sql` (incrementar o número do último arquivo existente)
+- **Antes de qualquer migration ou referência a tabela/coluna**, ler `modern/backend/database/schema.sql` para confirmar nomes exatos — nomes de tabelas não seguem plural padrão (ex: `Usuario` e não `Usuarios`, `Cupons` e não `Cupom`)
+- Toda alteração no schema do banco (nova coluna, tabela, índice, etc.) deve gerar um arquivo de migration em `modern/backend/database/migration/` seguindo a nomenclatura `mig-NNN.sql` (incrementar o número do último arquivo existente) **e também atualizar `modern/backend/database/schema.sql`**
 - Toda nova seção do painel admin deve ter uma coluna `ver_*` correspondente na tabela `Papeis` (ex: nova página "Reviews" → `ver_reviews BOOLEAN DEFAULT FALSE`), com migration própria, e deve ser atualizada em **todos** os seguintes lugares:
   - `AdminRolesRepository.php` — SELECT, INSERT e UPDATE
   - `AdminRolesService.php` — `validateRole()`
@@ -72,6 +73,12 @@ modern/
 - Host externo Railway: `autorack.proxy.rlwy.net:49098`
 - Banco: `railway`
 - Schema em: `modern/backend/database/schema.sql`
+
+## Testes (Vitest + Testing Library)
+- Sempre usar `within(container)` para buscar elementos — nunca `screen.getBy*` sozinho
+- O cleanup automático entre testes não funciona de forma confiável neste projeto; `within(container)` isola cada render e evita o erro "Found multiple elements"
+- Padrão correto: `const { container } = render(<Comp />)` → `within(container).getByText(...)`
+- Testes em `modern/frontend/src/test/` — documentação em `docs/TESTES.md`
 
 ## Variáveis de ambiente (frontend)
 ```

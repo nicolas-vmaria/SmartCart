@@ -129,6 +129,20 @@ class OrderRepository {
         }
     }
 
+    public function hasUserUsed(int $cupom_id, int $usuario_id): bool {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT 1 FROM CuponsUsoUsuarios
+                WHERE cupom_id = :cupom_id AND usuario_id = :usuario_id
+                LIMIT 1
+            ");
+            $stmt->execute([':cupom_id' => $cupom_id, ':usuario_id' => $usuario_id]);
+            return $stmt->fetchColumn() !== false;
+        } catch (PDOException $e) {
+            throw new RuntimeException('ERRO_VERIFICAR_USO_CUPOM', 0, $e);
+        }
+    }
+
     public function findCupom(string $codigo): ?array {
         try {
             $stmt = $this->db->prepare("
@@ -210,12 +224,21 @@ class OrderRepository {
             ");
             $stmtCarrinho->execute([':id' => $payload['carrinho_id']]);
 
-            // Incrementa uso do cupom se usado
+            // Incrementa uso do cupom e registra uso por usuário
             if ($cupom_id !== null) {
                 $stmtCupom = $this->db->prepare("
                     UPDATE Cupons SET quant_usos = quant_usos + 1 WHERE id = :id
                 ");
                 $stmtCupom->execute([':id' => $cupom_id]);
+
+                $stmtUso = $this->db->prepare("
+                    INSERT IGNORE INTO CuponsUsoUsuarios (cupom_id, usuario_id)
+                    VALUES (:cupom_id, :usuario_id)
+                ");
+                $stmtUso->execute([
+                    ':cupom_id'   => $cupom_id,
+                    ':usuario_id' => $payload['usuario_id'],
+                ]);
             }
 
             $this->db->commit();

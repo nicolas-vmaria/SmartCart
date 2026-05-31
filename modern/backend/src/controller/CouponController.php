@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../service/CouponService.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/BaseController.php';
 
 class CouponController extends BaseController {
@@ -11,6 +12,7 @@ class CouponController extends BaseController {
     }
 
     public function validate() {
+        $payload = AuthMiddleware::handle();
         $body = $this->getBody();
 
         if (!$body) {
@@ -19,6 +21,7 @@ class CouponController extends BaseController {
             return;
         }
 
+        $body['usuario_id'] = (int) $payload['userId'];
         $result = $this->service->validateCoupon($body);
         $this->respond($result);
     }
