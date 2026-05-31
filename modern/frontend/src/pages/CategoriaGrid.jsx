@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { LuSlidersHorizontal, LuArrowUpDown, LuChevronRight, LuTag } from 'react-icons/lu'
-import { FaCartShopping } from 'react-icons/fa6'
 import { getCategoryBySlug } from '../lib/api/categories'
 import { slugIconMap } from '../lib/categoryIcons'
 
@@ -33,19 +32,11 @@ function ProdutoCard({ produto }) {
                     {nome}
                 </h3>
 
-                <div className="flex items-end justify-between mt-auto">
-                    <div>
-                        <p className="text-xs text-gray-400">a partir de</p>
-                        <p className="text-lg font-bold text-gray-900">
-                            {Number(preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                        </p>
-                    </div>
-                    <button
-                        onClick={e => e.preventDefault()}
-                        className="w-9 h-9 rounded-xl bg-verde-escuro text-verde-claro flex items-center justify-center hover:opacity-80 transition-opacity shrink-0"
-                    >
-                        <FaCartShopping size={15} />
-                    </button>
+                <div className="mt-auto">
+                    <p className="text-xs text-gray-400">a partir de</p>
+                    <p className="text-lg font-bold text-gray-900">
+                        {Number(preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    </p>
                 </div>
             </div>
         </Link>

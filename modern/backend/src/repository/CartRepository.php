@@ -45,11 +45,19 @@ class CartRepository {
                 c.status,
                 p.id AS produto_id,
                 p.nome AS produto_nome,
-                p.preco,
+                p.preco AS preco_original,
+                p.desconto_percentual,
+                CASE WHEN p.desconto_percentual > 0
+                    THEN ROUND(p.preco * (1 - p.desconto_percentual / 100), 2)
+                    ELSE p.preco
+                END AS preco,
                 p.foto_url,
                 p.estoque,
                 ic.quantidade,
-                (p.preco * ic.quantidade) AS subtotal
+                (CASE WHEN p.desconto_percentual > 0
+                    THEN ROUND(p.preco * (1 - p.desconto_percentual / 100), 2)
+                    ELSE p.preco
+                END * ic.quantidade) AS subtotal
             FROM Carrinhos c
             JOIN Itens_Carrinho ic ON ic.carrinho_id = c.id
             JOIN Produtos p ON p.id = ic.produto_id

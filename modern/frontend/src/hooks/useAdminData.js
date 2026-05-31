@@ -4,7 +4,9 @@ export function useAdminData(cacheKey, fetchFn) {
     const [data, setData] = useState(() => {
         try {
             const c = localStorage.getItem(cacheKey)
-            return c ? JSON.parse(c) : null
+            if (!c) return null
+            const parsed = JSON.parse(c)
+            return Array.isArray(parsed) ? parsed : null
         } catch { return null }
     })
     const [loading, setLoading] = useState(() => !localStorage.getItem(cacheKey))
@@ -30,5 +32,5 @@ export function useAdminData(cacheKey, fetchFn) {
         })
     }
 
-    return { data: data ?? [], loading, setData: updateCache, refetch, setLoading }
+    return { data: Array.isArray(data) ? data : [], loading, setData: updateCache, refetch, setLoading }
 }

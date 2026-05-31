@@ -13,14 +13,16 @@ const CART_CACHE_KEY = 'cart_cache'
 const CartItem = memo(function CartItem({ item, onChangeQtd, onRemove, updating }) {
     const onMinus = useCallback(() => onChangeQtd(item, -1), [item, onChangeQtd])
     const onPlus  = useCallback(() => onChangeQtd(item, +1), [item, onChangeQtd])
+    const desconto = Number(item.desconto_percentual) || 0
     const preco = Number(item.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    const precoOriginal = Number(item.preco_original).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
     const subtotal = (Number(item.preco) * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
     return (
         <div className="flex flex-col sm:flex-row bg-gray-100 p-5 sm:p-8 rounded-2xl gap-4 sm:gap-6 items-start sm:items-center">
             <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-2xl border-2 border-gray-200 bg-white flex justify-center items-center shrink-0 overflow-hidden">
                 {item.foto_url
-                    ? <img src={item.foto_url} alt={item.produto_nome} className="w-full h-full object-contain p-2" />
+                    ? <img src={item.foto_url} alt={item.produto_nome} className="w-full h-full object-cover" />
                     : <ShoppingCart className="text-gray-300 text-4xl" size={40} />
                 }
             </div>
@@ -29,7 +31,15 @@ const CartItem = memo(function CartItem({ item, onChangeQtd, onRemove, updating 
                 <div className="flex flex-col gap-1 min-w-0 flex-1">
                     <h1 className="text-lg sm:text-xl font-bold truncate">{item.produto_nome}</h1>
                     <p className="text-gray-500 text-sm">SKU: {item.produto_id}</p>
-                    <p className="text-verde-escuro font-semibold text-sm">{preco} un.</p>
+                    {desconto > 0 ? (
+                        <div className="flex items-center gap-2">
+                            <p className="text-verde-escuro font-semibold text-sm">{preco} un.</p>
+                            <p className="text-gray-400 text-xs line-through">{precoOriginal}</p>
+                            <span className="text-xs font-bold text-white bg-red-500 px-1.5 py-0.5 rounded-full">-{desconto}%</span>
+                        </div>
+                    ) : (
+                        <p className="text-verde-escuro font-semibold text-sm">{preco} un.</p>
+                    )}
                     {item.quantidade > item.estoque && (
                         <p className="flex items-center gap-1 text-xs text-red-500 font-medium">
                             <AlertTriangle size={12} /> Apenas {item.estoque} em estoque
