@@ -57,7 +57,7 @@ function apiRoleToModel(r) {
         nome_papel: r.nome_papel ? r.nome_papel.charAt(0).toUpperCase() + r.nome_papel.slice(1) : '',
         descricao: r.descricao || '',
         color: (r.badge && r.badge.startsWith('bg-')) ? r.badge : 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200',
-        users: 0,
+        users: parseInt(r.total_usuarios) || 0,
         permissions: {
             dashboard:     !!r.ver_dashboard,
             clientes:      !!r.ver_clientes,
@@ -275,7 +275,7 @@ export default function AdminRoles() {
                     </div>
                 ))}
 
-                {roles.length === 0 && (
+                {!loading && roles.length === 0 && (
                     <div className="py-16 text-center text-gray-400 dark:text-(--admin-text-muted) bg-white dark:bg-(--admin-card) rounded-2xl border border-gray-200 dark:border-(--admin-border)">
                         Nenhum papel cadastrado.
                     </div>

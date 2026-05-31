@@ -12,8 +12,11 @@ class AdminRolesRepository {
     public function findAllRoles(): array {
         try {
             $stmt = $this->db->query('
-                SELECT id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_customizacao, ver_usuarios, ver_configuracoes, ver_marketing
-                FROM Papeis
+                SELECT p.id, p.nome_papel, p.badge, p.descricao, p.ver_dashboard, p.ver_clientes, p.ver_categorias, p.ver_produtos, p.ver_pedidos, p.ver_admin, p.ver_curriculos, p.ver_trabalhos, p.ver_cupons, p.ver_relatorios, p.ver_customizacao, p.ver_usuarios, p.ver_configuracoes, p.ver_marketing,
+                       COUNT(u.id) AS total_usuarios
+                FROM Papeis p
+                LEFT JOIN Usuario u ON u.papel_id = p.id
+                GROUP BY p.id
             ');
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }

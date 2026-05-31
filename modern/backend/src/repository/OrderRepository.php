@@ -226,6 +226,29 @@ class OrderRepository {
         }
     }
 
+    public function getOrderReviewItems(int $pedido_id, int $user_id): array {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT
+                    ip.produto_id,
+                    p.nome,
+                    p.foto_url,
+                    ip.quantidade,
+                    r.id        AS review_id,
+                    r.nota,
+                    r.descricao AS review_descricao
+                FROM Itens_Pedido ip
+                JOIN Produtos p ON p.id = ip.produto_id
+                LEFT JOIN Review r ON r.produto_id = ip.produto_id AND r.user_id = :user_id
+                WHERE ip.pedido_id = :pedido_id
+            ");
+            $stmt->execute([':pedido_id' => $pedido_id, ':user_id' => $user_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new RuntimeException('ERRO_GET_ORDER_REVIEW_ITEMS', 0, $e);
+        }
+    }
+
     public function updateStatus(int $id, string $status, ?string $codigo_rastreio): bool {
         try {
             $stmt = $this->db->prepare("

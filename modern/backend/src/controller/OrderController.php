@@ -48,4 +48,10 @@ class OrderController extends BaseController {
         $result = $this->service->getTracking((int) $id, (int) $payload['userId']);
         $this->respond($result);
     }
+
+    public function reviewItems($id) {
+        $payload = AuthMiddleware::handle();
+        $result  = $this->service->getOrderReviewItems((int) $id, (int) $payload['userId']);
+        $this->respond($result);
+    }
 }

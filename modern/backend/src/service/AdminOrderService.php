@@ -276,6 +276,23 @@ class AdminOrderService {
     </div>";
         }
 
+        $botaoReview = '';
+        if ($status === 'entregue') {
+            $frontendUrl = $_ENV['FRONTEND_URL'] ?? 'http://localhost:5173';
+            $rawId       = $order['id'];
+            $botaoReview = "
+    <div style='text-align: center; margin: 28px 0;'>
+        <a href='{$frontendUrl}/review-pedido/{$rawId}'
+           style='display:inline-block; background:#16a34a; color:#fff; font-size:15px;
+                  font-weight:bold; padding:14px 32px; border-radius:8px; text-decoration:none;'>
+            Avaliar Produtos
+        </a>
+        <p style='color:#9ca3af; font-size:12px; margin-top:10px;'>
+            Sua opinião nos ajuda a melhorar!
+        </p>
+    </div>";
+        }
+
         return "
 <div style='font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff;'>
     <div style='border-left: 4px solid {$m['cor']}; padding-left: 16px; margin-bottom: 24px;'>
@@ -298,6 +315,7 @@ class AdminOrderService {
     </div>
 
     {$notaFiscal}
+    {$botaoReview}
 
     <hr style='border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;'>
     <p style='color: #9ca3af; font-size: 12px; text-align: center; margin: 0;'>SmartCart &copy; " . date('Y') . " — Loja Inteligente</p>
