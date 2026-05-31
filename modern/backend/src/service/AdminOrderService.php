@@ -78,7 +78,7 @@ class AdminOrderService {
         try {
             $mailer       = new Mailer();
             $assunto      = self::STATUS_ASSUNTO[$novoStatus] ?? 'Atualização do seu pedido — SmartCart';
-            $corpo        = $this->buildEmail($order, $novoStatus, $codigoRastreio);
+            $corpo        = $this->buildEmail($order, $novoStatus, $codigoRastreio, $itens);
             $pdfConteudo  = null;
             $pdfNome      = null;
 
@@ -194,7 +194,7 @@ class AdminOrderService {
         return $dompdf->output();
     }
 
-    private function buildEmail(array $order, string $status, ?string $rastreio): string {
+    private function buildEmail(array $order, string $status, ?string $rastreio, array $itens = []): string {
         $orderId = '#' . str_pad($order['id'], 5, '0', STR_PAD_LEFT);
         $nome    = htmlspecialchars($order['nome']);
         $total   = 'R$ ' . number_format($order['total'], 2, ',', '.');
