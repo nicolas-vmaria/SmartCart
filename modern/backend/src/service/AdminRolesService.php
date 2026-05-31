@@ -27,6 +27,7 @@ class AdminRolesService {
         $ver_usuarios     = ($body['ver_usuarios']     === 'true' || $body['ver_usuarios']     === '1') ? 1 : 0;
         $ver_configuracoes= ($body['ver_configuracoes']=== 'true' || $body['ver_configuracoes']=== '1') ? 1 : 0;
         $ver_marketing    = ($body['ver_marketing']    === 'true' || $body['ver_marketing']    === '1') ? 1 : 0;
+        $ver_reviews      = ($body['ver_reviews']      === 'true' || $body['ver_reviews']      === '1') ? 1 : 0;
 
         if (!$nome_papel || !$badge) {
             throw new InvalidArgumentException("Campos obrigatórios ausentes: nome_papel, badge");
@@ -50,6 +51,7 @@ class AdminRolesService {
             'ver_usuarios'     => $ver_usuarios,
             'ver_configuracoes'=> $ver_configuracoes,
             'ver_marketing'    => $ver_marketing,
+            'ver_reviews'      => $ver_reviews,
         ];
     }
 

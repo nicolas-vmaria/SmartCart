@@ -20,11 +20,11 @@ class ReportsRepository {
             }
             
             $stmt = $this->db->prepare('
-                SELECT 
-                    SUM(p.total) as total_sales,
+                SELECT
+                    SUM(CASE WHEN p.status IN ("pago","enviado","entregue") THEN p.total ELSE 0 END) as total_sales,
                     COUNT(p.id) as total_orders,
                     COUNT(CASE WHEN p.status = "cancelado" THEN 1 END) as canceled_orders,
-                    IFNULL(SUM(p.total) / COUNT(p.id), 0) as average_ticket
+                    IFNULL(SUM(CASE WHEN p.status IN ("pago","enviado","entregue") THEN p.total ELSE 0 END) / NULLIF(COUNT(CASE WHEN p.status IN ("pago","enviado","entregue") THEN 1 END), 0), 0) as average_ticket
                 FROM Pedidos p
                 WHERE p.created_at >= ?
             ');
