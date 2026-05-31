@@ -4,6 +4,14 @@ class Connection {
     private static ?PDO $instance = null;
 
     public static function get(): PDO {
+        if (self::$instance !== null) {
+            try {
+                self::$instance->query('SELECT 1');
+            } catch (PDOException $e) {
+                self::$instance = null;
+            }
+        }
+
         if (self::$instance === null) {
             $host = $_ENV['DB_HOST'];
             $name = $_ENV['DB_NAME'];
@@ -18,7 +26,7 @@ class Connection {
                 [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::MYSQL_ATTR_FOUND_ROWS => true
+                    PDO::MYSQL_ATTR_FOUND_ROWS   => true,
                 ]
             );
         }

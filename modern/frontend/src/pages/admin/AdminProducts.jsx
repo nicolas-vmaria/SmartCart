@@ -21,7 +21,7 @@ const emptyForm = { name: '', categoria_id: '', descricao: '', price: '', stock:
 export default function AdminProducts() {
     const { data: products, loading, setData: setProducts, refetch: getProducts, setLoading } = useAdminData(
         'admin_products',
-        async () => { const { data } = await getProduct(); return data.products ?? data }
+        async () => { const { data } = await getProduct(); const arr = data.products ?? data; return Array.isArray(arr) ? arr : [] }
     )
     const { data: categories, setData: setCategories } = useAdminData(
         'admin_categories',

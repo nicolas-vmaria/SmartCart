@@ -331,7 +331,7 @@ export default function ProductDetail() {
                         : <div className="w-full h-full flex items-center justify-center"><span className="text-gray-400">Sem imagem</span></div>
                     }
                     {desconto > 0 && (
-                        <span className="absolute top-4 left-4 bg-orange-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
+                        <span className="absolute top-4 left-4 bg-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
                             -{desconto}%
                         </span>
                     )}
