@@ -4,7 +4,6 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 import { Plus, Pencil, Trash2, Briefcase, MapPin, Clock, Wifi } from 'lucide-react'
 import { getVagas, createVaga, updateVaga, toggleVaga, deleteVaga } from '../../lib/api/adminVagas'
 import Toast from '../../components/Toast'
-import { areaCor } from '../../data/vagas'
 
 const TIPOS_CONTRATO    = ['CLT', 'PJ', 'Estágio', 'Freelance', 'CLT + Bônus']
 const FORMATOS_TRABALHO = ['Presencial', 'Remoto', 'Híbrido']

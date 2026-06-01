@@ -3,7 +3,6 @@ import AdminHeader from '../../components/admin/AdminHeader'
 import Toast from '../../components/Toast'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import { Search, SlidersHorizontal, Trash2, X, Download, FileText, Mail, Phone, Link2, ExternalLink } from 'lucide-react'
-import { areaCor } from '../../data/vagas'
 import { getCurriculos, getCurriculoById, updateCurriculoStatus, deleteCurriculo } from '../../lib/api/adminCurriculos'
 
 const STATUS_LABEL = {

@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { Users, HelpCircle, Store, Briefcase, Handshake, ChevronRight, ChevronDown, MapPin, Phone, Clock, CheckCircle } from 'lucide-react'
 import { FaLightbulb, FaHandshake, FaLeaf, FaRocket, FaUsers, FaStore } from 'react-icons/fa'
 import { FaRocket as FaRocket6 } from 'react-icons/fa6'
-import { areaCor } from '../data/vagas'
 import { getVagasPublicas } from '../lib/api/vagas'
 
 // ─── Quem Somos ───────────────────────────────────────────────────────────────
