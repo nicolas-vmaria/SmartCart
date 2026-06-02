@@ -210,6 +210,17 @@ CREATE TABLE Resetar_Senha (
     expire_at DATETIME NOT NULL
 );
 
+CREATE TABLE Configuracoes (
+    chave VARCHAR(100) PRIMARY KEY,
+    valor VARCHAR(1000) NOT NULL DEFAULT ''
+);
+
+INSERT IGNORE INTO Configuracoes (chave, valor) VALUES
+    ('notify_novos_pedidos',  '1'),
+    ('notify_estoque_baixo',  '1'),
+    ('notify_novos_curriculos', '1'),
+    ('notify_alertas_sistema','1');
+
 INSERT INTO Papeis (id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_usuarios, ver_configuracoes)
 VALUES (1, 'cliente', NULL, 'Usuário padrão', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
        (2, 'admin', 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Administrador com acesso total', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);

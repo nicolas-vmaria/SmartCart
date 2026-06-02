@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AdminHeader from "../../components/admin/AdminHeader"
-import { Moon, Sun, Monitor, Bell, Store, Globe, Check } from 'lucide-react'
+import { Moon, Sun, Monitor, Bell, Check } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
+import { getAdminConfiguracoes, updateConfiguracoes } from '../../lib/api/adminConfiguracoes'
+import Toast from '../../components/Toast'
 
 function Section({ title, children }) {
     return (
@@ -47,8 +49,6 @@ const themeOptions = [
     { value: 'system', label: 'Sistema', icon: Monitor },
 ]
 
-const inputClass = "border border-gray-200 dark:border-(--admin-border) dark:bg-(--admin-input) dark:text-(--admin-text) rounded-lg px-3 py-1.5 text-sm outline-none focus:border-verde-escuro dark:focus:border-(--admin-accent) transition-all w-full sm:w-52"
-
 export default function AdminSettings() {
     const { dark, setDark } = useTheme()
     const [themeMode, setThemeMode] = useState(() => {
@@ -56,18 +56,32 @@ export default function AdminSettings() {
         return saved || (dark ? 'dark' : 'light')
     })
     const [notifications, setNotifications] = useState({
-        newOrders: true,
-        lowStock: true,
-        newClients: false,
+        newOrders:    true,
+        lowStock:     true,
+        newClients:   false,
         systemAlerts: true,
     })
-    const [storeInfo, setStoreInfo] = useState({
-        name: 'SmartCart',
-        email: 'contato@smartcart.com',
-        phone: '(11) 99999-9999',
-        address: 'Rua Exemplo, 123 – São Paulo, SP',
-    })
-    const [saved, setSaved] = useState(false)
+    const [loading, setLoading]   = useState(true)
+    const [saving, setSaving]     = useState(false)
+    const [toast, setToast]       = useState(null)
+
+    useEffect(() => {
+        let cancelled = false
+        getAdminConfiguracoes()
+            .then(res => {
+                if (cancelled) return
+                const cfg = res.data.configuracoes ?? {}
+                setNotifications({
+                    newOrders:    cfg.notify_novos_pedidos   !== '0',
+                    lowStock:     cfg.notify_estoque_baixo   !== '0',
+                    newClients:   cfg.notify_novos_curriculos  !== '0',
+                    systemAlerts: cfg.notify_alertas_sistema !== '0',
+                })
+            })
+            .catch(() => {})
+            .finally(() => { if (!cancelled) setLoading(false) })
+        return () => { cancelled = true }
+    }, [])
 
     function handleThemeChange(value) {
         setThemeMode(value)
@@ -81,14 +95,28 @@ export default function AdminSettings() {
         }
     }
 
-    function handleSave(e) {
+    async function handleSave(e) {
         e.preventDefault()
-        setSaved(true)
-        setTimeout(() => setSaved(false), 2000)
+        setSaving(true)
+        try {
+            await updateConfiguracoes({
+                notify_novos_pedidos:   notifications.newOrders    ? '1' : '0',
+                notify_estoque_baixo:   notifications.lowStock     ? '1' : '0',
+                notify_novos_curriculos:  notifications.newClients   ? '1' : '0',
+                notify_alertas_sistema: notifications.systemAlerts ? '1' : '0',
+            })
+            window.dispatchEvent(new CustomEvent('config:updated'))
+            setToast({ message: 'Configurações salvas com sucesso.', type: 'success' })
+        } catch {
+            setToast({ message: 'Erro ao salvar configurações.', type: 'error' })
+        } finally {
+            setSaving(false)
+        }
     }
 
     return (
         <main>
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <AdminHeader title="Configurações" description="Personalize o sistema conforme suas preferências." />
 
             <form onSubmit={handleSave} className="mt-5 flex flex-col gap-5">
@@ -134,39 +162,44 @@ export default function AdminSettings() {
                 </Section>
 
                 <Section title="Notificações">
-                    <Row icon={Bell} label="Novos pedidos" description="Notificar quando um novo pedido for realizado">
-                        <Toggle checked={notifications.newOrders} onChange={v => setNotifications(p => ({ ...p, newOrders: v }))} />
-                    </Row>
-                    <Row icon={Bell} label="Estoque baixo" description="Notificar quando um produto tiver estoque abaixo de 10">
-                        <Toggle checked={notifications.lowStock} onChange={v => setNotifications(p => ({ ...p, lowStock: v }))} />
-                    </Row>
-                    <Row icon={Bell} label="Novos clientes" description="Notificar quando um cliente novo se cadastrar">
-                        <Toggle checked={notifications.newClients} onChange={v => setNotifications(p => ({ ...p, newClients: v }))} />
-                    </Row>
-                    <Row icon={Bell} label="Alertas do sistema" description="Erros e avisos críticos do sistema">
-                        <Toggle checked={notifications.systemAlerts} onChange={v => setNotifications(p => ({ ...p, systemAlerts: v }))} />
-                    </Row>
-                </Section>
-
-                <Section title="Informações da loja">
-                    <Row icon={Store} label="Nome da loja" description="Exibido em notas fiscais e relatórios">
-                        <input type="text" value={storeInfo.name} onChange={e => setStoreInfo(p => ({ ...p, name: e.target.value }))} className={inputClass} />
-                    </Row>
-                    <Row icon={Globe} label="Email de contato">
-                        <input type="email" value={storeInfo.email} onChange={e => setStoreInfo(p => ({ ...p, email: e.target.value }))} className={inputClass} />
-                    </Row>
-                    <Row icon={Store} label="Telefone">
-                        <input type="text" value={storeInfo.phone} onChange={e => setStoreInfo(p => ({ ...p, phone: e.target.value }))} className={inputClass} />
-                    </Row>
-                    <Row icon={Store} label="Endereço">
-                        <input type="text" value={storeInfo.address} onChange={e => setStoreInfo(p => ({ ...p, address: e.target.value }))} className={inputClass} />
-                    </Row>
+                    {loading ? (
+                        <div className="flex flex-col gap-4 animate-pulse">
+                            {[1,2,3,4].map(i => (
+                                <div key={i} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-(--admin-hover)" />
+                                        <div className="flex flex-col gap-1.5">
+                                            <div className="h-3 w-32 bg-gray-200 dark:bg-(--admin-hover) rounded" />
+                                            <div className="h-2.5 w-48 bg-gray-100 dark:bg-(--admin-hover) rounded" />
+                                        </div>
+                                    </div>
+                                    <div className="w-11 h-6 rounded-full bg-gray-200 dark:bg-(--admin-hover)" />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <>
+                            <Row icon={Bell} label="Novos pedidos" description="Notificar quando um novo pedido for realizado">
+                                <Toggle checked={notifications.newOrders} onChange={v => setNotifications(p => ({ ...p, newOrders: v }))} />
+                            </Row>
+                            <Row icon={Bell} label="Estoque baixo" description="Notificar quando um produto tiver estoque abaixo de 10">
+                                <Toggle checked={notifications.lowStock} onChange={v => setNotifications(p => ({ ...p, lowStock: v }))} />
+                            </Row>
+                            <Row icon={Bell} label="Novos currículos" description="Notificar quando um novo currículo for enviado">
+                                <Toggle checked={notifications.newClients} onChange={v => setNotifications(p => ({ ...p, newClients: v }))} />
+                            </Row>
+                            <Row icon={Bell} label="Alertas do sistema" description="Erros e avisos críticos do sistema">
+                                <Toggle checked={notifications.systemAlerts} onChange={v => setNotifications(p => ({ ...p, systemAlerts: v }))} />
+                            </Row>
+                        </>
+                    )}
                 </Section>
 
                 <div className="flex justify-end">
-                    <button type="submit"
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${saved ? 'bg-green-100 dark:bg-(--admin-accent-soft) text-verde-escuro dark:text-(--admin-accent)' : 'bg-verde-escuro dark:bg-(--admin-accent) text-white dark:text-black hover:opacity-90'}`}>
-                        {saved ? <><Check size={15} /> Salvo!</> : 'Salvar configurações'}
+                    <button type="submit" disabled={saving || loading}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-verde-escuro dark:bg-(--admin-accent) text-white dark:text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">
+                        {saving && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin dark:border-black dark:border-t-transparent" />}
+                        {saving ? 'Salvando...' : 'Salvar configurações'}
                     </button>
                 </div>
             </form>

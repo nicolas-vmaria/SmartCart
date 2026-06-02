@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../repository/CandidacyRepository.php';
+require_once __DIR__ . '/NotificationService.php';
 
 class CandidacyService {
     private CandidacyRepository $repository;
@@ -82,6 +83,8 @@ class CandidacyService {
                 'carta_apresent' => $carta_apresent,
             ]);
 
+            NotificationService::notifyNewCurriculo($nome, $trabalho['cargo'] ?? $trabalho['titulo'] ?? '');
+
             http_response_code(201);
             return ['message' => 'Candidatura enviada com sucesso'];
         } catch (RuntimeException $e) {
@@ -118,7 +121,9 @@ class CandidacyService {
                 'carta_apresent' => $carta_apresent,
                 'area_interesse' => $area_interesse,
             ]);
- 
+
+            NotificationService::notifyNewCurriculo($nome, $area_interesse);
+
             http_response_code(201);
             return ['message' => 'Currículo enviado com sucesso'];
         } catch (RuntimeException $e) {

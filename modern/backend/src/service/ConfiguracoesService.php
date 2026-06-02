@@ -21,6 +21,8 @@ class ConfiguracoesService {
         'desconto_faixa_1_minimo', 'desconto_faixa_1_pct',
         'desconto_faixa_2_minimo', 'desconto_faixa_2_pct',
         'desconto_faixa_3_minimo', 'desconto_faixa_3_pct',
+        'notify_novos_pedidos', 'notify_estoque_baixo',
+        'notify_novos_curriculos', 'notify_alertas_sistema',
     ];
 
     public function __construct() {

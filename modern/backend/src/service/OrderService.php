@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../repository/OrderRepository.php';
+require_once __DIR__ . '/NotificationService.php';
 
 class OrderService {
     private OrderRepository $repo;
@@ -175,6 +176,8 @@ class OrderService {
 
         $pedido = $this->repo->getOrderById($pedido_id);
         $pedido['itens'] = $this->repo->getOrderItems($pedido_id);
+
+        NotificationService::notifyNewOrder($pedido_id, (float)$total, $body['metodo_pagamento']);
 
         return [
             'message' => 'Pedido criado com sucesso',

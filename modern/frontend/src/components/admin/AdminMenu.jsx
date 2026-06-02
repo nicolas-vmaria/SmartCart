@@ -4,6 +4,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import { getAdminOrders } from '../../lib/api/adminOrders'
 import { getCurriculos } from '../../lib/api/adminCurriculos'
+import { getAdminConfiguracoes } from '../../lib/api/adminConfiguracoes'
+import { getProduct } from '../../lib/api/adminProducts'
 
 const linkClass = "cursor-pointer flex gap-2 items-center h-10 px-2 rounded-md transition-all hover:bg-gray-100 dark:text-(--admin-text) dark:hover:bg-(--admin-hover) outline-none"
 
@@ -22,8 +24,18 @@ export default function AdminMenu({ isOpen, onClose }) {
     const [confirm, setConfirm] = useState(false)
     const [notifPedidos, setNotifPedidos]       = useState(0)
     const [notifCurriculos, setNotifCurriculos] = useState(0)
+    const [notifEstoque, setNotifEstoque]       = useState(0)
+    const [notifCfg, setNotifCfg]               = useState({})
+
+    function fetchConfig() {
+        getAdminConfiguracoes()
+            .then(({ data }) => setNotifCfg(data.configuracoes ?? {}))
+            .catch(() => {})
+    }
 
     useEffect(() => {
+        fetchConfig()
+
         getAdminOrders()
             .then(({ data }) => {
                 const count = (data.orders ?? []).filter(o => o.status === 'aguardando').length
@@ -34,7 +46,19 @@ export default function AdminMenu({ isOpen, onClose }) {
         getCurriculos()
             .then(({ data }) => setNotifCurriculos(data.stats?.novos ?? 0))
             .catch(() => {})
+
+        getProduct()
+            .then(({ data }) => {
+                const prods = data.products ?? data ?? []
+                setNotifEstoque(prods.filter(p => p.estoque > 0 && p.estoque < 10).length)
+            })
+            .catch(() => {})
     }, [location.pathname])
+
+    useEffect(() => {
+        window.addEventListener('config:updated', fetchConfig)
+        return () => window.removeEventListener('config:updated', fetchConfig)
+    }, [])
 
     const adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}')
     const nome = adminUser.nome || 'Usuário'
@@ -68,11 +92,11 @@ export default function AdminMenu({ isOpen, onClose }) {
                         <div className="flex flex-col gap-4">
                             {can('dashboard')   && <Link to="/admin" onClick={onClose} className={linkClass}><LayoutDashboard size={18} />Dashboard</Link>}
                             {can('clientes')    && <Link to="/admin/clients" onClick={onClose} className={linkClass}><Users size={18} />Clientes</Link>}
-                            {can('produtos')    && <Link to="/admin/products" onClick={onClose} className={linkClass}><Package size={18} />Produtos</Link>}
+                            {can('produtos')    && <Link to="/admin/products" onClick={onClose} className={linkClass}><Package size={18} />Produtos<Badge count={notifCfg.notify_estoque_baixo !== '0' ? notifEstoque : 0} /></Link>}
                             {can('categorias')  && <Link to="/admin/categories" onClick={onClose} className={linkClass}><Tag size={18} />Categorias</Link>}
                             {can('reviews')     && <Link to="/admin/reviews" onClick={onClose} className={linkClass}><MessageSquare size={18} />Reviews</Link>}
-                            {can('pedidos')     && <Link to="/admin/orders" onClick={onClose} className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={notifPedidos} /></Link>}
-                            {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos<Badge count={notifCurriculos} /></Link>}
+                            {can('pedidos')     && <Link to="/admin/orders" onClick={onClose} className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={notifCfg.notify_novos_pedidos !== '0' ? notifPedidos : 0} /></Link>}
+                            {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos<Badge count={notifCfg.notify_novos_curriculos !== '0' ? notifCurriculos : 0} /></Link>}
                             {can('trabalhos')   && <Link to="/admin/vagas" onClick={onClose} className={linkClass}><Briefcase size={18} />Vagas</Link>}
                             {can('cupons')      && <Link to="/admin/cupons" onClick={onClose} className={linkClass}><Ticket size={18} />Cupons</Link>}
                             {can('customizacao') && <Link to="/admin/customizacao" onClick={onClose} className={linkClass}><Paintbrush size={18} />Customização</Link>}
