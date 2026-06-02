@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import AdminHeader from '../../components/admin/AdminHeader'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import Toast from '../../components/Toast'
-import { Trash2, Search, Star, X, Plus, MessageSquare, TrendingUp, Calendar, Eye, EyeOff } from 'lucide-react'
+import { Trash2, Search, Star, X, Plus, MessageSquare, TrendingUp, Calendar, Eye, EyeOff, Wand2, ChevronDown, ChevronUp } from 'lucide-react'
 import { getAllReviews, deleteReview, bulkDeleteReviews, getPalavras, addPalavra, deletePalavra } from '../../lib/api/adminReviews'
+import { analyzeReviews } from '../../lib/IaAssistant'
 
 function StatCard({ icon: Icon, label, value, loading }) {
     if (loading) return (
@@ -65,6 +66,10 @@ export default function AdminReviews() {
     const [confirmBulk, setConfirmBulk] = useState(false)
     const [deleting, setDeleting]       = useState(false)
     const [toast, setToast]             = useState(null)
+
+    const [analyzing, setAnalyzing]         = useState(false)
+    const [analysisResult, setAnalysisResult] = useState(null)
+    const [showAnalysis, setShowAnalysis]   = useState(false)
 
     const [palavras, setPalavras]           = useState([])
     const [novaPalavra, setNovaPalavra]     = useState('')
@@ -223,7 +228,52 @@ export default function AdminReviews() {
                             Excluir {selected.length} selecionado(s)
                         </button>
                     )}
+                    <button
+                        disabled={reviews.length === 0 || analyzing}
+                        onClick={async () => {
+                            if (analysisResult) { setShowAnalysis(v => !v); return }
+                            setAnalyzing(true)
+                            setShowAnalysis(true)
+                            try {
+                                const result = await analyzeReviews(reviews)
+                                setAnalysisResult(result)
+                            } catch {
+                                setToast({ message: 'Erro ao analisar reviews com IA', type: 'error' })
+                                setShowAnalysis(false)
+                            } finally {
+                                setAnalyzing(false)
+                            }
+                        }}
+                        className="ml-auto flex items-center gap-2 px-3 py-2 rounded-lg border border-verde-escuro text-verde-escuro text-sm font-medium hover:bg-verde-escuro hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                        {analyzing
+                            ? <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            : <Wand2 size={14} />
+                        }
+                        {analyzing ? 'Analisando...' : 'Analisar com IA'}
+                        {analysisResult && !analyzing && (showAnalysis ? <ChevronUp size={13} /> : <ChevronDown size={13} />)}
+                    </button>
                 </div>
+
+                {showAnalysis && (
+                    <div className="border-b border-gray-100 dark:border-(--admin-border) p-4 bg-green-50 dark:bg-green-900/10">
+                        {analyzing
+                            ? <div className="flex items-center gap-3 animate-pulse">
+                                <div className="w-4 h-4 bg-gray-300 rounded-full" />
+                                <div className="flex-1 space-y-2">
+                                    <div className="h-3 bg-gray-200 rounded w-full" />
+                                    <div className="h-3 bg-gray-200 rounded w-3/4" />
+                                    <div className="h-3 bg-gray-200 rounded w-4/5" />
+                                </div>
+                              </div>
+                            : <div className="text-sm text-gray-700 dark:text-(--admin-text) whitespace-pre-line leading-relaxed">
+                                <div className="flex items-center gap-2 mb-2 text-verde-escuro dark:text-(--admin-accent) font-medium text-xs uppercase tracking-wide">
+                                    <Wand2 size={13} /> Análise com IA
+                                </div>
+                                {analysisResult}
+                              </div>
+                        }
+                    </div>
+                )}
 
                 {/* Table */}
                 <div className="overflow-x-auto">

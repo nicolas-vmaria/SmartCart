@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from '../hooks/useAuth'
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Search, X } from "lucide-react";
 import logo from '../assets/smartcart-logo-transparente.png'
 import { FaCartShopping } from "react-icons/fa6";
 import { FiChevronDown, FiMenu, FiX } from "react-icons/fi";
@@ -17,6 +18,23 @@ export default function Navbar() {
     const [loadingCategorias, setLoadingCategorias] = useState(true);
     const { isLogged, nome } = useAuth()
     const location = useLocation()
+    const navigate = useNavigate()
+    const [searchOpen, setSearchOpen] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('')
+    const searchInputRef = useRef(null)
+
+    useEffect(() => {
+        if (searchOpen) searchInputRef.current?.focus()
+    }, [searchOpen])
+
+    function handleSearch(e) {
+        e.preventDefault()
+        const q = searchQuery.trim()
+        if (!q) return
+        setSearchOpen(false)
+        setSearchQuery('')
+        navigate(`/busca?q=${encodeURIComponent(q)}`)
+    }
 
     useEffect(() => {
         getCategories()
@@ -127,6 +145,29 @@ export default function Navbar() {
                 </>
             )}
                 
+                <div className="flex items-center gap-1">
+                    <form
+                        onSubmit={handleSearch}
+                        className={`overflow-hidden transition-all duration-300 ease-in-out ${searchOpen ? 'w-48 opacity-100' : 'w-0 opacity-0'}`}
+                    >
+                        <input
+                            ref={searchInputRef}
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
+                            placeholder="Buscar produtos..."
+                            className="w-full bg-white/15 text-verde-claro placeholder-verde-claro/50 rounded-full px-4 py-1.5 text-sm outline-none border border-verde-claro/30"
+                        />
+                    </form>
+                    <button
+                        onClick={() => { setSearchOpen(v => !v); if (searchOpen) setSearchQuery('') }}
+                        className="text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200 relative w-9 h-9 flex items-center justify-center shrink-0"
+                    >
+                        <Search size={20} className={`absolute transition-all duration-200 ${searchOpen ? 'opacity-0 scale-50 rotate-90' : 'opacity-100 scale-100 rotate-0'}`} />
+                        <X size={20} className={`absolute transition-all duration-200 ${searchOpen ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 -rotate-90'}`} />
+                    </button>
+                </div>
+
                 <Link to="/carrinho" className="relative text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200">
                     <FaCartShopping size={36} />
                     {cartCount > 0 && (
@@ -139,6 +180,9 @@ export default function Navbar() {
 
             {/* Ícones mobile direita */}
             <div className="flex md:hidden items-center gap-3">
+                <button onClick={() => navigate('/busca')} className="text-verde-claro p-1">
+                    <Search size={22} />
+                </button>
                 <Link to="/carrinho" onClick={fecharMenu} className="relative">
                     <FaCartShopping className="w-6 h-auto text-verde-claro" />
                     {cartCount > 0 && (

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import AdminHeader from '../../components/admin/AdminHeader'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import { Plus, Pencil, Trash2, Briefcase, MapPin, Clock, Wifi } from 'lucide-react'
+import { Plus, Pencil, Trash2, Briefcase, MapPin, Clock, Wifi, Wand2 } from 'lucide-react'
 import { getVagas, createVaga, updateVaga, toggleVaga, deleteVaga } from '../../lib/api/adminVagas'
+import { generateJobDescription } from '../../lib/IaAssistant'
+import { areaCor } from '../../lib/areaColors'
 import Toast from '../../components/Toast'
 
 const TIPOS_CONTRATO    = ['CLT', 'PJ', 'Estágio', 'Freelance', 'CLT + Bônus']
@@ -13,10 +15,12 @@ const labelCls = "text-xs font-medium text-gray-500 dark:text-(--admin-text-mute
 
 const emptyForm = { nome: '', cargo: '', area: '', tipo_contrato: 'CLT', formato_trabalho: 'Presencial', local: '', requisitos: '', ativa: true }
 
+
 function VagaModal({ vaga, onClose, onSaved }) {
     const [form, setForm]       = useState(vaga ?? emptyForm)
     const [loading, setLoading] = useState(false)
     const [toast, setToast]     = useState(null)
+    const [generatingJob, setGeneratingJob] = useState(false)
 
     const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
 
@@ -62,7 +66,10 @@ function VagaModal({ vaga, onClose, onSaved }) {
                         </div>
                         <div className="flex flex-col gap-1">
                             <label className={labelCls}>Área *</label>
-                            <input className={inputCls} placeholder="Ex: Tecnologia" value={form.area} onChange={e => set('area', e.target.value)} required />
+                            <select className={inputCls} value={form.area} onChange={e => set('area', e.target.value)} required>
+                                <option value="">Selecione...</option>
+                                {Object.keys(areaCor).map(a => <option key={a} value={a}>{a}</option>)}
+                            </select>
                         </div>
                     </div>
 
@@ -87,7 +94,31 @@ function VagaModal({ vaga, onClose, onSaved }) {
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <label className={labelCls}>Requisitos</label>
+                        <div className="flex items-center justify-between">
+                            <label className={labelCls}>Requisitos</label>
+                            <button
+                                type="button"
+                                disabled={!form.cargo || !form.area || generatingJob}
+                                onClick={async () => {
+                                    setGeneratingJob(true)
+                                    try {
+                                        const text = await generateJobDescription(form.cargo, form.area, form.tipo_contrato, form.formato_trabalho)
+                                        set('requisitos', text)
+                                    } catch {
+                                        setToast({ message: 'Erro ao gerar requisitos com IA', type: 'error' })
+                                    } finally {
+                                        setGeneratingJob(false)
+                                    }
+                                }}
+                                className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border border-verde-escuro text-verde-escuro hover:bg-verde-escuro hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                                {generatingJob
+                                    ? <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                                    : <Wand2 size={11} />
+                                }
+                                {generatingJob ? 'Gerando...' : 'Gerar com IA'}
+                            </button>
+                        </div>
                         <textarea
                             className={`${inputCls} resize-none`}
                             rows={4}

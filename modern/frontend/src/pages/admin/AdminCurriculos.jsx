@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import AdminHeader from '../../components/admin/AdminHeader'
 import Toast from '../../components/Toast'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import { Search, SlidersHorizontal, Trash2, X, Download, FileText, Mail, Phone, Link2, ExternalLink } from 'lucide-react'
-import { getCurriculos, getCurriculoById, updateCurriculoStatus, deleteCurriculo } from '../../lib/api/adminCurriculos'
+import { Search, SlidersHorizontal, Trash2 } from 'lucide-react'
+import { getCurriculos, deleteCurriculo } from '../../lib/api/adminCurriculos'
+import { areaCor } from '../../lib/areaColors'
 
 const STATUS_LABEL = {
     novo:       'Novo',
@@ -61,9 +63,6 @@ export default function AdminCurriculos() {
     const [filterStatus, setFilterStatus] = useState('')
     const [showFilters, setShowFilters]   = useState(false)
     const [selected, setSelected]     = useState([])
-    const [detalhe, setDetalhe]       = useState(null)
-    const [loadingDetalhe, setLoadingDetalhe] = useState(false)
-    const [loadingStatus, setLoadingStatus]   = useState(false)
     const [toast, setToast]           = useState(null)
     const [confirm, setConfirm]       = useState(null)
     const filterRef = useRef(null)
@@ -97,44 +96,6 @@ export default function AdminCurriculos() {
         }
     }
 
-    async function openDetalhe(id) {
-        setDetalhe({ _loading: true })
-        setLoadingDetalhe(true)
-        try {
-            const res = await getCurriculoById(id)
-            setDetalhe(res.data.curriculo)
-        } catch {
-            setToast({ message: 'Erro ao carregar candidatura.', type: 'error' })
-            setDetalhe(null)
-        } finally {
-            setLoadingDetalhe(false)
-        }
-    }
-
-    async function handleUpdateStatus(id, status) {
-        setLoadingStatus(true)
-        try {
-            await updateCurriculoStatus(id, status)
-            setDetalhe(p => p ? { ...p, status } : null)
-            setCurriculos(p => p.map(c => c.id === id ? { ...c, status } : c))
-            setStats(await refetchStats())
-            setToast({ message: 'Status atualizado.', type: 'success' })
-        } catch (err) {
-            const msg = err?.response?.data?.error ?? 'Erro ao atualizar status.'
-            setToast({ message: msg, type: 'error' })
-        } finally {
-            setLoadingStatus(false)
-        }
-    }
-
-    async function refetchStats() {
-        try {
-            const res = await getCurriculos({ status: filterStatus || undefined, search: search || undefined })
-            setStats(res.data.stats ?? stats)
-            return res.data.stats
-        } catch { return stats }
-    }
-
     function confirmDelete(ids) {
         setConfirm({
             title:        `Excluir ${ids.length > 1 ? `${ids.length} candidaturas` : 'candidatura'}?`,
@@ -150,9 +111,8 @@ export default function AdminCurriculos() {
             await Promise.all(ids.map(id => deleteCurriculo(id)))
             setCurriculos(p => p.filter(c => !ids.includes(c.id)))
             setSelected(p => p.filter(id => !ids.includes(id)))
-            if (detalhe && ids.includes(detalhe.id)) setDetalhe(null)
             setToast({ message: `${ids.length > 1 ? `${ids.length} candidaturas excluídas` : 'Candidatura excluída'}.`, type: 'success' })
-            await refetchStats()
+            fetchList()
         } catch {
             setToast({ message: 'Erro ao excluir candidatura.', type: 'error' })
         }
@@ -319,11 +279,11 @@ export default function AdminCurriculos() {
                                                 </span>
                                             </td>
                                             <td className="py-3">
-                                                <button
-                                                    onClick={() => openDetalhe(c.id)}
+                                                <Link
+                                                    to={`/admin/curriculos/${c.id}`}
                                                     className="text-xs font-bold text-verde-escuro dark:text-(--admin-accent) border border-verde-escuro dark:border-(--admin-accent) px-3 py-1 rounded-full hover:bg-verde-escuro dark:hover:bg-(--admin-accent) hover:text-white dark:hover:text-black transition-all">
                                                     Ver
-                                                </button>
+                                                </Link>
                                             </td>
                                         </tr>
                                     ))
@@ -332,110 +292,6 @@ export default function AdminCurriculos() {
                     </table>
                 </div>
             </div>
-
-            {/* Modal de detalhe */}
-            {detalhe && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-(--admin-card) rounded-2xl w-full max-w-lg shadow-2xl dark:shadow-black/60 flex flex-col max-h-[90vh]">
-
-                        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-(--admin-border)">
-                            <div>
-                                <h2 className="font-bold text-lg text-verde-escuro dark:text-(--admin-accent)">
-                                    {loadingDetalhe ? <span className="inline-block h-5 w-40 bg-gray-200 dark:bg-(--admin-hover) rounded animate-pulse" /> : detalhe.nome}
-                                </h2>
-                                <p className="text-sm text-gray-400 dark:text-(--admin-text-muted)">
-                                    {loadingDetalhe ? <span className="inline-block h-3 w-28 bg-gray-100 dark:bg-(--admin-hover) rounded animate-pulse mt-1" /> : (detalhe.cargo ?? detalhe.vaga_nome ?? '—')}
-                                </p>
-                            </div>
-                            <button onClick={() => setDetalhe(null)}
-                                className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) text-gray-400 transition-all">
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        {loadingDetalhe ? (
-                            <div className="p-6 flex flex-col gap-4 animate-pulse">
-                                <div className="grid grid-cols-2 gap-3">
-                                    {Array.from({ length: 4 }).map((_, i) => (
-                                        <div key={i} className="h-16 bg-gray-100 dark:bg-(--admin-hover) rounded-xl" />
-                                    ))}
-                                </div>
-                                <div className="h-32 bg-gray-100 dark:bg-(--admin-hover) rounded-xl" />
-                            </div>
-                        ) : (
-                            <>
-                                <div className="overflow-y-auto p-6 flex flex-col gap-5">
-                                    <div className="grid grid-cols-2 gap-3 text-sm">
-                                        {[
-                                            { icon: Mail,     label: 'E-mail',    valor: detalhe.email },
-                                            { icon: Phone,    label: 'Telefone',  valor: detalhe.tel   },
-                                            { icon: Link2,    label: 'LinkedIn',  valor: detalhe.portfolio_url || '—' },
-                                            { icon: FileText, label: 'Enviado em',valor: fmtDate(detalhe.created_at) },
-                                        ].map(({ icon: Icon, label, valor }) => (
-                                            <div key={label} className="bg-gray-50 dark:bg-(--admin-input) rounded-xl p-3 flex items-start gap-2">
-                                                <Icon size={14} className="text-gray-400 dark:text-(--admin-text-muted) mt-0.5 shrink-0" />
-                                                <div className="min-w-0">
-                                                    <p className="text-xs text-gray-400 dark:text-(--admin-text-muted)">{label}</p>
-                                                    <p className="font-medium text-gray-700 dark:text-(--admin-text) break-all text-xs">{valor}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <span className={`text-xs font-bold px-2 py-1 rounded-full ${corArea(detalhe.area)}`}>{detalhe.area ?? '—'}</span>
-                                        <span className={`text-xs font-bold px-2 py-1 rounded-full ${statusStyle[detalhe.status] ?? ''}`}>{STATUS_LABEL[detalhe.status] ?? detalhe.status}</span>
-                                    </div>
-
-                                    {detalhe.carta_apresent && (
-                                        <div>
-                                            <p className="text-xs font-bold text-gray-400 dark:text-(--admin-text-muted) uppercase tracking-wider mb-2">Carta de apresentação</p>
-                                            <p className="text-sm text-gray-600 dark:text-(--admin-text) leading-relaxed bg-gray-50 dark:bg-(--admin-input) rounded-xl p-4">
-                                                {detalhe.carta_apresent}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-400 dark:text-(--admin-text-muted) uppercase tracking-wider mb-2">Atualizar status</p>
-                                        <div className="flex gap-2 flex-wrap">
-                                            {Object.entries(STATUS_LABEL).map(([key, label]) => (
-                                                <button key={key}
-                                                    onClick={() => handleUpdateStatus(detalhe.id, key)}
-                                                    disabled={loadingStatus || detalhe.status === key}
-                                                    className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
-                                                        ${detalhe.status === key
-                                                            ? statusStyle[key]
-                                                            : 'border-gray-200 dark:border-(--admin-border) text-gray-500 dark:text-(--admin-text-muted) hover:bg-gray-50 dark:hover:bg-(--admin-hover)'}`}>
-                                                    {label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-3 p-6 border-t border-gray-100 dark:border-(--admin-border)">
-                                    {detalhe.curriculo_url ? (
-                                        <a href={detalhe.curriculo_url} target="_blank" rel="noreferrer"
-                                            className="flex items-center gap-2 flex-1 justify-center border border-gray-200 dark:border-(--admin-border) text-gray-500 dark:text-(--admin-text-muted) py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-(--admin-hover) transition-all">
-                                            <Download size={15} /> Baixar currículo
-                                        </a>
-                                    ) : (
-                                        <span className="flex items-center gap-2 flex-1 justify-center border border-gray-100 dark:border-(--admin-border) text-gray-300 dark:text-(--admin-text-muted) py-2.5 rounded-xl text-sm font-medium opacity-50 cursor-not-allowed">
-                                            <Download size={15} /> Sem currículo
-                                        </span>
-                                    )}
-                                    <button
-                                        onClick={() => confirmDelete([detalhe.id])}
-                                        className="flex items-center gap-2 justify-center px-4 py-2.5 rounded-xl bg-red-500 text-white text-sm font-medium hover:opacity-90 transition-all">
-                                        <Trash2 size={15} /> Excluir
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
 
             {confirm && (
                 <ConfirmDialog

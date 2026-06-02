@@ -2,7 +2,9 @@ import { Link } from "react-router-dom"
 import { useState, useEffect, useCallback, memo } from "react"
 import { ShoppingCart, Trash2, Loader2, X, Tag, Truck, AlertTriangle } from "lucide-react"
 import { validateCoupon } from "../lib/api/coupons"
-import { getCart, updateCartItem, removeCartItem, clearCart } from "../lib/api/cart"
+import { getCart, updateCartItem, removeCartItem, clearCart, addToCart } from "../lib/api/cart"
+import { getProdutosDestaque } from "../lib/api/products"
+import { suggestCartProducts } from "../lib/IaAssistant"
 import ConfirmDialog from "../components/ConfirmDialog"
 import { calcularFrete } from "../lib/frete"
 import Toast from "../components/Toast"
@@ -116,6 +118,9 @@ export default function Cart() {
     const [cepResult, setCepResult] = useState(null)
     const [loadingCep, setLoadingCep] = useState(false)
     const [cepError, setCepError] = useState('')
+    const [suggestions, setSuggestions] = useState([])
+    const [suggestionsLoading, setSuggestionsLoading] = useState(false)
+    const [addingSuggestion, setAddingSuggestion] = useState(null)
 
     useEffect(() => {
         getCart()
@@ -127,6 +132,20 @@ export default function Cart() {
             .catch(() => setItems([]))
             .finally(() => setLoading(false))
     }, [])
+
+    useEffect(() => {
+        if (loading || items.length === 0) return
+        setSuggestionsLoading(true)
+        getProdutosDestaque()
+            .then(async ({ data }) => {
+                const products = data.products ?? []
+                const slugs = await suggestCartProducts(items, products)
+                const found = slugs.map(s => products.find(p => p.slug === s)).filter(Boolean)
+                setSuggestions(found)
+            })
+            .catch(() => {})
+            .finally(() => setSuggestionsLoading(false))
+    }, [loading, items.length])
 
     const changeQtd = useCallback(async (item, delta) => {
         const novaQtd = item.quantidade + delta
@@ -300,6 +319,69 @@ export default function Cart() {
                                 onRemove={() => handleRemove(item.item_id)}
                             />
                         ))}
+                    </div>
+                )}
+
+                {(suggestionsLoading || suggestions.length > 0) && !loading && items.length > 0 && (
+                    <div className="mt-8">
+                        <h3 className="font-bold text-gray-800 text-lg mb-4">Você também pode gostar</h3>
+                        <div className="flex flex-col gap-3">
+                            {suggestionsLoading ? (
+                                Array.from({ length: 2 }).map((_, i) => (
+                                    <div key={i} className="flex bg-gray-100 p-4 rounded-2xl gap-4 items-center animate-pulse">
+                                        <div className="w-16 h-16 rounded-xl bg-gray-300 shrink-0" />
+                                        <div className="flex-1 flex flex-col gap-2">
+                                            <div className="h-4 bg-gray-300 rounded w-3/4" />
+                                            <div className="h-3 bg-gray-200 rounded w-1/3" />
+                                        </div>
+                                        <div className="h-9 w-24 bg-gray-300 rounded-full shrink-0" />
+                                    </div>
+                                ))
+                            ) : suggestions.map(p => (
+                                <div key={p.id} className="flex bg-gray-100 p-4 rounded-2xl gap-4 items-center">
+                                    <Link to={`/produto/${p.slug}`} className="w-16 h-16 rounded-xl bg-white border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+                                        {p.foto_url
+                                            ? <img src={p.foto_url} alt={p.nome} className="w-full h-full object-cover" />
+                                            : <ShoppingCart size={20} className="text-gray-300" />
+                                        }
+                                    </Link>
+                                    <div className="flex-1 min-w-0">
+                                        <Link to={`/produto/${p.slug}`} className="font-medium text-gray-800 text-sm hover:text-verde-escuro transition-colors line-clamp-2 leading-snug">
+                                            {p.nome}
+                                        </Link>
+                                        <p className="text-sm font-bold text-gray-700 mt-0.5">
+                                            {Number(p.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                        </p>
+                                    </div>
+                                    <button
+                                        disabled={addingSuggestion === p.id}
+                                        onClick={async () => {
+                                            setAddingSuggestion(p.id)
+                                            try {
+                                                await addToCart(p.id, 1)
+                                                window.dispatchEvent(new Event('cart:updated'))
+                                                const res = await getCart()
+                                                const carrinho = res.data.carrinho ?? []
+                                                setItems(carrinho)
+                                                localStorage.setItem(CART_CACHE_KEY, JSON.stringify(carrinho))
+                                                setSuggestions(prev => prev.filter(s => s.id !== p.id))
+                                            } catch {
+                                                setToast({ message: 'Erro ao adicionar produto', type: 'error' })
+                                            } finally {
+                                                setAddingSuggestion(null)
+                                            }
+                                        }}
+                                        className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-verde-escuro text-white text-xs font-medium hover:opacity-90 transition-all disabled:opacity-50 shrink-0"
+                                    >
+                                        {addingSuggestion === p.id
+                                            ? <Loader2 size={12} className="animate-spin" />
+                                            : <ShoppingCart size={12} />
+                                        }
+                                        Adicionar
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </section>
