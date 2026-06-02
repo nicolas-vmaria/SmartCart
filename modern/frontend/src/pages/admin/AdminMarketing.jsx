@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { Loader2, Megaphone, Truck, Star, Upload, X, Zap, Percent, ShoppingBag, Plus, Trash2 } from 'lucide-react'
+import { Loader2, Megaphone, Truck, Star, Upload, X, Zap, Percent, ShoppingBag, Plus, Trash2, Wand2 } from 'lucide-react'
+import { generateMarketingText } from '../../lib/IaAssistant'
 import AdminHeader from '../../components/admin/AdminHeader'
 import Toast from '../../components/Toast'
 import { getAdminConfiguracoes, updateConfiguracoes } from '../../lib/api/adminConfiguracoes'
@@ -77,6 +78,8 @@ export default function AdminMarketing() {
 
     const [compraJuntos, setCompraJuntos]     = useState([])
     const [loadingCJ, setLoadingCJ]           = useState(true)
+    const [generatingFlash, setGeneratingFlash] = useState(false)
+    const [generatingPopup, setGeneratingPopup] = useState(false)
     const [newCJ, setNewCJ]                   = useState({ produto_id: '', sugerido_id: '' })
     const [savingCJ, setSavingCJ]             = useState(false)
     const [deletingCJId, setDeletingCJId]     = useState(null)
@@ -222,7 +225,27 @@ export default function AdminMarketing() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Título</label>
+                                <div className="flex items-center justify-between">
+                                    <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Título</label>
+                                    <button
+                                        type="button"
+                                        disabled={generatingFlash}
+                                        onClick={async () => {
+                                            setGeneratingFlash(true)
+                                            try {
+                                                const { titulo } = await generateMarketingText('flash_sale')
+                                                set('flash_titulo', titulo)
+                                            } catch {
+                                            } finally {
+                                                setGeneratingFlash(false)
+                                            }
+                                        }}
+                                        className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border border-verde-escuro text-verde-escuro hover:bg-verde-escuro hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        {generatingFlash ? <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" /> : <Wand2 size={11} />}
+                                        {generatingFlash ? 'Gerando...' : 'Gerar com IA'}
+                                    </button>
+                                </div>
                                 <input type="text" value={configs.flash_titulo} onChange={e => set('flash_titulo', e.target.value)}
                                     placeholder="Ex: Oferta relâmpago! 20% em tudo" className={inputClass} />
                             </div>
@@ -286,7 +309,28 @@ export default function AdminMarketing() {
                                 <Toggle value={configs.popup_ativo === '1'} onChange={() => set('popup_ativo', configs.popup_ativo === '1' ? '0' : '1')} />
                             </div>
                             <div className="flex flex-col gap-1">
-                                <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Título</label>
+                                <div className="flex items-center justify-between">
+                                    <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Título</label>
+                                    <button
+                                        type="button"
+                                        disabled={generatingPopup}
+                                        onClick={async () => {
+                                            setGeneratingPopup(true)
+                                            try {
+                                                const { titulo, texto } = await generateMarketingText('popup')
+                                                set('popup_titulo', titulo)
+                                                if (texto) set('popup_texto', texto)
+                                            } catch {
+                                            } finally {
+                                                setGeneratingPopup(false)
+                                            }
+                                        }}
+                                        className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border border-verde-escuro text-verde-escuro hover:bg-verde-escuro hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        {generatingPopup ? <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" /> : <Wand2 size={11} />}
+                                        {generatingPopup ? 'Gerando...' : 'Gerar com IA'}
+                                    </button>
+                                </div>
                                 <input type="text" value={configs.popup_titulo} onChange={e => set('popup_titulo', e.target.value)}
                                     placeholder="Ex: Oferta especial!" className={inputClass} />
                             </div>

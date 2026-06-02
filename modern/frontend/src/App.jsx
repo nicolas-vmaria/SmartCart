@@ -23,6 +23,7 @@ import AdminRoles from "./pages/admin/AdminRoles"
 import AdminSettings from "./pages/admin/AdminSettings"
 import AdminProfile from "./pages/admin/AdminProfile"
 import AdminCurriculos from "./pages/admin/AdminCurriculos"
+import AdminCurriculoDetalhe from "./pages/admin/AdminCurriculoDetalhe"
 import AdminLogin from "./pages/admin/AdminLogin"
 import ProtectedRouteAdmin from "./components/admin/ProtectedRouteAdmin"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
@@ -47,6 +48,7 @@ import AdminHelp from "./pages/admin/AdminHelp"
 import AdminCustomizacao from "./pages/admin/AdminCustomizacao"
 import AdminMarketing from "./pages/admin/AdminMarketing"
 import { useConfiguracoes } from "./hooks/useConfiguracoes"
+import BuscaIA from "./pages/BuscaIA"
 
 function useCountdown(targetDate) {
   const [timeLeft, setTimeLeft] = useState(null)
@@ -276,6 +278,7 @@ function App() {
             <Route path="/pedido/confirmado" element={<OrderConfirmation />} />
             <Route path="/meus-pedidos" element={<MeusPedidos />} />
             <Route path="/review-pedido/:pedidoId" element={<ReviewPedido />} />
+            <Route path="/busca" element={<BuscaIA />} />
           </Route>
 
           {/* Rotas sem Navbar */}
@@ -296,6 +299,7 @@ function App() {
               <Route path="settings" element={<AdminSettings />} />
               <Route path="profile" element={<AdminProfile />} />
               <Route path="curriculos" element={<AdminCurriculos />} />
+              <Route path="curriculos/:id" element={<AdminCurriculoDetalhe />} />
               <Route path="vagas" element={<AdminVagas />} />
               <Route path="cupons" element={<AdminCupons />} />
               <Route path="relatorios" element={<AdminRelatorios />} />

@@ -12,6 +12,7 @@ import { getProductBySlug } from "../lib/api/products";
 import { addToCart } from "../lib/api/cart";
 import { getReviews, createReview, markHelpful } from "../lib/api/reviews";
 import { getCompraJunto } from "../lib/api/compraJunto";
+import { summarizeReviews } from "../lib/IaAssistant";
 import Toast from "../components/Toast";
 import { Plus } from "lucide-react";
 
@@ -212,10 +213,23 @@ export default function ProductDetail() {
     const [toast, setToast] = useState(null)
     const [compraJunto, setCompraJunto] = useState(null)
     const [addingBoth, setAddingBoth] = useState(false)
+    const [reviewSummary, setReviewSummary] = useState(null)
+    const [summaryLoading, setSummaryLoading] = useState(false)
+
+    useEffect(() => {
+        if (reviews.length < 3) { setReviewSummary(null); return }
+        setSummaryLoading(true)
+        setReviewSummary(null)
+        summarizeReviews(reviews)
+            .then(setReviewSummary)
+            .catch(() => {})
+            .finally(() => setSummaryLoading(false))
+    }, [reviews.length])
 
     useEffect(() => {
         setLoading(true)
         setReviews([])
+        setReviewSummary(null)
         setCompraJunto(null)
         getProductBySlug(slug)
             .then(async res => {
@@ -468,6 +482,21 @@ export default function ProductDetail() {
 
                     {/* Lista */}
                     <div className="flex flex-col gap-4 flex-1">
+                        {summaryLoading && (
+                            <div className="border border-gray-200 rounded-2xl p-4 flex items-center gap-3 animate-pulse">
+                                <div className="w-5 h-5 bg-gray-200 rounded-full shrink-0" />
+                                <div className="flex-1 space-y-2">
+                                    <div className="h-3 bg-gray-200 rounded w-full" />
+                                    <div className="h-3 bg-gray-200 rounded w-4/5" />
+                                </div>
+                            </div>
+                        )}
+                        {reviewSummary && !summaryLoading && (
+                            <div className="border border-verde-escuro/20 bg-green-50 rounded-2xl p-4 flex items-start gap-3">
+                                <span className="text-verde-escuro shrink-0 mt-0.5">✦</span>
+                                <p className="text-sm text-gray-700 leading-relaxed">{reviewSummary}</p>
+                            </div>
+                        )}
                         <FormReview productId={produto.id} onCreated={handleReviewCreated} />
 
                         {reviews.length === 0

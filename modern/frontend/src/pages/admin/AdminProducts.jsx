@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
-import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink, FileText } from 'lucide-react'
+import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink, FileText, Wand2 } from 'lucide-react'
 import { createProduct, getProduct, deleteProduct as deleteProductApi, editProduct } from '../../lib/api/adminProducts'
+import { generateProductDescription } from '../../lib/IaAssistant'
 import { getAdminCategories } from '../../lib/api/adminCategories'
 import Toast from '../../components/Toast'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -41,6 +42,7 @@ export default function AdminProducts() {
     const [uploadingImage, setUploadingImage] = useState(false)
     const [confirmId, setConfirmId] = useState(null)
     const [confirmBulk, setConfirmBulk] = useState(false)
+    const [generatingDesc, setGeneratingDesc] = useState(false)
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -407,22 +409,50 @@ export default function AdminProducts() {
                             <div className="flex flex-col gap-1">
                                 <label className="text-sm text-gray-500 dark:text-(--admin-text-muted)">Descrição</label>
                                 <div className="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowEditor(true)}
-                                        className={`flex items-center gap-2 flex-1 rounded-lg px-3 py-2 text-sm text-left cursor-pointer transition-colors border
-                                            ${form.descricao
-                                                ? 'bg-verde-escuro border-verde-escuro text-verde-claro hover:opacity-90'
-                                                : 'border-gray-200 dark:border-(--admin-border) text-gray-400 hover:border-verde-escuro dark:hover:border-(--admin-accent)'
-                                            }`}
-                                    >
-                                        <FileText size={15} className="shrink-0" />
-                                        <span className="truncate">
-                                            {form.descricao ? 'Descrição adicionada' : 'Clique para escrever a descrição...'}
-                                        </span>
-                                    </button>
-                                    {form.descricao && (
+                                    {!form.descricao ? (
                                         <>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditor(true)}
+                                                className="flex items-center gap-2 flex-1 rounded-lg px-3 py-2 text-sm text-left cursor-pointer transition-colors border border-gray-200 dark:border-(--admin-border) text-gray-400 hover:border-verde-escuro dark:hover:border-(--admin-accent)"
+                                            >
+                                                <FileText size={15} className="shrink-0" />
+                                                <span className="truncate">Escrever descrição...</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                disabled={!form.name || !form.categoria_id || generatingDesc}
+                                                onClick={async () => {
+                                                    const categoria = categories.find(c => String(c.id) === String(form.categoria_id))?.nome ?? ''
+                                                    setGeneratingDesc(true)
+                                                    try {
+                                                        const desc = await generateProductDescription(form.name, categoria)
+                                                        setForm(prev => ({ ...prev, descricao: desc }))
+                                                    } catch {
+                                                        setToast({ message: 'Erro ao gerar descrição com IA', type: 'error' })
+                                                    } finally {
+                                                        setGeneratingDesc(false)
+                                                    }
+                                                }}
+                                                className="flex items-center gap-2 flex-1 rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors border border-verde-escuro/40 text-verde-escuro hover:bg-verde-escuro hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                                            >
+                                                {generatingDesc
+                                                    ? <div className="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin shrink-0" />
+                                                    : <Wand2 size={15} className="shrink-0" />
+                                                }
+                                                <span className="truncate">{generatingDesc ? 'Gerando...' : 'Gerar com IA'}</span>
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditor(true)}
+                                                className="flex items-center gap-2 flex-1 rounded-lg px-3 py-2 text-sm text-left cursor-pointer transition-colors border bg-verde-escuro border-verde-escuro text-verde-claro hover:opacity-90"
+                                            >
+                                                <FileText size={15} className="shrink-0" />
+                                                <span className="truncate">Descrição adicionada</span>
+                                            </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setShowEditor(true)}
@@ -430,6 +460,29 @@ export default function AdminProducts() {
                                                 className="p-2 rounded-lg border border-gray-200 dark:border-(--admin-border) hover:border-verde-escuro text-gray-500 hover:text-verde-escuro transition-colors cursor-pointer"
                                             >
                                                 <Pencil size={14} />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                disabled={!form.name || !form.categoria_id || generatingDesc}
+                                                onClick={async () => {
+                                                    const categoria = categories.find(c => String(c.id) === String(form.categoria_id))?.nome ?? ''
+                                                    setGeneratingDesc(true)
+                                                    try {
+                                                        const desc = await generateProductDescription(form.name, categoria)
+                                                        setForm(prev => ({ ...prev, descricao: desc }))
+                                                    } catch {
+                                                        setToast({ message: 'Erro ao gerar descrição com IA', type: 'error' })
+                                                    } finally {
+                                                        setGeneratingDesc(false)
+                                                    }
+                                                }}
+                                                title="Regerar com IA"
+                                                className="p-2 rounded-lg border border-gray-200 dark:border-(--admin-border) hover:border-verde-escuro text-gray-500 hover:text-verde-escuro transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                            >
+                                                {generatingDesc
+                                                    ? <div className="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin" />
+                                                    : <Wand2 size={14} />
+                                                }
                                             </button>
                                             <button
                                                 type="button"

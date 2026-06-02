@@ -1,21 +1,62 @@
 import { useState, useRef, useEffect } from "react"
 import { IoChatbubblesOutline } from "react-icons/io5"
-import { useLocation } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { createChat, sendMessage } from "../lib/IaAssistant"
 import { getCategories } from "../lib/api/categories"
 import { getCart } from "../lib/api/cart"
-import { getProductBySlug } from "../lib/api/products"
+import { getProductBySlug, getProdutosDestaque } from "../lib/api/products"
+import { getUserOrders } from "../lib/api/orders"
 
-const SUGGESTIONS = [
-    "Quais produtos vocês têm?",
-    "Como acompanho meu pedido?",
-    "Tem algum desconto disponível?",
-]
+function getSuggestions(pathname) {
+    if (/^\/produto\//.test(pathname)) return [
+        "Quais são as especificações?",
+        "Tem frete grátis para esse?",
+        "Como é a garantia?",
+    ]
+    if (pathname === '/carrinho') return [
+        "Como aplico um cupom?",
+        "Como funciona o frete?",
+        "Posso parcelar?",
+    ]
+    if (pathname === '/checkout') return [
+        "Como funciona o PIX?",
+        "Qual o prazo de entrega?",
+        "Posso parcelar no cartão?",
+    ]
+    if (pathname === '/profile' || pathname === '/meus-pedidos') return [
+        "Como rastreio meu pedido?",
+        "Posso cancelar um pedido?",
+        "Como faço devolução?",
+    ]
+    return [
+        "Quais produtos vocês têm?",
+        "Como acompanho meu pedido?",
+        "Tem algum desconto disponível?",
+    ]
+}
 
-function parseBold(text) {
-    return text.split(/\*\*(.*?)\*\*/g).map((part, i) =>
-        i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-    )
+function parseInline(text) {
+    const regex = /\*\*(.*?)\*\*|(\/[a-z][a-z0-9\-/]*)/g
+    const result = []
+    let lastIndex = 0
+    let match
+    let key = 0
+
+    while ((match = regex.exec(text)) !== null) {
+        if (match.index > lastIndex) result.push(text.slice(lastIndex, match.index))
+        if (match[1] !== undefined) {
+            result.push(<strong key={key++}>{match[1]}</strong>)
+        } else if (match[2] !== undefined) {
+            result.push(
+                <Link key={key++} to={match[2]} className="underline text-verde-escuro hover:opacity-75">
+                    {match[2]}
+                </Link>
+            )
+        }
+        lastIndex = regex.lastIndex
+    }
+    if (lastIndex < text.length) result.push(text.slice(lastIndex))
+    return result
 }
 
 function renderMarkdown(text) {
@@ -27,7 +68,7 @@ function renderMarkdown(text) {
         if (listItems.length === 0) return
         result.push(
             <ul key={`ul-${key}`} className="list-disc pl-4 my-1 space-y-0.5">
-                {listItems.map((item, j) => <li key={j}>{parseBold(item)}</li>)}
+                {listItems.map((item, j) => <li key={j}>{parseInline(item)}</li>)}
             </ul>
         )
         listItems = []
@@ -38,7 +79,7 @@ function renderMarkdown(text) {
             listItems.push(line.slice(2))
         } else {
             flushList(i)
-            if (line.trim()) result.push(<p key={i} className="mb-0.5">{parseBold(line)}</p>)
+            if (line.trim()) result.push(<p key={i} className="mb-0.5">{parseInline(line)}</p>)
         }
     })
     flushList('end')
@@ -68,11 +109,13 @@ export default function AiChat() {
         const usuario = localStorage.getItem('user_nome') ?? null
         const token = localStorage.getItem('user_token')
 
-        const ctx = { usuario, categorias: [], carrinho: [], produtoAtual: null }
+        const ctx = { usuario, categorias: [], carrinho: [], produtoAtual: null, produtos: [], pedidos: [] }
 
         Promise.all([
             getCategories().then(({ data }) => { ctx.categorias = data.data ?? [] }).catch(() => {}),
+            getProdutosDestaque().then(res => { ctx.produtos = res.data.products ?? [] }).catch(() => {}),
             token ? getCart().then(res => { ctx.carrinho = res.data.carrinho ?? [] }).catch(() => {}) : Promise.resolve(),
+            token ? getUserOrders().then(res => { ctx.pedidos = res.data.orders ?? [] }).catch(() => {}) : Promise.resolve(),
             slug ? getProductBySlug(slug).then(res => { ctx.produtoAtual = res.data.product ?? null }).catch(() => {}) : Promise.resolve(),
         ]).then(() => { chatRef.current.context = ctx })
     }, [open, location.pathname])
@@ -103,6 +146,7 @@ export default function AiChat() {
     }
 
     const hasUserMessages = messages.some(m => m.role === "user")
+    const suggestions = getSuggestions(location.pathname)
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
@@ -131,7 +175,7 @@ export default function AiChat() {
 
                         {!hasUserMessages && (
                             <div className="flex flex-wrap gap-2 mt-1">
-                                {SUGGESTIONS.map(s => (
+                                {suggestions.map(s => (
                                     <button
                                         key={s}
                                         onClick={() => send(s)}
