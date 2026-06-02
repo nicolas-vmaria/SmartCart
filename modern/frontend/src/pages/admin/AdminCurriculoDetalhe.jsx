@@ -264,7 +264,7 @@ export default function AdminCurriculoDetalhe() {
                             <Wand2 size={15} /> Análise IA
                         </div>
                         {curriculo.carta_apresent && (
-                            <button onClick={() => runAnalysis()}
+                            <button onClick={() => runAnalysis(curriculo)}
                                 disabled={analysisLoading}
                                 className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-(--admin-hover) text-gray-400 hover:text-verde-escuro transition-all disabled:opacity-40"
                                 title="Regenerar análise">

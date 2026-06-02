@@ -58,7 +58,14 @@ export default function BuscaIA() {
     const [results, setResults] = useState([])
     const [loading, setLoading] = useState(false)
     const [searched, setSearched] = useState(false)
+    const [allProducts, setAllProducts] = useState(null)
     const inputRef = useRef(null)
+
+    useEffect(() => {
+        getProducts()
+            .then(({ data }) => setAllProducts(data.products ?? data ?? []))
+            .catch(() => setAllProducts([]))
+    }, [])
 
     useEffect(() => {
         if (initialQuery) runSearch(initialQuery)
@@ -71,11 +78,10 @@ export default function BuscaIA() {
         setSearched(true)
         setResults([])
         try {
-            const { data } = await getProducts()
-            const allProducts = data.products ?? data ?? []
-            const slugs = await searchProducts(q.trim(), allProducts)
+            const catalog = allProducts ?? (await getProducts().then(({ data }) => data.products ?? data ?? []))
+            const slugs = await searchProducts(q.trim(), catalog)
             const found = slugs
-                .map(slug => allProducts.find(p => p.slug === slug))
+                .map(slug => catalog.find(p => p.slug === slug))
                 .filter(Boolean)
             setResults(found)
         } catch {
