@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useParams, Navigate } from 'react-router-dom'
-import { areaCor } from '../data/vagas'
 import { MapPin, Briefcase, Upload, CheckCircle, ChevronRight, User, Mail, Phone, Link2, FileText, LayoutGrid, Clock, Wifi } from 'lucide-react'
 import { getTrabalho, submitCandidatura, submitEspontanea } from '../lib/api/candidacy'
 import { uploadFile } from '../lib/cloudinary'
