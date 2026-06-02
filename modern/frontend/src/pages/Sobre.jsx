@@ -1,9 +1,10 @@
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Users, HelpCircle, Store, Briefcase, Handshake, ChevronRight, ChevronDown, MapPin, Phone, Clock, CheckCircle } from 'lucide-react'
-import { FaLightbulb, FaHandshake, FaLeaf, FaRocket, FaUsers, FaStore } from 'react-icons/fa'
+import { FaLightbulb, FaHandshake, FaLeaf, FaUsers, FaStore } from 'react-icons/fa'
 import { FaRocket as FaRocket6 } from 'react-icons/fa6'
 import { getVagasPublicas } from '../lib/api/vagas'
+import { areaCor } from '../lib/areaColors'
 
 // ─── Quem Somos ───────────────────────────────────────────────────────────────
 function QuemSomos() {

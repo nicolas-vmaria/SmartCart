@@ -4,6 +4,7 @@ import { MapPin, Briefcase, Upload, CheckCircle, ChevronRight, User, Mail, Phone
 import { getTrabalho, submitCandidatura, submitEspontanea } from '../lib/api/candidacy'
 import { uploadFile } from '../lib/cloudinary'
 import Toast from '../components/Toast'
+import { areaCor } from '../lib/areaColors'
 
 const inputCls = "border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-verde-escuro transition-colors w-full"
 const labelCls = "text-sm font-bold text-gray-600 mb-1 block"
