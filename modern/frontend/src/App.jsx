@@ -26,6 +26,7 @@ import AdminCurriculos from "./pages/admin/AdminCurriculos"
 import AdminCurriculoDetalhe from "./pages/admin/AdminCurriculoDetalhe"
 import AdminLogin from "./pages/admin/AdminLogin"
 import ProtectedRouteAdmin from "./components/admin/ProtectedRouteAdmin"
+import ProtectedRouteUser from "./components/ProtectRoutesUser"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 import { useEffect, useState } from "react"
 import Checkout from "./pages/Checkout"
@@ -268,7 +269,6 @@ function App() {
             <Route path="/carrinho" element={<Cart />} />
             <Route path="/produto/:slug" element={<ProductDetail />} />
             <Route path="/checkout/:id" element={<Checkout />}/>
-            <Route path="/profile" element={<UserProfile />} />
             <Route path="/politicas" element={<Politicas />} />
             <Route path="/politicas/:slug" element={<Politicas />} />
             <Route path="/sobre" element={<Sobre />} />
@@ -276,7 +276,10 @@ function App() {
             <Route path="/candidatura/:slug" element={<Candidatura />} />
             <Route path="/produtos/categoria/:slug" element={<CategoriaGrid />} />
             <Route path="/pedido/confirmado" element={<OrderConfirmation />} />
-            <Route path="/meus-pedidos" element={<MeusPedidos />} />
+            <Route element={<ProtectedRouteUser />}>
+              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/meus-pedidos" element={<MeusPedidos />} />
+            </Route>
             <Route path="/review-pedido/:pedidoId" element={<ReviewPedido />} />
             <Route path="/busca" element={<BuscaIA />} />
           </Route>

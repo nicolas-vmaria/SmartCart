@@ -12,6 +12,24 @@ api.interceptors.request.use(config => {
     return config
 })
 
+api.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 401 && !error.config?.url?.startsWith('/auth/')) {
+            localStorage.removeItem('user_token')
+            localStorage.removeItem('user_nome')
+            window.dispatchEvent(new Event('storage'))
+
+            const publicAuthPages = ['/login', '/register', '/forgot-password', '/reset-password']
+            if (!publicAuthPages.includes(window.location.pathname)) {
+                window.location.assign('/login')
+            }
+        }
+
+        return Promise.reject(error)
+    }
+)
+
 export const adminApi = axios.create({
     baseURL: API_URL,
     headers: { 'Content-Type': 'application/json' }

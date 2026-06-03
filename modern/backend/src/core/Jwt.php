@@ -19,8 +19,10 @@ class Jwt{
 
 
         $payload['iat'] = time();
-        if (($payload['role'] ?? '') === 'admin') {
-            $payload['exp'] = time() + (8 * 3600);
+        if (!isset($payload['exp'])) {
+            $payload['exp'] = (($payload['role'] ?? '') === 'admin')
+                ? time() + (8 * 3600)
+                : time() + (24 * 3600);
         }
 
         $body = self::base64url(json_encode(($payload)));
