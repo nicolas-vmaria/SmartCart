@@ -227,7 +227,7 @@ class OrderRepository {
             // Incrementa uso do cupom e registra uso por usuário
             if ($cupom_id !== null) {
                 $stmtCupom = $this->db->prepare("
-                    UPDATE Cupons SET quant_usos = quant_usos + 1 WHERE id = :id
+                    UPDATE Cupons SET quant_usos = COALESCE(quant_usos, 0) + 1 WHERE id = :id
                 ");
                 $stmtCupom->execute([':id' => $cupom_id]);
 

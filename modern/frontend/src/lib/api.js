@@ -12,8 +12,19 @@ api.interceptors.request.use(config => {
     return config
 })
 
+function rejectApiError(response) {
+    const error = new Error(response.data.error)
+    error.response = response
+    error.config = response.config
+    error.isAxiosError = true
+    return Promise.reject(error)
+}
+
 api.interceptors.response.use(
-    response => response,
+    response => {
+        if (response.data?.error) return rejectApiError(response)
+        return response
+    },
     error => {
         if (error.response?.status === 401 && !error.config?.url?.startsWith('/auth/')) {
             localStorage.removeItem('user_token')
@@ -40,5 +51,13 @@ adminApi.interceptors.request.use(config => {
     if (token) config.headers.Authorization = `Bearer ${token}`
     return config
 })
+
+adminApi.interceptors.response.use(
+    response => {
+        if (response.data?.error) return rejectApiError(response)
+        return response
+    },
+    error => Promise.reject(error)
+)
 
 export default api

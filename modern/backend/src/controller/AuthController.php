@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../service/AuthService.php';
+require_once __DIR__ . '/../middleware/RateLimitMiddleware.php';
 require_once __DIR__ . '/BaseController.php';
 
 class AuthController extends BaseController {
@@ -17,6 +18,9 @@ class AuthController extends BaseController {
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
+
+        $email = isset($body['email']) ? strtolower(trim((string)$body['email'])) : 'unknown';
+        RateLimitMiddleware::handle('auth:login:' . $email, 5, 15 * 60);
 
         $result = $this->service->login($body);
         $this->respond($result);
@@ -40,6 +44,9 @@ class AuthController extends BaseController {
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
+        $email = isset($body['email']) ? strtolower(trim((string)$body['email'])) : 'unknown';
+        RateLimitMiddleware::handle('auth:forgot-password:' . $email, 3, 15 * 60);
+
         $result = $this->service->forgotPassword($body);
         $this->respond($result);
 

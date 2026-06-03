@@ -63,7 +63,7 @@ class AdminCouponRepository {
     public function update(int $id, array $coupon): bool {
         try {
             $stmt = $this->db->prepare('
-                UPDATE Cupons SET codigo = ?, tipo_desconto = ?, desconto = ?, data_validade = ?, ativo = ?, quant_usos = ?, max_usos = ?
+                UPDATE Cupons SET codigo = ?, tipo_desconto = ?, desconto = ?, data_validade = ?, ativo = ?, max_usos = ?
                 WHERE id = ?
             ');
 
@@ -73,7 +73,6 @@ class AdminCouponRepository {
                 $coupon['desconto'],
                 $coupon['data_validade'],
                 $coupon['ativo'],
-                $coupon['quant_usos'],
                 $coupon['max_usos'],
                 $id,
             ]);

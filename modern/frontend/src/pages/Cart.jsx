@@ -9,6 +9,7 @@ import ConfirmDialog from "../components/ConfirmDialog"
 import { calcularFrete } from "../lib/frete"
 import Toast from "../components/Toast"
 import { useConfiguracoes } from "../hooks/useConfiguracoes"
+import { getRateLimitMessage } from "../lib/rateLimitMessage"
 
 const CART_CACHE_KEY = 'cart_cache'
 
@@ -191,7 +192,7 @@ export default function Cart() {
             const { data } = await validateCoupon(couponCode.trim())
             setAppliedCoupon(data.coupon)
         } catch (err) {
-            setCouponError(err.response?.data?.error || 'Cupom inválido')
+            setCouponError(getRateLimitMessage(err, 'Cupom inválido'))
             setAppliedCoupon(null)
         } finally {
             setValidating(false)

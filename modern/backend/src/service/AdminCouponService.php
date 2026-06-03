@@ -16,10 +16,13 @@ class AdminCouponService {
         $data_validade = isset($body['data_validade']) ? ucwords(trim(strtolower((string)$body['data_validade']))) : '';
         $ativo = $body['ativo'] === 'true' || $body['ativo'] === '1' ? 1 : 0;
         $quant_usos = isset($body['quant_usos']) ? (int)$body['quant_usos'] : null;
-        $max_usos = isset($body['max_usos']) ? (int)$body['max_usos'] : null;
+        $max_usos = isset($body['max_usos']) && $body['max_usos'] !== '' ? (int)$body['max_usos'] : null;
+        if ($max_usos !== null && $max_usos <= 0) {
+            $max_usos = null;
+        }
 
-        if (!$codigo || !$tipo_desconto || !$desconto || !$data_validade || $quant_usos === null || $max_usos === null) {
-            throw new InvalidArgumentException("Campos obrigatórios ausentes: codigo, tipo_desconto, desconto, data_validade, ativo, quant_usos, max_usos");
+        if (!$codigo || !$tipo_desconto || !$desconto || !$data_validade || $quant_usos === null) {
+            throw new InvalidArgumentException("Campos obrigatórios ausentes: codigo, tipo_desconto, desconto, data_validade, ativo, quant_usos");
         }
 
         if($data_validade < date('Y-m-d')) {

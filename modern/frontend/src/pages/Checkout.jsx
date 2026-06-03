@@ -13,6 +13,7 @@ import { validateCoupon } from "../lib/api/coupons"
 import { siVisa, siMastercard, siAmericanexpress, siDiscover } from 'simple-icons'
 import Toast from "../components/Toast"
 import { getProfile } from "../lib/api/profile"
+import { getRateLimitMessage } from "../lib/rateLimitMessage"
 
 const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']
 
@@ -552,7 +553,7 @@ export default function Checkout() {
             const { data } = await validateCoupon(couponCode.trim())
             setAppliedCoupon(data.coupon)
         } catch (err) {
-            setCouponError(err.response?.data?.error || 'Cupom inválido')
+            setCouponError(getRateLimitMessage(err, 'Cupom inválido'))
             setAppliedCoupon(null)
         } finally {
             setValidatingCoupon(false)

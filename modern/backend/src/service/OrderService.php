@@ -125,7 +125,10 @@ class OrderService {
                 http_response_code(400);
                 return ['error' => 'Cupom expirado'];
             }
-            if ($cupom['max_usos'] !== null && $cupom['quant_usos'] >= $cupom['max_usos']) {
+            $quantUsos = (int)($cupom['quant_usos'] ?? 0);
+            $maxUsos = $cupom['max_usos'] !== null ? (int)$cupom['max_usos'] : null;
+
+            if ($maxUsos !== null && $maxUsos > 0 && $quantUsos >= $maxUsos) {
                 http_response_code(400);
                 return ['error' => 'Cupom esgotado'];
             }

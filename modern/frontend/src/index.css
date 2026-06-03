@@ -23,8 +23,13 @@
 }
 
 .mySwiper {
-  --swiper-navigation-color: #18572C;
+  --swiper-navigation-color: #E9FF75;
   --swiper-pagination-color: #18572C;
+}
+
+.mySwiper .swiper-button-prev,
+.mySwiper .swiper-button-next {
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.45));
 }
 
 *{

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import logo from '../assets/smartcart-logo-transparente-preto.png'
 import Toast from '../components/Toast'
 import { loginUser, googleLogin } from '../lib/api/authUser'
+import { getRateLimitMessage } from '../lib/rateLimitMessage'
 
 export default function Login() {
     const [toast, setToast] = useState(null)
@@ -50,7 +51,7 @@ export default function Login() {
             navigate('/')
 
         } catch (err){
-            setToast({ message: err.response?.data?.error || 'Falha ao conectar com servidor', type: 'error' })
+            setToast({ message: getRateLimitMessage(err, 'Falha ao conectar com servidor'), type: 'error' })
         } finally {
             setLoading(false)
         }

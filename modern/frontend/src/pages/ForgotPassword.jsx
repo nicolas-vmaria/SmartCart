@@ -4,6 +4,7 @@ import logo from '../assets/smartcart-logo-transparente-preto.png'
 import { Mail, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react'
 import { forgotUser } from '../lib/api/authUser'
 import Toast from '../components/Toast'
+import { getRateLimitMessage } from '../lib/rateLimitMessage'
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
@@ -21,7 +22,7 @@ export default function ForgotPassword() {
             
 
         }catch(err){
-            setToast({ message: err.response?.data?.error || 'Erro ao conectar com o servidor', type: 'error'})
+            setToast({ message: getRateLimitMessage(err, 'Erro ao conectar com o servidor'), type: 'error'})
             setLoading(false)
         }
         

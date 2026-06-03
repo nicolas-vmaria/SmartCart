@@ -36,7 +36,10 @@ class CouponService {
                 return ['error' => 'Cupom expirado'];
             }
 
-            if ($coupon['max_usos'] !== null && $coupon['quant_usos'] >= $coupon['max_usos']) {
+            $quantUsos = (int)($coupon['quant_usos'] ?? 0);
+            $maxUsos = $coupon['max_usos'] !== null ? (int)$coupon['max_usos'] : null;
+
+            if ($maxUsos !== null && $maxUsos > 0 && $quantUsos >= $maxUsos) {
                 http_response_code(422);
                 return ['error' => 'Cupom atingiu o limite de usos'];
             }
