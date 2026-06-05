@@ -13,6 +13,7 @@ class Mailer {
         $this->mail->Password   = $_ENV['MAIL_PASS'];
         $this->mail->SMTPSecure = 'tls';
         $this->mail->Port       = 587;
+        $this->mail->Timeout    = 10;
 
         $this->mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
     }
