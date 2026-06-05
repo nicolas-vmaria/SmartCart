@@ -7,7 +7,7 @@ class Connection {
         if (self::$instance !== null) {
             try {
                 self::$instance->query('SELECT 1');
-            } catch (PDOException $e) {
+            } catch (PDOException) {
                 self::$instance = null;
             }
         }
@@ -26,7 +26,7 @@ class Connection {
                 [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::MYSQL_ATTR_FOUND_ROWS   => true,
+                    Pdo\Mysql::ATTR_FOUND_ROWS   => true,
                 ]
             );
         }
