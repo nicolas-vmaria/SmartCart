@@ -37,9 +37,9 @@ export default function ResetPassword() {
 
     if (concluido) {
         return (
-            <main className="flex justify-center items-center h-screen bg-gray-50">
-                <Link to="/"><img src={logo} alt="SmartCart" className="w-40 h-auto absolute left-10 top-5" /></Link>
-                <div className="flex flex-col items-center bg-white w-150 rounded-3xl p-15 shadow-xl gap-5 text-center">
+            <main className="flex justify-center items-center min-h-screen bg-gray-50">
+                <Link to="/"><img src={logo} alt="SmartCart" className="w-40 h-auto absolute left-4 sm:left-10 top-4" /></Link>
+                <div className="flex flex-col items-center bg-white w-full max-w-lg mx-4 rounded-2xl p-8 sm:p-12 shadow-xl gap-5 text-center">
                     <div className="w-16 h-16 rounded-full bg-verde-escuro/10 flex items-center justify-center">
                         <CheckCircle className="text-verde-escuro" size={32} />
                     </div>
@@ -56,11 +56,11 @@ export default function ResetPassword() {
     }
 
     return (
-        <main className="flex justify-center items-center h-screen bg-gray-50">
+        <main className="flex justify-center items-center min-h-screen bg-gray-50">
 
-            <Link to="/"><img src={logo} alt="SmartCart" className="w-40 h-auto absolute left-10 top-5" /></Link>
+            <Link to="/"><img src={logo} alt="SmartCart" className="w-40 h-auto absolute left-4 sm:left-10 top-4" /></Link>
 
-            <div className="flex flex-col items-center bg-white w-150 rounded-3xl p-15 shadow-xl">
+            <div className="flex flex-col items-center bg-white w-full max-w-lg mx-4 rounded-2xl p-8 sm:p-12 shadow-xl">
 
                 <div className="flex flex-col items-center gap-2 mb-8 text-center">
                     <div className="w-14 h-14 rounded-full bg-verde-escuro/10 flex items-center justify-center mb-2">
@@ -72,7 +72,7 @@ export default function ResetPassword() {
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
                     <div>
-                        <label className="text-[13pt] font-bold ml-1">Nova senha:</label>
+                        <label className="text-sm font-bold ml-1">Nova senha:</label>
                         <input
                             type="password"
                             required
@@ -80,11 +80,11 @@ export default function ResetPassword() {
                             placeholder="Digite sua nova senha"
                             value={senha}
                             onChange={e => setSenha(e.target.value)}
-                            className="bg-white w-full h-15 p-5 box-border rounded-xl border-1 border-gray-200 mt-1"
+                            className="bg-white w-full h-12 p-5 box-border rounded-xl border-1 border-gray-200 mt-1"
                         />
                     </div>
                     <div>
-                        <label className="text-[13pt] font-bold ml-1">Confirmar senha:</label>
+                        <label className="text-sm font-bold ml-1">Confirmar senha:</label>
                         <input
                             type="password"
                             required
@@ -92,14 +92,14 @@ export default function ResetPassword() {
                             placeholder="Confirme sua nova senha"
                             value={confirmar}
                             onChange={e => setConfirmar(e.target.value)}
-                            className="bg-white w-full h-15 p-5 box-border rounded-xl border-1 border-gray-200 mt-1"
+                            className="bg-white w-full h-12 p-5 box-border rounded-xl border-1 border-gray-200 mt-1"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer font-bold disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
+                        className="bg-verde-escuro text-white h-12 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer font-bold disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                     >
                         {loading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
                         {loading ? 'Redefinindo...' : 'Redefinir senha'}

@@ -112,7 +112,7 @@ export default function AdminBanners() {
 
             <AdminHeader title="Carrossel" description="Gerencie as imagens exibidas no carrossel da página inicial." />
 
-            <div className="grid grid-cols-3 gap-4 mt-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
                 {[
                     { label: 'Total',    valor: banners.length, cor: 'text-gray-800 dark:text-(--admin-text)' },
                     { label: 'Ativos',   valor: ativos,         cor: 'text-green-600 dark:text-green-400'     },

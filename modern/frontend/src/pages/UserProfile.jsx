@@ -47,11 +47,11 @@ function ProfileSkeleton() {
                         <div className="h-4 bg-gray-200 rounded w-32" />
                     </div>
                 </div>
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                     {[1,2,3].map(i => <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 h-20" />)}
                 </div>
-                <div className="grid grid-cols-3 gap-6">
-                    <div className="col-span-2 flex flex-col gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 flex flex-col gap-6">
                         <div className="bg-white rounded-2xl border border-gray-200 h-60" />
                         <div className="bg-white rounded-2xl border border-gray-200 h-60" />
                     </div>
@@ -189,7 +189,7 @@ export default function UserProfile() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                     {[
                         { label: 'Pedidos realizados', value: profile?.total_pedidos ?? 0 },
                         { label: 'Total gasto',        value: totalGasto },
@@ -202,16 +202,16 @@ export default function UserProfile() {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     {/* Coluna principal */}
-                    <div className="col-span-2 flex flex-col gap-6">
+                    <div className="lg:col-span-2 flex flex-col gap-6">
 
                         {/* Dados pessoais */}
                         <Card>
                             <SectionTitle>Dados pessoais</SectionTitle>
                             <form onSubmit={handleSaveInfo} className="flex flex-col gap-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className={labelCls}>
                                             <span className="flex items-center gap-1.5"><User size={13} /> Nome completo</span>
@@ -246,7 +246,7 @@ export default function UserProfile() {
                         <Card>
                             <SectionTitle><span className="flex items-center gap-2"><MapPin size={15} /> Endereço de entrega</span></SectionTitle>
                             <form onSubmit={handleSaveAddress} className="flex flex-col gap-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className={labelCls}>CEP</label>
                                         <input className={inputCls} value={endereco.cep} onChange={e => setEndereco(p => ({ ...p, cep: e.target.value }))} />
@@ -351,7 +351,7 @@ export default function UserProfile() {
                                     ))
                                 }
                             </div>
-                            <Link to="/produtos" className="flex items-center justify-center gap-1 mt-4 text-sm text-verde-escuro font-bold hover:underline">
+                            <Link to="/meus-pedidos" className="flex items-center justify-center gap-1 mt-4 text-sm text-verde-escuro font-bold hover:underline">
                                 Ver todos os pedidos <ChevronRight size={14} />
                             </Link>
                         </Card>

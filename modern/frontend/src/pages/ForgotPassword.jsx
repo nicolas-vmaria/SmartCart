@@ -30,11 +30,11 @@ export default function ForgotPassword() {
     }
 
     return (
-        <main className="flex justify-center items-center h-screen bg-gray-50">
+        <main className="flex justify-center items-center min-h-screen bg-gray-50">
 
-            <Link to="/"><img src={logo} alt="SmartCart" className="w-40 h-auto absolute left-10 top-5" /></Link>
+            <Link to="/"><img src={logo} alt="SmartCart" className="w-40 h-auto absolute left-4 sm:left-10 top-4" /></Link>
 
-            <div className="flex flex-col items-center bg-white w-150 rounded-3xl p-15 shadow-xl">
+            <div className="flex flex-col items-center bg-white w-full max-w-lg mx-4 rounded-2xl p-8 sm:p-12 shadow-xl">
 
                 {enviado ? (
                     <div className="flex flex-col items-center gap-5 text-center py-5">
@@ -64,7 +64,7 @@ export default function ForgotPassword() {
 
                         <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
                             <div>
-                                <label className="text-[13pt] font-bold ml-1">E-mail:</label>
+                                <label className="text-sm font-bold ml-1">E-mail:</label>
                                 <input
                                     type="email"
                                     required
@@ -72,14 +72,14 @@ export default function ForgotPassword() {
                                     placeholder="Digite seu e-mail"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    className="bg-white w-full h-15 p-5 box-border rounded-xl border-1 border-gray-200 mt-1"
+                                    className="bg-white w-full h-12 p-5 box-border rounded-xl border-1 border-gray-200 mt-1"
                                 />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="bg-verde-escuro text-white h-15 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer font-bold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                                className="bg-verde-escuro text-white h-12 rounded-xl transition-all duration-100 hover:-translate-y-2 hover:shadow-xl active:translate-y-0 active:bg-verde-claro active:text-verde-escuro cursor-pointer font-bold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
                             >
                                 {loading ? <Loader2 size={20} className="animate-spin" /> : 'Enviar link de redefinição'}
                             </button>

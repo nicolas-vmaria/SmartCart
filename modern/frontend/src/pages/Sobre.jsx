@@ -41,7 +41,7 @@ function QuemSomos() {
 
             <div className="bg-verde-escuro rounded-2xl p-8 flex flex-col gap-6">
                 <h3 className="text-xl font-bold text-verde-claro text-center">Nossos valores</h3>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[
                         { icon: FaLightbulb, titulo: 'Inovação',        texto: 'Sempre um passo à frente, desenvolvendo tecnologia real.' },
                         { icon: FaHandshake, titulo: 'Parceria',         texto: 'Crescemos junto com os nossos clientes.' },
@@ -250,7 +250,7 @@ function TrabalheConosco() {
 
             <div className="bg-verde-escuro rounded-2xl p-8 flex flex-col gap-3 text-center">
                 <h3 className="text-xl font-bold text-verde-claro">Por que trabalhar na SmartCart?</h3>
-                <div className="grid grid-cols-3 gap-4 mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
                     {[
                         { t: 'Ambiente inovador',    d: 'Tecnologia de ponta no dia a dia' },
                         { t: 'Flexibilidade',        d: 'Vagas remotas e híbridas'         },
@@ -347,18 +347,18 @@ export default function Sobre() {
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-6 py-10 flex gap-8 items-start">
+            <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
                 {/* Sidebar */}
-                <aside className="w-56 shrink-0 sticky top-28">
-                    <nav className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <aside className="w-full lg:w-56 lg:shrink-0 lg:sticky lg:top-28">
+                    <nav className="bg-white rounded-2xl border border-gray-200 overflow-x-auto flex flex-row lg:flex-col">
                         {secoes.map(({ slug: s, titulo, icon: Icon }) => {
                             const active = s === slug
                             return (
                                 <Link
                                     key={s}
                                     to={`/sobre/${s}`}
-                                    className={`flex items-center gap-3 px-4 py-3.5 text-sm font-bold transition-colors border-l-2
+                                    className={`flex items-center gap-2 px-4 py-3.5 text-sm font-bold transition-colors shrink-0 whitespace-nowrap border-b-2 lg:border-b-0 lg:border-l-2
                                         ${active
                                             ? 'border-verde-escuro bg-verde-escuro/5 text-verde-escuro'
                                             : 'border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`}
@@ -372,7 +372,7 @@ export default function Sobre() {
                 </aside>
 
                 {/* Conteúdo */}
-                <article className="flex-1 bg-white rounded-2xl border border-gray-200 p-8">
+                <article className="flex-1 bg-white rounded-2xl border border-gray-200 p-5 sm:p-8">
                     <Conteudo />
                 </article>
 

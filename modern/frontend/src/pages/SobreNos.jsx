@@ -95,7 +95,7 @@ export default function SobreNos() {
             <section className="flex flex-col items-center justify-center py-16 sm:py-20 px-6 gap-5">
                 <h2 className="text-3xl sm:text-5xl text-verde-escuro text-center">Pronto para fazer parte dessa <span className="italic">revolução?</span></h2>
                 <Link to="/produtos">
-                    <button className="text-2xl text-verde-escuro rounded-full w-70 p-5 border-2 border-verde-escuro cursor-pointer transition-colors hover:bg-verde-escuro hover:text-verde-claro">
+                    <button className="text-2xl text-verde-escuro rounded-full w-full sm:w-auto px-10 py-5 border-2 border-verde-escuro cursor-pointer transition-colors hover:bg-verde-escuro hover:text-verde-claro">
                         Ver Produtos
                     </button>
                 </Link>

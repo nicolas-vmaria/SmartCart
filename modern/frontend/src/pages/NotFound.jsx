@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 export default function NotFound() {
     return (
         <main className="flex flex-col items-center justify-center min-h-screen bg-verde-escuro gap-6">
-            <h1 className="text-[10rem] font-black text-verde-claro leading-none">404</h1>
+            <h1 className="text-[5rem] sm:text-[8rem] md:text-[10rem] font-black text-verde-claro leading-none">404</h1>
             <p className="text-2xl text-white">Página não encontrada.</p>
             <p className="text-verde-claro/60 text-center max-w-sm">
                 O endereço que você acessou não existe ou foi removido.

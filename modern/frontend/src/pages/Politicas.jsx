@@ -187,18 +187,18 @@ export default function Politicas() {
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-6 py-10 flex gap-8 items-start">
+            <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
                 {/* Sidebar */}
-                <aside className="w-56 shrink-0 sticky top-28">
-                    <nav className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <aside className="w-full lg:w-56 lg:shrink-0 lg:sticky lg:top-28">
+                    <nav className="bg-white rounded-2xl border border-gray-200 overflow-x-auto flex flex-row lg:flex-col">
                         {politicas.map(({ slug: s, titulo, icon: Icon }) => {
                             const active = s === slug
                             return (
                                 <Link
                                     key={s}
                                     to={`/politicas/${s}`}
-                                    className={`flex items-center gap-3 px-4 py-3.5 text-sm font-bold transition-colors border-l-2
+                                    className={`flex items-center gap-2 px-4 py-3.5 text-sm font-bold transition-colors shrink-0 whitespace-nowrap border-b-2 lg:border-b-0 lg:border-l-2
                                         ${active
                                             ? 'border-verde-escuro bg-verde-escuro/5 text-verde-escuro'
                                             : 'border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`}
@@ -212,7 +212,7 @@ export default function Politicas() {
                 </aside>
 
                 {/* Conteúdo */}
-                <article className="flex-1 bg-white rounded-2xl border border-gray-200 p-8">
+                <article className="flex-1 bg-white rounded-2xl border border-gray-200 p-5 sm:p-8">
                     <div className="flex items-center gap-3 mb-8 pb-6 border-b border-gray-100">
                         <div className="w-10 h-10 rounded-xl bg-verde-escuro/10 text-verde-escuro flex items-center justify-center">
                             <politica.icon size={20} />
