@@ -6,9 +6,9 @@ class Mailer {
     private string $fromName;
 
     public function __construct() {
-        $this->apiKey    = $_ENV['BREVO_API_KEY'];
-        $this->fromEmail = $_ENV['MAIL_USER'];
-        $this->fromName  = $_ENV['MAIL_FROM_NAME'];
+        $this->apiKey    = $_ENV['BREVO_API_KEY']    ?? '';
+        $this->fromEmail = $_ENV['MAIL_USER']         ?? '';
+        $this->fromName  = $_ENV['MAIL_FROM_NAME']    ?? 'SmartCart';
     }
 
     public function send(
@@ -53,7 +53,6 @@ class Mailer {
         $response  = curl_exec($ch);
         $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
-        curl_close($ch);
 
         if ($curlError !== '') {
             throw new \RuntimeException('Mailer curl error: ' . $curlError);
