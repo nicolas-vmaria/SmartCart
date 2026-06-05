@@ -18,7 +18,13 @@ if (($_ENV['APP_ENV'] ?? 'production') === 'development') {
     error_reporting(0);
 }
 
-header("Access-Control-Allow-Origin: " . ($_ENV['FRONTEND_URL'] ?? 'http://localhost:5173'));
+$allowedOrigins = array_filter(array_map('trim', explode(',', $_ENV['FRONTEND_URL'] ?? 'http://localhost:5173')));
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+} elseif (!$origin) {
+    header("Access-Control-Allow-Origin: " . $allowedOrigins[0]);
+}
 header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
