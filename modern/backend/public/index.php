@@ -5,6 +5,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->safeLoad();
 
+// Garante que variáveis de ambiente do sistema (ex: Railway) fiquem disponíveis em $_ENV
+$_ENV = array_merge(getenv(), $_ENV);
+
 if (($_ENV['APP_ENV'] ?? 'production') === 'development') {
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
