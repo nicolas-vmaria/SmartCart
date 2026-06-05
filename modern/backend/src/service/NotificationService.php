@@ -6,12 +6,7 @@ require_once __DIR__ . '/../core/Mailer.php';
 class NotificationService {
 
     private static function cfg(): array {
-        $rows = (new ConfiguracoesRepository())->findAll();
-        $map  = [];
-        foreach ($rows as $row) {
-            $map[$row['chave']] = $row['valor'];
-        }
-        return $map;
+        return (new ConfiguracoesRepository())->findAll();
     }
 
     private static function adminEmail(): string {
