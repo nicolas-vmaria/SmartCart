@@ -1,35 +1,66 @@
 <?php
 
 class Mailer {
-    private PHPMailer\PHPMailer\PHPMailer $mail;
+    private string $apiKey;
+    private string $fromEmail;
+    private string $fromName;
 
     public function __construct() {
-        $this->mail = new PHPMailer\PHPMailer\PHPMailer(true);
-
-        $this->mail->isSMTP();
-        $this->mail->Host       = 'smtp.gmail.com';
-        $this->mail->SMTPAuth   = true;
-        $this->mail->Username   = $_ENV['MAIL_USER'];
-        $this->mail->Password   = $_ENV['MAIL_PASS'];
-        $this->mail->SMTPSecure = 'tls';
-        $this->mail->Port       = 587;
-        $this->mail->Timeout    = 10;
-
-        $this->mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
+        $this->apiKey    = $_ENV['BREVO_API_KEY'];
+        $this->fromEmail = $_ENV['MAIL_USER'];
+        $this->fromName  = $_ENV['MAIL_FROM_NAME'];
     }
 
-    public function send(string $para, string $assunto, string $corpo, string $replyTo = '', ?string $anexoConteudo = null, string $anexoNome = 'anexo.pdf'): void {
-        $this->mail->addAddress($para);
-        if ($replyTo) {
-            $this->mail->addCustomHeader('Reply-To', $replyTo);
+    public function send(
+        string $para,
+        string $assunto,
+        string $corpo,
+        string $replyTo = '',
+        ?string $anexoConteudo = null,
+        string $anexoNome = 'anexo.pdf'
+    ): void {
+        $payload = [
+            'sender'      => ['name' => $this->fromName, 'email' => $this->fromEmail],
+            'to'          => [['email' => $para]],
+            'subject'     => $assunto,
+            'htmlContent' => $corpo,
+        ];
+
+        if ($replyTo !== '') {
+            $payload['replyTo'] = ['email' => $replyTo];
         }
+
         if ($anexoConteudo !== null) {
-            $this->mail->addStringAttachment($anexoConteudo, $anexoNome, 'base64', 'application/pdf');
+            $payload['attachment'] = [[
+                'name'    => $anexoNome,
+                'content' => base64_encode($anexoConteudo),
+            ]];
         }
-        $this->mail->CharSet = 'UTF-8';
-        $this->mail->Subject = $assunto;
-        $this->mail->isHTML(true);
-        $this->mail->Body    = $corpo;
-        $this->mail->send();
+
+        $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode($payload),
+            CURLOPT_HTTPHEADER     => [
+                'api-key: ' . $this->apiKey,
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ],
+            CURLOPT_TIMEOUT        => 15,
+        ]);
+
+        $response  = curl_exec($ch);
+        $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError !== '') {
+            throw new \RuntimeException('Mailer curl error: ' . $curlError);
+        }
+        if ($httpCode < 200 || $httpCode >= 300) {
+            $body = json_decode($response, true);
+            throw new \RuntimeException('Brevo API error ' . $httpCode . ': ' . ($body['message'] ?? $response));
+        }
     }
 }
