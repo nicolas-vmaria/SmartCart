@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Core
-require_once __DIR__ . '/../src/Core/Router.php';
+require_once __DIR__ . '/../src/core/Router.php';
 
 // Routes
 require_once __DIR__ . '/../src/routes/HealthRoutes.php';
