@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Search, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react'
 import AdminHeader from '../../components/admin/AdminHeader'
 import { getAuditLogs } from '../../lib/api/adminAuditoria'
+import Toast from '../../components/Toast'
 
 const ACAO_LABEL = {
     criar:            { label: 'Criou',            color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
@@ -87,6 +88,7 @@ export default function AdminAuditoria() {
     const [admins, setAdmins] = useState([])
     const [roles, setRoles] = useState([])
     const [loading, setLoading] = useState(true)
+    const [toast, setToast] = useState(null)
     const [filters, setFilters] = useState({ entidade: '', admin_id: '', papel_id: '', data_inicio: '', data_fim: '' })
     const [page, setPage] = useState(1)
 
@@ -100,6 +102,9 @@ export default function AdminAuditoria() {
             setRoles(data.roles ?? [])
         } catch {
             setLogs([])
+            setAdmins([])
+            setRoles([])
+            setToast({ message: 'Erro ao carregar logs de auditoria.', type: 'error' })
         } finally {
             setLoading(false)
         }
@@ -125,6 +130,7 @@ export default function AdminAuditoria() {
 
     return (
         <main>
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <AdminHeader title="Auditoria" description="Registro de todas as ações realizadas por administradores." />
 
             <form onSubmit={handleFilter} className="mt-5 flex flex-wrap gap-3 items-end">

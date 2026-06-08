@@ -61,7 +61,8 @@ export default function AdminMenu({ isOpen, onClose }) {
         return () => window.removeEventListener('config:updated', fetchConfig)
     }, [])
 
-    const adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}')
+    let adminUser = {}
+    try { adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}') } catch { adminUser = {} }
     const nome = adminUser.nome || 'Usuário'
     const papel = adminUser.nome_papel || 'Admin'
     const initials = nome.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()

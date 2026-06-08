@@ -25,7 +25,7 @@ class AuditRepository {
                 $detalhes ? json_encode($detalhes, JSON_UNESCAPED_UNICODE) : null,
             ]);
         } catch (\Throwable $e) {
-            // Falha no audit não deve bloquear a operação principal
+            error_log('[AuditRepository] Falha ao registrar log: ' . $e->getMessage());
         }
     }
 }

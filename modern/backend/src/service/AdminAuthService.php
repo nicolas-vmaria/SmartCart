@@ -89,7 +89,7 @@ class AdminAuthService {
     }
 
     public function logout(array $admin): array {
-        AuditRepository::log((int)$admin['userId'], $admin['nome'], 'logout', 'sistema');
+        AuditRepository::log((int)($admin['userId'] ?? 0), (string)($admin['nome'] ?? ''), 'logout', 'sistema');
         return ['message' => 'Logout registrado'];
     }
 }

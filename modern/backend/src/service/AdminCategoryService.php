@@ -41,7 +41,7 @@ class AdminCategoryService {
             $nome = isset($body['nome']) ? ucwords(trim(strtolower((string)$body['nome']))) : '';
             $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $nome));
 
-            $this->repository->insertCategory([
+            $created = $this->repository->insertCategory([
                 'nome' => $nome,
                 'slug' => $slug,
                 'descricao' => $descricao
@@ -55,8 +55,8 @@ class AdminCategoryService {
             http_response_code(500);
             return ['error' => 'Erro ao criar categoria'];
         }
-        
-        if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'criar', 'categoria', null, ['nome' => $nome]);
+
+        if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'criar', 'categoria', (int)($created['id'] ?? 0), ['nome' => $nome]);
         return ['message' => "Categoria '$nome' criada com sucesso"];
     }
 
