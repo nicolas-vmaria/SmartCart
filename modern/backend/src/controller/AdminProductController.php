@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminProductController extends BaseController {
     private AdminProductService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_produtos');
+        $this->admin   = AuthMiddleware::handle('admin', 'ver_produtos');
         $this->service = new AdminProductService();
     }
 
@@ -33,7 +34,7 @@ class AdminProductController extends BaseController {
             return;
         }
 
-        $result = $this->service->createProduct($body);
+        $result = $this->service->createProduct($body, $this->admin);
         $this->respond($result, 201);
     }
 
@@ -46,12 +47,12 @@ class AdminProductController extends BaseController {
             return;
         }
 
-        $result = $this->service->updateProduct($id, $body);
+        $result = $this->service->updateProduct($id, $body, $this->admin);
         $this->respond($result);
     }
 
     public function destroy(string $id) {
-        $result = $this->service->deleteProduct($id);
+        $result = $this->service->deleteProduct($id, $this->admin);
         $this->respond($result);
     }
 }

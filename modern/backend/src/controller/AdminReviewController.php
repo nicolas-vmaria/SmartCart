@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminReviewController extends BaseController {
     private AdminReviewService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        $this->admin   = AuthMiddleware::handle('admin');
         $this->service = new AdminReviewService();
     }
 
@@ -19,14 +20,14 @@ class AdminReviewController extends BaseController {
     }
 
     public function destroy($id) {
-        $this->respond($this->service->delete((int) $id));
+        $this->respond($this->service->delete((int) $id, $this->admin));
     }
 
     public function bulkDestroy() {
         $body = $this->getBody();
         $raw  = $body['ids'] ?? [];
         $ids  = is_array($raw) ? array_map('intval', $raw) : [];
-        $this->respond($this->service->bulkDelete($ids));
+        $this->respond($this->service->bulkDelete($ids, $this->admin));
     }
 
     public function getPalavras() {
@@ -36,10 +37,10 @@ class AdminReviewController extends BaseController {
     public function addPalavra() {
         $body   = $this->getBody();
         $palavra = $body['palavra'] ?? '';
-        $this->respond($this->service->addPalavra($palavra));
+        $this->respond($this->service->addPalavra($palavra, $this->admin));
     }
 
     public function deletePalavra($id) {
-        $this->respond($this->service->deletePalavra((int) $id));
+        $this->respond($this->service->deletePalavra((int) $id, $this->admin));
     }
 }

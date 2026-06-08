@@ -1,12 +1,13 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminCouponRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 
 class AdminCouponService {  
     private AdminCouponRepository $repository;
 
-    public function __construct() {
-        $this->repository = new AdminCouponRepository();
+    public function __construct(?AdminCouponRepository $repo = null) {
+        $this->repository = $repo ?? new AdminCouponRepository();
     }
 
     public function validateCoupon(array $body): array {
@@ -64,13 +65,15 @@ class AdminCouponService {
         }
     }
 
-    public function createCoupon(array $body): array {
+    public function createCoupon(array $body, ?array $admin = null): array {
         try {
             $coupon = $this->validateCoupon($body);
 
-            $created = $this->repository->create($coupon);        
+            $created = $this->repository->create($coupon);
 
             http_response_code(201);
+
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'criar', 'cupom', (int)($created['id'] ?? 0), ['codigo' => $coupon['codigo']]);
 
             return [
                 'message' => "Cupom '{$coupon['codigo']}' criado com sucesso",
@@ -90,7 +93,7 @@ class AdminCouponService {
         }
     }
 
-    public function updateCoupon(int $id, array $body): array {
+    public function updateCoupon(int $id, array $body, ?array $admin = null): array {
         try {
             $coupon = $this->validateCoupon($body);
 
@@ -102,6 +105,8 @@ class AdminCouponService {
             }
 
             http_response_code(200);
+
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'editar', 'cupom', $id, ['codigo' => $coupon['codigo']]);
 
             return [
                 'message' => "Cupom com id $id atualizado com sucesso",
@@ -121,7 +126,7 @@ class AdminCouponService {
         }
     }
 
-    public function deleteCoupon($id) {
+    public function deleteCoupon($id, ?array $admin = null) {
         try {
             $deleted = $this->repository->delete($id);
 
@@ -131,6 +136,8 @@ class AdminCouponService {
             }
 
             http_response_code(200);
+
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'deletar', 'cupom', (int)$id);
 
             return ['message' => "Cupom $id removido"];
         } catch (RuntimeException $e) {

@@ -5,8 +5,8 @@ require_once __DIR__ . '/../repository/AdminDashboardRepository.php';
 class AdminDashboardService {
     private AdminDashboardRepository $repository;
 
-    public function __construct() {
-        $this->repository = new AdminDashboardRepository();
+    public function __construct(?AdminDashboardRepository $repo = null) {
+        $this->repository = $repo ?? new AdminDashboardRepository();
     }
 
     public function getDashboard(): array {

@@ -1,4 +1,5 @@
 import SmartCart3D from '../components/SmartCart3D'
+import { imgUrl } from '../lib/cloudinaryUrl'
 
 import { FaTruck } from "react-icons/fa6";
 import { FiClock } from "react-icons/fi";
@@ -98,7 +99,7 @@ export default function Home() {
                                     className='group border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1'>
                                     <div className='h-44 bg-gray-50 flex items-center justify-center overflow-hidden'>
                                         {p.foto_url
-                                            ? <img src={p.foto_url} alt={p.nome} className='w-full h-full object-cover group-hover:scale-105 transition-transform' />
+                                            ? <img src={imgUrl(p.foto_url, 400)} alt={p.nome} loading="lazy" className='w-full h-full object-cover group-hover:scale-105 transition-transform' />
                                             : <div className='w-16 h-16 bg-gray-200 rounded-xl' />
                                         }
                                     </div>

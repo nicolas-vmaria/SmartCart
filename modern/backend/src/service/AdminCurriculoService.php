@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminCurriculosRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 require_once __DIR__ . '/../core/Mailer.php';
 
 class AdminCurriculoService {
@@ -8,8 +9,8 @@ class AdminCurriculoService {
 
     private const ALLOWED_STATUS = ['novo', 'em_analise', 'aprovado', 'reprovado'];
 
-    public function __construct() {
-        $this->repository = new AdminCurriculosRepository();
+    public function __construct(?AdminCurriculosRepository $repo = null) {
+        $this->repository = $repo ?? new AdminCurriculosRepository();
     }
 
     private function validarId(int $id): bool {
@@ -56,7 +57,7 @@ class AdminCurriculoService {
         }
     }
 
-    public function updateStatus(string $id, array $body): array {
+    public function updateStatus(string $id, array $body, ?array $admin = null): array {
         $id     = (int)$id;
         $status = $body['status'] ?? null;
 
@@ -92,6 +93,7 @@ class AdminCurriculoService {
                 // Falha no email não impede a resposta de sucesso
             }
 
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'atualizar_status', 'curriculo', $id, ['status' => $status]);
             return ['message' => "Status atualizado para '$status'"];
         } catch (RuntimeException $e) {
             http_response_code(500);
@@ -151,7 +153,7 @@ class AdminCurriculoService {
 </div>";
     }
 
-    public function deleteCurriculo(string $id): array {
+    public function deleteCurriculo(string $id, ?array $admin = null): array {
         $id = (int)$id;
 
         if (!$this->validarId($id)) {
@@ -167,6 +169,7 @@ class AdminCurriculoService {
                 return ['error' => 'Candidatura não encontrada'];
             }
 
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'deletar', 'curriculo', $id);
             return ['message' => "Candidatura $id removida com sucesso"];
         } catch (RuntimeException $e) {
             http_response_code(500);

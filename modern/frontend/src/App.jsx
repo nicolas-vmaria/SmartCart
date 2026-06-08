@@ -1,55 +1,59 @@
-import Navbar from "./components/Navbar"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { Route, Routes, BrowserRouter, Outlet } from "react-router-dom"
 import { Menu, X } from "lucide-react"
-import Home from "./pages/Home"
-import Produtos from "./pages/Produtos"
-import SobreNos from "./pages/SobreNos"
-import Contato from "./pages/Contato"
+import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import ScrollToTop from "./components/ScrollToTop"
-import Cart from "./pages/Cart"
-import ProductDetail from "./pages/ProductDetail"
-import Login from "./pages/Login"
-import Register from "./pages/Register"
-import NotFound from "./pages/NotFound"
-import AdminHome from "./pages/admin/AdminHome"
 import AdminMenu from "./components/admin/AdminMenu"
-import AdminClients from "./pages/admin/AdminClients"
-import AdminProducts from "./pages/admin/AdminProducts"
-import AdminOrders from "./pages/admin/AdminOrders"
-import AdminCategories from "./pages/admin/AdminCategories"
-import AdminManageUsers from "./pages/admin/AdminManageUsers"
-import AdminRoles from "./pages/admin/AdminRoles"
-import AdminSettings from "./pages/admin/AdminSettings"
-import AdminProfile from "./pages/admin/AdminProfile"
-import AdminCurriculos from "./pages/admin/AdminCurriculos"
-import AdminCurriculoDetalhe from "./pages/admin/AdminCurriculoDetalhe"
-import AdminLogin from "./pages/admin/AdminLogin"
+import AiChat from "./components/AiChat"
 import ProtectedRouteAdmin from "./components/admin/ProtectedRouteAdmin"
 import ProtectedRouteUser from "./components/ProtectRoutesUser"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
-import { useEffect, useState } from "react"
-import Checkout from "./pages/Checkout"
-import UserProfile from "./pages/UserProfile"
-import Politicas from "./pages/Politicas"
-import Sobre from "./pages/Sobre"
-import Candidatura from "./pages/Candidatura"
-import ForgotPassword from "./pages/ForgotPassword"
-import ResetPassword from "./pages/ResetPassword"
-import CategoriaGrid from "./pages/CategoriaGrid"
-import OrderConfirmation from "./pages/OrderConfirmation"
-import MeusPedidos from "./pages/MeusPedidos"
-import ReviewPedido from "./pages/ReviewPedido"
-import AdminReviews from "./pages/admin/AdminReviews"
-import AiChat from "./components/AiChat"
-import AdminVagas from "./pages/admin/AdminVagas"
-import AdminCupons from "./pages/admin/AdminCupons"
-import AdminRelatorios from "./pages/admin/AdminRelatorios"
-import AdminHelp from "./pages/admin/AdminHelp"
-import AdminCustomizacao from "./pages/admin/AdminCustomizacao"
-import AdminMarketing from "./pages/admin/AdminMarketing"
 import { useConfiguracoes } from "./hooks/useConfiguracoes"
-import BuscaIA from "./pages/BuscaIA"
+
+const Home              = lazy(() => import("./pages/Home"))
+const Produtos          = lazy(() => import("./pages/Produtos"))
+const SobreNos          = lazy(() => import("./pages/SobreNos"))
+const Contato           = lazy(() => import("./pages/Contato"))
+const Cart              = lazy(() => import("./pages/Cart"))
+const ProductDetail     = lazy(() => import("./pages/ProductDetail"))
+const Login             = lazy(() => import("./pages/Login"))
+const Register          = lazy(() => import("./pages/Register"))
+const NotFound          = lazy(() => import("./pages/NotFound"))
+const Checkout          = lazy(() => import("./pages/Checkout"))
+const UserProfile       = lazy(() => import("./pages/UserProfile"))
+const Politicas         = lazy(() => import("./pages/Politicas"))
+const Sobre             = lazy(() => import("./pages/Sobre"))
+const Candidatura       = lazy(() => import("./pages/Candidatura"))
+const ForgotPassword    = lazy(() => import("./pages/ForgotPassword"))
+const ResetPassword     = lazy(() => import("./pages/ResetPassword"))
+const CategoriaGrid     = lazy(() => import("./pages/CategoriaGrid"))
+const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"))
+const MeusPedidos       = lazy(() => import("./pages/MeusPedidos"))
+const ReviewPedido      = lazy(() => import("./pages/ReviewPedido"))
+const BuscaIA           = lazy(() => import("./pages/BuscaIA"))
+const VerificarEmail    = lazy(() => import("./pages/VerificarEmail"))
+
+const AdminHome            = lazy(() => import("./pages/admin/AdminHome"))
+const AdminClients         = lazy(() => import("./pages/admin/AdminClients"))
+const AdminProducts        = lazy(() => import("./pages/admin/AdminProducts"))
+const AdminOrders          = lazy(() => import("./pages/admin/AdminOrders"))
+const AdminCategories      = lazy(() => import("./pages/admin/AdminCategories"))
+const AdminManageUsers     = lazy(() => import("./pages/admin/AdminManageUsers"))
+const AdminRoles           = lazy(() => import("./pages/admin/AdminRoles"))
+const AdminSettings        = lazy(() => import("./pages/admin/AdminSettings"))
+const AdminProfile         = lazy(() => import("./pages/admin/AdminProfile"))
+const AdminCurriculos      = lazy(() => import("./pages/admin/AdminCurriculos"))
+const AdminCurriculoDetalhe = lazy(() => import("./pages/admin/AdminCurriculoDetalhe"))
+const AdminLogin           = lazy(() => import("./pages/admin/AdminLogin"))
+const AdminReviews         = lazy(() => import("./pages/admin/AdminReviews"))
+const AdminVagas           = lazy(() => import("./pages/admin/AdminVagas"))
+const AdminCupons          = lazy(() => import("./pages/admin/AdminCupons"))
+const AdminRelatorios      = lazy(() => import("./pages/admin/AdminRelatorios"))
+const AdminHelp            = lazy(() => import("./pages/admin/AdminHelp"))
+const AdminCustomizacao    = lazy(() => import("./pages/admin/AdminCustomizacao"))
+const AdminMarketing       = lazy(() => import("./pages/admin/AdminMarketing"))
+const AdminAuditoria       = lazy(() => import("./pages/admin/AdminAuditoria"))
 
 function useCountdown(targetDate) {
   const [timeLeft, setTimeLeft] = useState(null)
@@ -259,61 +263,65 @@ function App() {
     <ThemeProvider>
       <BrowserRouter>
         <ScrollToTop />
-        <Routes>
-          {/* Rotas com Navbar + Footer */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/produtos" element={<Produtos />} />
-            <Route path="/sobre-nos" element={<SobreNos />} />
-            <Route path="/contato" element={<Contato />} />
-            <Route path="/carrinho" element={<Cart />} />
-            <Route path="/produto/:slug" element={<ProductDetail />} />
-            <Route path="/checkout/:id" element={<Checkout />}/>
-            <Route path="/politicas" element={<Politicas />} />
-            <Route path="/politicas/:slug" element={<Politicas />} />
-            <Route path="/sobre" element={<Sobre />} />
-            <Route path="/sobre/:slug" element={<Sobre />} />
-            <Route path="/candidatura/:slug" element={<Candidatura />} />
-            <Route path="/produtos/categoria/:slug" element={<CategoriaGrid />} />
-            <Route path="/pedido/confirmado" element={<OrderConfirmation />} />
-            <Route element={<ProtectedRouteUser />}>
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/meus-pedidos" element={<MeusPedidos />} />
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <Routes>
+            {/* Rotas com Navbar + Footer */}
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/produtos" element={<Produtos />} />
+              <Route path="/sobre-nos" element={<SobreNos />} />
+              <Route path="/contato" element={<Contato />} />
+              <Route path="/carrinho" element={<Cart />} />
+              <Route path="/produto/:slug" element={<ProductDetail />} />
+              <Route path="/checkout/:id" element={<Checkout />}/>
+              <Route path="/politicas" element={<Politicas />} />
+              <Route path="/politicas/:slug" element={<Politicas />} />
+              <Route path="/sobre" element={<Sobre />} />
+              <Route path="/sobre/:slug" element={<Sobre />} />
+              <Route path="/candidatura/:slug" element={<Candidatura />} />
+              <Route path="/produtos/categoria/:slug" element={<CategoriaGrid />} />
+              <Route path="/pedido/confirmado" element={<OrderConfirmation />} />
+              <Route element={<ProtectedRouteUser />}>
+                <Route path="/profile" element={<UserProfile />} />
+                <Route path="/meus-pedidos" element={<MeusPedidos />} />
+              </Route>
+              <Route path="/review-pedido/:pedidoId" element={<ReviewPedido />} />
+              <Route path="/busca" element={<BuscaIA />} />
             </Route>
-            <Route path="/review-pedido/:pedidoId" element={<ReviewPedido />} />
-            <Route path="/busca" element={<BuscaIA />} />
-          </Route>
 
-          {/* Rotas sem Navbar */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route element={<ProtectedRouteAdmin />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminHome />} />
-              <Route path="clients" element={<AdminClients />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="categories" element={<AdminCategories />} />
-              <Route path="manage-users" element={<AdminManageUsers />} />
-              <Route path="roles" element={<AdminRoles />} />
-              <Route path="settings" element={<AdminSettings />} />
-              <Route path="profile" element={<AdminProfile />} />
-              <Route path="curriculos" element={<AdminCurriculos />} />
-              <Route path="curriculos/:id" element={<AdminCurriculoDetalhe />} />
-              <Route path="vagas" element={<AdminVagas />} />
-              <Route path="cupons" element={<AdminCupons />} />
-              <Route path="relatorios" element={<AdminRelatorios />} />
-              <Route path="help" element={<AdminHelp />} />
-              <Route path="customizacao" element={<AdminCustomizacao />} />
-              <Route path="marketing" element={<AdminMarketing />} />
-              <Route path="reviews" element={<AdminReviews />} />
+            {/* Rotas sem Navbar */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/verificar-email" element={<VerificarEmail />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route element={<ProtectedRouteAdmin />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminHome />} />
+                <Route path="clients" element={<AdminClients />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="categories" element={<AdminCategories />} />
+                <Route path="manage-users" element={<AdminManageUsers />} />
+                <Route path="roles" element={<AdminRoles />} />
+                <Route path="settings" element={<AdminSettings />} />
+                <Route path="profile" element={<AdminProfile />} />
+                <Route path="curriculos" element={<AdminCurriculos />} />
+                <Route path="curriculos/:id" element={<AdminCurriculoDetalhe />} />
+                <Route path="vagas" element={<AdminVagas />} />
+                <Route path="cupons" element={<AdminCupons />} />
+                <Route path="relatorios" element={<AdminRelatorios />} />
+                <Route path="help" element={<AdminHelp />} />
+                <Route path="customizacao" element={<AdminCustomizacao />} />
+                <Route path="marketing" element={<AdminMarketing />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="auditoria" element={<AdminAuditoria />} />
+              </Route>
             </Route>
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </ThemeProvider>
   )

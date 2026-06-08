@@ -1,4 +1,6 @@
 import StarRating from "../components/StarRating";
+import { imgUrl } from "../lib/cloudinaryUrl";
+import Breadcrumb from "../components/Breadcrumb";
 
 import { FaBagShopping } from "react-icons/fa6";
 import { FiClock } from "react-icons/fi";
@@ -338,10 +340,17 @@ export default function ProductDetail() {
     return (
         <main className="">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+            <div className="px-5 md:px-10 pt-6">
+                <Breadcrumb items={[
+                    { label: 'Início', href: '/' },
+                    { label: produto.categoria_nome || 'Produtos', href: produto.categoria_slug ? `/produtos/categoria/${produto.categoria_slug}` : '/produtos' },
+                    { label: produto.nome },
+                ]} />
+            </div>
             <section className="flex flex-col md:flex-row items-center p-5 md:p-10 gap-6 md:gap-10">
                 <div className="relative bg-gray-100 aspect-square w-full md:w-auto md:h-180 rounded-3xl overflow-hidden md:shrink-0">
                     {produto.foto_url
-                        ? <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" />
+                        ? <img src={imgUrl(produto.foto_url, 1200)} alt={produto.nome} loading="lazy" className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center"><span className="text-gray-400">Sem imagem</span></div>
                     }
                     {desconto > 0 && (
@@ -418,7 +427,7 @@ export default function ProductDetail() {
                     <div className="flex flex-col sm:flex-row items-center gap-3 max-w-lg">
                         <div className="border border-gray-200 rounded-2xl p-4 flex items-center gap-3 flex-1 w-full">
                             {produto.foto_url
-                                ? <img src={produto.foto_url} className="w-14 h-14 object-contain shrink-0" alt={produto.nome} />
+                                ? <img src={imgUrl(produto.foto_url, 120)} loading="lazy" className="w-14 h-14 object-contain shrink-0" alt={produto.nome} />
                                 : <div className="w-14 h-14 bg-gray-100 rounded-xl shrink-0" />
                             }
                             <div className="min-w-0">
@@ -430,7 +439,7 @@ export default function ProductDetail() {
                         <Link to={`/produto/${compraJunto.slug}`}
                             className="border border-gray-200 hover:border-verde-escuro rounded-2xl p-4 flex items-center gap-3 flex-1 w-full transition-colors">
                             {compraJunto.foto_url
-                                ? <img src={compraJunto.foto_url} className="w-14 h-14 object-contain shrink-0" alt={compraJunto.nome} />
+                                ? <img src={imgUrl(compraJunto.foto_url, 120)} loading="lazy" className="w-14 h-14 object-contain shrink-0" alt={compraJunto.nome} />
                                 : <div className="w-14 h-14 bg-gray-100 rounded-xl shrink-0" />
                             }
                             <div className="min-w-0">

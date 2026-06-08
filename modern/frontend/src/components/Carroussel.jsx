@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { imgUrl } from '../lib/cloudinaryUrl'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination, Navigation, Autoplay } from 'swiper/modules'
 import 'swiper/css/navigation'
@@ -41,7 +42,7 @@ export default function Carroussel() {
             >
                 {slides.map(s => (
                     <SwiperSlide key={s.id}>
-                        <img src={s.foto_url} alt="banner" className="w-full" />
+                        <img src={imgUrl(s.foto_url, 1200)} alt="banner" loading="eager" className="w-full" />
                     </SwiperSlide>
                 ))}
             </Swiper>

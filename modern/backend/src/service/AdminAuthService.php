@@ -2,12 +2,13 @@
 
 require_once __DIR__ . '/../core/Jwt.php';
 require_once __DIR__ . '/../repository/AuthRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 
 class AdminAuthService {
     private AuthRepository $AuthRepository;
 
-    public function __construct() {
-        $this->AuthRepository = new AuthRepository();
+    public function __construct(?AuthRepository $repo = null) {
+        $this->AuthRepository = $repo ?? new AuthRepository();
     }
 
     public function login(array $body): array {
@@ -33,6 +34,7 @@ class AdminAuthService {
 
         $token = Jwt::generate([
             'userId' => $user['id'],
+            'nome'   => $user['nome'],
             'email'  => $user['email'],
             'role'   => 'admin',
             'perms'  => [
@@ -51,8 +53,11 @@ class AdminAuthService {
                 'ver_customizacao'  => (bool)$user['ver_customizacao'],
                 'ver_marketing'     => (bool)$user['ver_marketing'],
                 'ver_reviews'       => (bool)$user['ver_reviews'],
+                'ver_auditoria'     => (bool)$user['ver_auditoria'],
             ],
         ]);
+
+        AuditRepository::log($user['id'], $user['nome'], 'login', 'sistema');
 
         return [
             'token' => $token,
@@ -77,8 +82,14 @@ class AdminAuthService {
                     'customizacao'  => (bool)$user['ver_customizacao'],
                     'marketing'     => (bool)$user['ver_marketing'],
                     'reviews'       => (bool)$user['ver_reviews'],
+                'auditoria'     => (bool)$user['ver_auditoria'],
                 ],
             ]
         ];
+    }
+
+    public function logout(array $admin): array {
+        AuditRepository::log((int)($admin['userId'] ?? 0), (string)($admin['nome'] ?? ''), 'logout', 'sistema');
+        return ['message' => 'Logout registrado'];
     }
 }

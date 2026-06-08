@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import AdminHeader from '../../components/admin/AdminHeader'
+import { imgUrl } from '../../lib/cloudinaryUrl'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import Toast from '../../components/Toast'
 import { Trash2, Search, Star, X, Plus, MessageSquare, TrendingUp, Calendar, Eye, EyeOff, Wand2, ChevronDown, ChevronUp } from 'lucide-react'
@@ -311,7 +312,7 @@ export default function AdminReviews() {
                                         <div className="flex items-center gap-2">
                                             <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 dark:bg-(--admin-hover) shrink-0">
                                                 {r.foto_url
-                                                    ? <img src={r.foto_url} alt={r.produto_nome} className="w-full h-full object-cover" />
+                                                    ? <img src={imgUrl(r.foto_url, 100)} alt={r.produto_nome} loading="lazy" className="w-full h-full object-cover" />
                                                     : <div className="w-full h-full" />
                                                 }
                                             </div>

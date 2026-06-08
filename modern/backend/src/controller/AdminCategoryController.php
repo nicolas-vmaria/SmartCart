@@ -5,9 +5,10 @@ require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class AdminCategoryController extends BaseController {
     private AdminCategoryService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_categorias');
+        $this->admin   = AuthMiddleware::handle('admin', 'ver_categorias');
         $this->service = new AdminCategoryService();
     }
 
@@ -25,7 +26,7 @@ class AdminCategoryController extends BaseController {
             return;
         }
 
-        $result = $this->service->createCategory($body);
+        $result = $this->service->createCategory($body, $this->admin);
         $this->respond($result, 201);
     }
 
@@ -38,12 +39,12 @@ class AdminCategoryController extends BaseController {
             return;
         }
 
-        $result = $this->service->updateCategory($id, $body);
+        $result = $this->service->updateCategory($id, $body, $this->admin);
         $this->respond($result);
 }
 
     public function destroy(string $id) {
-        $result = $this->service->deleteCategory($id);
-        $this->respond($result);    
+        $result = $this->service->deleteCategory($id, $this->admin);
+        $this->respond($result);
     }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Loader2, Megaphone, Truck, Star, Upload, X, Zap, Percent, ShoppingBag, Plus, Trash2, Wand2 } from 'lucide-react'
+import { imgUrl } from '../../lib/cloudinaryUrl'
 import { generateMarketingText } from '../../lib/IaAssistant'
 import AdminHeader from '../../components/admin/AdminHeader'
 import Toast from '../../components/Toast'
@@ -520,7 +521,7 @@ export default function AdminMarketing() {
                                 {produtos.map(p => (
                                     <div key={p.id} className="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-(--admin-hover) transition-all">
                                         <div className="w-12 h-12 rounded-xl border border-gray-200 dark:border-(--admin-border) bg-white dark:bg-(--admin-input) overflow-hidden shrink-0 flex items-center justify-center">
-                                            {p.foto_url ? <img src={p.foto_url} className="w-full h-full object-contain p-1" alt="" /> : <Star size={16} className="text-gray-300" />}
+                                            {p.foto_url ? <img src={imgUrl(p.foto_url, 150)} loading="lazy" className="w-full h-full object-contain p-1" alt="" /> : <Star size={16} className="text-gray-300" />}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium dark:text-(--admin-text) truncate">{p.nome}</p>

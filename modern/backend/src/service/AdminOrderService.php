@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminOrderRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 require_once __DIR__ . '/../core/Mailer.php';
 
 use Dompdf\Dompdf;
@@ -17,8 +18,8 @@ class AdminOrderService {
         'cancelado'  => 'Pedido cancelado — SmartCart',
     ];
 
-    public function __construct() {
-        $this->repository = new AdminOrderRepository();
+    public function __construct(?AdminOrderRepository $repo = null) {
+        $this->repository = $repo ?? new AdminOrderRepository();
     }
 
     public function getAllOrders(): array {
@@ -45,7 +46,7 @@ class AdminOrderService {
         }
     }
 
-    public function updateStatus(int $id, array $body): array {
+    public function updateStatus(int $id, array $body, ?array $admin = null): array {
         $statusValidos = ['aguardando', 'pago', 'enviado', 'entregue', 'cancelado'];
 
         if (empty($body['status']) || !in_array($body['status'], $statusValidos)) {
@@ -74,6 +75,8 @@ class AdminOrderService {
             http_response_code(500);
             return ['error' => 'Erro ao atualizar status'];
         }
+
+        if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'atualizar_status', 'pedido', $id, ['status' => $novoStatus]);
 
         try {
             $mailer       = new Mailer();

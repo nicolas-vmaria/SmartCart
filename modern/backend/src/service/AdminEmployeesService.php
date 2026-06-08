@@ -1,12 +1,13 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminEmployeesRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 
 class AdminEmployeesService {
     private AdminEmployeesRepository $repository;
 
-    public function __construct() {
-        $this->repository = new AdminEmployeesRepository();
+    public function __construct(?AdminEmployeesRepository $repo = null) {
+        $this->repository = $repo ?? new AdminEmployeesRepository();
     }
 
     public function getAllEmployee(): array {
@@ -19,7 +20,7 @@ class AdminEmployeesService {
     }
     
 
-    public function createEmployee(array $body): array {
+    public function createEmployee(array $body, ?array $admin = null): array {
         $required = ['nome', 'email', 'senha', 'papel_id'];
         foreach ($required as $field) {
             if (empty($body[$field])) {
@@ -58,13 +59,14 @@ class AdminEmployeesService {
             'papel_id'   => $papel_id,
         ]);
 
+        if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'criar', 'funcionario', $newId, ['nome' => $nome, 'email' => $email]);
         return [
             'message' => 'Usuário criado com sucesso',
             'usuario' => $this->repository->findById($newId),
         ];
     }
 
-    public function updateEmployee(string $id, array $body): array {
+    public function updateEmployee(string $id, array $body, ?array $admin = null): array {
     // 1. Campos obrigatórios
     $required = ['nome', 'email', 'papel_id'];
     foreach ($required as $field) {
@@ -110,13 +112,14 @@ class AdminEmployeesService {
         'papel_id' => $papel_id,
     ]);
 
+    if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'editar', 'funcionario', $userId, ['nome' => $nome, 'email' => $email]);
     return [
         'message' => 'Usuário atualizado com sucesso',
         'usuario' => $this->repository->findById($userId),
     ];
     }
 
-    public function deleteEmployee(string $id): array {
+    public function deleteEmployee(string $id, ?array $admin = null): array {
     $userId = (int) $id;
 
     $usuario = $this->repository->findById($userId);
@@ -130,10 +133,11 @@ class AdminEmployeesService {
 
     $this->repository->delete($userId);
 
+    if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'deletar', 'funcionario', $userId);
     return ['message' => 'Usuário removido com sucesso'];
     }
 
-    public function resetPassword(string $id): array {
+    public function resetPassword(string $id, ?array $admin = null): array {
     $userId = (int) $id;
 
     if (!$this->repository->findById($userId)) {
@@ -142,6 +146,7 @@ class AdminEmployeesService {
 
     $this->repository->resetPassword($userId, password_hash('admin123', PASSWORD_BCRYPT));
 
+    if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'redefinir_senha', 'funcionario', $userId);
     return ['message' => 'Senha redefinida para o padrão com sucesso'];
     }
 }

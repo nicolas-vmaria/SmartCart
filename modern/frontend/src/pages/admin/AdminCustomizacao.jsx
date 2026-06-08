@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import AdminHeader from '../../components/admin/AdminHeader'
+import { imgUrl } from '../../lib/cloudinaryUrl'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import Toast from '../../components/Toast'
 import {
@@ -290,7 +291,7 @@ export default function AdminCustomizacao() {
                                         return (
                                             <div key={banner.id} className="border border-gray-200 dark:border-(--admin-border) rounded-2xl overflow-hidden">
                                                 <div className="relative aspect-16/6 bg-gray-100 dark:bg-(--admin-hover)">
-                                                    <img src={banner.foto_url} alt={`Banner ${index + 1}`} className="w-full h-full object-cover" />
+                                                    <img src={imgUrl(banner.foto_url, 1200)} alt={`Banner ${index + 1}`} loading="lazy" className="w-full h-full object-cover" />
                                                     <span className="absolute top-2 left-2 bg-black/50 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                                                         #{index + 1}
                                                     </span>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { imgUrl } from "../lib/cloudinaryUrl";
 
 export default function ProdutoCard({ produto }) {
     if (!produto) return null
@@ -17,8 +18,9 @@ export default function ProdutoCard({ produto }) {
             <div className="relative bg-gray-100 w-full h-80 overflow-hidden">
                 {produto.foto_url
                     ? <img
-                        src={produto.foto_url}
+                        src={imgUrl(produto.foto_url, 600)}
                         alt={produto.nome}
+                        loading="lazy"
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     : <span className="text-verde-escuro/50 text-sm">Sem imagem</span>

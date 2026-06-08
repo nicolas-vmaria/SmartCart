@@ -59,9 +59,7 @@ export default function Register() {
         setLoading(true)
         try {
             const { data } = await registerUser(nome, email, senha, tel.replace(/\D/g, ''))
-            localStorage.setItem('user_token', data.token)
-            localStorage.setItem('user_nome', data.user.nome)
-            navigate("/")
+            setToast({ message: data.message || 'Verifique seu e-mail para ativar a conta.', type: 'success' })
         } catch(err){
             setToast({ message: err.response?.data?.error || "Erro ao conectar no servidor", type: 'error'})
         } finally {

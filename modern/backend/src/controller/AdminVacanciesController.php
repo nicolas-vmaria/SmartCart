@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminVacanciesController extends BaseController {
     private AdminVacanciesService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_trabalhos');
+        $this->admin   = AuthMiddleware::handle('admin', 'ver_trabalhos');
         $this->service = new AdminVacanciesService();
     }
 
@@ -29,7 +30,7 @@ class AdminVacanciesController extends BaseController {
             return;
         }
 
-        $result = $this->service->createVacancy($body);
+        $result = $this->service->createVacancy($body, $this->admin);
         $this->respond($result, 201);
     }
 
@@ -42,16 +43,16 @@ class AdminVacanciesController extends BaseController {
             return;
         }
 
-        $result = $this->service->updateVacancy($id, $body);
+        $result = $this->service->updateVacancy($id, $body, $this->admin);
         $this->respond($result);
     }
 
     public function toggle(string $id) {
-        $this->respond($this->service->toggleVacancy($id));
+        $this->respond($this->service->toggleVacancy($id, $this->admin));
     }
 
     public function destroy(string $id) {
-        $this->respond($this->service->deleteVacancy($id));
+        $this->respond($this->service->deleteVacancy($id, $this->admin));
     }
 }
 

@@ -5,8 +5,8 @@ require_once __DIR__ . '/../repository/CartRepository.php';
 class CartService {
     private CartRepository $cartRepository;
 
-    public function __construct() {
-        $this->cartRepository = new CartRepository();
+    public function __construct(?CartRepository $repo = null) {
+        $this->cartRepository = $repo ?? new CartRepository();
     }
 
     public function getCart(int $usuario_id) {

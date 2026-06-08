@@ -19,3 +19,7 @@ export function resetPasswordUser(senha, token){
 export function googleLogin(token, userInfo) {
     return api.post('/auth/google', { token, email: userInfo.email, name: userInfo.name })
 }
+
+export function verifyEmail(token) {
+    return api.get('/auth/verificar-email', { params: { token } })
+}

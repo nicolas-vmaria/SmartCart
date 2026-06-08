@@ -6,11 +6,12 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminProfileController extends BaseController {
     private AdminProfileService $service;
+    private array $admin;
     private int $userId;
 
     public function __construct() {
-        $payload = AuthMiddleware::handle('admin');
-        $this->userId  = (int)$payload['userId'];
+        $this->admin   = AuthMiddleware::handle('admin');
+        $this->userId  = (int)$this->admin['userId'];
         $this->service = new AdminProfileService();
     }
 
@@ -25,7 +26,7 @@ class AdminProfileController extends BaseController {
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
-        $this->respond($this->service->updateProfile($this->userId, $body));
+        $this->respond($this->service->updateProfile($this->userId, $body, $this->admin));
     }
 
     public function changePassword(): void {
@@ -35,6 +36,6 @@ class AdminProfileController extends BaseController {
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
-        $this->respond($this->service->changePassword($this->userId, $body));
+        $this->respond($this->service->changePassword($this->userId, $body, $this->admin));
     }
 }

@@ -5,8 +5,8 @@ require_once __DIR__ . '/../repository/ProfileRepository.php';
 class ProfileService {
     private ProfileRepository $repository;
 
-    public function __construct() {
-        $this->repository = new ProfileRepository();
+    public function __construct(?ProfileRepository $repo = null) {
+        $this->repository = $repo ?? new ProfileRepository();
     }
 
     public function getProfile(int $id): array {

@@ -5,8 +5,8 @@ require_once __DIR__ . '/../repository/ReviewRepository.php';
 class ReviewService {
     private ReviewRepository $repository;
 
-    public function __construct() {
-        $this->repository = new ReviewRepository();
+    public function __construct(?ReviewRepository $repo = null) {
+        $this->repository = $repo ?? new ReviewRepository();
     }
 
 
@@ -35,7 +35,7 @@ class ReviewService {
     }
 
     public function createReview(array $body) {
-        $nota = (int)$body['nota'];
+        $nota = isset($body['nota']) ? (int)$body['nota'] : 0;
         $descricao = $body['descricao'] ?? null;
         $qtd_likes = isset($body['qtd_likes']) ? (int)$body['qtd_likes'] : 0;
 

@@ -5,8 +5,8 @@ require_once __DIR__ . '/../repository/CouponRepository.php';
 class CouponService {
     private CouponRepository $repository;
 
-    public function __construct() {
-        $this->repository = new CouponRepository();
+    public function __construct(?CouponRepository $repo = null) {
+        $this->repository = $repo ?? new CouponRepository();
     }
 
     public function validateCoupon(array $body): array {

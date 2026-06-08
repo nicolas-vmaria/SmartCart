@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { imgUrl } from '../../lib/cloudinaryUrl'
 import { useAdminData } from '../../hooks/useAdminData'
 import AdminHeader from "../../components/admin/AdminHeader"
 import { Search, Trash2, Pencil, X, Plus, SlidersHorizontal, ImagePlus, ExternalLink, FileText, Wand2 } from 'lucide-react'
@@ -265,7 +266,7 @@ export default function AdminProducts() {
                                 </td>
                                 <td className="py-3">
                                     {product.foto_url
-                                        ? <img src={product.foto_url} alt={product.nome} className="w-10 h-10 rounded-lg object-cover" />
+                                        ? <img src={imgUrl(product.foto_url, 100)} alt={product.nome} loading="lazy" className="w-10 h-10 rounded-lg object-cover" />
                                         : <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-(--admin-hover) flex items-center justify-center text-gray-300 dark:text-(--admin-text-muted)"><ImagePlus size={16} /></div>
                                     }
                                 </td>

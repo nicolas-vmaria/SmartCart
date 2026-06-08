@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminCurriculoController extends BaseController {
     private AdminCurriculoService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_curriculos');
+        $this->admin   = AuthMiddleware::handle('admin', 'ver_curriculos');
         $this->service = new AdminCurriculoService();
     }
 
@@ -44,12 +45,12 @@ class AdminCurriculoController extends BaseController {
             return;
         }
 
-        $result = $this->service->updateStatus($id, $body);
+        $result = $this->service->updateStatus($id, $body, $this->admin);
         $this->respond($result);
     }
 
     public function destroy(string $id) {
-        $result = $this->service->deleteCurriculo($id);
+        $result = $this->service->deleteCurriculo($id, $this->admin);
         $this->respond($result);
     }
 }

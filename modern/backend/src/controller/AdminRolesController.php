@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminRolesController extends BaseController {
     private AdminRolesService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_admin');
+        $this->admin   = AuthMiddleware::handle('admin', 'ver_admin');
         $this->service = new AdminRolesService();
     }
 
@@ -24,7 +25,7 @@ class AdminRolesController extends BaseController {
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
-        $result = $this->service->createRole($body);
+        $result = $this->service->createRole($body, $this->admin);
         $this->respond($result);
     }
 
@@ -35,12 +36,12 @@ class AdminRolesController extends BaseController {
             echo json_encode(['error' => 'JSON inválido ou corpo vazio']);
             return;
         }
-        $result = $this->service->updateRole($id, $body);
+        $result = $this->service->updateRole($id, $body, $this->admin);
         $this->respond($result);
     }
 
     public function destroy(string $id) {
-        $result = $this->service->deleteRole($id);
+        $result = $this->service->deleteRole($id, $this->admin);
         $this->respond($result);
     }
 }
