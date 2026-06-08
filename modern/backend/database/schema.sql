@@ -36,6 +36,11 @@ CREATE TABLE Papeis (
     ver_relatorios BOOLEAN DEFAULT FALSE,
     ver_usuarios BOOLEAN DEFAULT FALSE,
     ver_configuracoes BOOLEAN DEFAULT FALSE,
+    ver_banners BOOLEAN DEFAULT FALSE,
+    ver_customizacao BOOLEAN DEFAULT FALSE,
+    ver_marketing BOOLEAN DEFAULT FALSE,
+    ver_reviews BOOLEAN DEFAULT FALSE,
+    ver_auditoria BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -48,6 +53,8 @@ CREATE TABLE Usuario (
     email VARCHAR(255) UNIQUE NOT NULL,
     tel VARCHAR(20) NOT NULL,
     senha VARCHAR(255) NOT NULL,
+    email_verificado BOOLEAN NOT NULL DEFAULT FALSE,
+    token_verificacao VARCHAR(100) NULL,
     cep CHAR(8),
     rua VARCHAR(255),
     numero VARCHAR(20),
@@ -79,6 +86,8 @@ CREATE TABLE Produtos (
     descricao TEXT,
     foto_url VARCHAR(500),
     status BOOLEAN DEFAULT TRUE,
+    desconto_percentual INT NOT NULL DEFAULT 0,
+    destaque BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (categoria_id) REFERENCES Categorias(id)
 );
@@ -210,10 +219,30 @@ CREATE TABLE Resetar_Senha (
     expire_at DATETIME NOT NULL
 );
 
+CREATE TABLE AuditLog (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT NOT NULL,
+    admin_nome VARCHAR(255) NOT NULL,
+    acao VARCHAR(100) NOT NULL,
+    entidade VARCHAR(100) NOT NULL,
+    entidade_id INT NULL,
+    detalhes JSON NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES Usuario(id)
+);
+
 CREATE TABLE Configuracoes (
     chave VARCHAR(100) PRIMARY KEY,
     valor VARCHAR(1000) NOT NULL DEFAULT ''
 );
+
+CREATE INDEX idx_carrinhos_usuario_status ON Carrinhos(usuario_id, status);
+CREATE INDEX idx_itens_carrinho_carrinho  ON Itens_Carrinho(carrinho_id);
+CREATE INDEX idx_pedidos_status           ON Pedidos(status);
+CREATE INDEX idx_pedidos_usuario          ON Pedidos(usuario_id);
+CREATE INDEX idx_pedidos_created_at       ON Pedidos(created_at);
+CREATE INDEX idx_review_produto           ON Review(produto_id);
+CREATE INDEX idx_produtos_status          ON Produtos(status);
 
 INSERT IGNORE INTO Configuracoes (chave, valor) VALUES
     ('notify_novos_pedidos',  '1'),
@@ -221,9 +250,9 @@ INSERT IGNORE INTO Configuracoes (chave, valor) VALUES
     ('notify_novos_curriculos', '1'),
     ('notify_alertas_sistema','1');
 
-INSERT INTO Papeis (id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_usuarios, ver_configuracoes)
-VALUES (1, 'cliente', NULL, 'Usuário padrão', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-       (2, 'admin', 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Administrador com acesso total', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
+INSERT INTO Papeis (id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_usuarios, ver_configuracoes, ver_banners, ver_customizacao, ver_marketing, ver_reviews, ver_auditoria)
+VALUES (1, 'cliente', NULL, 'Usuário padrão', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+       (2, 'admin', 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Administrador com acesso total', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
 
 INSERT INTO Usuario (papel_id, is_admin, nome, email, tel, senha)
 VALUES (2, TRUE, 'Admin', 'admin@smartcart.com', '00000000000', '$2y$12$frHJ/ZcElz8Pk2Sz/I7qpOMrqAc8YB9hriQ6RXqGzWFe6RTg37CLS');

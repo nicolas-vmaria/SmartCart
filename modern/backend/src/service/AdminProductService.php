@@ -1,14 +1,15 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminProductRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 require_once __DIR__ . '/../core/Cloudinary.php';
 require_once __DIR__ . '/NotificationService.php';
 
 class AdminProductService {
     private AdminProductRepository $repository;
 
-    public function __construct() {
-        $this->repository = new AdminProductRepository();
+    public function __construct(?AdminProductRepository $repo = null) {
+        $this->repository = $repo ?? new AdminProductRepository();
     }
 
     private function validateProduct(array $body): array {
@@ -71,13 +72,15 @@ class AdminProductService {
 
     
 
-    public function createProduct(array $body): array {
+    public function createProduct(array $body, ?array $admin = null): array {
         try {
         $product = $this->validateProduct($body);
 
         $creted = $this->repository->createProduct($product);
 
         http_response_code(201);
+
+        if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'criar', 'produto', (int)($creted['id'] ?? 0), ['nome' => $product['nome']]);
 
         return [
             'message' => "Produto '{$product['nome']}' criado com sucesso",
@@ -98,7 +101,7 @@ class AdminProductService {
         }
     }
 
-    public function updateProduct(string $id, array $body): array {
+    public function updateProduct(string $id, array $body, ?array $admin = null): array {
         $id = (int)$id;
 
         try {
@@ -114,6 +117,8 @@ class AdminProductService {
             NotificationService::notifyLowStock($product['nome'], (int)$product['estoque']);
 
             http_response_code(200);
+
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'editar', 'produto', $id, ['nome' => $product['nome']]);
 
             return [
                 'message' => "Produto '{$product['nome']}' atualizado com sucesso",
@@ -134,7 +139,7 @@ class AdminProductService {
     }
 
 
-    public function deleteProduct($id) {
+    public function deleteProduct($id, ?array $admin = null) {
         $id = (int)$id;
 
         try {
@@ -150,6 +155,8 @@ class AdminProductService {
             if ($fotoUrl) Cloudinary::deleteImage($fotoUrl);
 
             http_response_code(200);
+
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'deletar', 'produto', $id);
 
             return ['message' => "Produto $id removido"];
         } catch (RuntimeException $e) {

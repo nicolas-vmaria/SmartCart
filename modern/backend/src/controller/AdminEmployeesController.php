@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminEmployeesController extends BaseController {
     private AdminEmployeesService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_admin');
+        $this->admin   = AuthMiddleware::handle('admin', 'ver_admin');
         $this->service = new AdminEmployeesService();
     }
 
@@ -32,7 +33,7 @@ class AdminEmployeesController extends BaseController {
             $this->respond(['error' => 'JSON inválido ou corpo vazio'], 400);
             return;
         }
-        $result = $this->service->createEmployee($body);
+        $result = $this->service->createEmployee($body, $this->admin);
         $this->respond($result, 201);
     }
 
@@ -42,14 +43,14 @@ class AdminEmployeesController extends BaseController {
             $this->respond(['error' => 'JSON inválido ou corpo vazio'], 400);
             return;
         }
-        $this->respond($this->service->updateEmployee($id, $body));
+        $this->respond($this->service->updateEmployee($id, $body, $this->admin));
     }
 
     public function destroy(string $id): void {
-        $this->respond($this->service->deleteEmployee($id));
+        $this->respond($this->service->deleteEmployee($id, $this->admin));
     }
 
     public function resetPassword(string $id): void {
-    $this->respond($this->service->resetPassword($id));
+    $this->respond($this->service->resetPassword($id, $this->admin));
     }
 }

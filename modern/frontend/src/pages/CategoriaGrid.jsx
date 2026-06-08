@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { imgUrl } from '../lib/cloudinaryUrl'
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { LuSlidersHorizontal, LuArrowUpDown, LuChevronRight, LuTag } from 'react-icons/lu'
 import { getCategoryBySlug } from '../lib/api/categories'
@@ -19,7 +20,7 @@ function ProdutoCard({ produto }) {
         >
             <div className="relative bg-gray-100 h-52 flex items-center justify-center overflow-hidden">
                 {foto_url ? (
-                    <img src={foto_url} alt={nome} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src={imgUrl(foto_url, 400)} alt={nome} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
                     <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
                         <FaCartShopping className="text-gray-400 text-3xl" />

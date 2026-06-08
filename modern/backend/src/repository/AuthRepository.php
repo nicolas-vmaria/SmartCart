@@ -11,12 +11,12 @@ class AuthRepository {
 
     public function findByEmail(string $email): ?array {
         $stmt = $this->db->prepare('
-            SELECT u.id, u.nome, u.email, u.tel, u.senha, u.is_admin,
+            SELECT u.id, u.nome, u.email, u.tel, u.senha, u.is_admin, u.email_verificado,
                    p.nome_papel AS role,
                    p.ver_dashboard, p.ver_clientes, p.ver_categorias,
                    p.ver_produtos, p.ver_pedidos, p.ver_admin, p.ver_curriculos,
                    p.ver_trabalhos, p.ver_cupons, p.ver_relatorios, p.ver_usuarios, p.ver_configuracoes,
-                   p.ver_customizacao, p.ver_marketing, p.ver_reviews
+                   p.ver_customizacao, p.ver_marketing, p.ver_reviews, p.ver_auditoria
             FROM Usuario u
             JOIN Papeis p ON p.id = u.papel_id
             WHERE u.email = ?
@@ -25,6 +25,23 @@ class AuthRepository {
         $user = $stmt->fetch();
 
         return $user ?: null;
+    }
+
+    public function saveVerificationToken(int $id, string $token): void {
+        $stmt = $this->db->prepare('UPDATE Usuario SET token_verificacao = ? WHERE id = ?');
+        $stmt->execute([$token, $id]);
+    }
+
+    public function findByVerificationToken(string $token): ?array {
+        $stmt = $this->db->prepare('SELECT id, email, nome FROM Usuario WHERE token_verificacao = ?');
+        $stmt->execute([$token]);
+        $user = $stmt->fetch();
+        return $user ?: null;
+    }
+
+    public function markEmailVerified(int $id): void {
+        $stmt = $this->db->prepare('UPDATE Usuario SET email_verificado = TRUE, token_verificacao = NULL WHERE id = ?');
+        $stmt->execute([$id]);
     }
 
     public function register(array $user): array {

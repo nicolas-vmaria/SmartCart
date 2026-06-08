@@ -5,8 +5,8 @@ require_once __DIR__ . '/../repository/CategoryRepository.php';
 class CategoryService {
     private CategoryRepository $repo;
 
-    public function __construct() {
-        $this->repo = new CategoryRepository();
+    public function __construct(?CategoryRepository $repo = null) {
+        $this->repo = $repo ?? new CategoryRepository();
     }
 
     public function getAllCategories(): array {

@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminClientController extends BaseController {
     private AdminClientService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_clientes');
+        $this->admin   = AuthMiddleware::handle('admin', 'ver_clientes');
         $this->service = new AdminClientService();
     }
 
@@ -18,7 +19,7 @@ class AdminClientController extends BaseController {
     }
 
     public function destroy($id) {
-        $result = $this->service->deleteClient($id);
+        $result = $this->service->deleteClient($id, $this->admin);
         $this->respond($result);
     }
 }

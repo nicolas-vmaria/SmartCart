@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminCouponController extends BaseController {
     private AdminCouponService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin', 'ver_cupons');
+        $this->admin   = AuthMiddleware::handle('admin', 'ver_cupons');
         $this->service = new AdminCouponService();
     }
 
@@ -33,7 +34,7 @@ class AdminCouponController extends BaseController {
             return;
         }
 
-        $result = $this->service->createCoupon($body);
+        $result = $this->service->createCoupon($body, $this->admin);
         $this->respond($result, 201);
     }
 
@@ -46,12 +47,12 @@ class AdminCouponController extends BaseController {
             return;
         }
 
-        $result = $this->service->updateCoupon($id, $body);
+        $result = $this->service->updateCoupon((int)$id, $body, $this->admin);
         $this->respond($result);
     }
 
     public function destroy(string $id) {
-        $result = $this->service->deleteCoupon($id);
+        $result = $this->service->deleteCoupon($id, $this->admin);
         $this->respond($result);
     }
 }

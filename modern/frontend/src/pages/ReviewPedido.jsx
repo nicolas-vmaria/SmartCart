@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { imgUrl } from '../lib/cloudinaryUrl'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Star } from 'lucide-react'
 import { getOrderReviewItems, createReview } from '../lib/api/reviews'
@@ -142,7 +143,7 @@ export default function ReviewPedido() {
                                 <div className="flex gap-4 items-start">
                                     <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-gray-100">
                                         {item.foto_url
-                                            ? <img src={item.foto_url} alt={item.nome} className="w-full h-full object-cover" />
+                                            ? <img src={imgUrl(item.foto_url, 200)} alt={item.nome} loading="lazy" className="w-full h-full object-cover" />
                                             : <div className="w-full h-full bg-gray-200" />
                                         }
                                     </div>

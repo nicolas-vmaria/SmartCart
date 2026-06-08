@@ -6,9 +6,10 @@ require_once __DIR__ . '/BaseController.php';
 
 class AdminOrderController extends BaseController {
     private AdminOrderService $service;
+    private array $admin;
 
     public function __construct() {
-        AuthMiddleware::handle('admin');
+        $this->admin   = AuthMiddleware::handle('admin');
         $this->service = new AdminOrderService();
     }
 
@@ -30,7 +31,7 @@ class AdminOrderController extends BaseController {
             return;
         }
 
-        $result = $this->service->updateStatus($id, $body);
+        $result = $this->service->updateStatus((int)$id, $body, $this->admin);
         $this->respond($result);
         
     }

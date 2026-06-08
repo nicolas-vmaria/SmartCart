@@ -6,8 +6,8 @@ require_once __DIR__ . '/NotificationService.php';
 class CandidacyService {
     private CandidacyRepository $repository;
 
-    public function __construct() {
-        $this->repository = new CandidacyRepository();
+    public function __construct(?CandidacyRepository $repo = null) {
+        $this->repository = $repo ?? new CandidacyRepository();
     }
 
     public function getAllTrabalhos(): array {

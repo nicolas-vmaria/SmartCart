@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../service/AdminAuthService.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class AdminAuthController extends BaseController {
     private AdminAuthService $service;
@@ -19,5 +20,10 @@ class AdminAuthController extends BaseController {
         }
         $result = $this->service->login($body);
         $this->respond($result);
+    }
+
+    public function logout() {
+        $admin = AuthMiddleware::handle('admin');
+        $this->respond($this->service->logout($admin));
     }
 }

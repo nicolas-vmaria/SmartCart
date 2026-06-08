@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminVacanciesRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 
 class AdminVacanciesService {
     private AdminVacanciesRepository $repository;
@@ -8,8 +9,8 @@ class AdminVacanciesService {
     private const TIPOS_CONTRATO   = ['CLT', 'PJ', 'Estágio', 'Freelance', 'CLT + Bônus'];
     private const FORMATOS         = ['Presencial', 'Remoto', 'Híbrido'];
 
-    public function __construct() {
-        $this->repository = new AdminVacanciesRepository();
+    public function __construct(?AdminVacanciesRepository $repo = null) {
+        $this->repository = $repo ?? new AdminVacanciesRepository();
     }
 
     private function generateSlug(string $nome): string {
@@ -105,7 +106,7 @@ class AdminVacanciesService {
         ];
     }
 
-    public function createVacancy(array $body): array {
+    public function createVacancy(array $body, ?array $admin = null): array {
         $data = $this->validate($body);
         if (isset($data['error'])) return $data;
 
@@ -118,6 +119,7 @@ class AdminVacanciesService {
             }
 
             $created = $this->repository->create($data);
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'criar', 'vaga', $created['id'] ?? null, ['nome' => $data['nome']]);
             http_response_code(201);
             return [
                 'message' => "Vaga '{$data['nome']}' criada com sucesso",
@@ -129,7 +131,7 @@ class AdminVacanciesService {
         }
     }
 
-    public function updateVacancy(string $id, array $body): array {
+    public function updateVacancy(string $id, array $body, ?array $admin = null): array {
         $idInt = (int)$id;
         if ($idInt <= 0) {
             http_response_code(400);
@@ -154,6 +156,7 @@ class AdminVacanciesService {
             }
 
             $this->repository->update($idInt, $data);
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'editar', 'vaga', $idInt, ['nome' => $data['nome']]);
             return [
                 'message' => "Vaga $idInt atualizada com sucesso",
                 'vacancy' => $this->repository->findById($idInt),
@@ -164,7 +167,7 @@ class AdminVacanciesService {
         }
     }
 
-    public function toggleVacancy(string $id): array {
+    public function toggleVacancy(string $id, ?array $admin = null): array {
         $idInt = (int)$id;
         if ($idInt <= 0) {
             http_response_code(400);
@@ -176,6 +179,7 @@ class AdminVacanciesService {
                 http_response_code(404);
                 return ['error' => 'Vaga não encontrada'];
             }
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'toggle_ativo', 'vaga', $idInt);
             return ['message' => 'Status atualizado', 'vaga' => $vaga];
         } catch (RuntimeException $e) {
             http_response_code(500);
@@ -183,7 +187,7 @@ class AdminVacanciesService {
         }
     }
 
-    public function deleteVacancy(string $id): array {
+    public function deleteVacancy(string $id, ?array $admin = null): array {
         $idInt = (int)$id;
         if ($idInt <= 0) {
             http_response_code(400);
@@ -202,6 +206,7 @@ class AdminVacanciesService {
             }
 
             $this->repository->delete($idInt);
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'deletar', 'vaga', $idInt);
             return ['message' => "Vaga $idInt removida com sucesso"];
         } catch (RuntimeException $e) {
             http_response_code(500);

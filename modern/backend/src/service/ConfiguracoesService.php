@@ -25,8 +25,8 @@ class ConfiguracoesService {
         'notify_novos_curriculos', 'notify_alertas_sistema',
     ];
 
-    public function __construct() {
-        $this->repository = new ConfiguracoesRepository();
+    public function __construct(?ConfiguracoesRepository $repo = null) {
+        $this->repository = $repo ?? new ConfiguracoesRepository();
     }
 
     public function getAll(): array {

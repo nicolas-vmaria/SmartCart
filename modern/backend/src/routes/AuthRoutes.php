@@ -7,3 +7,4 @@ $router->post('/auth/register',        [AuthController::class, 'register']);
 $router->post('/auth/google',          [AuthController::class, 'googleLogin']);
 $router->post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 $router->post('/auth/reset-password',  [AuthController::class, 'resetPassword']);
+$router->get('/auth/verificar-email',  [AuthController::class, 'verifyEmail']);

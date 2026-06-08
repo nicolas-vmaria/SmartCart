@@ -10,9 +10,9 @@ class AuthService {
     private AuthRepository $authRepository;
     private forgotPasswordRepository $forgotPasswordRepository;
 
-    public function __construct() {
-        $this->authRepository = new AuthRepository();
-        $this->forgotPasswordRepository = new forgotPasswordRepository();
+    public function __construct(?AuthRepository $auth = null, ?forgotPasswordRepository $forgot = null) {
+        $this->authRepository = $auth ?? new AuthRepository();
+        $this->forgotPasswordRepository = $forgot ?? new forgotPasswordRepository();
     }
 
     public function login(array $body): array {
@@ -34,6 +34,11 @@ class AuthService {
         if(strtolower($user['role']) !== 'cliente') {
             http_response_code(403);
             return ['error' => 'Acesso negado para usuários admin'];
+        }
+
+        if (!(bool)$user['email_verificado']) {
+            http_response_code(403);
+            return ['error' => 'Confirme seu e-mail antes de fazer login.'];
         }
 
         $token = Jwt::generate([
@@ -102,38 +107,45 @@ class AuthService {
 
         $user = $this->authRepository->findByEmail($email);
 
-        $token = Jwt::generate([
-            'userId' => $user['id'],
-            'email'  => $user['email'],
-            'tel'    => $user['tel'],
-            'role'   => $user['role'],
-        ]);
+        $verificationToken = bin2hex(random_bytes(32));
+        $this->authRepository->saveVerificationToken($user['id'], $verificationToken);
+
+        $frontendUrl = rtrim($_ENV['FRONTEND_URL'] ?? 'http://localhost:5173', '/');
+        $verifyLink  = "{$frontendUrl}/verificar-email?token={$verificationToken}";
 
         try {
             $mailer = new Mailer();
             $mailer->send(
                 $user['email'],
-                'Bem-vindo à SmartCart! 🎉',
-                $this->buildWelcomeEmail($user['nome'])
+                'Bem-vindo à SmartCart! Confirme seu e-mail',
+                $this->buildWelcomeEmail($user['nome'], $verifyLink)
             );
         } catch (Exception $e) {
             // Falha no email não impede o cadastro
         }
 
-        return [
-            'token' => $token,
-            'user'    => [
-                'id'    => $user['id'],
-                'nome'  => $user['nome'],
-                'tel'   => $user['tel'],
-                'email' => $user['email'],
-
-            ],
-        ];
+        return ['message' => 'Cadastro realizado! Verifique seu e-mail para ativar sua conta.'];
     }
 
-    private function buildWelcomeEmail(string $nome): string {
+    public function verifyEmail(string $token): array {
+        if ($token === '') {
+            http_response_code(400);
+            return ['error' => 'Token inválido'];
+        }
+
+        $user = $this->authRepository->findByVerificationToken($token);
+        if (!$user) {
+            http_response_code(400);
+            return ['error' => 'Token inválido ou já utilizado'];
+        }
+
+        $this->authRepository->markEmailVerified((int)$user['id']);
+        return ['message' => 'E-mail confirmado com sucesso! Você já pode fazer login.'];
+    }
+
+    private function buildWelcomeEmail(string $nome, string $verifyLink): string {
         $nome = htmlspecialchars($nome);
+        $verifyLink = htmlspecialchars($verifyLink);
         return "
 <div style='font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff;'>
     <div style='text-align: center; margin-bottom: 28px;'>
@@ -141,10 +153,17 @@ class AuthService {
         <p style='color: #9ca3af; font-size: 13px; margin: 4px 0 0;'>Loja Inteligente</p>
     </div>
 
-    <h2 style='color: #111827; font-size: 20px; margin: 0 0 8px;'>Olá, {$nome}! Seja bem-vindo(a)! 👋</h2>
+    <h2 style='color: #111827; font-size: 20px; margin: 0 0 8px;'>Olá, {$nome}! Confirme seu e-mail 👋</h2>
     <p style='color: #374151; font-size: 15px; line-height: 1.6; margin: 0 0 24px;'>
-        Estamos muito felizes em ter você na SmartCart. Sua conta foi criada com sucesso e você já pode aproveitar todos os nossos produtos.
+        Clique no botão abaixo para confirmar seu e-mail e ativar sua conta SmartCart.
     </p>
+
+    <div style='text-align: center; margin-bottom: 24px;'>
+        <a href='{$verifyLink}'
+           style='display: inline-block; padding: 14px 32px; background-color: #16a34a; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>
+            Confirmar e-mail
+        </a>
+    </div>
 
     <div style='background: #f0fdf4; border: 2px dashed #16a34a; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 24px;'>
         <p style='color: #15803d; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;'>Presente de boas-vindas</p>
@@ -152,16 +171,7 @@ class AuthService {
         <p style='color: #6b7280; font-size: 13px; margin: 0;'>10% de desconto na sua primeira compra</p>
     </div>
 
-    <p style='color: #374151; font-size: 14px; line-height: 1.6; margin: 0 0 24px;'>
-        Use o cupom acima no checkout e ganhe <strong>10% de desconto</strong> em qualquer pedido. Sem valor mínimo e sem data de expiração!
-    </p>
-
-    <div style='text-align: center; margin-bottom: 28px;'>
-        <a href='http://localhost:5173/produtos'
-           style='display: inline-block; padding: 14px 32px; background-color: #16a34a; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>
-            Explorar produtos
-        </a>
-    </div>
+    <p style='color: #9ca3af; font-size: 12px;'>Se você não criou esta conta, ignore este e-mail.</p>
 
     <hr style='border: none; border-top: 1px solid #e5e7eb; margin: 0 0 16px;'>
     <p style='color: #9ca3af; font-size: 12px; text-align: center; margin: 0;'>SmartCart &copy; " . date('Y') . " — Loja Inteligente</p>
@@ -242,6 +252,8 @@ class AuthService {
                     'senha' => password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT),
                 ]);
                 $user = $this->authRepository->findByEmail($email);
+                $this->authRepository->markEmailVerified((int)$user['id']);
+                $user['email_verificado'] = true;
             }
 
             if ($user['role'] !== 'cliente') {

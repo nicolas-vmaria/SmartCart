@@ -1,4 +1,5 @@
 import { Link, useLocation, Navigate } from "react-router-dom"
+import { imgUrl } from "../lib/cloudinaryUrl"
 import { CheckCircle, MapPin, CreditCard, Package, Clock, ChevronRight, ShoppingBag } from "lucide-react"
 import { FaPix } from "react-icons/fa6"
 import { FaRegCreditCard } from "react-icons/fa"
@@ -68,7 +69,7 @@ export default function OrderConfirmation() {
                             <div key={item.id} className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0">
                                 <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
                                     {item.foto_url
-                                        ? <img src={item.foto_url} alt={item.nome} className="w-full h-full object-cover" />
+                                        ? <img src={imgUrl(item.foto_url, 150)} alt={item.nome} loading="lazy" className="w-full h-full object-cover" />
                                         : <Package size={18} className="text-gray-400" />
                                     }
                                 </div>

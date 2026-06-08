@@ -1,12 +1,13 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminRolesRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 
 class AdminRolesService {
     private AdminRolesRepository $repository;
 
-    public function __construct() {
-        $this->repository = new AdminRolesRepository();
+    public function __construct(?AdminRolesRepository $repo = null) {
+        $this->repository = $repo ?? new AdminRolesRepository();
     }
 
     public function validateRole(array $body): array {
@@ -28,6 +29,7 @@ class AdminRolesService {
         $ver_configuracoes= ($body['ver_configuracoes']=== 'true' || $body['ver_configuracoes']=== '1') ? 1 : 0;
         $ver_marketing    = ($body['ver_marketing']    === 'true' || $body['ver_marketing']    === '1') ? 1 : 0;
         $ver_reviews      = ($body['ver_reviews']      === 'true' || $body['ver_reviews']      === '1') ? 1 : 0;
+        $ver_auditoria    = ($body['ver_auditoria']    === 'true' || $body['ver_auditoria']    === '1') ? 1 : 0;
 
         if (!$nome_papel || !$badge) {
             throw new InvalidArgumentException("Campos obrigatórios ausentes: nome_papel, badge");
@@ -52,6 +54,7 @@ class AdminRolesService {
             'ver_configuracoes'=> $ver_configuracoes,
             'ver_marketing'    => $ver_marketing,
             'ver_reviews'      => $ver_reviews,
+            'ver_auditoria'    => $ver_auditoria,
         ];
     }
 
@@ -65,12 +68,13 @@ class AdminRolesService {
         }
     }
 
-    public function createRole(array $body): array {
+    public function createRole(array $body, ?array $admin = null): array {
         try {
             $role = $this->validateRole($body);
 
             $created = $this->repository->createRole($role);        
 
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'criar', 'papel', $created['id'] ?? null, ['nome' => $role['nome_papel']]);
             http_response_code(201);
 
             return [
@@ -91,7 +95,7 @@ class AdminRolesService {
         }           
     }
 
-    public function updateRole($id, array $body): array {
+    public function updateRole($id, array $body, ?array $admin = null): array {
         try {
             $role = $this->validateRole($body);
 
@@ -104,6 +108,7 @@ class AdminRolesService {
 
             http_response_code(200);
 
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'editar', 'papel', (int)$id, ['nome' => $role['nome_papel']]);
             return [
                 'message' => "Papel '{$role['nome_papel']}' atualizado com sucesso",
                 'role' => $role
@@ -117,7 +122,7 @@ class AdminRolesService {
         }           
     }
 
-    public function deleteRole($id): array {
+    public function deleteRole($id, ?array $admin = null): array {
         try {
             $deleted = $this->repository->deleteRole((int)$id);
 
@@ -126,6 +131,7 @@ class AdminRolesService {
                 return ['error' => "Não foi possível remover papel $id, verifique se o id é válido"];
             }
 
+            if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'deletar', 'papel', (int)$id);
             http_response_code(200);
             return ['message' => "Papel $id removido"];
         } catch (RuntimeException $e) {

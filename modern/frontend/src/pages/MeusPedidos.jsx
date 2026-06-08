@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import Breadcrumb from "../components/Breadcrumb"
 import { Package, ChevronRight, Clock, ShoppingBag } from "lucide-react"
 import { FaPix } from "react-icons/fa6"
 import { FaRegCreditCard } from "react-icons/fa"
@@ -85,6 +86,7 @@ export default function MeusPedidos() {
     return (
         <main className="min-h-screen bg-gray-50 py-12 px-6">
             <div className="max-w-2xl mx-auto flex flex-col gap-6">
+                <Breadcrumb items={[{ label: 'Início', href: '/' }, { label: 'Meus Pedidos' }]} />
 
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">

@@ -64,6 +64,12 @@ class AuthController extends BaseController {
         $this->respond($result);
     }
 
+    public function verifyEmail() {
+        $token = isset($_GET['token']) ? trim((string)$_GET['token']) : '';
+        $result = $this->service->verifyEmail($token);
+        $this->respond($result);
+    }
+
     public function googleLogin() {
         $body = $this->getBody();
         if (!$body) {

@@ -5,8 +5,8 @@ require_once __DIR__ . '/../repository/CompraJuntoRepository.php';
 class CompraJuntoService {
     private CompraJuntoRepository $repository;
 
-    public function __construct() {
-        $this->repository = new CompraJuntoRepository();
+    public function __construct(?CompraJuntoRepository $repo = null) {
+        $this->repository = $repo ?? new CompraJuntoRepository();
     }
 
     public function getAll(): array {

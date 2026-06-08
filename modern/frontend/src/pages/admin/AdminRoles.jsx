@@ -22,6 +22,7 @@ const SECTIONS = [
     { key: 'usuarios',      label: 'Usuários' },
     { key: 'configuracoes', label: 'Configurações' },
     { key: 'reviews',       label: 'Reviews' },
+    { key: 'auditoria',     label: 'Auditoria' },
 ]
 
 function emptyPerms() {
@@ -75,6 +76,7 @@ function apiRoleToModel(r) {
             usuarios:      !!r.ver_usuarios,
             configuracoes: !!r.ver_configuracoes,
             reviews:       !!r.ver_reviews,
+            auditoria:     !!r.ver_auditoria,
         }
     }
 }
@@ -133,6 +135,7 @@ export default function AdminRoles() {
             ver_usuarios:     form.permissions.usuarios      ? '1' : '0',
             ver_configuracoes:form.permissions.configuracoes ? '1' : '0',
             ver_reviews:      form.permissions.reviews       ? '1' : '0',
+            ver_auditoria:    form.permissions.auditoria     ? '1' : '0',
         }
         if (editing) {
             try {

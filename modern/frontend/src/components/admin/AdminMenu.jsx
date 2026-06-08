@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp, MessageSquare, ScrollText } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -6,6 +6,7 @@ import { getAdminOrders } from '../../lib/api/adminOrders'
 import { getCurriculos } from '../../lib/api/adminCurriculos'
 import { getAdminConfiguracoes } from '../../lib/api/adminConfiguracoes'
 import { getProduct } from '../../lib/api/adminProducts'
+import { adminApi } from '../../lib/api'
 
 const linkClass = "cursor-pointer flex gap-2 items-center h-10 px-2 rounded-md transition-all hover:bg-gray-100 dark:text-(--admin-text) dark:hover:bg-(--admin-hover) outline-none"
 
@@ -102,6 +103,7 @@ export default function AdminMenu({ isOpen, onClose }) {
                             {can('customizacao') && <Link to="/admin/customizacao" onClick={onClose} className={linkClass}><Paintbrush size={18} />Customização</Link>}
                             {can('marketing')    && <Link to="/admin/marketing"    onClick={onClose} className={linkClass}><TrendingUp size={18} />Marketing</Link>}
                             {can('relatorios')  && <Link to="/admin/relatorios" onClick={onClose} className={linkClass}><BarChart2 size={18} />Relatórios</Link>}
+                            {can('auditoria')   && <Link to="/admin/auditoria" onClick={onClose} className={linkClass}><ScrollText size={18} />Auditoria</Link>}
                         </div>
                     </ul>
 
@@ -123,7 +125,7 @@ export default function AdminMenu({ isOpen, onClose }) {
             </button>
 
         </aside>
-        {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/') }} onCancel={() => {setConfirm(false)}}/>}
+        {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/admin/login'); adminApi.post('/admin/auth/logout').catch(() => {}) }} onCancel={() => {setConfirm(false)}}/>}
         </>
     )
 }

@@ -23,8 +23,8 @@ class OrderService {
         return self::FRETE_POR_UF[$uf] ?? 29.90;
     }
 
-    public function __construct() {
-        $this->repo = new OrderRepository();
+    public function __construct(?OrderRepository $repo = null) {
+        $this->repo = $repo ?? new OrderRepository();
     }
 
     public function getUserOrders(int $usuario_id): array {

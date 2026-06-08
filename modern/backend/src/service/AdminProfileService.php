@@ -1,12 +1,13 @@
 <?php
 
 require_once __DIR__ . '/../repository/AdminProfileRepository.php';
+require_once __DIR__ . '/../repository/AuditRepository.php';
 
 class AdminProfileService {
     private AdminProfileRepository $repository;
 
-    public function __construct() {
-        $this->repository = new AdminProfileRepository();
+    public function __construct(?AdminProfileRepository $repo = null) {
+        $this->repository = $repo ?? new AdminProfileRepository();
     }
 
     public function getProfile(int $id): array {
@@ -18,7 +19,7 @@ class AdminProfileService {
         return ['profile' => $user];
     }
 
-    public function updateProfile(int $id, array $body): array {
+    public function updateProfile(int $id, array $body, ?array $admin = null): array {
         $nome  = trim($body['nome']  ?? '');
         $email = trim($body['email'] ?? '');
         $tel   = trim($body['tel']   ?? '');
@@ -40,10 +41,11 @@ class AdminProfileService {
         }
 
         $this->repository->updateProfile($id, ['nome' => $nome, 'email' => $email, 'tel' => $tel ?: null]);
+        if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'editar_perfil', 'perfil', $id, ['nome' => $nome, 'email' => $email]);
         return ['message' => 'Perfil atualizado com sucesso', 'profile' => $this->repository->findById($id)];
     }
 
-    public function changePassword(int $id, array $body): array {
+    public function changePassword(int $id, array $body, ?array $admin = null): array {
         $senhaAtual    = $body['senha_atual']    ?? '';
         $senhaNova     = $body['senha_nova']     ?? '';
         $senhaConfirma = $body['senha_confirma'] ?? '';
@@ -70,6 +72,7 @@ class AdminProfileService {
         }
 
         $this->repository->updatePassword($id, password_hash($senhaNova, PASSWORD_BCRYPT));
+        if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'alterar_senha', 'perfil', $id);
         return ['message' => 'Senha alterada com sucesso'];
     }
 }

@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom"
+import { imgUrl } from "../lib/cloudinaryUrl"
+import Breadcrumb from "../components/Breadcrumb"
 import { useState, useEffect, useCallback, memo } from "react"
 import { ShoppingCart, Trash2, Loader2, X, Tag, Truck, AlertTriangle } from "lucide-react"
 import { validateCoupon } from "../lib/api/coupons"
@@ -25,7 +27,7 @@ const CartItem = memo(function CartItem({ item, onChangeQtd, onRemove, updating 
         <div className="flex flex-col sm:flex-row bg-gray-100 p-5 sm:p-8 rounded-2xl gap-4 sm:gap-6 items-start sm:items-center">
             <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-2xl border-2 border-gray-200 bg-white flex justify-center items-center shrink-0 overflow-hidden">
                 {item.foto_url
-                    ? <img src={item.foto_url} alt={item.produto_nome} className="w-full h-full object-cover" />
+                    ? <img src={imgUrl(item.foto_url, 300)} alt={item.produto_nome} loading="lazy" className="w-full h-full object-cover" />
                     : <ShoppingCart className="text-gray-300 text-4xl" size={40} />
                 }
             </div>
@@ -270,6 +272,7 @@ export default function Cart() {
             )}
 
             <section className="flex flex-col w-full lg:flex-1">
+                <Breadcrumb items={[{ label: 'Início', href: '/' }, { label: 'Carrinho' }]} />
                 <div className="flex items-center justify-between py-5">
                     <h1 className="text-4xl font-bold">
                         Carrinho
@@ -342,7 +345,7 @@ export default function Cart() {
                                 <div key={p.id} className="flex bg-gray-100 p-4 rounded-2xl gap-4 items-center">
                                     <Link to={`/produto/${p.slug}`} className="w-16 h-16 rounded-xl bg-white border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
                                         {p.foto_url
-                                            ? <img src={p.foto_url} alt={p.nome} className="w-full h-full object-cover" />
+                                            ? <img src={imgUrl(p.foto_url, 150)} alt={p.nome} loading="lazy" className="w-full h-full object-cover" />
                                             : <ShoppingCart size={20} className="text-gray-300" />
                                         }
                                     </Link>
