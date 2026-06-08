@@ -26,12 +26,13 @@ class AuthServiceTest extends TestCase
     private function userFixture(string $role = 'cliente', string $senha = 'senha123'): array
     {
         return [
-            'id'    => 1,
-            'nome'  => 'João',
-            'email' => 'joao@test.com',
-            'tel'   => '11999999999',
-            'senha' => password_hash($senha, PASSWORD_DEFAULT),
-            'role'  => $role,
+            'id'               => 1,
+            'nome'             => 'João',
+            'email'            => 'joao@test.com',
+            'tel'              => '11999999999',
+            'senha'            => password_hash($senha, PASSWORD_DEFAULT),
+            'role'             => $role,
+            'email_verificado' => 1,
         ];
     }
 
