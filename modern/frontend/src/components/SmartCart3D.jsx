@@ -3,9 +3,9 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
-const MAT_WHEEL  = new THREE.MeshStandardMaterial({ color: '#0a0a0a', roughness: 0.9, metalness: 0.1 })
-const MAT_HANDLE = new THREE.MeshStandardMaterial({ color: '#0a0a0a', roughness: 0.3, metalness: 0.8 })
-const MAT_BASKET = new THREE.MeshStandardMaterial({ color: '#5F9936', roughness: 0.3, metalness: 0.5 })
+const MAT_WHEEL  = new THREE.MeshStandardMaterial({ color: '#1a1a1a', roughness: 0.9, metalness: 0.05 })
+const MAT_HANDLE = new THREE.MeshStandardMaterial({ color: '#1a1a1a', roughness: 0.6, metalness: 0.05 })
+const MAT_BASKET = new THREE.MeshStandardMaterial({ color: '#5F9936', roughness: 0.55, metalness: 0.05 })
 
 function CartModel({ onLoaded }) {
   const group = useRef()
@@ -55,10 +55,11 @@ export default function SmartCart3D() {
         }}
         style={{ width: '100%', height: '100%', background: 'transparent' }}
       >
-        <ambientLight intensity={1.4} />
-        <directionalLight position={[5, 8, 5]} intensity={2.2} />
-        <directionalLight position={[-4, 3, -3]} intensity={0.9} />
-        <pointLight position={[0, 5, 2]} intensity={1.2} color="#D4E84A" />
+        <ambientLight intensity={3} />
+        <directionalLight position={[5, 8, 5]} intensity={4} />
+        <directionalLight position={[-4, 3, -3]} intensity={2} />
+        <directionalLight position={[0, -4, 5]} intensity={1.5} />
+        <pointLight position={[0, 4, 6]} intensity={2} color="#ffffff" />
         <Suspense fallback={null}>
           <CartModel onLoaded={handleLoaded} />
         </Suspense>

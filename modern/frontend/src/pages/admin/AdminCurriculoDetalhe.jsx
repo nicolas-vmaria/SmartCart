@@ -99,6 +99,7 @@ export default function AdminCurriculoDetalhe() {
         try {
             await updateCurriculoStatus(id, status)
             setCurriculo(p => ({ ...p, status }))
+            window.dispatchEvent(new CustomEvent('curriculos:updated'))
             setToast({ message: 'Status atualizado.', type: 'success' })
         } catch {
             setToast({ message: 'Erro ao atualizar status.', type: 'error' })

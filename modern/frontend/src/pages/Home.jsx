@@ -235,7 +235,7 @@ function ProdutosDestaque() {
               <div key={p.id} className={`reveal delay-${i + 1} w-[calc(50%-12px)] lg:w-[calc(25%-18px)]`}>
                 <Link
                   to={`/produto/${p.slug}`}
-                  className="flex flex-col h-full rounded-[18px] border border-[#e0e0e0] bg-white overflow-hidden transition-[transform,box-shadow,border-color] duration-300 ease-out hover:shadow-[0_24px_48px_-18px_rgba(26,92,42,0.35)] hover:-translate-y-2 hover:border-[#4CAF50]/40"
+                  className="flex flex-col h-full rounded-[18px] border border-[#e0e0e0] transition-all bg-white overflow-hidden transition-[transform,box-shadow,border-color] duration-300 ease-out hover:shadow-[0_24px_48px_-18px_rgba(26,92,42,0.35)] hover:-translate-y-2 hover:border-[#4CAF50]/40"
                 >
                   <div
                     className="relative grid place-items-center"
@@ -244,6 +244,11 @@ function ProdutosDestaque() {
                     {i === 0 && (
                       <span className="absolute top-3.5 left-3.5 text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: '#1a5c2a', color: '#D4E84A' }}>
                         Mais vendido
+                      </span>
+                    )}
+                    {p.desconto_percentual > 0 && (
+                      <span className="absolute top-3.5 right-3.5 text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: '#e53935', color: '#fff' }}>
+                        -{p.desconto_percentual}%
                       </span>
                     )}
                     {p.foto_url
@@ -256,8 +261,13 @@ function ProdutosDestaque() {
                     <h3 className="text-[17px] font-bold text-gray-900 line-clamp-2">{p.nome}</h3>
                     <div className="flex items-baseline gap-2 mt-2">
                       <span className="text-[22px] font-extrabold tracking-tight text-[#1a5c2a]">
-                        {Number(p.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        {(Number(p.preco) * (1 - p.desconto_percentual / 100)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </span>
+                      {p.desconto_percentual > 0 && (
+                        <span className="text-[13px] text-gray-400 line-through">
+                          {Number(p.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        </span>
+                      )}
                     </div>
                     <button className="mt-3.5 py-2.5 rounded-full text-[14px] font-semibold border border-[#1a5c2a] text-[#1a5c2a] transition-colors hover:bg-[#1a5c2a] hover:text-white">
                       Adicionar ao carrinho
@@ -299,15 +309,14 @@ function Features() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {FEATURES.map((f, i) => (
-            <div
-              key={f.title}
-              className={`reveal delay-${i + 1} flex flex-col gap-3.5 p-8 rounded-[18px] border border-[#e0e0e0] bg-white transition-all hover:shadow-[0_22px_50px_-28px_rgba(26,92,42,0.45)] hover:border-[#4CAF50]`}
-            >
-              <div className="w-[52px] h-[52px] rounded-[14px] grid place-items-center" style={{ background: '#e8f5e9', color: '#1a5c2a' }}>
-                {f.icon}
+            <div key={f.title} className={`reveal delay-${i + 1}`}>
+              <div className="flex flex-col gap-3.5 p-8 rounded-[18px] border border-[#e0e0e0] bg-white h-full transition-[box-shadow,border-color] duration-300 ease-out hover:shadow-[0_22px_50px_-28px_rgba(26,92,42,0.45)] hover:border-[#4CAF50]">
+                <div className="w-[52px] h-[52px] rounded-[14px] grid place-items-center" style={{ background: '#e8f5e9', color: '#1a5c2a' }}>
+                  {f.icon}
+                </div>
+                <h3 className="text-[18px] font-bold text-gray-900">{f.title}</h3>
+                <p className="text-[14.5px] text-[#555] leading-relaxed">{f.desc}</p>
               </div>
-              <h3 className="text-[18px] font-bold text-gray-900">{f.title}</h3>
-              <p className="text-[14.5px] text-[#555] leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
