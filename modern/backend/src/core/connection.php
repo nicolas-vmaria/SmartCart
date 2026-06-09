@@ -26,7 +26,7 @@ class Connection {
                 [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    Pdo\Mysql::ATTR_FOUND_ROWS   => true,
+                    PDO::MYSQL_ATTR_FOUND_ROWS   => true,
                 ]
             );
         }

@@ -1,189 +1,431 @@
-import SmartCart3D from '../components/SmartCart3D'
-import { imgUrl } from '../lib/cloudinaryUrl'
-
-import { FaTruck } from "react-icons/fa6";
-import { FiClock } from "react-icons/fi";
-import { FaArrowsRotate } from "react-icons/fa6";
-import { FaCreditCard } from "react-icons/fa6";
-import { LuNfc } from "react-icons/lu";
-import { FaRegEye } from "react-icons/fa";
-import { FaWeightHanging } from "react-icons/fa";
-import { MdOutlineTouchApp } from "react-icons/md";
-import { MdOutlinePayments } from "react-icons/md";
-import { FaWifi } from "react-icons/fa";
-
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { gsap } from 'gsap'
+import { TextPlugin } from 'gsap/TextPlugin'
+import {
+  ShoppingCart, Truck, Shield, RefreshCcw, CreditCard,
+  Radio, Eye, Scale, Hand, Wifi, ArrowRight, Plug, Monitor, ShoppingBasket,
+} from 'lucide-react'
 import { getProdutosDestaque } from '../lib/api/products'
+import { imgUrl } from '../lib/cloudinaryUrl'
+import SmartCart3D from '../components/SmartCart3D'
 
-export default function Home() {
-    const [destaques, setDestaques] = useState([])
-    const [loadingDestaques, setLoadingDestaques] = useState(true)
+gsap.registerPlugin(TextPlugin)
 
-    useEffect(() => {
-        getProdutosDestaque()
-            .then(({ data }) => setDestaques(data.products ?? []))
-            .catch(() => {})
-            .finally(() => setLoadingDestaques(false))
-    }, [])
+const QUOTE = '"Existe um mundo antes e um depois de termos o SmartCart em nossos mercados!"'
 
-    return (
-        <main className="">
-            <section className="flex flex-col md:flex-row min-h-screen items-center justify-between bg-linear-65 from-verde-escuro to-green-700 px-6 sm:px-12 lg:px-32 xl:px-50 py-20 md:py-0 gap-10">
-                <div className="flex flex-col gap-5 max-w-xl w-full">
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl text-verde-claro font-bold">O Carrinho inteligente que <span className='italic font-light'>facilita sua compra.</span></h1>
+/* Adiciona .in-view a elementos com .reveal quando entram no viewport */
+function setupReveal(root) {
+  const els = root.querySelectorAll('.reveal')
+  if (!els.length) return () => {}
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in-view')
+        io.unobserve(e.target)
+      }
+    }),
+    { threshold: 0.12 }
+  )
+  els.forEach((el) => io.observe(el))
+  return () => io.disconnect()
+}
 
-                    <p className='text-verde-claro'>O <span className="font-black">SmartCart</span> é um carrinho muito bom, legal, maneiro e tem todas as funcionalidade de um carrinho comum, mas muito melhor pq ele tem telinha e computa todos os items que você coloca dentro dele.</p>
+/* ── Hero ────────────────────────────────────────────────────── */
+function Hero() {
+  return (
+    <section
+      className="relative overflow-hidden text-white"
+      style={{
+        background:
+          'radial-gradient(ellipse 70% 80% at 38% 42%, rgba(76,175,80,0.28), transparent 70%), #1a5c2a',
+      }}
+    >
+      <div className="max-w-[1240px] mx-auto px-7 grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 items-center py-18 lg:py-22 min-h-[600px]">
+        {/* Copy */}
+        <div className="flex flex-col">
+          <span
+            className="hero-eyebrow self-start inline-flex items-center gap-2 text-[13px] font-semibold px-4 py-2 rounded-full mb-6 tracking-wide"
+            style={{
+              background: 'rgba(212,232,74,0.12)',
+              border: '1px solid rgba(212,232,74,0.3)',
+              color: '#D4E84A',
+            }}
+          >
+            ● Tecnologia embarcada · feita no Brasil
+          </span>
 
-                    <Link to={'/produtos'}>
-                        <button className='border-2 rounded-2xl border-verde-claro text-verde-claro self-start p-5 transition-all hover:bg-verde-claro hover:text-verde-escuro cursor-pointer'>
-                            Descubra mais produtos!
-                        </button>
-                    </Link>
+          <h1
+            className="font-extrabold leading-[1.05] tracking-[-1.5px] mb-6"
+            style={{ fontSize: 'clamp(40px, 5.2vw, 66px)', color: '#D4E84A' }}
+          >
+            <span className="hero-line block overflow-hidden">O Carrinho</span>
+            <span className="hero-line block overflow-hidden">inteligente que</span>
+            <span
+              className="hero-line block overflow-hidden"
+              style={{ fontFamily: '"Playfair Display", Georgia, serif', fontStyle: 'italic', fontWeight: 600 }}
+            >
+              facilita sua compra.
+            </span>
+          </h1>
+
+          <p
+            className="hero-subtitle text-[17px] leading-relaxed max-w-[480px] mb-8"
+            style={{ color: 'rgba(255,255,255,0.85)' }}
+          >
+            O SmartCart une RFID, visão computacional com IA, sensores de peso e tela
+            touchscreen com pagamento integrado — para acabar com as filas de caixa e
+            transformar a experiência de compra na sua rede.
+          </p>
+
+          <div className="hero-cta-row flex items-center gap-4 flex-wrap">
+            <Link
+              to="/produtos"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full text-base font-semibold border border-white/85 text-white transition-all hover:bg-[#D4E84A] hover:text-[#1a5c2a] hover:border-[#D4E84A]"
+            >
+              Descubra mais produtos! <ArrowRight size={18} />
+            </Link>
+            <a
+              href="#tecnologia"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full text-base font-bold"
+              style={{ background: '#D4E84A', color: '#1a5c2a', border: '1.5px solid #D4E84A' }}
+            >
+              Ver tecnologia
+            </a>
+          </div>
+
+          <div className="flex gap-10 mt-12">
+            {[
+              { num: '-92%', lbl: 'tempo no caixa' },
+              { num: '+38%', lbl: 'ticket médio' },
+              { num: '+120', lbl: 'lojas equipadas' },
+            ].map((s) => (
+              <div key={s.lbl} className="hero-stat">
+                <div className="text-[30px] font-extrabold tracking-tight" style={{ color: '#D4E84A' }}>
+                  {s.num}
                 </div>
-
-                <div className='w-72 h-72 sm:w-96 sm:h-96 lg:w-120 lg:h-120 shrink-0 hidden md:block'>
-                    <SmartCart3D />
+                <div className="text-[13px] mt-0.5" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                  {s.lbl}
                 </div>
-            </section>
+              </div>
+            ))}
+          </div>
+        </div>
 
-            <section className='flex py-10 items-center justify-between'>
-                <div className='px-6 sm:px-12 lg:px-32 xl:px-50 flex w-full gap-5 justify-between flex-wrap'>
-                    <div className='flex border border-gray-200 rounded-2xl p-6 sm:p-10 box-border flex-col items-center gap-2 flex-1 min-w-40'>
-                        <div className='bg-verde-escuro p-6 sm:p-8 rounded-full'>
-                            <FaTruck className='w-10 h-auto sm:w-16 text-verde-claro' />
-                        </div>
-                        <p className='text-center text-sm sm:text-base'>Frete Grátis para todo Brasil!</p>
-                    </div>
-                    <div className='flex border border-gray-200 rounded-2xl p-6 sm:p-10 box-border flex-col items-center gap-2 flex-1 min-w-40'>
-                        <div className='bg-verde-escuro p-6 sm:p-8 rounded-full'>
-                            <FiClock className='w-10 h-auto sm:w-16 text-verde-claro' />
-                        </div>
-                        <p className='text-center text-sm sm:text-base'>Garantia de 2 Anos.</p>
-                    </div>
-                    <div className='flex border border-gray-200 rounded-2xl p-6 sm:p-10 box-border flex-col items-center gap-2 flex-1 min-w-40'>
-                        <div className='bg-verde-escuro p-6 sm:p-8 rounded-full'>
-                            <FaArrowsRotate className='w-10 h-auto sm:w-16 text-verde-claro' />
-                        </div>
-                        <p className='text-center text-sm sm:text-base'>Devolução em Até 30 Dias.</p>
-                    </div>
-                    <div className='flex border border-gray-200 rounded-2xl p-6 sm:p-10 box-border flex-col items-center gap-2 flex-1 min-w-40'>
-                        <div className='bg-verde-escuro p-6 sm:p-8 rounded-full'>
-                            <FaCreditCard className='w-10 h-auto sm:w-16 text-verde-claro' />
-                        </div>
-                        <p className='text-center text-sm sm:text-base'>Parcelado em até 12x sem Juros.</p>
-                    </div>
+        {/* Cart 3D */}
+        <div className="hero-image flex items-center justify-center">
+          <div className="relative w-full max-w-[420px]" style={{ aspectRatio: '1 / 1.05' }}>
+            <SmartCart3D />
+            {/* Mini screen overlay */}
+            <div
+              className="absolute bottom-6 right-[-18px] rounded-[14px] p-3.5 min-w-[180px] z-10"
+              style={{
+                background: 'rgba(15,61,26,0.92)',
+                border: '1px solid rgba(212,232,74,0.4)',
+                backdropFilter: 'blur(6px)',
+                boxShadow: '0 20px 40px -16px rgba(0,0,0,0.6)',
+              }}
+            >
+              {[['Arroz 5kg', 'R$ 28,90'], ['Café 500g', 'R$ 19,50'], ['Frutas (1,2kg)', 'R$ 11,40']].map(([item, price]) => (
+                <div key={item} className="flex justify-between text-[12px] py-0.5" style={{ color: 'rgba(255,255,255,0.78)' }}>
+                  <span>{item}</span><span>{price}</span>
                 </div>
-            </section>
+              ))}
+              <div className="flex justify-between text-[12px] mt-1.5 pt-2 border-t" style={{ borderColor: 'rgba(255,255,255,0.18)' }}>
+                <span style={{ color: 'rgba(255,255,255,0.78)' }}>Total</span>
+                <span className="font-extrabold text-[15px]" style={{ color: '#D4E84A' }}>R$ 59,80</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
-            {(loadingDestaques || destaques.length > 0) && (
-                <section className='py-10 px-6 sm:px-12 lg:px-32 xl:px-50'>
-                    <div className='mb-8'>
-                        <h1 className='text-3xl sm:text-4xl'>Produtos em <span className='font-bold italic'>Destaque</span></h1>
-                        <p className='text-gray-600'>Selecionados especialmente para você</p>
-                    </div>
-                    {loadingDestaques ? (
-                        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'>
-                            {Array.from({ length: 4 }).map((_, i) => (
-                                <div key={i} className='animate-pulse'>
-                                    <div className='bg-gray-200 rounded-2xl h-44 mb-3' />
-                                    <div className='h-4 bg-gray-200 rounded w-3/4 mb-2' />
-                                    <div className='h-3 bg-gray-100 rounded w-1/2' />
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'>
-                            {destaques.map(p => (
-                                <Link key={p.id} to={`/produto/${p.slug}`}
-                                    className='group border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1'>
-                                    <div className='h-44 bg-gray-50 flex items-center justify-center overflow-hidden'>
-                                        {p.foto_url
-                                            ? <img src={imgUrl(p.foto_url, 400)} alt={p.nome} loading="lazy" className='w-full h-full object-cover group-hover:scale-105 transition-transform' />
-                                            : <div className='w-16 h-16 bg-gray-200 rounded-xl' />
-                                        }
-                                    </div>
-                                    <div className='p-4'>
-                                        <h3 className='font-semibold text-sm text-gray-800 line-clamp-2'>{p.nome}</h3>
-                                        <p className='text-verde-escuro font-bold text-sm mt-1'>
-                                            {Number(p.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                                        </p>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
+/* ── Diferenciais ────────────────────────────────────────────── */
+const DIFERENCIAIS = [
+  { icon: <Truck size={24} />, title: 'Frete Grátis', desc: 'Entrega gratuita para todo o Brasil em pedidos elegíveis.' },
+  { icon: <Shield size={24} />, title: 'Garantia de 2 Anos', desc: 'Cobertura total contra defeitos de fabricação e hardware.' },
+  { icon: <RefreshCcw size={24} />, title: 'Devolução em 30 Dias', desc: 'Não gostou? Devolva em até 30 dias, sem complicação.' },
+  { icon: <CreditCard size={24} />, title: 'Até 12x sem Juros', desc: 'Parcele a modernização da sua rede em até 12 vezes.' },
+]
+
+function Diferenciais() {
+  return (
+    <section className="bg-white py-16">
+      <div className="max-w-[1240px] mx-auto px-7">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {DIFERENCIAIS.map((d, i) => (
+            <div
+              key={d.title}
+              className={`reveal delay-${i + 1} flex flex-col gap-3 p-7 rounded-[18px] border border-[#e0e0e0] bg-white transition-shadow hover:shadow-[0_18px_40px_-22px_rgba(26,92,42,0.4)]`}
+            >
+              <div className="w-[50px] h-[50px] rounded-[14px] grid place-items-center" style={{ background: '#1a5c2a', color: '#D4E84A' }}>
+                {d.icon}
+              </div>
+              <h3 className="text-[16px] font-bold text-gray-900">{d.title}</h3>
+              <p className="text-[14px] text-[#555] leading-relaxed">{d.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Produtos em Destaque ────────────────────────────────────── */
+const PRODUTO_ICONS = {
+  0: <ShoppingCart size={56} strokeWidth={1.6} />,
+  1: <Plug size={52} strokeWidth={1.6} />,
+  2: <ShoppingBasket size={56} strokeWidth={1.6} />,
+  3: <Monitor size={56} strokeWidth={1.6} />,
+}
+
+function ProdutosDestaque() {
+  const [destaques, setDestaques] = useState([])
+  const [loading, setLoading] = useState(true)
+  const gridRef = useRef(null)
+
+  useEffect(() => {
+    getProdutosDestaque()
+      .then(({ data }) => setDestaques(data.products ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  /* Observa os cards depois que eles entram no DOM (pós-loading) */
+  useEffect(() => {
+    if (loading || !gridRef.current) return
+    const cleanup = setupReveal(gridRef.current)
+    return cleanup
+  }, [loading])
+
+  if (!loading && destaques.length === 0) return null
+
+  return (
+    <section className="py-24 bg-[#F5F5F5]" id="produtos">
+      <div className="max-w-[1240px] mx-auto px-7">
+        <div className="text-center mb-14 reveal">
+          <h2 className="font-extrabold tracking-tight leading-[1.12]" style={{ fontSize: 'clamp(28px, 3.6vw, 40px)', color: '#1a1a1a' }}>
+            Produtos em{' '}
+            <span style={{ fontFamily: '"Playfair Display", Georgia, serif', fontStyle: 'italic', fontWeight: 600, color: '#2d7a3a' }}>
+              Destaque
+            </span>
+          </h2>
+          <p className="mt-3.5 text-[17px] text-[#555]">Selecionados especialmente para a sua rede</p>
+        </div>
+
+        {loading ? (
+          <div className="flex flex-wrap justify-center gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="w-[calc(50%-12px)] lg:w-[calc(25%-18px)] animate-pulse rounded-[18px] border border-[#e0e0e0] overflow-hidden">
+                <div className="bg-[#e8f5e9] h-44" />
+                <div className="p-5 flex flex-col gap-2">
+                  <div className="h-3 bg-gray-200 rounded w-1/3" />
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-5 bg-gray-200 rounded w-1/2 mt-1" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div ref={gridRef} className="flex flex-wrap justify-center gap-6">
+            {destaques.map((p, i) => (
+              <div key={p.id} className={`reveal delay-${i + 1} w-[calc(50%-12px)] lg:w-[calc(25%-18px)]`}>
+                <Link
+                  to={`/produto/${p.slug}`}
+                  className="flex flex-col h-full rounded-[18px] border border-[#e0e0e0] bg-white overflow-hidden transition-[transform,box-shadow,border-color] duration-300 ease-out hover:shadow-[0_24px_48px_-18px_rgba(26,92,42,0.35)] hover:-translate-y-2 hover:border-[#4CAF50]/40"
+                >
+                  <div
+                    className="relative grid place-items-center"
+                    style={{ aspectRatio: '1 / 0.92', background: 'repeating-linear-gradient(45deg, #e8f5e9 0 16px, #f0f9f1 16px 32px)' }}
+                  >
+                    {i === 0 && (
+                      <span className="absolute top-3.5 left-3.5 text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: '#1a5c2a', color: '#D4E84A' }}>
+                        Mais vendido
+                      </span>
                     )}
-                </section>
-            )}
+                    {p.foto_url
+                      ? <img src={imgUrl(p.foto_url, 400)} alt={p.nome} loading="lazy" className="w-full h-full object-cover" />
+                      : <div style={{ color: '#1a5c2a' }}>{PRODUTO_ICONS[i % 4]}</div>
+                    }
+                  </div>
+                  <div className="p-5 flex flex-col gap-1.5">
+                    <span className="text-[12px] font-semibold uppercase tracking-wider text-[#4CAF50]">Produto</span>
+                    <h3 className="text-[17px] font-bold text-gray-900 line-clamp-2">{p.nome}</h3>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <span className="text-[22px] font-extrabold tracking-tight text-[#1a5c2a]">
+                        {Number(p.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      </span>
+                    </div>
+                    <button className="mt-3.5 py-2.5 rounded-full text-[14px] font-semibold border border-[#1a5c2a] text-[#1a5c2a] transition-colors hover:bg-[#1a5c2a] hover:text-white">
+                      Adicionar ao carrinho
+                    </button>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
 
-            <section className='py-10 px-6 sm:px-10'>
-                <div className='my-10'>
-                    <h1 className='text-3xl sm:text-4xl'>O que o  <span className='font-bold italic'>Smartcart</span> oferece?</h1>
-                    <p className='text-gray-600'>Descubra a tecnologia por trás de um produto SmartCart</p>
-                </div>
+/* ── Features ────────────────────────────────────────────────── */
+const FEATURES = [
+  { icon: <Radio size={26} />, title: 'RFID / NFC', desc: 'Leitores que identificam produtos automaticamente ao colocá-los no carrinho, sem precisar passar no caixa.' },
+  { icon: <Eye size={26} />, title: 'Computer Vision (câmeras + IA)', desc: 'Câmeras que reconhecem os itens visualmente, úteis para frutas, verduras e produtos sem código de barras.' },
+  { icon: <Scale size={26} />, title: 'Sensores de peso', desc: 'Balança integrada que valida o item reconhecido pela câmera ou RFID, evitando fraudes.' },
+  { icon: <Hand size={26} />, title: 'Tela touchscreen', desc: 'Display que exibe a lista de compras, total em tempo real, promoções personalizadas e permite o pagamento direto no carrinho.' },
+  { icon: <CreditCard size={26} />, title: 'Pagamento integrado (NFC / chip)', desc: 'Leitor de cartão ou aproximação direto no carrinho, eliminando a fila do caixa completamente.' },
+  { icon: <Wifi size={26} />, title: 'Conectividade IoT (Wi-Fi / BT)', desc: 'O carrinho sincroniza estoque, envia dados e é rastreado em tempo real via Bluetooth e Wi-Fi.' },
+]
 
-                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10'>
-                    <div className='border-2 border-gray-200 p-5 rounded-2xl transition-all hover:scale-105 hover:shadow-2xl'>
-                        <div className='py-10'>
-                            <LuNfc className='text-4xl text-verde-escuro' />
-                        </div>
-                        <h1 className='text-2xl font-bold'>RFID / NFC</h1>
-                        <p>Leitores que identificam produtos automaticamente ao colocá-los no carrinho, sem precisar passar no caixa.</p>
-                    </div>
-                    <div className='border-2 border-gray-200 p-5 rounded-2xl transition-all hover:shadow-2xl hover:scale-105'>
-                        <div className='py-10'>
-                            <FaRegEye className='text-4xl text-verde-escuro' />
-                        </div>
-                        <h1 className='text-2xl font-bold'>Computer Vision (câmeras + IA)</h1>
-                        <p>Câmeras que reconhecem os itens visualmente, útil para frutas, verduras e produtos sem código de barras.</p>
-                    </div>
-                    <div className='border-2 border-gray-200 p-5 rounded-2xl transition-all hover:shadow-2xl hover:scale-105'>
-                        <div className='py-10'>
-                            <FaWeightHanging className='text-4xl text-verde-escuro' />
-                        </div>
-                        <h1 className='text-2xl font-bold'>Sensores de peso</h1>
-                        <p>Balança integrada que valida o item reconhecido pela câmera ou RFID, evitando fraudes.</p>
-                    </div>
-                    <div className='border-2 border-gray-200 p-5 rounded-2xl transition-all hover:shadow-2xl hover:scale-105'>
-                        <div className='py-10'>
-                            <MdOutlineTouchApp className='text-4xl text-verde-escuro' />
-                        </div>
-                        <h1 className='text-2xl font-bold'>Tela touchscreen</h1>
-                        <p>Display embutido que exibe a lista de compras, total em tempo real, promoções personalizadas e permite o pagamento direto no carrinho.</p>
-                    </div>
-                    <div className='border-2 border-gray-200 p-5 rounded-2xl transition-all hover:shadow-2xl hover:scale-105'>
-                        <div className='py-10'>
-                            <MdOutlinePayments className='text-4xl text-verde-escuro' />
-                        </div>
-                        <h1 className='text-2xl font-bold'>Pagamento integrado (NFC / chip)</h1>
-                        <p>Leitor de cartão ou aproximação direto no carrinho, eliminando a fila do caixa completamente.</p>
-                    </div>
-                    <div className='border-2 border-gray-200 p-5 rounded-2xl transition-all hover:shadow-2xl hover:scale-105'>
-                        <div className='py-10'>
-                            <FaWifi className='text-4xl text-verde-escuro' />
-                        </div>
-                        <h1 className='text-2xl font-bold'>Conectividade IoT (Wi-Fi / BLE)</h1>
-                        <p>O carrinho se comunica com o sistema da loja em tempo real para sincronizar estoque, enviar dados de comportamento do cliente e localizar o carrinho dentro da loja via Bluetooth Low Energy.</p>
-                    </div>
-                </div>
-            </section>
+function Features() {
+  return (
+    <section className="py-24 bg-white" id="tecnologia">
+      <div className="max-w-[1240px] mx-auto px-7">
+        <div className="text-center mb-14 reveal">
+          <h2 className="font-extrabold tracking-tight leading-[1.12]" style={{ fontSize: 'clamp(28px, 3.6vw, 40px)', color: '#1a1a1a' }}>
+            O que o{' '}
+            <span style={{ fontFamily: '"Playfair Display", Georgia, serif', fontStyle: 'italic', fontWeight: 600, color: '#2d7a3a' }}>
+              SmartCart
+            </span>{' '}
+            oferece?
+          </h2>
+          <p className="mt-3.5 text-[17px] text-[#555]">Descubra a tecnologia por trás de um produto SmartCart</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {FEATURES.map((f, i) => (
+            <div
+              key={f.title}
+              className={`reveal delay-${i + 1} flex flex-col gap-3.5 p-8 rounded-[18px] border border-[#e0e0e0] bg-white transition-all hover:shadow-[0_22px_50px_-28px_rgba(26,92,42,0.45)] hover:border-[#4CAF50]`}
+            >
+              <div className="w-[52px] h-[52px] rounded-[14px] grid place-items-center" style={{ background: '#e8f5e9', color: '#1a5c2a' }}>
+                {f.icon}
+              </div>
+              <h3 className="text-[18px] font-bold text-gray-900">{f.title}</h3>
+              <p className="text-[14.5px] text-[#555] leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
 
-            <section className='my-10'>
-                <div className='m-6 sm:m-10'>
-                    <h1 className='text-3xl sm:text-4xl'>Veja o que é falado sobre os nossos produtos!</h1>
-                    <p className='text-gray-600'>Veja o que tá na boca do povo</p>
-                </div>
+/* ── Testimonial ─────────────────────────────────────────────── */
+function Testimonial() {
+  return (
+    <section className="py-24 bg-white">
+      <div className="max-w-[1240px] mx-auto px-7 text-center mb-12 reveal">
+        <h2 className="font-extrabold tracking-tight" style={{ fontSize: 'clamp(28px, 3.6vw, 40px)', color: '#1a1a1a' }}>
+          Veja o que é falado sobre os nossos produtos!
+        </h2>
+        <p className="mt-3.5 text-[17px] text-[#555]">Veja o que tá na boca do povo</p>
+      </div>
+      <div className="testimonial-section py-20" style={{ background: '#1a5c2a' }}>
+        <div className="max-w-[920px] mx-auto px-7 text-center">
+          <div className="leading-[0.6] mb-4 opacity-60" style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 90, color: '#D4E84A' }}>"</div>
+          <p className="quote-text font-bold leading-[1.28] tracking-[-0.8px] text-white min-h-[2.4em]" style={{ fontSize: 'clamp(24px, 3.4vw, 38px)' }} />
+          <div className="quote-author mt-8">
+            <div className="font-bold text-[17px]" style={{ color: '#D4E84A' }}>Frederico Texeira de Campos</div>
+            <div className="text-[14px] mt-1" style={{ color: 'rgba(255,255,255,0.7)' }}>Texeira's Atacadão</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
-                <div className='flex flex-col bg-linear-65 from-verde-escuro to-green-700 w-full py-16 sm:py-20 items-center justify-center px-6 sm:px-16 text-center'>
-                    <h1 className='text-2xl sm:text-4xl text-white'>"Existe um mundo antes e um depois de termos o SmartCart em nossos mercados!"</h1>
-                    <p className='text-verde-claro mt-4'>Frederico Texeira de Campos, Texeira's Atacadão</p>
-                </div>
-            </section>
+/* ── CTA Final ───────────────────────────────────────────────── */
+function CtaFinal() {
+  return (
+    <section className="py-24 bg-white text-center">
+      <div className="max-w-[1240px] mx-auto px-7">
+        <h2
+          className="reveal font-extrabold tracking-[-1.2px] leading-[1.12] max-w-[820px] mx-auto"
+          style={{ fontSize: 'clamp(30px, 4.4vw, 52px)', color: '#1a5c2a' }}
+        >
+          <span style={{ fontFamily: '"Playfair Display", Georgia, serif', fontStyle: 'italic', fontWeight: 600, color: '#2d7a3a' }}>
+            O que está esperando?
+          </span>
+          <br />
+          Aproveite um mundo depois do SmartCart hoje mesmo.
+        </h2>
+        <p className="reveal delay-1 mt-4 text-[18px] text-[#555]">
+          Fale com nosso time e equipe sua rede com a tecnologia que transforma o varejo.
+        </p>
+        <Link
+          to="/produtos"
+          className="reveal delay-2 mt-10 inline-flex items-center gap-2.5 px-12 py-4 rounded-full text-[17px] font-bold text-white transition-colors hover:bg-[#2d7a3a]"
+          style={{ background: '#1a5c2a', border: '1.5px solid #1a5c2a' }}
+        >
+          Produtos <ArrowRight size={18} />
+        </Link>
+      </div>
+    </section>
+  )
+}
 
-            <section className='flex flex-col items-center justify-center py-20 sm:py-32 gap-5 px-6 text-center'>
-                <h1 className='text-4xl sm:text-5xl text-verde-escuro'>O que está <span className='italic'>esperando?</span> <br /> Aproveite um mundo depois do <span className='font-bold'>SmartCart</span> hoje mesmo.</h1>
-                <Link to={"/produtos"}><button className='text-xl sm:text-2xl text-verde-escuro rounded-full px-10 sm:w-70 p-5 border-2 border-verde-escuro cursor-pointer transition-colors hover:bg-verde-escuro hover:text-verde-claro'>Produtos</button></Link>
-            </section>
-        </main>
-    )
+/* ── Home ────────────────────────────────────────────────────── */
+export default function Home() {
+  const rootRef = useRef(null)
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    /* 1. Hero entrance (GSAP — não depende de ScrollTrigger) */
+    const ctx = gsap.context(() => {
+      if (!reduce) {
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+        tl.from('.hero-eyebrow', { y: 30, opacity: 0, duration: 0.5 })
+          .from('.hero-line',    { y: 80, opacity: 0, duration: 0.7, stagger: 0.2 }, '-=0.2')
+          .from('.hero-subtitle',{ y: 40, opacity: 0, duration: 0.6 }, '-=0.3')
+          .from('.hero-cta-row', { scale: 0.85, opacity: 0, duration: 0.5, transformOrigin: 'left center' }, '-=0.2')
+          .from('.hero-stat',    { y: 24, opacity: 0, duration: 0.5, stagger: 0.12 }, '-=0.2')
+          .from('.hero-image',   { x: 120, opacity: 0, duration: 0.8 }, '-=0.9')
+
+        /* Float do carrinho */
+        gsap.to('.hero-image', { y: -12, duration: 3, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      }
+
+      /* Testimonial typewriter */
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            gsap.to('.quote-text', { duration: 3, text: QUOTE, ease: 'none' })
+            gsap.from('.quote-author', { opacity: 0, y: 20, duration: 0.8, delay: 2.6 })
+            io.disconnect()
+          }
+        })
+      }, { threshold: 0.3 })
+      const testimonialSection = root.querySelector('.testimonial-section')
+      if (testimonialSection) io.observe(testimonialSection)
+    }, root)
+
+    /* 2. Scroll reveal via IntersectionObserver (confiável, sem ScrollTrigger) */
+    const cleanupReveal = reduce ? () => {} : setupReveal(root)
+
+    return () => {
+      ctx.revert()
+      cleanupReveal()
+    }
+  }, [])
+
+  return (
+    <main ref={rootRef}>
+      <Hero />
+      <Diferenciais />
+      <ProdutosDestaque />
+      <Features />
+      <Testimonial />
+      <CtaFinal />
+    </main>
+  )
 }
