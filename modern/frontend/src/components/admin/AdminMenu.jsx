@@ -45,7 +45,7 @@ export default function AdminMenu({ isOpen, onClose }) {
             .catch(() => {})
 
         getCurriculos()
-            .then(({ data }) => setNotifCurriculos(data.stats?.novos ?? 0))
+            .then(({ data }) => setNotifCurriculos(Number(data.stats?.novos ?? 0)))
             .catch(() => {})
 
         getProduct()
@@ -59,6 +59,16 @@ export default function AdminMenu({ isOpen, onClose }) {
     useEffect(() => {
         window.addEventListener('config:updated', fetchConfig)
         return () => window.removeEventListener('config:updated', fetchConfig)
+    }, [])
+
+    useEffect(() => {
+        function refreshCurriculos() {
+            getCurriculos()
+                .then(({ data }) => setNotifCurriculos(Number(data.stats?.novos ?? 0)))
+                .catch(() => {})
+        }
+        window.addEventListener('curriculos:updated', refreshCurriculos)
+        return () => window.removeEventListener('curriculos:updated', refreshCurriculos)
     }, [])
 
     let adminUser = {}
