@@ -44,7 +44,16 @@ jobs:
     needs: [frontend-tests, backend-tests]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-      - name: Deploy Frontend
-        run: curl -s -X POST "${{ secrets.RAILWAY_DEPLOY_HOOK_FRONTEND }}"
+      - uses: actions/checkout@v4
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
       - name: Deploy Backend
-        run: curl -s -X POST "${{ secrets.RAILWAY_DEPLOY_HOOK_BACKEND }}"
+        working-directory: modern/backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service ${{ secrets.RAILWAY_SERVICE_BACKEND }} --detach
+      - name: Deploy Frontend
+        working-directory: modern/frontend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service ${{ secrets.RAILWAY_SERVICE_FRONTEND }} --detach

@@ -269,9 +269,9 @@ function ProdutosDestaque() {
                         </span>
                       )}
                     </div>
-                    <button className="mt-3.5 py-2.5 rounded-full text-[14px] font-semibold border border-[#1a5c2a] text-[#1a5c2a] transition-colors hover:bg-[#1a5c2a] hover:text-white">
-                      Adicionar ao carrinho
-                    </button>
+                    <span className="mt-3.5 block py-2.5 rounded-full text-[14px] font-semibold text-center border border-[#1a5c2a] text-[#1a5c2a] transition-colors group-hover:bg-[#1a5c2a] group-hover:text-white">
+                      Ver produto
+                    </span>
                   </div>
                 </Link>
               </div>
