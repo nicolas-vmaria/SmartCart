@@ -282,7 +282,7 @@ export default function AdminManageUsers() {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading && Array.from({ length: 8 }).map((_, i) => (
+                        {loading && users.length === 0 && Array.from({ length: 8 }).map((_, i) => (
                             <tr key={i} className="border-b border-gray-50 dark:border-(--admin-border) animate-pulse">
                                 <td className="py-3 pr-3"><div className="w-4 h-4 bg-gray-200 dark:bg-(--admin-hover) rounded" /></td>
                                 <td className="py-3"><div className="h-4 bg-gray-200 dark:bg-(--admin-hover) rounded w-32" /></td>
