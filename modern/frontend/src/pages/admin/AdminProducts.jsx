@@ -72,9 +72,9 @@ export default function AdminProducts() {
         const matchcategoria = filters.categoria === 'Todas' || p.categoria === filters.categoria
         const matchStock =
             filters.stock === 'Todos' ? true :
-            filters.stock === 'Sem estoque' ? p.stock === 0 :
-            filters.stock === 'Baixo (1-10)' ? p.stock >= 1 && p.stock <= 10 :
-            p.stock > 10
+            filters.stock === 'Sem estoque' ? p.estoque === 0 :
+            filters.stock === 'Baixo (1-10)' ? p.estoque >= 1 && p.estoque <= 10 :
+            p.estoque > 10
         return matchSearch && matchStatus && matchcategoria && matchStock
     })
 

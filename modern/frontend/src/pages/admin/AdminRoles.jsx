@@ -4,7 +4,7 @@ import AdminHeader from "../../components/admin/AdminHeader"
 import Toast from '../../components/Toast'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import { Plus, Pencil, Trash2, X, Check, ShieldCheck, Shield, ChevronDown, ChevronUp, Users } from 'lucide-react'
-import { createRole, getRoles as getRolesApi, updateRole } from '../../lib/api/roles'
+import { createRole, getRoles as getRolesApi, updateRole, deleteRole as deleteRoleApi } from '../../lib/api/roles'
 
 const SECTIONS = [
     { key: 'dashboard',     label: 'Dashboard' },
@@ -92,6 +92,7 @@ export default function AdminRoles() {
     const [expanded, setExpanded] = useState(null)
     const [toast, setToast] = useState(null)
     const [confirmRoleId, setConfirmRoleId] = useState(null)
+    const [submitting, setSubmitting] = useState(false)
 
 
     function openCreate() {
@@ -111,11 +112,13 @@ export default function AdminRoles() {
         setShowModal(false)
         setEditing(null)
         setForm(buildEmptyForm())
+        setSubmitting(false)
     }
 
     async function handleSubmit(e) {
         e.preventDefault()
-        if (!form.nome_papel) return
+        if (!form.nome_papel || submitting) return
+        setSubmitting(true)
         const payload = {
             nome_papel:       form.nome_papel,
             badge:            form.color,
@@ -137,35 +140,36 @@ export default function AdminRoles() {
             ver_reviews:      form.permissions.reviews       ? '1' : '0',
             ver_auditoria:    form.permissions.auditoria     ? '1' : '0',
         }
-        if (editing) {
-            try {
+        try {
+            if (editing) {
                 await updateRole(editing, payload)
                 setRoles(prev => prev.map(r => r.id === editing
                     ? { ...r, nome_papel: form.nome_papel, descricao: form.descricao, color: form.color, permissions: { ...form.permissions } }
                     : r
                 ))
                 setToast({ message: 'Papel editado com sucesso', type: 'success' })
-            } catch (err) {
-                setToast({ message: err.response?.data?.error || 'Erro ao editar papel', type: 'error' })
-                return
-            }
-            
-        } else {
-            try {
+                closeModal()
+            } else {
                 const { data } = await createRole(payload)
                 setRoles(prev => [...prev, apiRoleToModel({ ...data.role })])
                 setToast({ message: 'Papel criado com sucesso', type: 'success' })
-            } catch (err) {
-                setToast({ message: err.response?.data?.error || 'Erro ao criar papel', type: 'error' })
-                return
+                closeModal()
             }
+        } catch (err) {
+            setToast({ message: err.response?.data?.error || (editing ? 'Erro ao editar papel' : 'Erro ao criar papel'), type: 'error' })
+        } finally {
+            setSubmitting(false)
         }
-        closeModal()
     }
 
-    function deleteRole(id) {
-        setRoles(prev => prev.filter(r => r.id !== id))
-        setToast({ message: 'Papel removido', type: 'success' })
+    async function deleteRole(id) {
+        try {
+            await deleteRoleApi(id)
+            setRoles(prev => prev.filter(r => r.id !== id))
+            setToast({ message: 'Papel removido', type: 'success' })
+        } catch (err) {
+            setToast({ message: err.response?.data?.error || 'Erro ao remover papel', type: 'error' })
+        }
     }
 
     function togglePerm(section) {
@@ -375,9 +379,12 @@ export default function AdminRoles() {
                                     className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-(--admin-border) text-sm text-gray-500 dark:text-(--admin-text-muted) hover:bg-gray-50 dark:hover:bg-(--admin-hover) transition-all">
                                     Cancelar
                                 </button>
-                                <button type="submit"
-                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all">
-                                    <Check size={15} />
+                                <button type="submit" disabled={submitting}
+                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                                    {submitting
+                                        ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        : <Check size={15} />
+                                    }
                                     {editing ? 'Salvar' : 'Criar papel'}
                                 </button>
                             </div>
