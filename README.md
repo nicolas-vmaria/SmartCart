@@ -105,6 +105,7 @@ npm run dev
 
 | | URL | Credenciais |
 |-|-----|-------------|
+|Site em Produção | https://smartcart-production-5a73.up.railway.app/ | - |
 | Site | http://localhost:5173 | — |
 | Admin | http://localhost:5173/admin/login | admin@smartcart.com / admin123 |
 | API | http://localhost:3001 | — |
