@@ -68,7 +68,7 @@ export default function AdminLogin() {
                                 <input
                                     type="email"
                                     required
-                                    placeholder="admin@smartcart.com"
+                                    placeholder="exemplo@smartcart.com"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     className="bg-transparent text-gray-900 dark:text-(--admin-text) text-sm outline-none w-full placeholder:text-gray-400 dark:placeholder:text-(--admin-text-muted)/50"

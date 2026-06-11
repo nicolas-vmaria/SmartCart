@@ -271,9 +271,7 @@ function App() {
               <Route path="/produtos" element={<Produtos />} />
               <Route path="/sobre-nos" element={<SobreNos />} />
               <Route path="/contato" element={<Contato />} />
-              <Route path="/carrinho" element={<Cart />} />
               <Route path="/produto/:slug" element={<ProductDetail />} />
-              <Route path="/checkout/:id" element={<Checkout />}/>
               <Route path="/politicas" element={<Politicas />} />
               <Route path="/politicas/:slug" element={<Politicas />} />
               <Route path="/sobre" element={<Sobre />} />
@@ -282,6 +280,8 @@ function App() {
               <Route path="/produtos/categoria/:slug" element={<CategoriaGrid />} />
               <Route path="/pedido/confirmado" element={<OrderConfirmation />} />
               <Route element={<ProtectedRouteUser />}>
+                <Route path="/carrinho" element={<Cart />} />
+                <Route path="/checkout/:id" element={<Checkout />}/>
                 <Route path="/profile" element={<UserProfile />} />
                 <Route path="/meus-pedidos" element={<MeusPedidos />} />
               </Route>
