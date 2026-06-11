@@ -1,0 +1,550 @@
+{
+  "cart": {
+    "id": "demo-cart-001",
+    "status": "shopping",
+    "products": [
+      {
+        "id": 1,
+        "name": "Leite Integral",
+        "price": 6.49,
+        "quantity": 2,
+        "unit": "un",
+        "soldByWeight": false,
+        "image": "/assets/products/leite.svg",
+        "category": "Laticinios"
+      },
+      {
+        "id": 2,
+        "name": "Pao de Forma",
+        "price": 9.9,
+        "quantity": 1,
+        "unit": "un",
+        "soldByWeight": false,
+        "image": "/assets/products/pao.svg",
+        "category": "Padaria"
+      },
+      {
+        "id": 3,
+        "name": "Cafe Torrado",
+        "price": 18.75,
+        "quantity": 1,
+        "unit": "un",
+        "soldByWeight": false,
+        "image": "/assets/products/cafe.svg",
+        "category": "Mercearia"
+      },
+      {
+        "id": 4,
+        "name": "Maca Gala",
+        "price": 7.99,
+        "quantity": 0.85,
+        "unit": "kg",
+        "soldByWeight": true,
+        "image": "/assets/products/maca.svg",
+        "category": "Hortifruti"
+      }
+    ]
+  },
+  "availableProducts": [
+    {
+      "id": 1,
+      "name": "Leite Integral",
+      "price": 6.49,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/leite.svg",
+      "category": "Laticinios"
+    },
+    {
+      "id": 2,
+      "name": "Pao de Forma",
+      "price": 9.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/pao.svg",
+      "category": "Padaria"
+    },
+    {
+      "id": 3,
+      "name": "Cafe Torrado",
+      "price": 18.75,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/cafe.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 4,
+      "name": "Maca Gala",
+      "price": 7.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/maca.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 5,
+      "name": "Arroz Branco 5kg",
+      "price": 24.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/arroz.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 6,
+      "name": "Suco de Uva 1L",
+      "price": 12.49,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/suco.svg",
+      "category": "Bebidas"
+    },
+    {
+      "id": 7,
+      "name": "Ovos Brancos 12un",
+      "price": 15.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/ovos.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 8,
+      "name": "Queijo Mussarela",
+      "price": 18.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/queijo.svg",
+      "category": "Laticinios"
+    },
+    {
+      "id": 9,
+      "name": "Banana Prata",
+      "price": 5.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/banana.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 10,
+      "name": "Tomate Italiano",
+      "price": 8.49,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/tomate.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 11,
+      "name": "Batata Inglesa",
+      "price": 4.79,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/batata.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 12,
+      "name": "Feijao Carioca 1kg",
+      "price": 8.99,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/arroz.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 13,
+      "name": "Acucar Cristal 1kg",
+      "price": 4.89,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/arroz.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 14,
+      "name": "Macarrao Espaguete",
+      "price": 5.49,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/arroz.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 15,
+      "name": "Molho de Tomate",
+      "price": 3.79,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/tomate.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 16,
+      "name": "Farinha de Trigo",
+      "price": 6.29,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/arroz.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 17,
+      "name": "Achocolatado 400g",
+      "price": 9.79,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/cafe.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 18,
+      "name": "Biscoito Recheado",
+      "price": 3.99,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/pao.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 19,
+      "name": "Iogurte Natural",
+      "price": 4.99,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/leite.svg",
+      "category": "Laticinios"
+    },
+    {
+      "id": 20,
+      "name": "Manteiga 200g",
+      "price": 11.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/queijo.svg",
+      "category": "Laticinios"
+    },
+    {
+      "id": 21,
+      "name": "Requeijao Cremoso",
+      "price": 8.49,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/queijo.svg",
+      "category": "Laticinios"
+    },
+    {
+      "id": 22,
+      "name": "Presunto Fatiado",
+      "price": 12.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/queijo.svg",
+      "category": "Frios"
+    },
+    {
+      "id": 23,
+      "name": "Agua Mineral 1,5L",
+      "price": 3.49,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/suco.svg",
+      "category": "Bebidas"
+    },
+    {
+      "id": 24,
+      "name": "Refrigerante Cola 2L",
+      "price": 9.99,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/suco.svg",
+      "category": "Bebidas"
+    },
+    {
+      "id": 25,
+      "name": "Cha Gelado 1L",
+      "price": 7.49,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/suco.svg",
+      "category": "Bebidas"
+    },
+    {
+      "id": 26,
+      "name": "Pao Frances 6un",
+      "price": 6.5,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/pao.svg",
+      "category": "Padaria"
+    },
+    {
+      "id": 27,
+      "name": "Bolo de Cenoura",
+      "price": 14.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/pao.svg",
+      "category": "Padaria"
+    },
+    {
+      "id": 28,
+      "name": "Granola Tradicional",
+      "price": 16.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/cafe.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 29,
+      "name": "Laranja Pera",
+      "price": 4.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/banana.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 30,
+      "name": "Mamao Formosa",
+      "price": 6.49,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/maca.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 31,
+      "name": "Abacate",
+      "price": 9.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/maca.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 32,
+      "name": "Pera Williams",
+      "price": 12.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/maca.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 33,
+      "name": "Uva Vitoria",
+      "price": 15.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/banana.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 34,
+      "name": "Melancia",
+      "price": 3.49,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/maca.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 35,
+      "name": "Melao Amarelo",
+      "price": 5.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/banana.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 36,
+      "name": "Cebola",
+      "price": 4.29,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/batata.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 37,
+      "name": "Cenoura",
+      "price": 5.49,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/batata.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 38,
+      "name": "Pepino Japones",
+      "price": 7.49,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/tomate.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 39,
+      "name": "Pimentao Verde",
+      "price": 10.9,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/tomate.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 40,
+      "name": "Brocolis",
+      "price": 11.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/batata.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 41,
+      "name": "Mandioquinha",
+      "price": 13.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/batata.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 42,
+      "name": "Mandioca",
+      "price": 5.79,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/batata.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 43,
+      "name": "Limao Tahiti",
+      "price": 6.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/banana.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 44,
+      "name": "Kiwi",
+      "price": 18.99,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/maca.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 45,
+      "name": "Morango",
+      "price": 22.9,
+      "quantity": 0.1,
+      "unit": "kg",
+      "soldByWeight": true,
+      "image": "/assets/products/maca.svg",
+      "category": "Hortifruti"
+    },
+    {
+      "id": 46,
+      "name": "Milho Verde Lata",
+      "price": 4.69,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/arroz.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 47,
+      "name": "Azeite 500ml",
+      "price": 29.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/suco.svg",
+      "category": "Mercearia"
+    },
+    {
+      "id": 48,
+      "name": "Detergente Neutro",
+      "price": 2.79,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/suco.svg",
+      "category": "Limpeza"
+    },
+    {
+      "id": 49,
+      "name": "Sabao em Po 1kg",
+      "price": 13.9,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/arroz.svg",
+      "category": "Limpeza"
+    },
+    {
+      "id": 50,
+      "name": "Papel Toalha",
+      "price": 7.99,
+      "quantity": 1,
+      "unit": "un",
+      "soldByWeight": false,
+      "image": "/assets/products/pao.svg",
+      "category": "Utilidades"
+    }
+  ]
+}
