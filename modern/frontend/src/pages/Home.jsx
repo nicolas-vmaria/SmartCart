@@ -9,6 +9,7 @@ import {
 import { getProdutosDestaque } from '../lib/api/products'
 import { imgUrl } from '../lib/cloudinaryUrl'
 import SmartCart3D from '../components/SmartCart3D'
+import SmartCartDemo from '../components/SmartCartDemo'
 
 gsap.registerPlugin(TextPlugin)
 
@@ -433,6 +434,7 @@ export default function Home() {
       <Diferenciais />
       <ProdutosDestaque />
       <Features />
+      <SmartCartDemo />
       <Testimonial />
       <CtaFinal />
     </main>
