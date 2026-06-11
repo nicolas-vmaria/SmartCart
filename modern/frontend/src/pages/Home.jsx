@@ -42,7 +42,7 @@ function Hero() {
           'radial-gradient(ellipse 70% 80% at 38% 42%, rgba(76,175,80,0.28), transparent 70%), #1a5c2a',
       }}
     >
-      <div className="max-w-[1240px] mx-auto px-7 grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 items-center py-18 lg:py-22 min-h-[600px]">
+      <div className="max-w-[1240px] mx-auto px-7 grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 items-center py-24 lg:py-32 min-h-[92vh]">
         {/* Copy */}
         <div className="flex flex-col">
           <span
@@ -340,7 +340,7 @@ function Testimonial() {
         <div className="max-w-[920px] mx-auto px-7 text-center">
           <div className="leading-[0.6] mb-4 opacity-60" style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 90, color: '#D4E84A' }}>"</div>
           <p className="quote-text font-bold leading-[1.28] tracking-[-0.8px] text-white min-h-[2.4em]" style={{ fontSize: 'clamp(24px, 3.4vw, 38px)' }} />
-          <div className="quote-author mt-8">
+          <div className="quote-author mt-8" style={{ opacity: 0, transform: 'translateY(20px)' }}>
             <div className="font-bold text-[17px]" style={{ color: '#D4E84A' }}>Frederico Texeira de Campos</div>
             <div className="text-[14px] mt-1" style={{ color: 'rgba(255,255,255,0.7)' }}>Texeira's Atacadão</div>
           </div>
@@ -410,7 +410,7 @@ export default function Home() {
         entries.forEach((e) => {
           if (e.isIntersecting) {
             gsap.to('.quote-text', { duration: 3, text: QUOTE, ease: 'none' })
-            gsap.from('.quote-author', { opacity: 0, y: 20, duration: 0.8, delay: 2.6 })
+            gsap.to('.quote-author', { opacity: 1, y: 0, duration: 0.8, delay: 2.6 })
             io.disconnect()
           }
         })

@@ -16,9 +16,19 @@ export default function Navbar() {
     const [cartCount, setCartCount] = useState(0);
     const [categorias, setCategorias] = useState([]);
     const [loadingCategorias, setLoadingCategorias] = useState(true);
+    const [scrolled, setScrolled] = useState(false);
     const { isLogged, nome } = useAuth()
     const location = useLocation()
     const navigate = useNavigate()
+    const isHome = location.pathname === '/'
+
+    useEffect(() => {
+        if (!isHome) { setScrolled(false); return }
+        function onScroll() { setScrolled(window.scrollY > 10) }
+        onScroll()
+        window.addEventListener('scroll', onScroll, { passive: true })
+        return () => window.removeEventListener('scroll', onScroll)
+    }, [isHome])
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const searchInputRef = useRef(null)
@@ -68,7 +78,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="flex items-center justify-between h-20 px-6 md:px-10 w-full bg-verde-escuro">
+        <nav className={`flex items-center justify-between h-20 px-6 md:px-10 w-full transition-colors duration-300 ${isHome && !scrolled ? 'bg-transparent' : 'bg-verde-escuro'}`}>
 
             <Link to="/" onClick={fecharMenu}><img className="w-36 md:w-40" src={logo} alt="" /></Link>
 
