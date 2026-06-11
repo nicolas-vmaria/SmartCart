@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { imgUrl } from '../lib/cloudinaryUrl'
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { LuSlidersHorizontal, LuArrowUpDown, LuChevronRight, LuTag } from 'react-icons/lu'
+import { FaCartShopping } from 'react-icons/fa6'
 import { getCategoryBySlug } from '../lib/api/categories'
 import { slugIconMap } from '../lib/categoryIcons'
 
