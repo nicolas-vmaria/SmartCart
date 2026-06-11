@@ -362,7 +362,7 @@ export default function Cart() {
                                         onClick={async () => {
                                             setAddingSuggestion(p.id)
                                             try {
-                                                await addToCart(p.id, 1)
+                                                await addToCart(p.slug, p.id, 1)
                                                 window.dispatchEvent(new Event('cart:updated'))
                                                 const res = await getCart()
                                                 const carrinho = res.data.carrinho ?? []
@@ -391,44 +391,56 @@ export default function Cart() {
             </section>
 
             <section className="flex items-start w-full lg:w-80 lg:mt-20 shrink-0">
-                <div className="bg-gray-100 shadow-2xl p-5 rounded-2xl w-full">
-                    <h1 className="text-2xl font-bold">Resumo do pedido</h1>
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden w-full">
 
+                    {/* Header */}
+                    <div className="px-5 pt-5 pb-4">
+                        <h2 className="text-lg font-bold text-gray-900">Resumo do pedido</h2>
+                    </div>
+
+                    {/* Descontos progressivos */}
                     {items.length > 0 && !loading && faixas.length > 0 && (() => {
                         const faixasAsc = [...faixas].sort((a, b) => a.minimo - b.minimo)
                         const proxima   = faixasAsc.find(f => subtotal < f.minimo)
                         return (
-                            <div className="border border-gray-200 rounded-xl p-3 mt-3 flex flex-col gap-1">
-                                {faixasAsc.map(f => {
-                                    const isAtiva = faixaAtiva?.minimo === f.minimo
-                                    return (
-                                        <div key={f.minimo} className={`flex items-center gap-2 text-xs py-1 border-b border-gray-100 last:border-0 ${isAtiva ? 'text-verde-escuro font-semibold' : 'text-gray-400'}`}>
-                                            <span className={`w-2 h-2 rounded-full shrink-0 ${isAtiva ? 'bg-verde-escuro' : 'bg-gray-200'}`} />
-                                            <span className="flex-1">Acima de {f.minimo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                                            <span>{f.pct}% off</span>
-                                        </div>
-                                    )
-                                })}
+                            <div className="px-5 py-4 border-t border-gray-100">
+                                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Descontos progressivos</p>
+                                <div className="flex flex-col gap-1.5">
+                                    {faixasAsc.map(f => {
+                                        const isAtiva = faixaAtiva?.minimo === f.minimo
+                                        return (
+                                            <div key={f.minimo} className="flex items-center gap-2 text-xs">
+                                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isAtiva ? 'bg-green-500' : 'bg-gray-200'}`} />
+                                                <span className={`flex-1 ${isAtiva ? 'text-green-700 font-medium' : 'text-gray-400'}`}>
+                                                    Acima de {f.minimo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                </span>
+                                                <span className={`font-medium ${isAtiva ? 'text-green-700' : 'text-gray-400'}`}>{f.pct}% off</span>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                                 {proxima && (
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        Adicione mais <strong>{(proxima.minimo - subtotal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong> para {proxima.pct}% off
+                                    <p className="text-xs text-gray-400 mt-2">
+                                        Adicione mais <span className="font-semibold text-gray-600">{(proxima.minimo - subtotal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span> para {proxima.pct}% off
                                     </p>
                                 )}
                             </div>
                         )
                     })()}
 
+                    {/* Frete grátis */}
                     {items.length > 0 && !loading && freteGratisMinimo === 0 && (
-                        <div className="flex items-center gap-1.5 text-green-600 text-xs font-medium mt-2">
-                            <Truck size={13} /> Frete grátis em todas as compras!
+                        <div className="px-5 py-3 border-t border-gray-100 flex items-center gap-2 text-green-600 text-xs font-medium">
+                            <Truck size={12} /> Frete grátis em todas as compras!
                         </div>
                     )}
                     {items.length > 0 && !loading && freteGratisMinimo > 0 && subtotalComDesconto < freteGratisMinimo && (
-                        <div className="bg-green-50 border border-green-200 rounded-xl p-3 mt-3">
-                            <p className="text-xs text-green-700 mb-1.5">
-                                Faltam <strong>{(freteGratisMinimo - subtotalComDesconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong> para frete grátis!
-                            </p>
-                            <div className="h-1.5 bg-green-200 rounded-full overflow-hidden">
+                        <div className="px-5 py-4 border-t border-gray-100">
+                            <div className="flex justify-between text-xs text-gray-500 mb-2">
+                                <span>Frete grátis</span>
+                                <span className="font-medium text-gray-700">{(freteGratisMinimo - subtotalComDesconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} restantes</span>
+                            </div>
+                            <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-green-500 rounded-full transition-all"
                                     style={{ width: `${Math.min(subtotalComDesconto / freteGratisMinimo * 100, 100)}%` }}
@@ -437,57 +449,61 @@ export default function Cart() {
                         </div>
                     )}
 
-                    {appliedCoupon ? (
-                        <div className="flex items-center justify-between mt-3 px-3 py-2 bg-green-50 border border-green-200 rounded-xl">
-                            <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
-                                <Tag size={14} />
-                                {appliedCoupon.codigo}
+                    {/* Cupom */}
+                    <div className="px-5 py-4 border-t border-gray-100">
+                        {appliedCoupon ? (
+                            <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+                                <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
+                                    <Tag size={13} />
+                                    {appliedCoupon.codigo}
+                                </div>
+                                <button onClick={removeCoupon} className="text-green-400 hover:text-red-400 transition-colors cursor-pointer">
+                                    <X size={14} />
+                                </button>
                             </div>
-                            <button onClick={removeCoupon} className="text-green-500 hover:text-red-400 transition-colors cursor-pointer">
-                                <X size={15} />
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="flex gap-2 mt-3">
-                            <input
-                                type="text"
-                                value={couponCode}
-                                onChange={e => { setCouponCode(e.target.value.toUpperCase()); setCouponError('') }}
-                                onKeyDown={e => e.key === 'Enter' && applyCoupon()}
-                                placeholder="Código do cupom"
-                                className="bg-white border border-gray-200 rounded-xl flex-1 h-10 px-3 text-sm outline-none focus:border-verde-escuro transition-colors"
-                            />
-                            <button
-                                onClick={applyCoupon}
-                                disabled={validating || !couponCode.trim()}
-                                className="h-10 px-3 rounded-xl bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
-                            >
-                                {validating ? <Loader2 size={15} className="animate-spin" /> : 'Aplicar'}
-                            </button>
-                        </div>
-                    )}
-                    {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
+                        ) : (
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={couponCode}
+                                    onChange={e => { setCouponCode(e.target.value.toUpperCase()); setCouponError('') }}
+                                    onKeyDown={e => e.key === 'Enter' && applyCoupon()}
+                                    placeholder="Código do cupom"
+                                    className="border border-gray-200 rounded-xl flex-1 h-10 px-3 text-sm outline-none focus:border-verde-escuro transition-colors"
+                                />
+                                <button
+                                    onClick={applyCoupon}
+                                    disabled={validating || !couponCode.trim()}
+                                    className="h-10 px-4 rounded-xl bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+                                >
+                                    {validating ? <Loader2 size={14} className="animate-spin" /> : 'Aplicar'}
+                                </button>
+                            </div>
+                        )}
+                        {couponError && <p className="text-red-500 text-xs mt-1.5">{couponError}</p>}
+                    </div>
 
-                    <div className="flex flex-col gap-1 my-5">
+                    {/* Detalhamento de preços */}
+                    <div className="px-5 py-4 border-t border-gray-100 flex flex-col gap-2.5">
                         <div className="flex justify-between text-sm">
-                            <span className="font-bold">Subtotal:</span>
-                            <span>{subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                            <span className="text-gray-600">Subtotal</span>
+                            <span className="font-medium text-gray-900">{subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                         </div>
                         {descontoProgressivo > 0 && (
-                            <div className="flex justify-between text-sm text-green-600">
-                                <span className="font-bold">Desconto {faixaAtiva.pct}%:</span>
-                                <span>- {descontoProgressivo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-green-600">Desconto {faixaAtiva.pct}%</span>
+                                <span className="text-green-600 font-medium">-{descontoProgressivo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                             </div>
                         )}
                         {discount > 0 && (
-                            <div className="flex justify-between text-sm text-green-600">
-                                <span className="font-bold">Cupom:</span>
-                                <span>- {discount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-green-600">Cupom</span>
+                                <span className="text-green-600 font-medium">-{discount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                             </div>
                         )}
                         <div className="flex justify-between text-sm">
-                            <span className="font-bold">Frete:</span>
-                            <span className={frete === 0 && items.length > 0 ? 'text-green-600 font-bold' : 'text-gray-500 italic'}>
+                            <span className="text-gray-600">Frete</span>
+                            <span className={frete === 0 && items.length > 0 ? 'text-green-600 font-medium' : 'text-gray-400 italic'}>
                                 {items.length === 0 ? '—'
                                     : frete === null ? 'A calcular'
                                     : frete === 0 ? 'Grátis'
@@ -497,20 +513,20 @@ export default function Cart() {
                     </div>
 
                     {/* Calculador de frete */}
-                    <div className="border-t border-gray-200 pt-4 pb-2 flex flex-col gap-2">
-                        <p className="text-sm font-bold flex items-center gap-1.5">
-                            <Truck size={14} /> Calcular frete
+                    <div className="px-5 py-4 border-t border-gray-100">
+                        <p className="text-xs font-semibold text-gray-400 flex items-center gap-1.5 mb-2.5">
+                            <Truck size={12} /> Calcular frete
                         </p>
                         {cepResult ? (
-                            <div className="flex items-center justify-between bg-white rounded-xl px-3 py-2 border border-gray-200">
+                            <div className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2.5">
                                 <div>
                                     <p className="text-xs text-gray-400">{cepResult.cidade} — {cepResult.uf}</p>
-                                    <p className={`text-sm font-bold ${frete === 0 ? 'text-green-600' : 'text-gray-700'}`}>
+                                    <p className={`text-sm font-bold mt-0.5 ${frete === 0 ? 'text-green-600' : 'text-gray-800'}`}>
                                         {frete === 0 ? 'Frete grátis' : frete?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                     </p>
                                 </div>
-                                <button onClick={() => { setCepResult(null); setCepCalc('') }} className="text-gray-300 hover:text-gray-500 transition-colors">
-                                    <X size={14} />
+                                <button onClick={() => { setCepResult(null); setCepCalc('') }} className="text-gray-300 hover:text-gray-500 transition-colors cursor-pointer">
+                                    <X size={13} />
                                 </button>
                             </div>
                         ) : (
@@ -519,50 +535,51 @@ export default function Cart() {
                                     <input
                                         value={cepCalc}
                                         onChange={e => { setCepCalc(e.target.value); setCepError('') }}
-                                                        onKeyDown={e => e.key === 'Enter' && buscarFrete()}
+                                        onKeyDown={e => e.key === 'Enter' && buscarFrete()}
                                         placeholder="00000-000"
                                         maxLength={9}
-                                        className="bg-white border border-gray-200 rounded-xl flex-1 h-10 px-3 text-sm outline-none focus:border-verde-escuro transition-colors"
+                                        className="border border-gray-200 rounded-xl flex-1 h-10 px-3 text-sm outline-none focus:border-verde-escuro transition-colors"
                                     />
                                     <button
                                         onClick={buscarFrete}
                                         disabled={loadingCep || cepCalc.replace(/\D/g, '').length < 8}
-                                        className="h-10 px-3 rounded-xl bg-verde-escuro text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+                                        className="h-10 px-4 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-all disabled:opacity-40 cursor-pointer"
                                     >
-                                        {loadingCep ? <Loader2 size={15} className="animate-spin" /> : 'OK'}
+                                        {loadingCep ? <Loader2 size={14} className="animate-spin" /> : 'OK'}
                                     </button>
                                 </div>
                                 {cepError
-                                    ? <p className="text-red-500 text-xs">{cepError}</p>
-                                    : <p className="text-xs text-gray-400">{freteGratisMinimo === 0 ? 'Frete grátis em todas as compras' : `Frete grátis acima de ${freteGratisMinimo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`}</p>
+                                    ? <p className="text-red-500 text-xs mt-1.5">{cepError}</p>
+                                    : <p className="text-xs text-gray-400 mt-1.5">{freteGratisMinimo === 0 ? 'Frete grátis em todas as compras' : `Grátis acima de ${freteGratisMinimo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`}</p>
                                 }
                             </>
                         )}
                     </div>
 
-                    <hr />
-
-                    <div className="flex justify-between my-5 font-bold text-lg">
-                        <span>Total:</span>
-                        <span>{total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                    {/* Total + CTA */}
+                    <div className="px-5 pt-4 pb-5 border-t border-gray-100">
+                        <div className="flex justify-between items-baseline mb-4">
+                            <span className="text-base font-semibold text-gray-700">Total</span>
+                            <span className="text-2xl font-bold text-gray-900">{total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                        </div>
+                        {hasStockIssue && (
+                            <p className="flex items-center gap-1.5 text-xs text-red-500 font-medium mb-3 justify-center">
+                                <AlertTriangle size={13} /> Ajuste as quantidades antes de continuar
+                            </p>
+                        )}
+                        <Link
+                            to="/checkout/1"
+                            state={{
+                                ...(cepResult ? { cep: cepCalc } : {}),
+                                ...(appliedCoupon ? { coupon: appliedCoupon } : {}),
+                            }}
+                            className={`flex items-center justify-center bg-verde-escuro text-white h-12 w-full rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 font-bold text-sm
+                                ${(items.length === 0 || hasStockIssue) ? 'opacity-40 pointer-events-none' : ''}`}
+                        >
+                            Finalizar compra
+                        </Link>
                     </div>
 
-                    {hasStockIssue && (
-                        <p className="flex items-center gap-1.5 text-xs text-red-500 font-medium text-center justify-center">
-                            <AlertTriangle size={13} /> Ajuste as quantidades antes de continuar
-                        </p>
-                    )}
-                    <Link
-                        to="/checkout/1"
-                        state={{
-                            ...(cepResult ? { cep: cepCalc } : {}),
-                            ...(appliedCoupon ? { coupon: appliedCoupon } : {}),
-                        }}
-                        className={`flex items-center justify-center bg-verde-escuro text-white h-12 w-full rounded-xl transition-all hover:-translate-y-1 hover:shadow-xl active:translate-y-0 font-bold
-                            ${(items.length === 0 || hasStockIssue) ? 'opacity-40 pointer-events-none' : ''}`}
-                    >
-                        Finalizar compra
-                    </Link>
                 </div>
             </section>
         </main>

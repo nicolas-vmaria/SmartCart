@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react"
-import { Route, Routes, BrowserRouter, Outlet } from "react-router-dom"
+import { Route, Routes, BrowserRouter, Outlet, useLocation } from "react-router-dom"
 import { Menu, X } from "lucide-react"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
@@ -170,6 +170,8 @@ function AnnouncementBar({ texto, cor, onDismiss }) {
 
 function Layout() {
   const { config } = useConfiguracoes()
+  const location = useLocation()
+  const isHome = location.pathname === '/'
   const [dismissed, setDismissed] = useState(
     () => sessionStorage.getItem('anuncio_dismissed') === '1'
   )
@@ -205,7 +207,7 @@ function Layout() {
         )}
         <Navbar />
       </header>
-      <div style={{ paddingTop: showAnuncio ? '116px' : '80px', paddingBottom: showFlash ? '44px' : '0' }}>
+      <div style={{ paddingTop: isHome ? 0 : (showAnuncio ? '116px' : '80px'), paddingBottom: showFlash ? '44px' : '0' }}>
         <Outlet />
       </div>
       <Footer />
