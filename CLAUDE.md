@@ -49,6 +49,16 @@ modern/
 - Arquivos admin **sempre** usam `import { adminApi } from '../api'` — **nunca** `import api from '../api'`; usar `api` em arquivo admin manda `user_token` no header, causando 401 e redirect para `/login`
 - Ícones: preferir `lucide-react` (traço fino) ou `react-icons`
 
+### Mobile (React Native / Expo)
+- Usuário quer **aprender fazendo** — nunca rodar comandos no terminal pelo usuário; sempre mostrar o comando e explicar o que ele faz, deixando o usuário executar
+- Variáveis de ambiente usam prefixo `EXPO_PUBLIC_` (ex: `EXPO_PUBLIC_API_URL`)
+- `AsyncStorage` no lugar de `localStorage` para tokens e dados persistentes
+- `Alert.alert()` no lugar de `Toast` para feedback de erro
+- `ActivityIndicator` no lugar de spinner CSS para loading
+- Usar `npx expo install <pacote>` em vez de `npm install` para garantir versões compatíveis com o SDK
+- Ícones: `@expo/vector-icons` (já incluso no Expo)
+- Navegação: `expo-router` (já configurado no projeto) — funciona igual ao React Router baseado em arquivos
+
 ### Backend
 - **Antes de qualquer migration ou referência a tabela/coluna**, ler `modern/backend/database/schema.sql` para confirmar nomes exatos — nomes de tabelas não seguem plural padrão (ex: `Usuario` e não `Usuarios`, `Cupons` e não `Cupom`)
 - Toda alteração no schema do banco (nova coluna, tabela, índice, etc.) deve gerar um arquivo de migration em `modern/backend/database/migration/` seguindo a nomenclatura `mig-NNN.sql` (incrementar o número do último arquivo existente) **e também atualizar `modern/backend/database/schema.sql`**
