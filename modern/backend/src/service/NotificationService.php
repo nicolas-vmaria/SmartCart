@@ -1,7 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../repository/ConfiguracoesRepository.php';
+require_once __DIR__ . '/../repository/PushTokenRepository.php';
 require_once __DIR__ . '/../core/Mailer.php';
+require_once __DIR__ . '/PushNotificationService.php';
 
 class NotificationService {
 
@@ -13,12 +15,22 @@ class NotificationService {
         return $_ENV['MAIL_USER'];
     }
 
+    private static function sendPush(string $title, string $body): void {
+        (new PushNotificationService(new PushTokenRepository()))->send($title, $body);
+    }
+
     public static function notifyNewOrder(int $pedidoId, float $total, string $metodo): void {
         try {
             $cfg = self::cfg();
             if (($cfg['notify_novos_pedidos'] ?? '0') !== '1') return;
 
             $totalFmt = 'R$ ' . number_format($total, 2, ',', '.');
+
+            self::sendPush(
+                '🛒 Novo pedido recebido!',
+                "Pedido #{$pedidoId} · {$totalFmt}"
+            );
+
             $mailer   = new Mailer();
             $mailer->send(
                 self::adminEmail(),

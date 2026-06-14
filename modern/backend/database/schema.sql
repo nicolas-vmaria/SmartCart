@@ -236,6 +236,13 @@ CREATE TABLE Configuracoes (
     valor VARCHAR(1000) NOT NULL DEFAULT ''
 );
 
+CREATE TABLE IF NOT EXISTS PushTokens (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    token      VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 CREATE INDEX idx_carrinhos_usuario_status ON Carrinhos(usuario_id, status);
 CREATE INDEX idx_itens_carrinho_carrinho  ON Itens_Carrinho(carrinho_id);
 CREATE INDEX idx_pedidos_status           ON Pedidos(status);

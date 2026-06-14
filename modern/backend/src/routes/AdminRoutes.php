@@ -16,3 +16,4 @@ require_once __DIR__ . '/AdminDashboardRoutes.php';
 require_once __DIR__ . '/AdminMarketingRoutes.php';
 require_once __DIR__ . '/AdminReviewRoutes.php';
 require_once __DIR__ . '/AdminAuditRoutes.php';
+require_once __DIR__ . '/AdminPushTokenRoutes.php';

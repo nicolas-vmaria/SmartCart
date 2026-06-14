@@ -1,10 +1,27 @@
-import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Image, ActivityIndicator, Alert } from "react-native";
+import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Image, ActivityIndicator, Alert, Platform } from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import { login } from "../lib/api/index";
-
+import { savePushToken } from "../lib/api/notifications";
 import Feather from '@expo/vector-icons/Feather';
+
+async function registerPushToken() {
+    try {
+        const { status: existing } = await Notifications.getPermissionsAsync();
+        const { status } = existing === 'granted'
+            ? { status: existing }
+            : await Notifications.requestPermissionsAsync();
+
+        if (status !== 'granted') return;
+
+        const { data: token } = await Notifications.getExpoPushTokenAsync();
+        await savePushToken(token);
+    } catch {
+        // silencioso — não bloqueia o login se falhar
+    }
+}
 
 
 export default function Login() {
@@ -24,6 +41,7 @@ export default function Login() {
         try{
             const { data } = await login(email, password);
             await AsyncStorage.setItem('admin_token', data.token);
+            registerPushToken(); // não bloqueia — roda em background
             router.replace("/(tabs)/dashboard");
         }catch(err: any){
             Alert.alert("Erro", "E-mail ou senha incorretos.");

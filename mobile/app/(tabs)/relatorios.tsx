@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from "react-native";
 import { useEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import TitleHeader from "../../components/titleHeader";
@@ -8,7 +8,13 @@ import { getOrderAnalytics, getHighlights } from "../../lib/api";
 const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
 type DayData = { dia: number; pedidos: number; valor: number };
-type Highlight = { nome: string; quantidade: number };
+type Highlight = { nome: string; total_vendido: number };
+
+function formatCurrency(value: number) {
+    const n = (parseFloat(value as any) || 0).toFixed(2);
+    const [intPart, decPart] = n.split(".");
+    return `R$ ${intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${decPart}`;
+}
 
 export default function Relatorios() {
     const now = new Date();
@@ -17,26 +23,25 @@ export default function Relatorios() {
     const [analytics, setAnalytics] = useState<DayData[]>([]);
     const [highlights, setHighlights] = useState<Highlight[]>([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
 
-    useEffect(() => {
-        fetchData();
-    }, [mes, ano]);
-
-    async function fetchData() {
-        setLoading(true);
+    async function fetchData(isRefresh = false) {
+        if (isRefresh) setRefreshing(true);
+        else setLoading(true);
         try {
             const [analyticsRes, highlightsRes] = await Promise.all([
                 getOrderAnalytics(mes, ano),
                 getHighlights(),
             ]);
-            const analyticsArr = analyticsRes.data?.data ?? analyticsRes.data;
-            const highlightsArr = highlightsRes.data?.products ?? highlightsRes.data;
-            setAnalytics(Array.isArray(analyticsArr) ? analyticsArr : []);
-            setHighlights(Array.isArray(highlightsArr) ? highlightsArr : []);
+            setAnalytics(Array.isArray(analyticsRes.data?.analytics) ? analyticsRes.data.analytics : []);
+            setHighlights(Array.isArray(highlightsRes.data?.best_sellers) ? highlightsRes.data.best_sellers : []);
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
     }
+
+    useEffect(() => { fetchData(); }, [mes, ano]);
 
     function prevMonth() {
         if (mes === 1) { setMes(12); setAno(a => a - 1); }
@@ -44,7 +49,6 @@ export default function Relatorios() {
     }
 
     function nextMonth() {
-        const isCurrentMonth = mes === now.getMonth() + 1 && ano === now.getFullYear();
         if (isCurrentMonth) return;
         if (mes === 12) { setMes(1); setAno(a => a + 1); }
         else setMes(m => m + 1);
@@ -52,22 +56,22 @@ export default function Relatorios() {
 
     const isCurrentMonth = mes === now.getMonth() + 1 && ano === now.getFullYear();
 
-    const totalFaturamento = analytics.reduce((sum, d) => sum + (d.valor ?? 0), 0);
-    const totalPedidos = analytics.reduce((sum, d) => sum + (d.pedidos ?? 0), 0);
+    const totalFaturamento = analytics.reduce((sum, d) => sum + (parseFloat(d.valor as any) || 0), 0);
+    const totalPedidos = analytics.reduce((sum, d) => sum + (Number(d.pedidos) || 0), 0);
     const ticketMedio = totalPedidos > 0 ? totalFaturamento / totalPedidos : 0;
 
-    function formatCurrency(value: number) {
-        return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-    }
-
-    const maxHighlights = highlights.reduce((max, h) => Math.max(max, h.quantidade), 1);
+    const maxValor = analytics.reduce((max, d) => Math.max(max, parseFloat(d.valor as any) || 0), 1);
+    const maxHighlights = highlights.reduce((max, h) => Math.max(max, h.total_vendido), 1);
+    const BAR_HEIGHT = 80;
 
     return (
         <View className="flex-1 bg-white">
-            <ScrollView contentContainerStyle={{ paddingTop: 72, paddingHorizontal: 20, paddingBottom: 32 }}>
+            <ScrollView
+                contentContainerStyle={{ paddingTop: 72, paddingHorizontal: 20, paddingBottom: 120 }}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchData(true)} tintColor="#18572C" />}
+            >
                 <TitleHeader title="Relatórios" subtitle="Análise por período" />
 
-                {/* Seletor de mês */}
                 <View className="flex-row items-center justify-between mb-6 bg-gray-50 rounded-2xl px-4 py-3">
                     <TouchableOpacity onPress={prevMonth} hitSlop={8}>
                         <Feather name="chevron-left" size={22} color="#18572C" />
@@ -105,6 +109,33 @@ export default function Relatorios() {
                             </View>
                         </View>
 
+                        {/* Gráfico de barras diário */}
+                        {analytics.length > 0 && (
+                            <View className="mb-6">
+                                <Text className="font-bold text-gray-900 text-base mb-4">Faturamento por dia</Text>
+                                <View style={{ height: BAR_HEIGHT + 28 }}>
+                                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: "flex-end", gap: 4, paddingBottom: 0 }}>
+                                        {analytics.map((d) => {
+                                            const valor = parseFloat(d.valor as any) || 0;
+                                            const barH = Math.max(4, Math.round((valor / maxValor) * BAR_HEIGHT));
+                                            return (
+                                                <View key={d.dia} style={{ width: 28, alignItems: "center", justifyContent: "flex-end", height: BAR_HEIGHT + 28 }}>
+                                                    <View style={{ width: 20, height: barH, backgroundColor: "#18572C", borderRadius: 4, marginBottom: 4 }} />
+                                                    <Text style={{ fontSize: 9, color: "#9CA3AF", textAlign: "center" }}>{String(d.dia).padStart(2, "0")}</Text>
+                                                </View>
+                                            );
+                                        })}
+                                    </ScrollView>
+                                </View>
+                            </View>
+                        )}
+
+                        {analytics.length === 0 && (
+                            <View className="border border-gray-100 rounded-2xl py-8 items-center mb-6">
+                                <Text className="text-gray-400">Sem dados para este período.</Text>
+                            </View>
+                        )}
+
                         {/* Produtos mais vendidos */}
                         <Text className="font-bold text-gray-900 text-base mb-3">Produtos mais vendidos</Text>
                         {highlights.length === 0 ? (
@@ -117,11 +148,11 @@ export default function Relatorios() {
                                             <Text className="text-gray-800 font-medium flex-1 pr-2" numberOfLines={1}>
                                                 {i + 1}. {item.nome}
                                             </Text>
-                                            <Text className="text-gray-500 text-sm">{item.quantidade} un.</Text>
+                                            <Text className="text-gray-500 text-sm">{item.total_vendido} un.</Text>
                                         </View>
                                         <View className="bg-gray-100 rounded-full h-1.5">
                                             <View
-                                                style={{ width: `${(item.quantidade / maxHighlights) * 100}%`, backgroundColor: "#18572C" }}
+                                                style={{ width: `${(item.total_vendido / maxHighlights) * 100}%`, backgroundColor: "#18572C" }}
                                                 className="h-1.5 rounded-full"
                                             />
                                         </View>
