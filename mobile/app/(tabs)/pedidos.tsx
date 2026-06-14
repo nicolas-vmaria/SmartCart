@@ -6,6 +6,7 @@ import SkeletonCard from "../../components/SkeletonCard";
 import StatusBadge from "../../components/StatusBadge";
 import OrderModal from "../../components/OrderModal";
 import { getOrders } from "../../lib/api";
+import { formatDate } from "../../lib/date";
 
 type Order = {
     id: number;
@@ -56,13 +57,6 @@ export default function Pedidos() {
         const n = (parseFloat(value as any) || 0).toFixed(2);
         const [intPart, decPart] = n.split(".");
         return `R$ ${intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${decPart}`;
-    }
-
-    function formatDate(dateStr: string) {
-        const d = new Date(dateStr);
-        const day = String(d.getDate()).padStart(2, "0");
-        const month = String(d.getMonth() + 1).padStart(2, "0");
-        return `${day}/${month}/${d.getFullYear()}`;
     }
 
     return (

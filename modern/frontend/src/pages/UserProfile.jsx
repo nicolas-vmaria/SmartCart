@@ -4,6 +4,7 @@ import { Check, Eye, EyeOff, Lock, Mail, Phone, User, MapPin, Package, ChevronRi
 import ConfirmDialog from '../components/ConfirmDialog'
 import Toast from '../components/Toast'
 import { getProfile, updateProfile, updateAddress, updatePassword } from '../lib/api/profile'
+import { formatDate, formatMonthYear } from '../lib/date'
 
 const inputCls = "border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-verde-escuro transition-colors w-full"
 
@@ -168,9 +169,7 @@ export default function UserProfile() {
 
     const initials = (profile?.nome || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
     const totalGasto = Number(profile?.total_gasto ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-    const membroDesde = profile?.created_at
-        ? new Date(profile.created_at).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
-        : '—'
+    const membroDesde = formatMonthYear(profile?.created_at ?? '')
 
     return (
         <main className="min-h-screen bg-gray-50">
@@ -350,7 +349,7 @@ export default function UserProfile() {
                                             </div>
                                             <p className="text-xs text-gray-500">{order.qtd_itens} {order.qtd_itens === 1 ? 'item' : 'itens'}</p>
                                             <div className="flex justify-between text-xs text-gray-400">
-                                                <span>{new Date(order.created_at).toLocaleDateString('pt-BR')}</span>
+                                                <span>{formatDate(order.created_at)}</span>
                                                 <span className="font-bold text-gray-600">
                                                     {Number(order.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                                 </span>

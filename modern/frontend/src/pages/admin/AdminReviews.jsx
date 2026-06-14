@@ -6,6 +6,7 @@ import Toast from '../../components/Toast'
 import { Trash2, Search, Star, X, Plus, MessageSquare, TrendingUp, Calendar, Eye, EyeOff, Wand2, ChevronDown, ChevronUp } from 'lucide-react'
 import { getAllReviews, deleteReview, bulkDeleteReviews, getPalavras, addPalavra, deletePalavra } from '../../lib/api/adminReviews'
 import { analyzeReviews } from '../../lib/IaAssistant'
+import { formatDate as fmt } from '../../lib/date'
 
 function StatCard({ icon: Icon, label, value, loading }) {
     if (loading) return (
@@ -183,8 +184,6 @@ export default function AdminReviews() {
             setDeletingPalavra(null)
         }
     }
-
-    const fmt = (d) => new Date(d).toLocaleDateString('pt-BR')
 
     return (
         <main>

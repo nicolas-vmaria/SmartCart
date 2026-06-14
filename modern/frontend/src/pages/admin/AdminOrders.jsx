@@ -6,6 +6,7 @@ import Toast from '../../components/Toast'
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js'
 import { getAdminOrders, getAdminOrderById, updateOrderStatus, getOrderAnalytics } from '../../lib/api/adminOrders'
+import { parseDateParts } from '../../lib/date'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
@@ -36,12 +37,7 @@ const PAYMENT_LABEL = {
 
 const STATUS_STEPS = ['aguardando', 'pago', 'enviado', 'entregue']
 
-function parseDate(created_at) {
-    if (!created_at) return { date: '—', hour: '—', iso: '' }
-    const [datePart, timePart = ''] = created_at.split(' ')
-    const [y, m, d] = datePart.split('-')
-    return { date: `${d}/${m}/${y}`, hour: timePart.slice(0, 5), iso: datePart }
-}
+const parseDate = parseDateParts
 
 function fmt(v) {
     return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })

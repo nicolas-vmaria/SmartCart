@@ -6,6 +6,7 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 import { Search, SlidersHorizontal, Trash2 } from 'lucide-react'
 import { getCurriculos, deleteCurriculo } from '../../lib/api/adminCurriculos'
 import { areaCor } from '../../lib/areaColors'
+import { formatDate as fmtDate } from '../../lib/date'
 
 const STATUS_LABEL = {
     novo:       'Novo',
@@ -24,13 +25,6 @@ const statusStyle = {
 function corArea(area) {
     return areaCor[area] ?? 'bg-gray-100 text-gray-600'
 }
-
-function fmtDate(str) {
-    if (!str) return '—'
-    return new Date(str).toLocaleDateString('pt-BR')
-}
-
-
 
 function SkeletonCard() {
     return (

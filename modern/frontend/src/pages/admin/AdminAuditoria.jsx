@@ -3,6 +3,7 @@ import { Search, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react'
 import AdminHeader from '../../components/admin/AdminHeader'
 import { getAuditLogs } from '../../lib/api/adminAuditoria'
 import Toast from '../../components/Toast'
+import { formatDateTime as formatDate } from '../../lib/date'
 
 const ACAO_LABEL = {
     criar:            { label: 'Criou',            color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
@@ -38,11 +39,6 @@ const ENTIDADE_LABEL = {
     sistema:     'Sistema',
 }
 
-function formatDate(str) {
-    if (!str) return '—'
-    const d = new Date(str)
-    return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
 
 function AcaoBadge({ acao }) {
     const info = ACAO_LABEL[acao] ?? { label: acao, color: 'bg-gray-100 text-gray-600' }

@@ -6,6 +6,7 @@ import { FaPix } from "react-icons/fa6"
 import { FaRegCreditCard } from "react-icons/fa"
 import { getUserOrders, cancelOrder, getOrderById } from "../lib/api/orders"
 import ConfirmDialog from "../components/ConfirmDialog"
+import { formatDate } from "../lib/date"
 
 const statusConfig = {
     aguardando: { label: 'Aguardando',  cls: 'bg-yellow-100 text-yellow-700' },
@@ -25,9 +26,6 @@ const paymentLabel = {
     cartao_credito: 'Cartão de Crédito',
 }
 
-function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString('pt-BR')
-}
 
 function OrderSkeleton() {
     return (

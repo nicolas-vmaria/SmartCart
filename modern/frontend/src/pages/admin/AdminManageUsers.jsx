@@ -5,6 +5,7 @@ import Toast from '../../components/Toast'
 import { Loader2, Search, Trash2, Pencil, X, UserPlus, SlidersHorizontal, Check, Shield, KeyRound, AlertTriangle } from 'lucide-react'
 import { getUsers, createUser, updateUser, deleteUser, resetUserPassword } from '../../lib/api/users'
 import { getRoles } from '../../lib/api/roles'
+import { formatDate } from '../../lib/date'
 
 const DEFAULT_BADGE = 'bg-gray-100 text-gray-700 dark:bg-gray-500/25 dark:text-gray-200'
 
@@ -24,7 +25,7 @@ function mapUser(u) {
         email: u.email,
         tel: maskPhone(u.tel || ''),
         role: u.nome_papel,
-        createdAt: u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '—',
+        createdAt: formatDate(u.created_at ?? ''),
     }
 }
 

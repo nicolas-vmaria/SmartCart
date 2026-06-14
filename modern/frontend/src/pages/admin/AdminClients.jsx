@@ -5,13 +5,8 @@ import Toast from '../../components/Toast'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import { Search, Trash2, Loader2 } from 'lucide-react'
 import { getClients, deleteClient } from '../../lib/api/clients'
+import { formatDate } from '../../lib/date'
 
-function formatDate(dateStr) {
-    if (!dateStr) return '—'
-    const [date] = dateStr.split(' ')
-    const [y, m, d] = date.split('-')
-    return `${d}/${m}/${y}`
-}
 
 function formatPhone(tel) {
     if (!tel) return '—'

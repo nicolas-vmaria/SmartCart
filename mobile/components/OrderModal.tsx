@@ -3,6 +3,7 @@ import { getOrderById, updateOrderStatus } from "../lib/api";
 import { useEffect, useState } from "react";
 import StatusBadge from "./StatusBadge";
 import Feather from "@expo/vector-icons/Feather";
+import { formatDateTime } from "../lib/date";
 
 const TIMELINE = ["Aguardando", "Pago", "Enviado", "Entregue"];
 
@@ -81,16 +82,6 @@ export default function OrderModal({ orderId, visible, onClose, onStatusUpdate }
         return `R$ ${formatted},${decPart}`;
     }
 
-    function formatDate(dateStr: string) {
-        const d = new Date(dateStr);
-        const day = String(d.getDate()).padStart(2, "0");
-        const month = String(d.getMonth() + 1).padStart(2, "0");
-        const year = d.getFullYear();
-        const hours = String(d.getHours()).padStart(2, "0");
-        const minutes = String(d.getMinutes()).padStart(2, "0");
-        return `${day}/${month}/${year} ${hours}:${minutes}`;
-    }
-
     const currentStep = TIMELINE.findIndex(s => s.toLowerCase() === order?.status?.toLowerCase());
     const isCanceled = order?.status?.toLowerCase() === "cancelado";
 
@@ -151,7 +142,7 @@ export default function OrderModal({ orderId, visible, onClose, onStatusUpdate }
                         {/* Info */}
                         <View className="bg-gray-50 rounded-2xl p-4 mb-4 gap-2">
                             <Row label="Cliente" value={order.nome} />
-                            <Row label="Data" value={formatDate(order.created_at)} />
+                            <Row label="Data" value={formatDateTime(order.created_at)} />
                             <Row label="Pagamento" value={order.metodo_pagamento} />
                             {order.codigo_rastreio && <Row label="Rastreio" value={order.codigo_rastreio} />}
                             {order.cupom_codigo && <Row label="Cupom" value={order.cupom_codigo} />}

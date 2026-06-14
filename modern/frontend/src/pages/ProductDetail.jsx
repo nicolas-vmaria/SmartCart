@@ -7,6 +7,7 @@ import { FiClock } from "react-icons/fi";
 import { FaArrowsRotate, FaStar } from "react-icons/fa6";
 import { FaCheckCircle } from "react-icons/fa";
 import { ThumbsUp } from "lucide-react";
+import { formatDate } from "../lib/date";
 
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -26,10 +27,6 @@ function getInitials(nome) {
         : nome.slice(0, 2).toUpperCase()
 }
 
-function formatDate(dateStr) {
-    if (!dateStr) return ''
-    return new Date(dateStr).toLocaleDateString('pt-BR')
-}
 
 function ReviewSkeleton() {
     return (

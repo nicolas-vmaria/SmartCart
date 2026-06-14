@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { formatDate } from './date'
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_KEY)
 
@@ -69,7 +70,7 @@ A SmartCart fabrica carrinhos inteligentes com tecnologia embarcada que eliminam
 
     if (pedidos.length > 0) {
         prompt += `\n\n## PEDIDOS DO CLIENTE\n` +
-            pedidos.map(p => `- Pedido #${p.id}: ${p.status} — ${new Date(p.created_at).toLocaleDateString('pt-BR')}`).join('\n')
+            pedidos.map(p => `- Pedido #${p.id}: ${p.status} — ${formatDate(p.created_at)}`).join('\n')
     }
 
     return prompt

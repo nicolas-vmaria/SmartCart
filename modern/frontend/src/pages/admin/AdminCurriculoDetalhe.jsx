@@ -4,6 +4,7 @@ import { ArrowLeft, Mail, Phone, Link2, FileText, Download, Trash2, Wand2, Refre
 import { getCurriculoById, updateCurriculoStatus, deleteCurriculo } from '../../lib/api/adminCurriculos'
 import { analyzeCurriculo } from '../../lib/IaAssistant'
 import { areaCor } from '../../lib/areaColors'
+import { formatDateLong as fmtDate } from '../../lib/date'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import Toast from '../../components/Toast'
 
@@ -27,10 +28,6 @@ const recomendacaoStyle = {
     negativo: 'bg-red-100 text-red-700 border-red-200',
 }
 
-function fmtDate(str) {
-    if (!str) return '—'
-    return new Date(str).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
-}
 
 function AnalyseSkeleton() {
     return (

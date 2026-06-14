@@ -1,6 +1,7 @@
 import { View, Text, Modal, ScrollView, TouchableOpacity, Image } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import StatusBadge from "./StatusBadge";
+import { formatDate } from "../lib/date";
 
 type Product = {
     id: number;
@@ -32,12 +33,6 @@ function formatCurrency(value: number) {
     return `R$ ${intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${decPart}`;
 }
 
-function formatDate(dateStr: string) {
-    const d = new Date(dateStr);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    return `${day}/${month}/${d.getFullYear()}`;
-}
 
 export default function ProductModal({ product, visible, onClose }: {
     product: Product | null;
