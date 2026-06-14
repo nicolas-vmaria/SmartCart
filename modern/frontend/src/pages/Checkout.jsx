@@ -9,8 +9,9 @@ import { QRCode } from "react-qr-code"
 import { getCart } from "../lib/api/cart"
 import { createOrder } from "../lib/api/orders"
 import { gerarPixPayload } from "../lib/pix"
-import { calcularFrete, FRETE_GRATIS_MINIMO } from "../lib/frete"
+import { calcularFrete } from "../lib/frete"
 import { validateCoupon } from "../lib/api/coupons"
+import { getConfiguracoes } from "../lib/api/configuracoes"
 import { siVisa, siMastercard, siAmericanexpress, siDiscover } from 'simple-icons'
 import Toast from "../components/Toast"
 import { getProfile } from "../lib/api/profile"
@@ -310,7 +311,7 @@ function PaymentStep({ method, setMethod, cardData, onCardChange, cardErrors, co
     )
 }
 
-function OrderSummary({ itens, loading, estado, coupon }) {
+function OrderSummary({ itens, loading, estado, coupon, freteMinimo }) {
     const subtotal = useMemo(() =>
         itens.reduce((sum, i) => sum + Number(i.preco) * i.quantidade, 0), [itens])
     const discount = coupon
@@ -319,7 +320,7 @@ function OrderSummary({ itens, loading, estado, coupon }) {
             : Math.min(parseFloat(coupon.desconto), subtotal)
         : 0
     const subtotalComDesconto = subtotal - discount
-    const frete = estado ? calcularFrete(estado, subtotalComDesconto) : null
+    const frete = estado ? calcularFrete(estado, subtotalComDesconto, freteMinimo) : null
     const total = subtotalComDesconto + (frete ?? 0)
 
     const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -482,12 +483,22 @@ export default function Checkout() {
     const [appliedCoupon, setAppliedCoupon] = useState(navState?.coupon ?? null)
     const [couponError, setCouponError] = useState('')
     const [validatingCoupon, setValidatingCoupon] = useState(false)
+    const [freteMinimo, setFreteMinimo] = useState(undefined)
 
     useEffect(() => {
         getCart()
             .then(res => setItens(res.data.carrinho ?? []))
             .catch(() => {})
             .finally(() => setLoadingCart(false))
+    }, [])
+
+    useEffect(() => {
+        getConfiguracoes()
+            .then(res => {
+                const val = res.data.configuracoes?.frete_gratis_minimo
+                setFreteMinimo(val !== undefined ? Number(val) : undefined)
+            })
+            .catch(() => {})
     }, [])
 
     useEffect(() => {
@@ -656,7 +667,7 @@ export default function Checkout() {
                 </section>
 
                 <aside className="w-full lg:w-80 shrink-0">
-                    <OrderSummary itens={itens} loading={loadingCart} estado={delivery.estado} coupon={appliedCoupon} />
+                    <OrderSummary itens={itens} loading={loadingCart} estado={delivery.estado} coupon={appliedCoupon} freteMinimo={freteMinimo} />
                 </aside>
 
             </div>
