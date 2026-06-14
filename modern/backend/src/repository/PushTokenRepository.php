@@ -1,12 +1,12 @@
 <?php
 
-require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../core/connection.php';
 
 class PushTokenRepository {
     private PDO $db;
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = Connection::get();
     }
 
     public function save(string $token): void {
