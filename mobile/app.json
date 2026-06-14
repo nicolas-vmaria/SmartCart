@@ -43,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "19f4d513-f636-40d7-8d3f-c3135462f01a"
+      }
+    },
+    "owner": "barbosa-felpe"
   }
 }

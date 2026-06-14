@@ -9,14 +9,20 @@ const TIMELINE = ["Aguardando", "Pago", "Enviado", "Entregue"];
 type OrderDetail = {
     id: number;
     status: string;
-    nome_cliente: string;
+    nome: string;
     metodo_pagamento: string;
     codigo_rastreio?: string;
-    cupom?: string;
+    cupom_codigo?: string;
     total: number;
     created_at: string;
-    endereco: { rua: string; numero: string; complemento?: string; bairro: string; cidade: string; estado: string; cep: string };
-    itens: { nome: string; quantidade: number; preco_historico: number }[];
+    rua: string;
+    numero: string;
+    complemento?: string;
+    bairro: string;
+    cidade: string;
+    estado: string;
+    cep: string;
+    itens: { nome: string; quantidade: number; preco_unitario_historico: number }[];
 };
 
 export default function OrderModal({ orderId, visible, onClose, onStatusUpdate }: {
@@ -50,8 +56,9 @@ export default function OrderModal({ orderId, visible, onClose, onStatusUpdate }
         if (!order) return;
         setUpdatingStatus(true);
         try {
-            await updateOrderStatus(order.id, status);
-            setOrder({ ...order, status });
+            const statusLower = status.toLowerCase();
+            await updateOrderStatus(order.id, statusLower);
+            setOrder({ ...order, status: statusLower });
             onStatusUpdate();
         } catch {
             Alert.alert("Erro", "Não foi possível atualizar o status.");
@@ -63,17 +70,25 @@ export default function OrderModal({ orderId, visible, onClose, onStatusUpdate }
     function handleCancel() {
         Alert.alert("Cancelar pedido", "Tem certeza que deseja cancelar este pedido?", [
             { text: "Não", style: "cancel" },
-            { text: "Sim, cancelar", style: "destructive", onPress: () => handleStatusUpdate("Cancelado") },
+            { text: "Sim, cancelar", style: "destructive", onPress: () => handleStatusUpdate("cancelado") },
         ]);
     }
 
     function formatCurrency(value: number) {
-        return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        const n = (parseFloat(value as any) || 0).toFixed(2);
+        const [intPart, decPart] = n.split(".");
+        const formatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return `R$ ${formatted},${decPart}`;
     }
 
     function formatDate(dateStr: string) {
         const d = new Date(dateStr);
-        return d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const year = d.getFullYear();
+        const hours = String(d.getHours()).padStart(2, "0");
+        const minutes = String(d.getMinutes()).padStart(2, "0");
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
 
     const currentStep = TIMELINE.findIndex(s => s.toLowerCase() === order?.status?.toLowerCase());
@@ -135,23 +150,23 @@ export default function OrderModal({ orderId, visible, onClose, onStatusUpdate }
 
                         {/* Info */}
                         <View className="bg-gray-50 rounded-2xl p-4 mb-4 gap-2">
-                            <Row label="Cliente" value={order.nome_cliente} />
+                            <Row label="Cliente" value={order.nome} />
                             <Row label="Data" value={formatDate(order.created_at)} />
                             <Row label="Pagamento" value={order.metodo_pagamento} />
                             {order.codigo_rastreio && <Row label="Rastreio" value={order.codigo_rastreio} />}
-                            {order.cupom && <Row label="Cupom" value={order.cupom} />}
+                            {order.cupom_codigo && <Row label="Cupom" value={order.cupom_codigo} />}
                         </View>
 
                         {/* Endereço */}
-                        {order.endereco && (
+                        {order.rua && (
                             <View className="bg-gray-50 rounded-2xl p-4 mb-4">
                                 <Text className="text-sm font-semibold text-gray-500 mb-2">ENDEREÇO</Text>
                                 <Text className="text-gray-800">
-                                    {order.endereco.rua}, {order.endereco.numero}
-                                    {order.endereco.complemento ? ` - ${order.endereco.complemento}` : ""}
+                                    {order.rua}, {order.numero}
+                                    {order.complemento ? ` - ${order.complemento}` : ""}
                                 </Text>
-                                <Text className="text-gray-600 text-sm">{order.endereco.bairro} — {order.endereco.cidade}/{order.endereco.estado}</Text>
-                                <Text className="text-gray-600 text-sm">CEP: {order.endereco.cep}</Text>
+                                <Text className="text-gray-600 text-sm">{order.bairro} — {order.cidade}/{order.estado}</Text>
+                                <Text className="text-gray-600 text-sm">CEP: {order.cep}</Text>
                             </View>
                         )}
 
@@ -162,9 +177,9 @@ export default function OrderModal({ orderId, visible, onClose, onStatusUpdate }
                                 <View key={i} className="flex-row justify-between items-center py-2 border-b border-gray-100">
                                     <View className="flex-1 pr-2">
                                         <Text className="text-gray-800 font-medium" numberOfLines={1}>{item.nome}</Text>
-                                        <Text className="text-gray-500 text-sm">{item.quantidade}x {formatCurrency(item.preco_historico)}</Text>
+                                        <Text className="text-gray-500 text-sm">{item.quantidade}x {formatCurrency(item.preco_unitario_historico)}</Text>
                                     </View>
-                                    <Text className="font-semibold text-gray-900">{formatCurrency(item.quantidade * item.preco_historico)}</Text>
+                                    <Text className="font-semibold text-gray-900">{formatCurrency(item.quantidade * item.preco_unitario_historico)}</Text>
                                 </View>
                             ))}
                             <View className="flex-row justify-between pt-3">

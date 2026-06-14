@@ -3,6 +3,7 @@ import { useState } from "react";
 import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { login } from "../lib/api/index";
 import { savePushToken } from "../lib/api/notifications";
 import Feather from '@expo/vector-icons/Feather';
@@ -16,10 +17,11 @@ async function registerPushToken() {
 
         if (status !== 'granted') return;
 
-        const { data: token } = await Notifications.getExpoPushTokenAsync();
+        const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+        const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
         await savePushToken(token);
-    } catch {
-        // silencioso — não bloqueia o login se falhar
+    } catch (err: any) {
+        Alert.alert('Push token error', err?.message ?? String(err));
     }
 }
 

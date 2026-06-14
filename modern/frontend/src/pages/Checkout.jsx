@@ -11,7 +11,7 @@ import { createOrder } from "../lib/api/orders"
 import { gerarPixPayload } from "../lib/pix"
 import { calcularFrete } from "../lib/frete"
 import { validateCoupon } from "../lib/api/coupons"
-import { getConfiguracoes } from "../lib/api/configuracoes"
+import { useConfiguracoes } from "../hooks/useConfiguracoes"
 import { siVisa, siMastercard, siAmericanexpress, siDiscover } from 'simple-icons'
 import Toast from "../components/Toast"
 import { getProfile } from "../lib/api/profile"
@@ -483,22 +483,17 @@ export default function Checkout() {
     const [appliedCoupon, setAppliedCoupon] = useState(navState?.coupon ?? null)
     const [couponError, setCouponError] = useState('')
     const [validatingCoupon, setValidatingCoupon] = useState(false)
-    const [freteMinimo, setFreteMinimo] = useState(undefined)
+    const { config: storeConfig } = useConfiguracoes()
+    const freteMinimo = (() => {
+        const raw = Number(storeConfig.frete_gratis_minimo)
+        return isNaN(raw) ? 500 : raw
+    })()
 
     useEffect(() => {
         getCart()
             .then(res => setItens(res.data.carrinho ?? []))
             .catch(() => {})
             .finally(() => setLoadingCart(false))
-    }, [])
-
-    useEffect(() => {
-        getConfiguracoes()
-            .then(res => {
-                const val = res.data.configuracoes?.frete_gratis_minimo
-                setFreteMinimo(val !== undefined ? Number(val) : undefined)
-            })
-            .catch(() => {})
     }, [])
 
     useEffect(() => {

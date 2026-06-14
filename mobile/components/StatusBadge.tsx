@@ -10,12 +10,15 @@ const statusConfig: Record<string, { bg: string; text: string; label: string }> 
     inativo:    { bg: "#F3F4F6", text: "#6B7280", label: "Inativo" },
 };
 
-export default function StatusBadge({ status }: { status: string }) {
-    const key = typeof status === "string" ? status.toLowerCase() : "";
-    const config = statusConfig[key] ?? { bg: "#F3F4F6", text: "#6B7280", label: String(status ?? "—") };
+const numericMap: Record<string, string> = { "1": "ativo", "0": "inativo" };
+
+export default function StatusBadge({ status }: { status: string | number }) {
+    const normalized = numericMap[String(status)] ?? (typeof status === "string" ? status.toLowerCase() : "");
+    const config = statusConfig[normalized] ?? { bg: "#F3F4F6", text: "#6B7280", label: String(status ?? "—") };
     return (
         <View style={{ backgroundColor: config.bg }} className="px-2 py-1 rounded-full">
             <Text style={{ color: config.text }} className="text-xs font-semibold">{config.label}</Text>
         </View>
     );
+
 }
