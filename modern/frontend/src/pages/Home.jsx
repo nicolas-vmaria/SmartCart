@@ -10,6 +10,7 @@ import { getProdutosDestaque } from '../lib/api/products'
 import { imgUrl } from '../lib/cloudinaryUrl'
 import SmartCart3D from '../components/SmartCart3D'
 import SmartCartDemo from '../components/SmartCartDemo'
+import ScrollVideo from '../components/ScrollVideo'
 
 gsap.registerPlugin(TextPlugin)
 
@@ -431,6 +432,7 @@ export default function Home() {
   return (
     <main ref={rootRef}>
       <Hero />
+      <ScrollVideo framesPath="/frames" frameCount={250} />
       <Diferenciais />
       <ProdutosDestaque />
       <Features />
