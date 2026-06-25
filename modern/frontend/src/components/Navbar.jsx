@@ -17,7 +17,6 @@ export default function Navbar() {
     const [categorias, setCategorias] = useState([]);
     const [loadingCategorias, setLoadingCategorias] = useState(true);
     const [scrolled, setScrolled] = useState(false);
-    const [hidden, setHidden] = useState(false);
     const { isLogged, nome } = useAuth()
     const location = useLocation()
     const navigate = useNavigate()
@@ -29,13 +28,6 @@ export default function Navbar() {
         onScroll()
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
-    }, [isHome])
-
-    useEffect(() => {
-        if (!isHome) { setHidden(false); return }
-        function onScrollVideo(e) { setHidden(e.detail) }
-        window.addEventListener('scrollvideo:active', onScrollVideo)
-        return () => window.removeEventListener('scrollvideo:active', onScrollVideo)
     }, [isHome])
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
@@ -86,7 +78,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className={`flex items-center justify-between h-20 px-6 md:px-10 w-full transition-all duration-300 ${isHome && !scrolled ? 'bg-transparent' : 'bg-verde-escuro'} ${hidden ? '-translate-y-full opacity-0 pointer-events-none' : ''}`}>
+        <nav className={`flex items-center justify-between h-20 px-6 md:px-10 w-full transition-colors duration-300 ${isHome && !scrolled ? 'bg-transparent' : 'bg-verde-escuro'}`}>
 
             <Link to="/" onClick={fecharMenu}><img className="w-36 md:w-40" src={logo} alt="" /></Link>
 
