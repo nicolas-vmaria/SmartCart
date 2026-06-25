@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp, MessageSquare, ScrollText } from 'lucide-react'
+import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp, MessageSquare, ScrollText, Bug } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -124,6 +124,7 @@ export default function AdminMenu({ isOpen, onClose }) {
                         <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Admin</h1>
                         {can('usuarios')      && <Link to="/admin/manage-users" onClick={onClose} className={linkClass}><UserCog size={18} />Gerenciar usuários</Link>}
                         {can('papeis')        && <Link to="/admin/roles" onClick={onClose} className={linkClass}><ShieldCheck size={18} />Gerenciar Pápeis</Link>}
+                        <Link to="/admin/reports" onClick={onClose} className={linkClass}><Bug size={18} />Reports</Link>
                         <Link to="/admin/help" onClick={onClose} className={linkClass}><HelpCircle size={18} />Ajuda</Link>
                         {can('configuracoes') && <Link to="/admin/settings" onClick={onClose} className={linkClass}><Settings size={18} />Configurações</Link>}
                     </ul>

@@ -393,10 +393,17 @@ export default function ProductDetail() {
 
             <section className="px-5 md:px-10 py-10 md:py-16 border-t border-gray-200">
                 {produto.descricao && (
-                    <div
-                        className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600 prose-strong:text-gray-800 prose-img:rounded-2xl"
-                        dangerouslySetInnerHTML={{ __html: produto.descricao }}
-                    />
+                    <div className="max-w-7xl mx-auto">
+                        <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
+                            <div className="mb-3">
+                                <p className="text-xs font-bold uppercase tracking-widest text-verde-escuro/70">Descricao</p>
+                            </div>
+                            <div
+                                className="product-description-box prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-strong:text-gray-900 prose-img:rounded-xl"
+                                dangerouslySetInnerHTML={{ __html: produto.descricao }}
+                            />
+                        </div>
+                    </div>
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 mt-10 md:mt-16 border-t border-gray-200 pt-10">

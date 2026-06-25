@@ -4,6 +4,7 @@ use smartcart;
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS Resetar_Senha;
+DROP TABLE IF EXISTS AdminReports;
 DROP TABLE IF EXISTS Aplicacao;
 DROP TABLE IF EXISTS Trabalho;
 DROP TABLE IF EXISTS Review;
@@ -64,6 +65,26 @@ CREATE TABLE Usuario (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (papel_id) REFERENCES Papeis(id)
+);
+
+CREATE TABLE AdminReports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT NOT NULL,
+    admin_nome VARCHAR(255) NOT NULL,
+    admin_email VARCHAR(255) NULL,
+    problema_central VARCHAR(100) NOT NULL,
+    categoria VARCHAR(100) NOT NULL,
+    prioridade ENUM('Baixa', 'Media', 'Alta', 'Critica') NOT NULL DEFAULT 'Media',
+    contexto_afetado VARCHAR(255) NULL,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT NOT NULL,
+    passos TEXT NULL,
+    navegador VARCHAR(1000) NULL,
+    status ENUM('novo', 'enviado', 'erro') NOT NULL DEFAULT 'novo',
+    erro_envio VARCHAR(500) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES Usuario(id)
 );
 
 CREATE TABLE Categorias (
@@ -250,6 +271,10 @@ CREATE INDEX idx_pedidos_usuario          ON Pedidos(usuario_id);
 CREATE INDEX idx_pedidos_created_at       ON Pedidos(created_at);
 CREATE INDEX idx_review_produto           ON Review(produto_id);
 CREATE INDEX idx_produtos_status          ON Produtos(status);
+CREATE INDEX idx_admin_reports_admin      ON AdminReports(admin_id);
+CREATE INDEX idx_admin_reports_status     ON AdminReports(status);
+CREATE INDEX idx_admin_reports_prioridade ON AdminReports(prioridade);
+CREATE INDEX idx_admin_reports_created_at ON AdminReports(created_at);
 
 INSERT IGNORE INTO Configuracoes (chave, valor) VALUES
     ('notify_novos_pedidos',  '1'),

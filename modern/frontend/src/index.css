@@ -67,6 +67,43 @@ body{
   display: none;
 }
 
+.product-description-box :where(h1, h2, h3) {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.28rem;
+  line-height: 1.35;
+}
+
+.product-description-box :where(p, ul, ol) {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.product-description-box :where(p, li) {
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.product-description-box :where(ul, ol) {
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1rem;
+}
+
+@media (min-width: 768px) {
+  .product-description-box :where(ul, ol) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.product-description-box > :first-child {
+  margin-top: 0;
+}
+
+.product-description-box > :last-child {
+  margin-bottom: 0;
+}
+
 .btn-border-draw {
   position: relative;
 }
