@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect, useState } from "react"
-import { Route, Routes, BrowserRouter, Outlet, useLocation } from "react-router-dom"
+import { Route, Routes, BrowserRouter, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { Menu, X } from "lucide-react"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import ScrollToTop from "./components/ScrollToTop"
 import AdminMenu from "./components/admin/AdminMenu"
 import AiChat from "./components/AiChat"
+import Toast from "./components/Toast"
 import ProtectedRouteAdmin from "./components/admin/ProtectedRouteAdmin"
 import ProtectedRouteUser from "./components/ProtectRoutesUser"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
@@ -260,11 +261,100 @@ function AdminLayout() {
   )
 }
 
+function decodeToken(token) {
+  try {
+    const payload = token.split('.')[1]
+    return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))
+  } catch {
+    return null
+  }
+}
+
+export function SessionWatcher() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [toast, setToast] = useState(null)
+
+  useEffect(() => {
+    let timeoutId = null
+
+    function expireSession(type) {
+      if (type === 'admin') {
+        localStorage.removeItem('admin_token')
+        localStorage.removeItem('admin_user')
+        window.dispatchEvent(new Event('storage'))
+        setToast({ message: 'Token expirado. Faça login novamente.', type: 'warning' })
+        navigate('/admin/login', { replace: true })
+        return
+      }
+
+      localStorage.removeItem('user_token')
+      localStorage.removeItem('user_nome')
+      window.dispatchEvent(new Event('storage'))
+      window.dispatchEvent(new CustomEvent('cart:updated'))
+      setToast({ message: 'Token expirado. Faça login novamente.', type: 'warning' })
+      navigate('/login', { replace: true })
+    }
+
+    function schedule() {
+      if (timeoutId) clearTimeout(timeoutId)
+
+      const sessions = [
+        location.pathname.startsWith('/admin')
+          ? { type: 'admin', token: localStorage.getItem('admin_token') }
+          : { type: 'user', token: localStorage.getItem('user_token') },
+      ]
+        .map(session => ({ ...session, payload: session.token ? decodeToken(session.token) : null }))
+        .filter(session => session.payload?.exp)
+        .sort((a, b) => a.payload.exp - b.payload.exp)
+
+      if (sessions.length === 0) return
+
+      const next = sessions[0]
+      const delay = next.payload.exp * 1000 - Date.now()
+
+      if (delay <= 0) {
+        expireSession(next.type)
+        return
+      }
+
+      timeoutId = setTimeout(() => expireSession(next.type), delay)
+    }
+
+    function checkNow() {
+      schedule()
+    }
+
+    function handleExpiredEvent(event) {
+      expireSession(event.detail?.type ?? 'user')
+    }
+
+    schedule()
+    window.addEventListener('storage', schedule)
+    window.addEventListener('auth:changed', schedule)
+    window.addEventListener('auth:expired', handleExpiredEvent)
+    window.addEventListener('focus', checkNow)
+    document.addEventListener('visibilitychange', checkNow)
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+      window.removeEventListener('storage', schedule)
+      window.removeEventListener('auth:changed', schedule)
+      window.removeEventListener('auth:expired', handleExpiredEvent)
+      window.removeEventListener('focus', checkNow)
+      document.removeEventListener('visibilitychange', checkNow)
+    }
+  }, [location.pathname, navigate])
+
+  return toast ? <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} /> : null
+}
+
 function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
         <ScrollToTop />
+        <SessionWatcher />
         <Suspense fallback={<div className="min-h-screen" />}>
           <Routes>
             {/* Rotas com Navbar + Footer */}

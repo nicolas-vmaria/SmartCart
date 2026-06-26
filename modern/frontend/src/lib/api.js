@@ -30,11 +30,7 @@ api.interceptors.response.use(
             localStorage.removeItem('user_token')
             localStorage.removeItem('user_nome')
             window.dispatchEvent(new Event('storage'))
-
-            const publicAuthPages = ['/login', '/register', '/forgot-password', '/reset-password']
-            if (!publicAuthPages.includes(window.location.pathname)) {
-                window.location.assign('/login')
-            }
+            window.dispatchEvent(new CustomEvent('auth:expired', { detail: { type: 'user' } }))
         }
 
         return Promise.reject(error)
@@ -57,7 +53,16 @@ adminApi.interceptors.response.use(
         if (response.data?.error) return rejectApiError(response)
         return response
     },
-    error => Promise.reject(error)
+    error => {
+        if (error.response?.status === 401 && !error.config?.url?.startsWith('/admin/auth/')) {
+            localStorage.removeItem('admin_token')
+            localStorage.removeItem('admin_user')
+            window.dispatchEvent(new Event('storage'))
+            window.dispatchEvent(new CustomEvent('auth:expired', { detail: { type: 'admin' } }))
+        }
+
+        return Promise.reject(error)
+    }
 )
 
 export default api
