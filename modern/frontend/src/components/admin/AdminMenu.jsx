@@ -78,11 +78,9 @@ export default function AdminMenu({ isOpen, onClose }) {
     const initials = nome.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
 
     const perms = adminUser.permissions ?? null
-    const isRootRole = ['admin', 'root'].includes(String(papel).toLowerCase())
     const can = (key) => {
         if (!perms) return true
-        if (Object.prototype.hasOwnProperty.call(perms, key)) return !!perms[key]
-        return isRootRole && ['reports', 'chamados'].includes(key)
+        return Object.prototype.hasOwnProperty.call(perms, key) ? !!perms[key] : false
     }
 
     function closeAdmin() {

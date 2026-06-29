@@ -9,7 +9,9 @@ class BaseController {
 
     protected function respond(array $result, int $successCode = 200): void {
         if (isset($result['error'])) {
-            http_response_code(400);
+            if (http_response_code() < 400) {
+                http_response_code(400);
+            }
             echo json_encode($result);
             return;
         }

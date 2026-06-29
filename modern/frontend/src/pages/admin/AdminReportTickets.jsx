@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import AdminHeader from '../../components/admin/AdminHeader'
 import Toast from '../../components/Toast'
 import { getAdminReports, updateAdminReport } from '../../lib/api/adminReports'
@@ -89,6 +89,9 @@ export default function AdminReportTickets() {
         () => reports.find(report => report.id === selectedId) ?? reports[0] ?? null,
         [reports, selectedId]
     )
+    const selectedReportId = selected?.id ?? null
+    const selectedRef = useRef(null)
+    selectedRef.current = selected
 
     const fetchReports = useCallback(async () => {
         setLoading(true)
@@ -114,13 +117,14 @@ export default function AdminReportTickets() {
     }, [fetchReports, search])
 
     useEffect(() => {
-        if (!selected) return
-        setSelectedId(selected.id)
+        const current = selectedRef.current
+        if (!current) return
+        setSelectedId(current.id)
         setForm({
-            status: selected.status === 'novo' ? 'em_atendimento' : selected.status,
-            resolucao: selected.resolucao ?? '',
+            status: current.status === 'novo' ? 'em_atendimento' : current.status,
+            resolucao: current.resolucao ?? '',
         })
-    }, [selected])
+    }, [selectedReportId])
 
     async function handleSubmit(e) {
         e.preventDefault()
