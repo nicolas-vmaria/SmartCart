@@ -30,6 +30,8 @@ class AdminRolesService {
         $ver_marketing    = ($body['ver_marketing']    === 'true' || $body['ver_marketing']    === '1') ? 1 : 0;
         $ver_reviews      = ($body['ver_reviews']      === 'true' || $body['ver_reviews']      === '1') ? 1 : 0;
         $ver_auditoria    = ($body['ver_auditoria']    === 'true' || $body['ver_auditoria']    === '1') ? 1 : 0;
+        $ver_reports      = ($body['ver_reports']      === 'true' || $body['ver_reports']      === '1') ? 1 : 0;
+        $ver_chamados     = ($body['ver_chamados']     === 'true' || $body['ver_chamados']     === '1') ? 1 : 0;
 
         if (!$nome_papel || !$badge) {
             throw new InvalidArgumentException("Campos obrigatórios ausentes: nome_papel, badge");
@@ -55,6 +57,8 @@ class AdminRolesService {
             'ver_marketing'    => $ver_marketing,
             'ver_reviews'      => $ver_reviews,
             'ver_auditoria'    => $ver_auditoria,
+            'ver_reports'      => $ver_reports,
+            'ver_chamados'     => $ver_chamados,
         ];
     }
 
@@ -140,4 +144,3 @@ class AdminRolesService {
         }
     }
 }
- 

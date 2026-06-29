@@ -54,6 +54,8 @@ class AdminAuthService {
                 'ver_marketing'     => (bool)$user['ver_marketing'],
                 'ver_reviews'       => (bool)$user['ver_reviews'],
                 'ver_auditoria'     => (bool)$user['ver_auditoria'],
+                'ver_reports'       => (bool)$user['ver_reports'],
+                'ver_chamados'      => (bool)$user['ver_chamados'],
             ],
         ]);
 
@@ -82,7 +84,9 @@ class AdminAuthService {
                     'customizacao'  => (bool)$user['ver_customizacao'],
                     'marketing'     => (bool)$user['ver_marketing'],
                     'reviews'       => (bool)$user['ver_reviews'],
-                'auditoria'     => (bool)$user['ver_auditoria'],
+                    'auditoria'     => (bool)$user['ver_auditoria'],
+                    'reports'       => (bool)$user['ver_reports'],
+                    'chamados'      => (bool)$user['ver_chamados'],
                 ],
             ]
         ];

@@ -42,6 +42,8 @@ CREATE TABLE Papeis (
     ver_marketing BOOLEAN DEFAULT FALSE,
     ver_reviews BOOLEAN DEFAULT FALSE,
     ver_auditoria BOOLEAN NOT NULL DEFAULT FALSE,
+    ver_reports BOOLEAN NOT NULL DEFAULT FALSE,
+    ver_chamados BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -80,11 +82,16 @@ CREATE TABLE AdminReports (
     descricao TEXT NOT NULL,
     passos TEXT NULL,
     navegador VARCHAR(1000) NULL,
-    status ENUM('novo', 'enviado', 'erro') NOT NULL DEFAULT 'novo',
+    status ENUM('novo', 'enviado', 'erro', 'em_atendimento', 'resolvido', 'fechado') NOT NULL DEFAULT 'novo',
     erro_envio VARCHAR(500) NULL,
+    tecnico_id INT NULL,
+    tecnico_nome VARCHAR(255) NULL,
+    resolucao TEXT NULL,
+    resolvido_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES Usuario(id)
+    FOREIGN KEY (admin_id) REFERENCES Usuario(id),
+    FOREIGN KEY (tecnico_id) REFERENCES Usuario(id)
 );
 
 CREATE TABLE Categorias (
@@ -285,6 +292,11 @@ INSERT IGNORE INTO Configuracoes (chave, valor) VALUES
 INSERT INTO Papeis (id, nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_usuarios, ver_configuracoes, ver_banners, ver_customizacao, ver_marketing, ver_reviews, ver_auditoria)
 VALUES (1, 'cliente', NULL, 'Usuário padrão', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
        (2, 'admin', 'bg-green-100 text-green-700 dark:bg-green-500/25 dark:text-green-300', 'Administrador com acesso total', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
+
+UPDATE Papeis
+SET ver_reports = TRUE,
+    ver_chamados = TRUE
+WHERE id = 2;
 
 INSERT INTO Usuario (papel_id, is_admin, nome, email, tel, senha)
 VALUES (2, TRUE, 'Admin', 'admin@smartcart.com', '00000000000', '$2y$12$frHJ/ZcElz8Pk2Sz/I7qpOMrqAc8YB9hriQ6RXqGzWFe6RTg37CLS');

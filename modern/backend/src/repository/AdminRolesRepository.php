@@ -12,7 +12,7 @@ class AdminRolesRepository {
     public function findAllRoles(): array {
         try {
             $stmt = $this->db->query('
-                SELECT p.id, p.nome_papel, p.badge, p.descricao, p.ver_dashboard, p.ver_clientes, p.ver_categorias, p.ver_produtos, p.ver_pedidos, p.ver_admin, p.ver_curriculos, p.ver_trabalhos, p.ver_cupons, p.ver_relatorios, p.ver_customizacao, p.ver_usuarios, p.ver_configuracoes, p.ver_marketing, p.ver_reviews, p.ver_auditoria,
+                SELECT p.id, p.nome_papel, p.badge, p.descricao, p.ver_dashboard, p.ver_clientes, p.ver_categorias, p.ver_produtos, p.ver_pedidos, p.ver_admin, p.ver_curriculos, p.ver_trabalhos, p.ver_cupons, p.ver_relatorios, p.ver_customizacao, p.ver_usuarios, p.ver_configuracoes, p.ver_marketing, p.ver_reviews, p.ver_auditoria, p.ver_reports, p.ver_chamados,
                        COUNT(u.id) AS total_usuarios
                 FROM Papeis p
                 LEFT JOIN Usuario u ON u.papel_id = p.id
@@ -28,8 +28,8 @@ class AdminRolesRepository {
     public function createRole(array $role): array {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO Papeis (nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_customizacao, ver_usuarios, ver_configuracoes, ver_marketing, ver_reviews, ver_auditoria)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Papeis (nome_papel, badge, descricao, ver_dashboard, ver_clientes, ver_categorias, ver_produtos, ver_pedidos, ver_admin, ver_curriculos, ver_trabalhos, ver_cupons, ver_relatorios, ver_customizacao, ver_usuarios, ver_configuracoes, ver_marketing, ver_reviews, ver_auditoria, ver_reports, ver_chamados)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ');
 
             $stmt->execute([
@@ -52,6 +52,8 @@ class AdminRolesRepository {
                 $role['ver_marketing'],
                 $role['ver_reviews'],
                 $role['ver_auditoria'],
+                $role['ver_reports'],
+                $role['ver_chamados'],
             ]);
 
             $id = (int)$this->db->lastInsertId();
@@ -77,6 +79,8 @@ class AdminRolesRepository {
                 'ver_marketing'    => $role['ver_marketing'],
                 'ver_reviews'      => $role['ver_reviews'],
                 'ver_auditoria'    => $role['ver_auditoria'],
+                'ver_reports'      => $role['ver_reports'],
+                'ver_chamados'     => $role['ver_chamados'],
             ];
         } catch (PDOException $e) {
             if ($e->getCode() === '23000' && (str_contains($e->getMessage(), 'Duplicate') || str_contains($e->getMessage(), 'key'))) {
@@ -90,7 +94,7 @@ class AdminRolesRepository {
     public function updateRole($id, array $role): bool {
         try {
             $stmt = $this->db->prepare('
-                UPDATE Papeis SET nome_papel = ?, badge = ?, descricao = ?, ver_dashboard = ?, ver_clientes = ?, ver_categorias = ?, ver_produtos = ?, ver_pedidos = ?, ver_admin = ?, ver_curriculos = ?, ver_trabalhos = ?, ver_cupons = ?, ver_relatorios = ?, ver_customizacao = ?, ver_usuarios = ?, ver_configuracoes = ?, ver_marketing = ?, ver_reviews = ?, ver_auditoria = ?
+                UPDATE Papeis SET nome_papel = ?, badge = ?, descricao = ?, ver_dashboard = ?, ver_clientes = ?, ver_categorias = ?, ver_produtos = ?, ver_pedidos = ?, ver_admin = ?, ver_curriculos = ?, ver_trabalhos = ?, ver_cupons = ?, ver_relatorios = ?, ver_customizacao = ?, ver_usuarios = ?, ver_configuracoes = ?, ver_marketing = ?, ver_reviews = ?, ver_auditoria = ?, ver_reports = ?, ver_chamados = ?
                 WHERE id = ?
             ');
 
@@ -114,6 +118,8 @@ class AdminRolesRepository {
                 $role['ver_marketing'],
                 $role['ver_reviews'],
                 $role['ver_auditoria'],
+                $role['ver_reports'],
+                $role['ver_chamados'],
                 $id,
             ]);
 

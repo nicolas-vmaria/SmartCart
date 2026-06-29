@@ -23,6 +23,8 @@ const SECTIONS = [
     { key: 'configuracoes', label: 'Configurações' },
     { key: 'reviews',       label: 'Reviews' },
     { key: 'auditoria',     label: 'Auditoria' },
+    { key: 'reports',       label: 'Reports' },
+    { key: 'chamados',      label: 'Chamados' },
 ]
 
 function emptyPerms() {
@@ -77,6 +79,8 @@ function apiRoleToModel(r) {
             configuracoes: !!r.ver_configuracoes,
             reviews:       !!r.ver_reviews,
             auditoria:     !!r.ver_auditoria,
+            reports:       !!r.ver_reports,
+            chamados:      !!r.ver_chamados,
         }
     }
 }
@@ -139,6 +143,8 @@ export default function AdminRoles() {
             ver_configuracoes:form.permissions.configuracoes ? '1' : '0',
             ver_reviews:      form.permissions.reviews       ? '1' : '0',
             ver_auditoria:    form.permissions.auditoria     ? '1' : '0',
+            ver_reports:      form.permissions.reports       ? '1' : '0',
+            ver_chamados:     form.permissions.chamados      ? '1' : '0',
         }
         try {
             if (editing) {

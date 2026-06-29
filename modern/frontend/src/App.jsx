@@ -48,6 +48,7 @@ const AdminCurriculoDetalhe = lazy(() => import("./pages/admin/AdminCurriculoDet
 const AdminLogin           = lazy(() => import("./pages/admin/AdminLogin"))
 const AdminReviews         = lazy(() => import("./pages/admin/AdminReviews"))
 const AdminReports         = lazy(() => import("./pages/admin/AdminReports"))
+const AdminReportTickets   = lazy(() => import("./pages/admin/AdminReportTickets"))
 const AdminVagas           = lazy(() => import("./pages/admin/AdminVagas"))
 const AdminCupons          = lazy(() => import("./pages/admin/AdminCupons"))
 const AdminRelatorios      = lazy(() => import("./pages/admin/AdminRelatorios"))
@@ -320,6 +321,7 @@ function App() {
                 <Route path="marketing" element={<AdminMarketing />} />
                 <Route path="reviews" element={<AdminReviews />} />
                 <Route path="reports" element={<AdminReports />} />
+                <Route path="report-tickets" element={<AdminReportTickets />} />
                 <Route path="auditoria" element={<AdminAuditoria />} />
               </Route>
             </Route>

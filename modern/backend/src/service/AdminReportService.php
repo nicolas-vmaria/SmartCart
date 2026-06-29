@@ -6,6 +6,7 @@ require_once __DIR__ . '/../repository/AuditRepository.php';
 
 class AdminReportService {
     private AdminReportRepository $repository;
+    private const TECH_STATUSES = ['novo', 'enviado', 'erro', 'em_atendimento', 'resolvido', 'fechado'];
 
     public function __construct(?AdminReportRepository $repo = null) {
         $this->repository = $repo ?? new AdminReportRepository();
@@ -93,6 +94,76 @@ class AdminReportService {
         }
     }
 
+    public function list(array $query = []): array {
+        $filters = [
+            'status' => isset($query['status']) ? trim((string)$query['status']) : '',
+            'prioridade' => isset($query['prioridade']) ? trim((string)$query['prioridade']) : '',
+            'problema_central' => isset($query['problemaCentral']) ? trim((string)$query['problemaCentral']) : '',
+            'search' => isset($query['search']) ? trim((string)$query['search']) : '',
+        ];
+
+        if ($filters['status'] !== '' && !in_array($filters['status'], self::TECH_STATUSES, true)) {
+            http_response_code(400);
+            return ['error' => 'Status invalido'];
+        }
+
+        $reports = $this->repository->findAll(array_filter($filters, fn($value) => $value !== ''));
+        return [
+            'reports' => array_map([$this, 'normalizeReport'], $reports),
+            'stats' => $this->normalizeStats($this->repository->getStats()),
+        ];
+    }
+
+    public function show(string $id): array {
+        $report = $this->repository->findById((int)$id);
+        if (!$report) {
+            http_response_code(404);
+            return ['error' => 'Report nao encontrado'];
+        }
+
+        return ['report' => $this->normalizeReport($report)];
+    }
+
+    public function updateAttendance(string $id, array $body, array $admin): array {
+        $status = isset($body['status']) ? trim((string)$body['status']) : '';
+        $resolucao = isset($body['resolucao']) ? trim((string)$body['resolucao']) : '';
+
+        if (!in_array($status, self::TECH_STATUSES, true)) {
+            http_response_code(400);
+            return ['error' => 'Status invalido'];
+        }
+
+        if (in_array($status, ['resolvido', 'fechado'], true) && strlen($resolucao) < 10) {
+            http_response_code(400);
+            return ['error' => 'Informe uma resolucao com pelo menos 10 caracteres'];
+        }
+
+        $report = $this->repository->findById((int)$id);
+        if (!$report) {
+            http_response_code(404);
+            return ['error' => 'Report nao encontrado'];
+        }
+
+        $updated = $this->repository->updateAttendance((int)$id, [
+            'status' => $status,
+            'tecnico_id' => (int)($admin['userId'] ?? 0),
+            'tecnico_nome' => (string)($admin['nome'] ?? 'Tecnico'),
+            'resolucao' => $resolucao !== '' ? $resolucao : null,
+            'resolvido_at' => in_array($status, ['resolvido', 'fechado'], true) ? date('Y-m-d H:i:s') : null,
+        ]);
+
+        AuditRepository::log((int)($admin['userId'] ?? 0), (string)($admin['nome'] ?? 'Tecnico'), 'atualizar', 'report', (int)$id, [
+            'status_anterior' => $report['status'] ?? null,
+            'status' => $status,
+            'resolucao' => $resolucao !== '' ? $resolucao : null,
+        ]);
+
+        return [
+            'message' => 'Chamado atualizado com sucesso',
+            'report' => $this->normalizeReport($updated ?? $report),
+        ];
+    }
+
     private function buildEmail(array $data): string {
         $field = fn(string $key) => nl2br(htmlspecialchars((string)($data[$key] ?? ''), ENT_QUOTES, 'UTF-8'));
 
@@ -140,5 +211,40 @@ class AdminReportService {
                 <p style='font-size:13px;color:#4b5563;line-height:1.5'>{$field('navegador')}</p>
             </div>
         </div>";
+    }
+
+    private function normalizeStats(array $stats): array {
+        return [
+            'total' => (int)($stats['total'] ?? 0),
+            'abertos' => (int)($stats['abertos'] ?? 0),
+            'em_atendimento' => (int)($stats['em_atendimento'] ?? 0),
+            'resolvidos' => (int)($stats['resolvidos'] ?? 0),
+            'criticos' => (int)($stats['criticos'] ?? 0),
+        ];
+    }
+
+    private function normalizeReport(array $report): array {
+        return [
+            'id' => (int)$report['id'],
+            'admin_id' => (int)$report['admin_id'],
+            'admin_nome' => $report['admin_nome'],
+            'admin_email' => $report['admin_email'],
+            'problema_central' => $report['problema_central'],
+            'categoria' => $report['categoria'],
+            'prioridade' => $report['prioridade'],
+            'contexto_afetado' => $report['contexto_afetado'],
+            'titulo' => $report['titulo'],
+            'descricao' => $report['descricao'],
+            'passos' => $report['passos'],
+            'navegador' => $report['navegador'],
+            'status' => $report['status'],
+            'erro_envio' => $report['erro_envio'],
+            'tecnico_id' => isset($report['tecnico_id']) ? (int)$report['tecnico_id'] : null,
+            'tecnico_nome' => $report['tecnico_nome'] ?? null,
+            'resolucao' => $report['resolucao'] ?? null,
+            'resolvido_at' => $report['resolvido_at'] ?? null,
+            'created_at' => $report['created_at'],
+            'updated_at' => $report['updated_at'],
+        ];
     }
 }
