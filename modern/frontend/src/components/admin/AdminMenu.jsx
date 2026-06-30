@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp, MessageSquare, ScrollText } from 'lucide-react'
+import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp, MessageSquare, ScrollText, Bug, Wrench } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -78,7 +78,10 @@ export default function AdminMenu({ isOpen, onClose }) {
     const initials = nome.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
 
     const perms = adminUser.permissions ?? null
-    const can = (key) => !perms || !!(perms[key])
+    const can = (key) => {
+        if (!perms) return true
+        return Object.prototype.hasOwnProperty.call(perms, key) ? !!perms[key] : false
+    }
 
     function closeAdmin() {
         setConfirm(true)
@@ -124,6 +127,8 @@ export default function AdminMenu({ isOpen, onClose }) {
                         <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Admin</h1>
                         {can('usuarios')      && <Link to="/admin/manage-users" onClick={onClose} className={linkClass}><UserCog size={18} />Gerenciar usuários</Link>}
                         {can('papeis')        && <Link to="/admin/roles" onClick={onClose} className={linkClass}><ShieldCheck size={18} />Gerenciar Pápeis</Link>}
+                        {can('reports')      && <Link to="/admin/reports" onClick={onClose} className={linkClass}><Bug size={18} />Reports</Link>}
+                        {can('chamados')     && <Link to="/admin/report-tickets" onClick={onClose} className={linkClass}><Wrench size={18} />Chamados</Link>}
                         <Link to="/admin/help" onClick={onClose} className={linkClass}><HelpCircle size={18} />Ajuda</Link>
                         {can('configuracoes') && <Link to="/admin/settings" onClick={onClose} className={linkClass}><Settings size={18} />Configurações</Link>}
                     </ul>
