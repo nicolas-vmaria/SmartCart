@@ -114,7 +114,10 @@ class OrderRepository {
                     ic.produto_id,
                     ic.quantidade,
                     p.nome,
-                    p.preco,
+                    CASE WHEN p.desconto_percentual > 0
+                        THEN ROUND(p.preco * (1 - p.desconto_percentual / 100), 2)
+                        ELSE p.preco
+                    END AS preco,
                     p.estoque,
                     p.status,
                     p.foto_url

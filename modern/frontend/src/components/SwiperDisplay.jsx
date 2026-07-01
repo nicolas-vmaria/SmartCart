@@ -15,10 +15,15 @@ function ProdutoCardSkeleton() {
     )
 }
 
-export default function SwiperDisplay({ title, produtos = [], loading }) {
+export default function SwiperDisplay({ title, icon, subtitle, produtos = [], loading }) {
     return (
-        <div className="px-5 pt-4 pb-2">
-            <h1 className="text-4xl p-5">{title}</h1>
+        <div className="px-5 md:px-10 pt-10 pb-4">
+            <div className="flex items-end gap-3 mb-1">
+                {icon && <span className="text-3xl mb-1">{icon}</span>}
+                <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
+            </div>
+            {subtitle && <p className="text-gray-500 text-sm mb-4 ml-0.5">{subtitle}</p>}
+            <div className="w-12 h-1 bg-verde-escuro rounded-full mb-5" />
 
             {loading ? (
                 <div className="flex gap-5 overflow-hidden px-1 py-2">

@@ -63,11 +63,10 @@ class AuthRepository {
             $id = (int)$this->db->lastInsertId();
 
             return [
-                'id' => $id,
-                'nome' => $user['nome'],
+                'id'    => $id,
+                'nome'  => $user['nome'],
                 'email' => $user['email'],
-                'tel' => $user['tel'],
-                'role' => $user['role'],
+                'tel'   => $user['tel'],
             ];
         } catch (PDOException $e) {
             if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'Duplicate')) {

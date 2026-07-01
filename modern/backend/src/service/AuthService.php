@@ -121,7 +121,7 @@ class AuthService {
                 $this->buildWelcomeEmail($user['nome'], $verifyLink)
             );
         } catch (Exception $e) {
-            // Falha no email não impede o cadastro
+            error_log('Mailer error: ' . $e->getMessage());
         }
 
         return ['message' => 'Cadastro realizado! Verifique seu e-mail para ativar sua conta.'];
@@ -140,7 +140,22 @@ class AuthService {
         }
 
         $this->authRepository->markEmailVerified((int)$user['id']);
-        return ['message' => 'E-mail confirmado com sucesso! Você já pode fazer login.'];
+
+        $jwt = Jwt::generate([
+            'userId' => $user['id'],
+            'email'  => $user['email'],
+            'role'   => 'cliente',
+        ]);
+
+        return [
+            'message' => 'E-mail confirmado com sucesso!',
+            'token'   => $jwt,
+            'user'    => [
+                'id'    => $user['id'],
+                'nome'  => $user['nome'],
+                'email' => $user['email'],
+            ],
+        ];
     }
 
     private function buildWelcomeEmail(string $nome, string $verifyLink): string {

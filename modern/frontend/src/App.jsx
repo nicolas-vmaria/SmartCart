@@ -33,7 +33,8 @@ const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"))
 const MeusPedidos       = lazy(() => import("./pages/MeusPedidos"))
 const ReviewPedido      = lazy(() => import("./pages/ReviewPedido"))
 const BuscaIA           = lazy(() => import("./pages/BuscaIA"))
-const VerificarEmail    = lazy(() => import("./pages/VerificarEmail"))
+const VerificarEmail      = lazy(() => import("./pages/VerificarEmail"))
+const CadastroConfirmado  = lazy(() => import("./pages/CadastroConfirmado"))
 
 const AdminHome            = lazy(() => import("./pages/admin/AdminHome"))
 const AdminClients         = lazy(() => import("./pages/admin/AdminClients"))
@@ -389,6 +390,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/verificar-email" element={<VerificarEmail />} />
+            <Route path="/cadastro-confirmado" element={<CadastroConfirmado />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route element={<ProtectedRouteAdmin />}>
               <Route path="/admin" element={<AdminLayout />}>

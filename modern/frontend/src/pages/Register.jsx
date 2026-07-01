@@ -58,8 +58,8 @@ export default function Register() {
         e.preventDefault()
         setLoading(true)
         try {
-            const { data } = await registerUser(nome, email, senha, tel.replace(/\D/g, ''))
-            setToast({ message: data.message || 'Verifique seu e-mail para ativar a conta.', type: 'success' })
+            await registerUser(nome, email, senha, tel.replace(/\D/g, ''))
+            navigate('/cadastro-confirmado', { state: { email } })
         } catch(err){
             setToast({ message: err.response?.data?.error || "Erro ao conectar no servidor", type: 'error'})
         } finally {
