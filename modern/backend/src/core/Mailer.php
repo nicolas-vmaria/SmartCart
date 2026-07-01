@@ -37,6 +37,8 @@ class Mailer {
             ]];
         }
 
+        $isDev = ($_ENV['APP_ENV'] ?? 'production') !== 'production';
+
         $ch = curl_init('https://api.brevo.com/v3/smtp/email');
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
@@ -48,6 +50,8 @@ class Mailer {
                 'Accept: application/json',
             ],
             CURLOPT_TIMEOUT        => 15,
+            CURLOPT_SSL_VERIFYPEER => !$isDev,
+            CURLOPT_SSL_VERIFYHOST => $isDev ? 0 : 2,
         ]);
 
         $response  = curl_exec($ch);

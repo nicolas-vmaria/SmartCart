@@ -390,7 +390,7 @@ export default function Cart() {
                 )}
             </section>
 
-            <section className="flex items-start w-full lg:w-80 lg:mt-20 shrink-0">
+            {(loading || items.length > 0) && <section className="flex items-start w-full lg:w-80 lg:mt-20 shrink-0">
                 <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden w-full">
 
                     {/* Header */}
@@ -581,7 +581,7 @@ export default function Cart() {
                     </div>
 
                 </div>
-            </section>
+            </section>}
         </main>
     )
 }
