@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate } from 'react-router-dom'
 
 import logo from '../assets/smartcart-logo-transparente.png'
+import boxedWater from '../assets/boxed-water-is-better.webp'
 import { registerUser } from "../lib"
 import { googleLogin } from "../lib/api/authUser"
 import Toast from "../components/Toast"
@@ -77,7 +78,7 @@ export default function Register() {
     return (
         <main className="flex min-h-screen bg-gray-100">
 
-            <Link to={"/"}><img src={logo} alt="SmartCart Logo" className='w-40 h-auto absolute right-10 top-0' /></Link>
+            <Link to={"/"}><img src={logo} alt="SmartCart Logo" className='w-40 h-auto absolute right-10 top-0 z-10' /></Link>
 
             <section className="flex flex-col justify-center w-full md:w-200 min-h-screen overflow-y-auto bg-white px-8 md:px-16 py-8">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -137,7 +138,10 @@ export default function Register() {
                 </button>
             </section>
 
-            <section className="flex-1 w-full bg-verde-escuro" />
+            <section className="relative flex-1 w-full bg-verde-escuro">
+                <img src={boxedWater} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-verde-escuro/60" />
+            </section>
 
             {toast && <Toast message={toast.message} type={toast.type}/>}
         </main>
