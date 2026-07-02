@@ -382,7 +382,7 @@ export default function AdminManageUsers() {
                                     A senha de <span className="font-semibold text-gray-700 dark:text-(--admin-text)">{resetTarget.name}</span> será redefinida para a senha padrão:
                                 </p>
                                 <div className="bg-gray-50 dark:bg-(--admin-hover) border border-gray-200 dark:border-(--admin-border) rounded-lg px-4 py-3 mb-5 flex items-center justify-between">
-                                    <span className="font-mono text-sm text-gray-700 dark:text-(--admin-text) tracking-widest">admin123</span>
+                                    <span className="font-mono text-sm text-gray-700 dark:text-(--admin-text) tracking-widest">Smartcart$123</span>
                                     <KeyRound size={14} className="text-gray-400 dark:text-(--admin-text-muted)" />
                                 </div>
                                 <p className="text-xs text-gray-400 dark:text-(--admin-text-muted) mb-5">

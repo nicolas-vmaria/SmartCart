@@ -144,7 +144,7 @@ class AdminEmployeesService {
         return ['error' => 'Usuário não encontrado', 'status' => 404];
     }
 
-    $this->repository->resetPassword($userId, password_hash('admin123', PASSWORD_BCRYPT));
+    $this->repository->resetPassword($userId, password_hash('Smartcart$123', PASSWORD_BCRYPT));
 
     if ($admin) AuditRepository::log((int)$admin['userId'], $admin['nome'], 'redefinir_senha', 'funcionario', $userId);
     return ['message' => 'Senha redefinida para o padrão com sucesso'];
