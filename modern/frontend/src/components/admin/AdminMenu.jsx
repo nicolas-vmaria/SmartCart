@@ -1,5 +1,5 @@
-import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp, MessageSquare, ScrollText, Bug, Wrench } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { LayoutDashboard, Users, Package, ClipboardList, UserCog, HelpCircle, Settings, LogOut, Tag, ShieldCheck, FileUser, Ticket, BarChart2, Briefcase, Paintbrush, TrendingUp, MessageSquare, ScrollText, Bug, Wrench, ChevronDown, Search } from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import { getAdminOrders } from '../../lib/api/adminOrders'
@@ -9,6 +9,57 @@ import { getProduct } from '../../lib/api/adminProducts'
 import { adminApi } from '../../lib/api'
 
 const linkClass = "cursor-pointer flex gap-2 items-center h-10 px-2 rounded-md transition-all hover:bg-gray-100 dark:text-(--admin-text) dark:hover:bg-(--admin-hover) outline-none"
+const activeLinkClass = "bg-verde-escuro/10 text-verde-escuro font-semibold dark:bg-(--admin-hover) dark:text-(--admin-accent)"
+
+const DASHBOARD_ITEM = { key: 'dashboard', label: 'Dashboard', to: '/admin', icon: LayoutDashboard, permKey: 'dashboard' }
+
+const GROUPS_STATIC = [
+    { groupKey: 'vendas', groupLabel: 'VENDAS', items: [
+        { key: 'pedidos', label: 'Pedidos', to: '/admin/orders', icon: ClipboardList, permKey: 'pedidos' },
+        { key: 'clientes', label: 'Clientes', to: '/admin/clients', icon: Users, permKey: 'clientes' },
+        { key: 'cupons', label: 'Cupons', to: '/admin/cupons', icon: Ticket, permKey: 'cupons' },
+    ]},
+    { groupKey: 'catalogo', groupLabel: 'CATÁLOGO', items: [
+        { key: 'produtos', label: 'Produtos', to: '/admin/products', icon: Package, permKey: 'produtos' },
+        { key: 'categorias', label: 'Categorias', to: '/admin/categories', icon: Tag, permKey: 'categorias' },
+        { key: 'reviews', label: 'Reviews', to: '/admin/reviews', icon: MessageSquare, permKey: 'reviews' },
+    ]},
+    { groupKey: 'marketing', groupLabel: 'MARKETING', items: [
+        { key: 'marketing', label: 'Marketing', to: '/admin/marketing', icon: TrendingUp, permKey: 'marketing' },
+        { key: 'customizacao', label: 'Customização', to: '/admin/customizacao', icon: Paintbrush, permKey: 'customizacao' },
+    ]},
+    { groupKey: 'rh', groupLabel: 'RH', items: [
+        { key: 'curriculos', label: 'Currículos', to: '/admin/curriculos', icon: FileUser, permKey: 'curriculos' },
+        { key: 'trabalhos', label: 'Vagas', to: '/admin/vagas', icon: Briefcase, permKey: 'trabalhos' },
+    ]},
+    { groupKey: 'relatorios', groupLabel: 'RELATÓRIOS', items: [
+        { key: 'relatorios', label: 'Relatórios', to: '/admin/relatorios', icon: BarChart2, permKey: 'relatorios' },
+        { key: 'auditoria', label: 'Auditoria', to: '/admin/auditoria', icon: ScrollText, permKey: 'auditoria' },
+    ]},
+    { groupKey: 'administracao', groupLabel: 'ADMINISTRAÇÃO', items: [
+        { key: 'usuarios', label: 'Gerenciar usuários', to: '/admin/manage-users', icon: UserCog, permKey: 'usuarios' },
+        { key: 'papeis', label: 'Gerenciar Papéis', to: '/admin/roles', icon: ShieldCheck, permKey: 'papeis' },
+    ]},
+    { groupKey: 'tecnico', groupLabel: 'TÉCNICO', items: [
+        { key: 'reports', label: 'Reports', to: '/admin/reports', icon: Bug, permKey: 'reports' },
+        { key: 'chamados', label: 'Chamados', to: '/admin/report-tickets', icon: Wrench, permKey: 'chamados' },
+    ]},
+]
+
+const FIXED_ITEMS = [
+    { key: 'configuracoes', label: 'Configurações', to: '/admin/settings', icon: Settings, permKey: 'configuracoes' },
+    { key: 'ajuda', label: 'Ajuda', to: '/admin/help', icon: HelpCircle, permKey: null },
+]
+
+function isItemActive(pathname, item) {
+    if (item.to === '/admin') return pathname === '/admin'
+    return pathname === item.to || pathname.startsWith(item.to + '/')
+}
+
+function findActiveGroupKey(pathname) {
+    const group = GROUPS_STATIC.find(g => g.items.some(i => isItemActive(pathname, i)))
+    return group ? group.groupKey : null
+}
 
 function Badge({ count }) {
     if (!count) return null
@@ -27,6 +78,11 @@ export default function AdminMenu({ isOpen, onClose }) {
     const [notifCurriculos, setNotifCurriculos] = useState(0)
     const [notifEstoque, setNotifEstoque]       = useState(0)
     const [notifCfg, setNotifCfg]               = useState({})
+    const [search, setSearch] = useState('')
+    const [openGroups, setOpenGroups] = useState(() => {
+        const active = findActiveGroupKey(location.pathname)
+        return active ? new Set([active]) : new Set()
+    })
 
     function fetchConfig() {
         getAdminConfiguracoes()
@@ -71,6 +127,11 @@ export default function AdminMenu({ isOpen, onClose }) {
         return () => window.removeEventListener('curriculos:updated', refreshCurriculos)
     }, [])
 
+    useEffect(() => {
+        const active = findActiveGroupKey(location.pathname)
+        if (active) setOpenGroups(prev => prev.has(active) ? prev : new Set(prev).add(active))
+    }, [location.pathname])
+
     let adminUser = {}
     try { adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}') } catch { adminUser = {} }
     const nome = adminUser.nome || 'Usuário'
@@ -81,6 +142,37 @@ export default function AdminMenu({ isOpen, onClose }) {
     const can = (key) => {
         if (!perms) return true
         return Object.prototype.hasOwnProperty.call(perms, key) ? !!perms[key] : false
+    }
+
+    const badgeByKey = {
+        produtos: notifCfg.notify_estoque_baixo !== '0' ? notifEstoque : 0,
+        pedidos: notifCfg.notify_novos_pedidos !== '0' ? notifPedidos : 0,
+        curriculos: notifCfg.notify_novos_curriculos !== '0' ? notifCurriculos : 0,
+    }
+
+    const visibleGroups = useMemo(() =>
+        GROUPS_STATIC
+            .map(g => ({ ...g, items: g.items.filter(i => !i.permKey || can(i.permKey)) }))
+            .filter(g => g.items.length > 0),
+        [perms]
+    )
+
+    const query = search.trim().toLowerCase()
+    const isSearching = query.length > 0
+
+    const displayGroups = useMemo(() => {
+        if (!isSearching) return visibleGroups
+        return visibleGroups
+            .map(g => ({ ...g, items: g.items.filter(i => i.label.toLowerCase().includes(query)) }))
+            .filter(g => g.items.length > 0)
+    }, [visibleGroups, query, isSearching])
+
+    function toggleGroup(key) {
+        setOpenGroups(prev => {
+            const next = new Set(prev)
+            next.has(key) ? next.delete(key) : next.add(key)
+            return next
+        })
     }
 
     function closeAdmin() {
@@ -101,44 +193,87 @@ export default function AdminMenu({ isOpen, onClose }) {
                     </div>
                 </Link>
 
+                <div className="flex items-center gap-2 border border-gray-200 dark:border-(--admin-border) rounded-md px-3 py-2 my-3">
+                    <Search size={16} className="text-gray-400 dark:text-(--admin-text-muted)" />
+                    <input
+                        type="text"
+                        placeholder="Buscar..."
+                        aria-label="Buscar no menu"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="outline-none bg-transparent dark:text-(--admin-text) text-sm w-full"
+                    />
+                </div>
+
                 <div>
-                    <ul className="flex flex-col gap-2 py-5">
-                        <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Geral</h1>
-                        <div className="flex flex-col gap-4">
-                            {can('dashboard')   && <Link to="/admin" onClick={onClose} className={linkClass}><LayoutDashboard size={18} />Dashboard</Link>}
-                            {can('clientes')    && <Link to="/admin/clients" onClick={onClose} className={linkClass}><Users size={18} />Clientes</Link>}
-                            {can('produtos')    && <Link to="/admin/products" onClick={onClose} className={linkClass}><Package size={18} />Produtos<Badge count={notifCfg.notify_estoque_baixo !== '0' ? notifEstoque : 0} /></Link>}
-                            {can('categorias')  && <Link to="/admin/categories" onClick={onClose} className={linkClass}><Tag size={18} />Categorias</Link>}
-                            {can('reviews')     && <Link to="/admin/reviews" onClick={onClose} className={linkClass}><MessageSquare size={18} />Reviews</Link>}
-                            {can('pedidos')     && <Link to="/admin/orders" onClick={onClose} className={linkClass}><ClipboardList size={18} />Pedidos<Badge count={notifCfg.notify_novos_pedidos !== '0' ? notifPedidos : 0} /></Link>}
-                            {can('curriculos')  && <Link to="/admin/curriculos" onClick={onClose} className={linkClass}><FileUser size={18} />Currículos<Badge count={notifCfg.notify_novos_curriculos !== '0' ? notifCurriculos : 0} /></Link>}
-                            {can('trabalhos')   && <Link to="/admin/vagas" onClick={onClose} className={linkClass}><Briefcase size={18} />Vagas</Link>}
-                            {can('cupons')      && <Link to="/admin/cupons" onClick={onClose} className={linkClass}><Ticket size={18} />Cupons</Link>}
-                            {can('customizacao') && <Link to="/admin/customizacao" onClick={onClose} className={linkClass}><Paintbrush size={18} />Customização</Link>}
-                            {can('marketing')    && <Link to="/admin/marketing"    onClick={onClose} className={linkClass}><TrendingUp size={18} />Marketing</Link>}
-                            {can('relatorios')  && <Link to="/admin/relatorios" onClick={onClose} className={linkClass}><BarChart2 size={18} />Relatórios</Link>}
-                            {can('auditoria')   && <Link to="/admin/auditoria" onClick={onClose} className={linkClass}><ScrollText size={18} />Auditoria</Link>}
-                        </div>
-                    </ul>
+                    {can('dashboard') && (
+                        <Link
+                            to={DASHBOARD_ITEM.to}
+                            onClick={onClose}
+                            className={`${linkClass} ${isItemActive(location.pathname, DASHBOARD_ITEM) ? activeLinkClass : ''}`}
+                        >
+                            <LayoutDashboard size={18} />Dashboard
+                        </Link>
+                    )}
 
-                    <hr className="border-gray-200 dark:border-(--admin-border)" />
-
-                    <ul className="py-5 flex flex-col gap-4">
-                        <h1 className="font-bold text-xl text-verde-escuro-escarlate dark:text-(--admin-accent)">Admin</h1>
-                        {can('usuarios')      && <Link to="/admin/manage-users" onClick={onClose} className={linkClass}><UserCog size={18} />Gerenciar usuários</Link>}
-                        {can('papeis')        && <Link to="/admin/roles" onClick={onClose} className={linkClass}><ShieldCheck size={18} />Gerenciar Pápeis</Link>}
-                        {can('reports')      && <Link to="/admin/reports" onClick={onClose} className={linkClass}><Bug size={18} />Reports</Link>}
-                        {can('chamados')     && <Link to="/admin/report-tickets" onClick={onClose} className={linkClass}><Wrench size={18} />Chamados</Link>}
-                        <Link to="/admin/help" onClick={onClose} className={linkClass}><HelpCircle size={18} />Ajuda</Link>
-                        {can('configuracoes') && <Link to="/admin/settings" onClick={onClose} className={linkClass}><Settings size={18} />Configurações</Link>}
-                    </ul>
+                    <div className="flex flex-col gap-1 py-3">
+                        {displayGroups.map(group => {
+                            const isEffectivelyOpen = isSearching ? true : openGroups.has(group.groupKey)
+                            return (
+                                <div key={group.groupKey}>
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleGroup(group.groupKey)}
+                                        aria-expanded={isEffectivelyOpen}
+                                        className="flex items-center justify-between w-full py-2 text-left cursor-pointer"
+                                    >
+                                        <h1 className="font-bold text-xs uppercase tracking-wide text-verde-escuro-escarlate dark:text-(--admin-accent)">{group.groupLabel}</h1>
+                                        <ChevronDown size={16} className={`transition-transform ${isEffectivelyOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    {isEffectivelyOpen && (
+                                        <div className="flex flex-col gap-2 pb-3">
+                                            {group.items.map(item => {
+                                                const Icon = item.icon
+                                                return (
+                                                    <Link
+                                                        key={item.key}
+                                                        to={item.to}
+                                                        onClick={onClose}
+                                                        className={`${linkClass} ${isItemActive(location.pathname, item) ? activeLinkClass : ''}`}
+                                                    >
+                                                        <Icon size={18} />{item.label}
+                                                        <Badge count={badgeByKey[item.key] ?? 0} />
+                                                    </Link>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
 
-            <button onClick={closeAdmin} className={linkClass}>
-                <LogOut size={18} />
-                <p>Sair</p>
-            </button>
+            <div className="flex flex-col gap-1 pt-3 border-t border-gray-200 dark:border-(--admin-border)">
+                {FIXED_ITEMS.filter(item => !item.permKey || can(item.permKey)).map(item => {
+                    const Icon = item.icon
+                    return (
+                        <Link
+                            key={item.key}
+                            to={item.to}
+                            onClick={onClose}
+                            className={`${linkClass} ${isItemActive(location.pathname, item) ? activeLinkClass : ''}`}
+                        >
+                            <Icon size={18} />{item.label}
+                        </Link>
+                    )
+                })}
+                <button onClick={closeAdmin} className={linkClass}>
+                    <LogOut size={18} />
+                    <p>Sair</p>
+                </button>
+            </div>
 
         </aside>
         {confirm && <ConfirmDialog message='Ao sair você perde o acesso e terá que logar novamente.' title='Deseja realmente sair?' onConfirm={() => { localStorage.clear(); navigate('/admin/login'); adminApi.post('/admin/auth/logout').catch(() => {}) }} onCancel={() => {setConfirm(false)}}/>}
