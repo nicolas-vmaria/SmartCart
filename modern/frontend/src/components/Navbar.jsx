@@ -80,7 +80,7 @@ export default function Navbar() {
     return (
         <nav className={`flex items-center justify-between h-20 px-6 md:px-10 w-full transition-colors duration-300 ${isHome && !scrolled ? 'bg-transparent' : 'bg-verde-escuro'}`}>
 
-            <Link to="/" onClick={fecharMenu}><img className="w-36 md:w-40" src={logo} alt="" /></Link>
+            <Link to="/" onClick={fecharMenu}><img className="w-36 md:w-40" src={logo} alt="SmartCart - página inicial" /></Link>
 
             {/* Menu desktop */}
             <ul className="hidden md:flex gap-20 items-center">
@@ -171,6 +171,8 @@ export default function Navbar() {
                     </form>
                     <button
                         onClick={() => { setSearchOpen(v => !v); if (searchOpen) setSearchQuery('') }}
+                        aria-label={searchOpen ? 'Fechar busca' : 'Abrir busca'}
+                        aria-expanded={searchOpen}
                         className="text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200 relative w-9 h-9 flex items-center justify-center shrink-0"
                     >
                         <Search size={20} className={`absolute transition-all duration-200 ${searchOpen ? 'opacity-0 scale-50 rotate-90' : 'opacity-100 scale-100 rotate-0'}`} />
@@ -178,7 +180,7 @@ export default function Navbar() {
                     </button>
                 </div>
 
-                <Link to="/carrinho" className="relative text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200">
+                <Link to="/carrinho" aria-label={cartCount > 0 ? `Carrinho, ${cartCount} ${cartCount === 1 ? 'item' : 'itens'}` : 'Carrinho'} className="relative text-verde-claro p-2 rounded-full hover:bg-white/15 hover:scale-110 transition-all duration-200">
                     <FaCartShopping size={36} />
                     {cartCount > 0 && (
                         <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center leading-none">
@@ -190,10 +192,10 @@ export default function Navbar() {
 
             {/* Ícones mobile direita */}
             <div className="flex md:hidden items-center gap-3">
-                <button onClick={() => navigate('/busca')} className="text-verde-claro p-1">
+                <button onClick={() => navigate('/busca')} aria-label="Buscar" className="text-verde-claro p-1">
                     <Search size={22} />
                 </button>
-                <Link to="/carrinho" onClick={fecharMenu} className="relative">
+                <Link to="/carrinho" onClick={fecharMenu} aria-label={cartCount > 0 ? `Carrinho, ${cartCount} ${cartCount === 1 ? 'item' : 'itens'}` : 'Carrinho'} className="relative">
                     <FaCartShopping className="w-6 h-auto text-verde-claro" />
                     {cartCount > 0 && (
                         <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
@@ -201,7 +203,7 @@ export default function Navbar() {
                         </span>
                     )}
                 </Link>
-                <button onClick={() => setMenuAberto(v => !v)} className="text-verde-claro p-1">
+                <button onClick={() => setMenuAberto(v => !v)} aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'} aria-expanded={menuAberto} className="text-verde-claro p-1">
                     {menuAberto ? <FiX size={26} /> : <FiMenu size={26} />}
                 </button>
             </div>

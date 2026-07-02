@@ -10,6 +10,8 @@ import Toast from "./components/Toast"
 import ProtectedRouteAdmin from "./components/admin/ProtectedRouteAdmin"
 import ProtectedRouteUser from "./components/ProtectRoutesUser"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
+import { AccessibilityProvider } from "./context/AccessibilityContext"
+import AccessibilityWidget from "./components/AccessibilityWidget"
 import { useConfiguracoes } from "./hooks/useConfiguracoes"
 
 const Home              = lazy(() => import("./pages/Home"))
@@ -101,7 +103,7 @@ function FlashSaleBanner({ config, onDismiss }) {
               Ver oferta
             </a>
           )}
-          <button onClick={onDismiss} className="text-white/70 hover:text-white transition-colors p-0.5">
+          <button onClick={onDismiss} aria-label="Fechar oferta" className="text-white/70 hover:text-white transition-colors p-0.5">
             <X size={14} />
           </button>
         </div>
@@ -128,7 +130,7 @@ function PopupPromocional({ config }) {
   return (
     <div className="fixed inset-0 bg-black/50 z-100 flex items-center justify-center p-4" onClick={close}>
       <div className="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
-        <button onClick={close} className="absolute top-3 right-3 z-10 bg-white/80 hover:bg-white rounded-full p-1 transition-all">
+        <button onClick={close} aria-label="Fechar popup" className="absolute top-3 right-3 z-10 bg-white/80 hover:bg-white rounded-full p-1 transition-all">
           <X size={16} className="text-gray-500" />
         </button>
         {config.popup_imagem && (
@@ -199,6 +201,9 @@ function Layout() {
 
   return (
     <>
+      <a href="#conteudo" className="sr-only focus:not-sr-only fixed top-2 left-2 z-100 bg-verde-escuro text-white px-4 py-2 rounded-xl">
+        Pular para o conteúdo
+      </a>
       <ScrollToTop />
       <PopupPromocional config={config} />
       <header className="fixed top-0 w-full z-50">
@@ -211,9 +216,9 @@ function Layout() {
         )}
         <Navbar />
       </header>
-      <div style={{ paddingTop: isHome ? 0 : (showAnuncio ? '116px' : '80px'), paddingBottom: showFlash ? '44px' : '0' }}>
+      <main id="conteudo" tabIndex={-1} style={{ paddingTop: isHome ? 0 : (showAnuncio ? '7.25rem' : '5rem'), paddingBottom: showFlash ? '2.75rem' : '0' }}>
         <Outlet />
-      </div>
+      </main>
       <Footer />
       <AiChat />
       {showFlash && <FlashSaleBanner config={config} onDismiss={handleFlashDismiss} />}
@@ -240,7 +245,10 @@ function AdminLayout() {
   }, [dark])
 
   return (
-    <main className={`flex${dark ? ' dark' : ''}`}>
+    <div className={`flex${dark ? ' dark' : ''}`}>
+      <a href="#conteudo" className="sr-only focus:not-sr-only fixed top-2 left-2 z-100 bg-verde-escuro text-white px-4 py-2 rounded-xl">
+        Pular para o conteúdo
+      </a>
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-10 md:hidden"
@@ -248,10 +256,11 @@ function AdminLayout() {
         />
       )}
       <AdminMenu isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <section className="p-5 md:p-10 box-border w-full bg-gray-50 dark:bg-(--admin-bg) md:ml-80 min-h-screen">
+      <main id="conteudo" tabIndex={-1} className="p-5 md:p-10 box-border w-full bg-gray-50 dark:bg-(--admin-bg) md:ml-80 min-h-screen">
         <div className="flex items-center gap-3 mb-5 md:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
+            aria-label="Abrir menu"
             className="p-2 rounded-lg border border-gray-200 dark:border-(--admin-border) hover:bg-white dark:hover:bg-(--admin-card) text-verde-escuro dark:text-(--admin-accent) transition-all"
           >
             <Menu size={20} />
@@ -259,8 +268,8 @@ function AdminLayout() {
           <span className="font-bold text-verde-escuro dark:text-(--admin-accent) text-lg">SmartCart Admin</span>
         </div>
         <Outlet />
-      </section>
-    </main>
+      </main>
+    </div>
   )
 }
 
@@ -355,9 +364,11 @@ export function SessionWatcher() {
 function App() {
   return (
     <ThemeProvider>
+      <AccessibilityProvider>
       <BrowserRouter>
         <ScrollToTop />
         <SessionWatcher />
+        <AccessibilityWidget />
         <Suspense fallback={<div className="min-h-screen" />}>
           <Routes>
             {/* Rotas com Navbar + Footer */}
@@ -421,6 +432,7 @@ function App() {
           </Routes>
         </Suspense>
       </BrowserRouter>
+      </AccessibilityProvider>
     </ThemeProvider>
   )
 }

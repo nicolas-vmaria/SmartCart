@@ -210,6 +210,8 @@ export default function AiChat() {
 
             <button
                 onClick={() => setOpen(o => !o)}
+                aria-label={open ? 'Fechar chat de ajuda' : 'Abrir chat de ajuda'}
+                aria-expanded={open}
                 className="w-14 h-14 rounded-full bg-verde-escuro text-white shadow-lg flex items-center justify-center text-2xl hover:scale-110 transition-transform">
                 {open ? "×" : <IoChatbubblesOutline className="text-2xl" />}
             </button>

@@ -9,15 +9,15 @@ export default function ConfirmDialog({ title, message, confirmLabel = 'Confirma
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-5">
+            <div role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message" className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-5">
 
                 <div className="flex items-start gap-4">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${c.icon}`}>
                         <AlertTriangle size={20} />
                     </div>
                     <div>
-                        <h3 className="font-bold text-gray-800 text-base">{title}</h3>
-                        <p className="text-sm text-gray-500 mt-1">{message}</p>
+                        <h3 id="confirm-dialog-title" className="font-bold text-gray-800 text-base">{title}</h3>
+                        <p id="confirm-dialog-message" className="text-sm text-gray-500 mt-1">{message}</p>
                     </div>
                 </div>
 

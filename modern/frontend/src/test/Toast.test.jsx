@@ -15,6 +15,11 @@ describe('Toast', () => {
         expect(icon).toHaveLength(1)
     })
 
+    it('container tem role status para leitores de tela', () => {
+        const { container } = render(<Toast message={"Olá mundo!"} type='success' onClose={() => {}}/>)
+        expect(within(container).getByRole('status')).toBeTruthy()
+    })
+
     it('se a funçao onClose fecha quando quando chamada', async () => {
         const onClose = vi.fn()
         const {container}= render(<Toast message={"Olá mundo!"} type='error' onClose={onClose}/>)

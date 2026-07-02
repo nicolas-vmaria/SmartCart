@@ -22,6 +22,28 @@
   --admin-input:        #101010;   /* fundo de inputs */
 }
 
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-verde-escuro-escarlate);
+  outline-offset: 2px;
+}
+
+.high-contrast { background-color: #000; }
+.high-contrast :where(body, div, section, article, aside, header, footer, nav, main, ul, li, form, table, td, th) {
+  background-color: #000 !important;
+  color: #fff !important;
+  border-color: #ffd700 !important;
+  box-shadow: none !important;
+}
+.high-contrast :where(h1, h2, h3, h4, h5, h6, p, span, label, strong, b) { color: #fff !important; }
+.high-contrast :where(a) { color: #ffd700 !important; text-decoration: underline !important; }
+.high-contrast :where(button, input, select, textarea) {
+  background-color: #000 !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+}
+.high-contrast :where(svg) { color: #fff !important; }
+.high-contrast :focus-visible { outline-color: #ffd700 !important; }
+
 .mySwiper {
   --swiper-navigation-color: #E9FF75;
   --swiper-pagination-color: #18572C;
