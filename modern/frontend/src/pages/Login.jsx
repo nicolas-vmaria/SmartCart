@@ -1,18 +1,25 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import logo from '../assets/smartcart-logo-transparente-preto.png'
 import Toast from '../components/Toast'
 import { loginUser, googleLogin } from '../lib/api/authUser'
 import { getRateLimitMessage } from '../lib/rateLimitMessage'
+import { loadGsi } from '../lib/googleGsi'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Login() {
+    useDocumentTitle('Entrar')
     const [toast, setToast] = useState(null)
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [loading, setLoading] = useState(false)
 
     const navigate = useNavigate()
+
+    useEffect(() => {
+        loadGsi().catch(() => {})
+    }, [])
 
     const handleGoogleClick = () => {
         if (!window.google) return

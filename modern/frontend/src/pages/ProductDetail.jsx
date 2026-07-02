@@ -15,6 +15,7 @@ import { getProductBySlug } from "../lib/api/products";
 import { addToCart } from "../lib/api/cart";
 import { getReviews, createReview, markHelpful } from "../lib/api/reviews";
 import { getCompraJunto } from "../lib/api/compraJunto";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { summarizeReviews } from "../lib/IaAssistant";
 import Toast from "../components/Toast";
 import { Plus } from "lucide-react";
@@ -204,6 +205,7 @@ export default function ProductDetail() {
     const navigate = useNavigate()
 
     const [produto, setProduto] = useState(null)
+    useDocumentTitle(produto?.nome)
     const [loading, setLoading] = useState(true)
     const [notFound, setNotFound] = useState(false)
     const [cont, setCont] = useState(1)

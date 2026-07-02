@@ -1,14 +1,21 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate } from 'react-router-dom'
 
 import logo from '../assets/smartcart-logo-transparente.png'
 import { registerUser } from "../lib"
 import { googleLogin } from "../lib/api/authUser"
 import Toast from "../components/Toast"
+import { loadGsi } from '../lib/googleGsi'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Register() {
+    useDocumentTitle('Criar conta')
 
     const navigate = useNavigate()
+
+    useEffect(() => {
+        loadGsi().catch(() => {})
+    }, [])
 
     const [checked, setChecked] = useState(false)
     const [nome, setNome] = useState('')

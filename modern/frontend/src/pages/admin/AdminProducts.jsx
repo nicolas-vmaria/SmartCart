@@ -299,7 +299,7 @@ export default function AdminProducts() {
                                     <button onClick={() => setConfirmId(product.id)} title="Excluir produto" className="p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20 cursor-pointer transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-red-500">
                                         <Trash2 size={15} />
                                     </button>
-                                    <a href={`/produto/${product.slug}`} target="_blank" rel="noreferrer" title="Ver no site"
+                                    <a href={`/produto/${product.slug}`} target="_blank" rel="noopener noreferrer" title="Ver no site"
                                         className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-(--admin-hover) transition-all text-gray-500 dark:text-(--admin-text-muted) hover:text-verde-escuro dark:hover:text-(--admin-accent)">
                                         <ExternalLink size={15} />
                                     </a>

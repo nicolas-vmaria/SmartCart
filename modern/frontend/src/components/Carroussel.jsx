@@ -5,9 +5,9 @@ import { Pagination, Navigation, Autoplay } from 'swiper/modules'
 import 'swiper/css/navigation'
 import 'swiper/css'
 
-import slide1 from '../assets/carrossel/1.png'
-import slide2 from '../assets/carrossel/2.png'
-import slide3 from '../assets/carrossel/3.png'
+import slide1 from '../assets/carrossel/1.webp'
+import slide2 from '../assets/carrossel/2.webp'
+import slide3 from '../assets/carrossel/3.webp'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -40,9 +40,17 @@ export default function Carroussel() {
                 modules={[Pagination, Navigation, Autoplay]}
                 className="mySwiper"
             >
-                {slides.map(s => (
+                {slides.map((s, i) => (
                     <SwiperSlide key={s.id}>
-                        <img src={imgUrl(s.foto_url, 1200)} alt="banner" loading="eager" className="w-full" />
+                        <img
+                            src={imgUrl(s.foto_url, 1200)}
+                            alt={s.titulo || `Banner promocional ${i + 1}`}
+                            width={1600}
+                            height={417}
+                            loading={i === 0 ? 'eager' : 'lazy'}
+                            fetchPriority={i === 0 ? 'high' : 'auto'}
+                            className="w-full h-auto"
+                        />
                     </SwiperSlide>
                 ))}
             </Swiper>

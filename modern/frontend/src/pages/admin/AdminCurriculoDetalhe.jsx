@@ -189,7 +189,7 @@ export default function AdminCurriculoDetalhe() {
                                 <div className="min-w-0">
                                     <p className="text-xs text-gray-400 dark:text-(--admin-text-muted)">{label}</p>
                                     {href
-                                        ? <a href={href} target="_blank" rel="noreferrer" className="font-medium text-verde-escuro dark:text-(--admin-accent) break-all text-xs flex items-center gap-1 hover:underline">
+                                        ? <a href={href} target="_blank" rel="noopener noreferrer" className="font-medium text-verde-escuro dark:text-(--admin-accent) break-all text-xs flex items-center gap-1 hover:underline">
                                             {valor} <ExternalLink size={10} />
                                           </a>
                                         : <p className="font-medium text-gray-700 dark:text-(--admin-text) break-all text-xs">{valor}</p>
@@ -239,7 +239,7 @@ export default function AdminCurriculoDetalhe() {
                     {/* Ações */}
                     <div className="flex gap-3">
                         {curriculo.curriculo_url ? (
-                            <a href={curriculo.curriculo_url} target="_blank" rel="noreferrer"
+                            <a href={curriculo.curriculo_url} target="_blank" rel="noopener noreferrer"
                                 className="flex items-center gap-2 flex-1 justify-center border border-gray-200 dark:border-(--admin-border) text-gray-500 dark:text-(--admin-text-muted) py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-(--admin-hover) transition-all">
                                 <Download size={15} /> Baixar currículo
                             </a>

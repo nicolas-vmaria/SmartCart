@@ -347,6 +347,7 @@ export default function AdminMarketing() {
                                     <div className="relative w-full h-32 rounded-xl overflow-hidden border border-gray-200 dark:border-(--admin-border)">
                                         <img src={configs.popup_imagem} className="w-full h-full object-cover" alt="" />
                                         <button onClick={() => set('popup_imagem', '')}
+                                            aria-label="Remover imagem"
                                             className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-black/70 transition-all cursor-pointer">
                                             <X size={12} />
                                         </button>

@@ -166,6 +166,7 @@ export default function Navbar() {
                             onChange={e => setSearchQuery(e.target.value)}
                             onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
                             placeholder="Buscar produtos..."
+                            aria-label="Buscar produtos"
                             className="w-full bg-white/15 text-verde-claro placeholder-verde-claro/50 rounded-full px-4 py-1.5 text-sm outline-none border border-verde-claro/30"
                         />
                     </form>

@@ -11,8 +11,10 @@ import { FaArrowsRotate } from "react-icons/fa6";
 import { FaCreditCard } from "react-icons/fa6";
 import { Flame, Sparkles, Star, Tag } from "lucide-react";
 import { useConfiguracoes } from "../hooks/useConfiguracoes";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 
 export default function Produtos() {
+    useDocumentTitle('Produtos')
     const [maisVendidos, setMaisVendidos] = useState([])
     const [lancamentos, setLancamentos] = useState([])
     const [categorias, setCategorias] = useState([])

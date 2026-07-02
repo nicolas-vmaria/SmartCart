@@ -18,8 +18,10 @@ export default function ProdutoCard({ produto }) {
             <div className="relative bg-gray-100 w-full h-80 overflow-hidden">
                 {produto.foto_url
                     ? <img
-                        src={imgUrl(produto.foto_url, 600)}
+                        src={imgUrl(produto.foto_url, 400)}
                         alt={produto.nome}
+                        width={400}
+                        height={427}
                         loading="lazy"
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />

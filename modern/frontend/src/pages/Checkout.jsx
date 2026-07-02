@@ -12,6 +12,7 @@ import { gerarPixPayload } from "../lib/pix"
 import { calcularFrete } from "../lib/frete"
 import { validateCoupon } from "../lib/api/coupons"
 import { useConfiguracoes } from "../hooks/useConfiguracoes"
+import { useDocumentTitle } from "../hooks/useDocumentTitle"
 import { siVisa, siMastercard, siAmericanexpress, siDiscover } from 'simple-icons'
 import Toast from "../components/Toast"
 import { getProfile } from "../lib/api/profile"
@@ -461,6 +462,7 @@ function PixModal({ pedido, onConfirm }) {
 }
 
 export default function Checkout() {
+    useDocumentTitle('Checkout')
     const [step, setStep] = useState(1)
     const [paymentMethod, setPaymentMethod] = useState('pix')
     const [itens, setItens] = useState([])

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { TextPlugin } from 'gsap/TextPlugin'
@@ -8,8 +8,9 @@ import {
 } from 'lucide-react'
 import { getProdutosDestaque } from '../lib/api/products'
 import { imgUrl } from '../lib/cloudinaryUrl'
-import SmartCart3D from '../components/SmartCart3D'
 import SmartCartDemo from '../components/SmartCartDemo'
+
+const SmartCart3D = lazy(() => import('../components/SmartCart3D'))
 
 gsap.registerPlugin(TextPlugin)
 
@@ -34,6 +35,17 @@ function setupReveal(root) {
 
 /* ── Hero ────────────────────────────────────────────────────── */
 function Hero() {
+  /* Adia o download/execução do three.js para depois do carregamento inicial */
+  const [show3D, setShow3D] = useState(false)
+  useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(() => setShow3D(true), { timeout: 3000 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const t = setTimeout(() => setShow3D(true), 2000)
+    return () => clearTimeout(t)
+  }, [])
+
   return (
     <section
       className="relative overflow-hidden text-white"
@@ -116,7 +128,11 @@ function Hero() {
         {/* Cart 3D */}
         <div className="hero-image flex items-center justify-center">
           <div className="relative w-full max-w-[420px]" style={{ aspectRatio: '1 / 1.05' }}>
-            <SmartCart3D />
+            {show3D && (
+              <Suspense fallback={null}>
+                <SmartCart3D />
+              </Suspense>
+            )}
             {/* Mini screen overlay */}
             <div
               className="absolute bottom-6 right-[-18px] rounded-[14px] p-3.5 min-w-[180px] z-10"
@@ -396,7 +412,7 @@ export default function Home() {
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
         tl.from('.hero-eyebrow', { y: 30, opacity: 0, duration: 0.5 })
           .from('.hero-line',    { y: 80, opacity: 0, duration: 0.7, stagger: 0.2 }, '-=0.2')
-          .from('.hero-subtitle',{ y: 40, opacity: 0, duration: 0.6 }, '-=0.3')
+          .from('.hero-subtitle',{ y: 40, duration: 0.6 }, '-=0.3')
           .from('.hero-cta-row', { scale: 0.85, opacity: 0, duration: 0.5, transformOrigin: 'left center' }, '-=0.2')
           .from('.hero-stat',    { y: 24, opacity: 0, duration: 0.5, stagger: 0.12 }, '-=0.2')
           .from('.hero-image',   { x: 120, opacity: 0, duration: 0.8 }, '-=0.9')

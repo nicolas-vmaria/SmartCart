@@ -12,6 +12,7 @@ import { calcularFrete } from "../lib/frete"
 import Toast from "../components/Toast"
 import { useConfiguracoes } from "../hooks/useConfiguracoes"
 import { getRateLimitMessage } from "../lib/rateLimitMessage"
+import { useDocumentTitle } from "../hooks/useDocumentTitle"
 
 const CART_CACHE_KEY = 'cart_cache'
 
@@ -100,6 +101,7 @@ function EmptyCart() {
 }
 
 export default function Cart() {
+    useDocumentTitle('Carrinho')
     const { config } = useConfiguracoes()
     const freteGratisMinimo = (() => {
         const raw = Number(config.frete_gratis_minimo)
