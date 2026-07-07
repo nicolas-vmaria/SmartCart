@@ -328,7 +328,7 @@ function OrderSummary({ itens, loading, estado, coupon, freteMinimo, config }) {
             .sort((a, b) => b.minimo - a.minimo)
         : []
     const faixaAtiva = faixas.find(f => subtotal >= f.minimo) ?? null
-    const descontoProgressivo = faixaAtiva ? subtotal * (faixaAtiva.pct / 100) : 0
+    const descontoProgressivo = faixaAtiva ? Math.min(subtotal * (faixaAtiva.pct / 100), subtotal - discount) : 0
 
     const subtotalComDesconto = subtotal - discount - descontoProgressivo
     const frete = estado ? calcularFrete(estado, subtotalComDesconto, freteMinimo) : null

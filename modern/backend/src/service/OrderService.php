@@ -169,7 +169,7 @@ class OrderService {
             $desconto = min($desconto, $subtotal);
         }
 
-        $descontoProgressivo = $this->calcularDescontoProgressivo($subtotal);
+        $descontoProgressivo = min($this->calcularDescontoProgressivo($subtotal), $subtotal - $desconto);
 
         $subtotalComDesconto = $subtotal - $desconto - $descontoProgressivo;
         $frete  = $this->calcularFrete($body['estado'], $subtotalComDesconto);
