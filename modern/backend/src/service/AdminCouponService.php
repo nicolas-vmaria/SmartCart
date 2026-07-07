@@ -141,6 +141,11 @@ class AdminCouponService {
 
             return ['message' => "Cupom $id removido"];
         } catch (RuntimeException $e) {
+            if ($e->getMessage() === 'CUPON_EM_USO') {
+                http_response_code(409);
+                return ['error' => 'Este cupom já foi utilizado em pedidos e não pode ser removido'];
+            }
+
             http_response_code(500);
             return ['error' => 'Erro interno ao remover cupom: ' . $e->getMessage()];
         }

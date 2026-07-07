@@ -37,6 +37,7 @@ export default function Login() {
                     const { data } = await googleLogin(tokenResponse.access_token, userInfo)
                     localStorage.setItem('user_token', data.token)
                     localStorage.setItem('user_nome', data.user.nome)
+                    sessionStorage.setItem('show_welcome_popup', '1')
                     navigate('/')
                 } catch (err) {
                     setToast({ message: err.response?.data?.error || 'Falha ao conectar com Google', type: 'error' })
@@ -55,6 +56,7 @@ export default function Login() {
             const { data } = await loginUser(email, senha)
             localStorage.setItem('user_token', data.token)
             localStorage.setItem('user_nome', data.user.nome)
+            sessionStorage.setItem('show_welcome_popup', '1')
             navigate('/')
 
         } catch (err){

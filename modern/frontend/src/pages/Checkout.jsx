@@ -312,7 +312,7 @@ function PaymentStep({ method, setMethod, cardData, onCardChange, cardErrors, co
     )
 }
 
-function OrderSummary({ itens, loading, estado, coupon, freteMinimo }) {
+function OrderSummary({ itens, loading, estado, coupon, freteMinimo, config }) {
     const subtotal = useMemo(() =>
         itens.reduce((sum, i) => sum + Number(i.preco) * i.quantidade, 0), [itens])
     const discount = coupon
@@ -320,7 +320,17 @@ function OrderSummary({ itens, loading, estado, coupon, freteMinimo }) {
             ? subtotal * (parseFloat(coupon.desconto) / 100)
             : Math.min(parseFloat(coupon.desconto), subtotal)
         : 0
-    const subtotalComDesconto = subtotal - discount
+
+    const faixas = config.desconto_ativo === '1'
+        ? [1, 2, 3]
+            .map(n => ({ minimo: Number(config[`desconto_faixa_${n}_minimo`]), pct: Number(config[`desconto_faixa_${n}_pct`]) }))
+            .filter(f => f.minimo > 0 && f.pct > 0)
+            .sort((a, b) => b.minimo - a.minimo)
+        : []
+    const faixaAtiva = faixas.find(f => subtotal >= f.minimo) ?? null
+    const descontoProgressivo = faixaAtiva ? Math.min(subtotal * (faixaAtiva.pct / 100), subtotal - discount) : 0
+
+    const subtotalComDesconto = subtotal - discount - descontoProgressivo
     const frete = estado ? calcularFrete(estado, subtotalComDesconto, freteMinimo) : null
     const total = subtotalComDesconto + (frete ?? 0)
 
@@ -390,6 +400,12 @@ function OrderSummary({ itens, loading, estado, coupon, freteMinimo }) {
                             <div className="flex justify-between text-green-600">
                                 <span>Desconto</span>
                                 <span>- {fmt(discount)}</span>
+                            </div>
+                        )}
+                        {descontoProgressivo > 0 && (
+                            <div className="flex justify-between text-green-600">
+                                <span>Desconto progressivo {faixaAtiva.pct}%</span>
+                                <span>- {fmt(descontoProgressivo)}</span>
                             </div>
                         )}
                         <div className="flex justify-between">
@@ -664,7 +680,7 @@ export default function Checkout() {
                 </section>
 
                 <aside className="w-full lg:w-80 shrink-0">
-                    <OrderSummary itens={itens} loading={loadingCart} estado={delivery.estado} coupon={appliedCoupon} freteMinimo={freteMinimo} />
+                    <OrderSummary itens={itens} loading={loadingCart} estado={delivery.estado} coupon={appliedCoupon} freteMinimo={freteMinimo} config={storeConfig} />
                 </aside>
 
             </div>
