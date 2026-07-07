@@ -1,10 +1,12 @@
 <?php
 
 require_once __DIR__ . '/../repository/OrderRepository.php';
+require_once __DIR__ . '/../repository/ConfiguracoesRepository.php';
 require_once __DIR__ . '/NotificationService.php';
 
 class OrderService {
     private OrderRepository $repo;
+    private ConfiguracoesRepository $configRepo;
 
     private const FRETE_GRATIS_MINIMO = 500.00;
 
@@ -23,8 +25,29 @@ class OrderService {
         return self::FRETE_POR_UF[$uf] ?? 29.90;
     }
 
-    public function __construct(?OrderRepository $repo = null) {
+    public function __construct(?OrderRepository $repo = null, ?ConfiguracoesRepository $configRepo = null) {
         $this->repo = $repo ?? new OrderRepository();
+        $this->configRepo = $configRepo ?? new ConfiguracoesRepository();
+    }
+
+    private function calcularDescontoProgressivo(float $subtotal): float {
+        $config = $this->configRepo->findAll();
+        if (($config['desconto_ativo'] ?? '0') !== '1') return 0.0;
+
+        $faixas = [];
+        foreach ([1, 2, 3] as $n) {
+            $minimo = (float)($config["desconto_faixa_{$n}_minimo"] ?? 0);
+            $pct    = (float)($config["desconto_faixa_{$n}_pct"] ?? 0);
+            if ($minimo > 0 && $pct > 0) $faixas[] = ['minimo' => $minimo, 'pct' => $pct];
+        }
+        usort($faixas, fn($a, $b) => $b['minimo'] <=> $a['minimo']);
+
+        foreach ($faixas as $faixa) {
+            if ($subtotal >= $faixa['minimo']) {
+                return round($subtotal * ($faixa['pct'] / 100), 2);
+            }
+        }
+        return 0.0;
     }
 
     public function getUserOrders(int $usuario_id): array {
@@ -146,7 +169,9 @@ class OrderService {
             $desconto = min($desconto, $subtotal);
         }
 
-        $subtotalComDesconto = $subtotal - $desconto;
+        $descontoProgressivo = $this->calcularDescontoProgressivo($subtotal);
+
+        $subtotalComDesconto = $subtotal - $desconto - $descontoProgressivo;
         $frete  = $this->calcularFrete($body['estado'], $subtotalComDesconto);
         $total  = $subtotalComDesconto + $frete;
 

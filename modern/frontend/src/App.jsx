@@ -115,13 +115,13 @@ function FlashSaleBanner({ config, onDismiss }) {
 function PopupPromocional({ config }) {
   const [visible, setVisible] = useState(() => {
     if (config.popup_ativo !== '1') return false
-    return sessionStorage.getItem('popup_dismissed') !== '1'
+    return sessionStorage.getItem('show_welcome_popup') === '1'
   })
 
   const show = visible && config.popup_ativo === '1' && !!config.popup_titulo
 
   function close() {
-    sessionStorage.setItem('popup_dismissed', '1')
+    sessionStorage.removeItem('show_welcome_popup')
     setVisible(false)
   }
 
