@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 require_once __DIR__ . '/../../../src/service/OrderService.php';
+require_once __DIR__ . '/../../../src/repository/ConfiguracoesRepository.php';
 
 #[AllowMockObjectsWithoutExpectations]
 class OrderServiceTest extends TestCase
@@ -11,6 +12,18 @@ class OrderServiceTest extends TestCase
     private function makeRepo(): OrderRepository
     {
         return $this->createMock(OrderRepository::class);
+    }
+
+    private function makeConfigRepo(): ConfiguracoesRepository
+    {
+        $configRepo = $this->createMock(ConfiguracoesRepository::class);
+        $configRepo->method('findAll')->willReturn([]);
+        return $configRepo;
+    }
+
+    private function makeService(OrderRepository $repo): OrderService
+    {
+        return new OrderService($repo, $this->makeConfigRepo());
     }
 
     private function bodyValido(array $overrides = []): array
@@ -50,7 +63,7 @@ class OrderServiceTest extends TestCase
     public function test_createOrder_campo_obrigatorio_ausente_retorna_erro(): void
     {
         $repo = $this->makeRepo();
-        $result = (new OrderService($repo))->createOrder(1, ['metodo_pagamento' => 'pix']);
+        $result = ($this->makeService($repo))->createOrder(1, ['metodo_pagamento' => 'pix']);
         $this->assertArrayHasKey('error', $result);
         $this->assertStringContainsString('obrigatório', $result['error']);
     }
@@ -58,7 +71,7 @@ class OrderServiceTest extends TestCase
     public function test_createOrder_metodo_pagamento_invalido_retorna_erro(): void
     {
         $repo = $this->makeRepo();
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido(['metodo_pagamento' => 'boleto']));
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido(['metodo_pagamento' => 'boleto']));
         $this->assertArrayHasKey('error', $result);
         $this->assertStringContainsString('pagamento', $result['error']);
     }
@@ -68,7 +81,7 @@ class OrderServiceTest extends TestCase
         $repo = $this->makeRepo();
         $repo->method('getCarrinhoAtivo')->willReturn(null);
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido());
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido());
         $this->assertArrayHasKey('error', $result);
         $this->assertStringContainsString('carrinho', $result['error']);
     }
@@ -79,7 +92,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getCarrinhoAtivo')->willReturn(['id' => 1]);
         $repo->method('getCarrinhoItens')->willReturn([]);
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido());
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido());
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Carrinho vazio', $result['error']);
     }
@@ -90,7 +103,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getCarrinhoAtivo')->willReturn(['id' => 1]);
         $repo->method('getCarrinhoItens')->willReturn([$this->itemFixture(false)]);
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido());
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido());
         $this->assertArrayHasKey('error', $result);
         $this->assertStringContainsString('indisponível', $result['error']);
     }
@@ -101,7 +114,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getCarrinhoAtivo')->willReturn(['id' => 1]);
         $repo->method('getCarrinhoItens')->willReturn([$this->itemFixture(true, 1)]);
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido());
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido());
         $this->assertArrayHasKey('error', $result);
         $this->assertStringContainsString('Estoque insuficiente', $result['error']);
     }
@@ -113,7 +126,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getCarrinhoItens')->willReturn([$this->itemFixture()]);
         $repo->method('findCupom')->willReturn(null);
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'INVALIDO']));
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'INVALIDO']));
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Cupom não encontrado', $result['error']);
     }
@@ -125,7 +138,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getCarrinhoItens')->willReturn([$this->itemFixture()]);
         $repo->method('findCupom')->willReturn($this->cupomFixture('percentual', 10.0, false));
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'PROMO10']));
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'PROMO10']));
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Cupom inativo', $result['error']);
     }
@@ -139,7 +152,7 @@ class OrderServiceTest extends TestCase
         $cupom['data_validade'] = date('Y-m-d', strtotime('-1 day'));
         $repo->method('findCupom')->willReturn($cupom);
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'PROMO10']));
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'PROMO10']));
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Cupom expirado', $result['error']);
     }
@@ -151,7 +164,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getCarrinhoItens')->willReturn([$this->itemFixture()]);
         $repo->method('findCupom')->willReturn($this->cupomFixture('percentual', 10.0, true, 5, 5));
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'PROMO10']));
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'PROMO10']));
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Cupom esgotado', $result['error']);
     }
@@ -164,7 +177,7 @@ class OrderServiceTest extends TestCase
         $repo->method('findCupom')->willReturn($this->cupomFixture());
         $repo->method('hasUserUsed')->willReturn(true);
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'PROMO10']));
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido(['codigo_cupom' => 'PROMO10']));
         $this->assertArrayHasKey('error', $result);
         $this->assertStringContainsString('já utilizou', $result['error']);
     }
@@ -179,7 +192,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getOrderById')->willReturn($pedido);
         $repo->method('getOrderItems')->willReturn([]);
 
-        $result = (new OrderService($repo))->createOrder(1, $this->bodyValido());
+        $result = ($this->makeService($repo))->createOrder(1, $this->bodyValido());
         $this->assertArrayHasKey('pedido', $result);
         $this->assertEquals('Pedido criado com sucesso', $result['message']);
     }
@@ -191,7 +204,7 @@ class OrderServiceTest extends TestCase
         $repo = $this->makeRepo();
         $repo->method('getOrderById')->willReturn(null);
 
-        $result = (new OrderService($repo))->cancelOrder(99, 1);
+        $result = ($this->makeService($repo))->cancelOrder(99, 1);
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Pedido não encontrado', $result['error']);
     }
@@ -201,7 +214,7 @@ class OrderServiceTest extends TestCase
         $repo = $this->makeRepo();
         $repo->method('getOrderById')->willReturn(['id' => 1, 'usuario_id' => 2, 'status' => 'aguardando']);
 
-        $result = (new OrderService($repo))->cancelOrder(1, 1);
+        $result = ($this->makeService($repo))->cancelOrder(1, 1);
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Acesso negado', $result['error']);
     }
@@ -211,7 +224,7 @@ class OrderServiceTest extends TestCase
         $repo = $this->makeRepo();
         $repo->method('getOrderById')->willReturn(['id' => 1, 'usuario_id' => 1, 'status' => 'enviado']);
 
-        $result = (new OrderService($repo))->cancelOrder(1, 1);
+        $result = ($this->makeService($repo))->cancelOrder(1, 1);
         $this->assertArrayHasKey('error', $result);
         $this->assertStringContainsString('cancelado', $result['error']);
     }
@@ -222,7 +235,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getOrderById')->willReturn(['id' => 1, 'usuario_id' => 1, 'status' => 'aguardando']);
         $repo->expects($this->once())->method('updateStatus')->with(1, 'cancelado', null);
 
-        $result = (new OrderService($repo))->cancelOrder(1, 1);
+        $result = ($this->makeService($repo))->cancelOrder(1, 1);
         $this->assertArrayHasKey('message', $result);
     }
 
@@ -233,7 +246,7 @@ class OrderServiceTest extends TestCase
         $repo = $this->makeRepo();
         $repo->method('getOrderById')->willReturn(null);
 
-        $result = (new OrderService($repo))->getOrderById(99, 1);
+        $result = ($this->makeService($repo))->getOrderById(99, 1);
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Pedido não encontrado', $result['error']);
     }
@@ -243,7 +256,7 @@ class OrderServiceTest extends TestCase
         $repo = $this->makeRepo();
         $repo->method('getOrderById')->willReturn(['id' => 1, 'usuario_id' => 2, 'status' => 'aguardando']);
 
-        $result = (new OrderService($repo))->getOrderById(1, 1);
+        $result = ($this->makeService($repo))->getOrderById(1, 1);
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Acesso negado', $result['error']);
     }
@@ -254,7 +267,7 @@ class OrderServiceTest extends TestCase
         $repo->method('getOrderById')->willReturn(['id' => 1, 'usuario_id' => 1, 'status' => 'aguardando']);
         $repo->method('getOrderItems')->willReturn([['nome' => 'Camiseta', 'quantidade' => 1]]);
 
-        $result = (new OrderService($repo))->getOrderById(1, 1);
+        $result = ($this->makeService($repo))->getOrderById(1, 1);
         $this->assertArrayHasKey('pedido', $result);
         $this->assertArrayHasKey('itens', $result['pedido']);
         $this->assertCount(1, $result['pedido']['itens']);
@@ -267,7 +280,7 @@ class OrderServiceTest extends TestCase
         $repo = $this->makeRepo();
         $repo->method('getOrderById')->willReturn(['id' => 1, 'usuario_id' => 1, 'status' => 'enviado']);
 
-        $result = (new OrderService($repo))->getOrderReviewItems(1, 1);
+        $result = ($this->makeService($repo))->getOrderReviewItems(1, 1);
         $this->assertArrayHasKey('error', $result);
         $this->assertStringContainsString('entregue', $result['error']);
     }
@@ -277,7 +290,7 @@ class OrderServiceTest extends TestCase
         $repo = $this->makeRepo();
         $repo->method('getOrderById')->willReturn(['id' => 1, 'usuario_id' => 2, 'status' => 'entregue']);
 
-        $result = (new OrderService($repo))->getOrderReviewItems(1, 1);
+        $result = ($this->makeService($repo))->getOrderReviewItems(1, 1);
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Acesso negado', $result['error']);
     }
@@ -302,7 +315,7 @@ class OrderServiceTest extends TestCase
             return 1;
         });
 
-        (new OrderService($repo))->createOrder(1, $this->bodyValido(['estado' => 'SP']));
+        ($this->makeService($repo))->createOrder(1, $this->bodyValido(['estado' => 'SP']));
         $this->assertEquals(0.0, $capturedPayload['total'] - 600.0);
     }
 
@@ -323,7 +336,7 @@ class OrderServiceTest extends TestCase
             return 1;
         });
 
-        (new OrderService($repo))->createOrder(1, $this->bodyValido(['estado' => 'SP']));
+        ($this->makeService($repo))->createOrder(1, $this->bodyValido(['estado' => 'SP']));
         $this->assertEquals(115.90, $capturedPayload['total']);
     }
 
@@ -344,7 +357,7 @@ class OrderServiceTest extends TestCase
             return 1;
         });
 
-        (new OrderService($repo))->createOrder(1, $this->bodyValido(['estado' => 'ZZ']));
+        ($this->makeService($repo))->createOrder(1, $this->bodyValido(['estado' => 'ZZ']));
         $this->assertEquals(129.90, $capturedPayload['total']);
     }
 }
