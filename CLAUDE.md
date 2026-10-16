@@ -3,7 +3,7 @@
 ## Stack
 - **Frontend:** React + Vite + Tailwind CSS
 - **Backend:** PHP (sem framework)
-- **Banco de dados:** MySQL hospedado no Railway
+- **Banco de dados:** MySQL no Docker (ou local)
 - **Imagens:** Cloudinary (upload direto do frontend)
 - **Autenticação:** JWT (HS256) com `user_token` e `admin_token` no localStorage
 
@@ -81,8 +81,9 @@ modern/
 - `user_nome` salvo no localStorage no login/registro para exibir na Navbar
 
 ## Banco de dados
-- Host externo Railway: `autorack.proxy.rlwy.net:49098`
-- Banco: `railway`
+- Local via Docker: `localhost:3307` (externo) / `db:3306` (rede interna Docker)
+- Banco: `smartcart`
+- Usuário / Senha: `root` / `root`
 - Schema em: `modern/backend/database/schema.sql`
 
 ## Testes (Vitest + Testing Library)

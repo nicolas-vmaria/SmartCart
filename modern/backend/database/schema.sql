@@ -1,5 +1,5 @@
-create database smartcart;
-use smartcart;
+CREATE DATABASE IF NOT EXISTS smartcart;
+USE smartcart;
 
 SET FOREIGN_KEY_CHECKS=0;
 

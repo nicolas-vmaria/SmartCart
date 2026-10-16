@@ -22,18 +22,17 @@ Carrinho de supermercado inteligente que identifica produtos automaticamente, ca
 
 ### Para instalação com Docker
 
-* Windows 10/11 com suporte ao WSL 2
+* Windows 10/11 com suporte ao WSL 2 (ou Linux / macOS)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-* Conta Docker para login, caso solicitado durante a configuração
 
-> 💡 Com Docker, **não é necessário instalar PHP ou Composer manualmente**, pois o ambiente do backend é configurado automaticamente pelos containers.
+> 💡 Com Docker, **não é necessário instalar PHP, Composer, Node.js, npm ou MySQL manualmente**, pois todo o ambiente (Frontend, Backend e Banco de Dados) é provisionado e executado automaticamente em containers.
 
-### Para instalação manual
+### Para instalação manual (sem Docker)
 
 * Node.js v18+
-* PHP 8.2+
+* PHP 8.2+ (ou 8.4)
 * [Composer](https://getcomposer.org/download/)
-* MySQL
+* MySQL 8.0+
 * [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) — opcional, caso prefira executar o schema pela interface gráfica
 
 ---
@@ -42,120 +41,67 @@ Carrinho de supermercado inteligente que identifica produtos automaticamente, ca
 
 ### Opção A — Instalação com Docker (recomendado)
 
-Esta é a forma mais simples de executar o projeto, pois o Docker configura o ambiente do backend automaticamente. Dessa forma, você não precisa instalar o PHP ou o Composer manualmente.
+Esta é a forma mais rápida e simples de executar o projeto completo. Um único comando inicializa o **banco de dados MySQL**, o **backend PHP** e o **frontend React**.
 
-#### 1. Instale o Docker Desktop
-
-Antes de começar, é necessário instalar o **Docker Desktop** no computador.
+#### 1. Instale e abra o Docker Desktop
 
 Baixe e instale o Docker Desktop pelo site oficial:
 
 https://www.docker.com/products/docker-desktop/
 
-Durante a instalação, mantenha o **WSL 2** habilitado quando essa opção for apresentada. Em versões recentes do Windows, o Docker Desktop pode solicitar configurações adicionais do WSL.
+Durante a instalação no Windows, mantenha o suporte a **WSL 2** habilitado.
 
-Após a instalação:
+Após a instalação, abra o **Docker Desktop** e aguarde até que ele esteja totalmente iniciado.
 
-1. Abra o **Docker Desktop**.
-2. Aguarde até que ele esteja totalmente iniciado.
-3. Se necessário, faça login na sua conta Docker.
-
-> ⚠️ **Importante:** o Docker Desktop precisa estar aberto e em execução antes de utilizar os comandos `docker` ou `docker compose` no terminal.
-
-Você pode verificar se o Docker está funcionando executando:
+Você pode confirmar que o Docker está funcionando executando no terminal:
 
 ```bash
 docker --version
-```
-
-E:
-
-```bash
 docker compose version
 ```
 
-Se os dois comandos exibirem suas respectivas versões, o Docker está configurado corretamente.
-
 #### 2. Clone o repositório
-
-Com o Docker Desktop aberto e funcionando, abra o PowerShell ou outro terminal e clone o projeto:
 
 ```bash
 git clone https://github.com/nicolas-vmaria/SmartCart.git
 cd SmartCart
 ```
 
-#### 3. Configure o backend
+#### 3. Configure as variáveis de ambiente
 
-Crie o arquivo `.env` do backend a partir do arquivo de exemplo:
+Crie os arquivos `.env` do backend e do frontend a partir dos modelos:
 
 ```powershell
 Copy-Item modern/backend/.env.example modern/backend/.env
+Copy-Item modern/frontend/.env.example modern/frontend/.env
 ```
 
-Depois, abra o arquivo:
+*(No Linux/macOS: `cp modern/backend/.env.example modern/backend/.env && cp modern/frontend/.env.example modern/frontend/.env`)*
 
-```text
-modern/backend/.env
-```
+> 💡 O `.env` do backend já vem pré-configurado para conectar ao container do banco (`DB_HOST=db`, `DB_USER=root`, `DB_PASS=root`), e o frontend para `http://localhost:3001`. Se desejar, adicione suas credenciais do Brevo (e-mail) ou Gemini no `.env`.
 
-e preencha as variáveis de ambiente necessárias para o projeto.
+#### 4. Inicie o projeto com Docker
 
-#### 4. Inicie o backend com Docker
-
-Na pasta principal do projeto, execute:
+Na pasta raiz do projeto, execute:
 
 ```bash
 docker compose up --build
 ```
 
-Na primeira execução, o Docker irá criar os containers e instalar automaticamente as dependências do backend, incluindo as dependências do Composer.
+*(Ou `docker compose up -d` para rodar em segundo plano)*
 
-> 💡 **Importante:** a primeira execução pode demorar um pouco mais, pois o Docker precisa baixar as imagens necessárias, criar os containers e instalar as dependências.
+O Docker irá:
+1. **Criar e inicializar o container do MySQL (`db`):** executa automaticamente o script `schema.sql` na primeira vez, criando todas as tabelas e o usuário administrador.
+2. **Iniciar o Backend PHP (`backend`):** instala as dependências do Composer e inicia a API em `http://localhost:3001` assim que o banco estiver saudável.
+3. **Iniciar o Frontend React + Vite (`frontend`):** instala os pacotes npm e disponibiliza a interface com Hot Reload em `http://localhost:5173`.
 
-Depois que o processo terminar, mantenha esse terminal aberto enquanto estiver utilizando o backend.
+> 💡 **Dica:** a primeira execução pode demorar alguns minutos para baixar as imagens e instalar os pacotes. Nas próximas inicializações, o processo é praticamente instantâneo.
 
-#### 5. Configure e execute o frontend
-
-Abra **outro terminal**. Não é necessário fechar o terminal onde o Docker está executando.
-
-Entre na pasta do frontend:
-
-```bash
-cd modern/frontend
-```
-
-Crie o arquivo `.env`:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Abra o arquivo `.env` e confirme que a URL da API está configurada como:
-
-```env
-VITE_API_URL=http://localhost:3001
-```
-
-Depois, instale as dependências do frontend:
+Para parar todos os containers, pressione `Ctrl + C` no terminal ou execute:
 
 ```bash
-npm install
+docker compose down
 ```
-
-Por fim, inicie o frontend:
-
-```bash
-npm run dev
-```
-
-Após isso, o sistema estará disponível em:
-
-```text
-http://localhost:5173
-```
-
-> 💡 **Resumo:** para utilizar o SmartCart com Docker, você precisa ter o **Docker Desktop instalado, aberto e em execução**, além de estar logado no Docker quando solicitado. O PHP e o Composer não precisam ser instalados manualmente.
 
 ---
 
@@ -263,11 +209,12 @@ npm run dev
 
 ## Acessos
 
-| Serviço | URL                               | Credenciais                        |
-| ------- | --------------------------------- | ---------------------------------- |
-| Site    | http://localhost:5173             | —                                  |
-| Admin   | http://localhost:5173/admin/login | `admin@smartcart.com` / `admin123` |
-| API     | http://localhost:3001             | —                                  |
+| Serviço                | URL / Porta                       | Credenciais                          |
+| ---------------------- | --------------------------------- | ------------------------------------ |
+| Frontend (Site)        | http://localhost:5173             | —                                    |
+| Painel Admin           | http://localhost:5173/admin/login | `admin@smartcart.com` / `admin123`   |
+| Backend (API)          | http://localhost:3001             | —                                    |
+| Banco de Dados (MySQL) | `localhost:3307`                  | `root` / `root` (banco: `smartcart`) |
 
 ---
 

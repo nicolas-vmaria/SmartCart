@@ -1,13 +1,63 @@
 services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: smartcart
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./modern/backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
-    build: ./modern/backend
+    build:
+      context: ./modern/backend
     ports:
       - "3001:3001"
     volumes:
       - ./modern/backend:/var/www/html
     env_file:
-      - ./modern/backend/.env
+      - path: ./modern/backend/.env
+        required: false
+    environment:
+      - DB_HOST=db
+      - DB_NAME=smartcart
+      - DB_USER=root
+      - DB_PASS=root
+      - DB_PORT=3306
+    depends_on:
+      db:
+        condition: service_healthy
     command: bash -c "[ -d vendor ] || composer install --no-interaction; php -d display_errors=On -d error_reporting=E_ALL -d log_errors=On -d error_log=/dev/stderr -S 0.0.0.0:3001 -t public public/index.php"
+
+  frontend:
+    build:
+      context: ./modern/frontend
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./modern/frontend:/app
+      - /app/node_modules
+    env_file:
+      - path: ./modern/frontend/.env
+        required: false
+    environment:
+      - VITE_API_URL=http://localhost:3001
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev -- --host 0.0.0.0
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
 
 networks:
   default:
